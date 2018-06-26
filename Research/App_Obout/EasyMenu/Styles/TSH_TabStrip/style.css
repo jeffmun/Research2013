@@ -1,0 +1,128 @@
+@media screen
+{
+	.TabStripMenu
+	{
+		
+	}
+	
+	.TabStripItemContainer
+	{
+		
+	}
+	
+	.TabStripItem
+	{
+		cursor: pointer; cursor: auto;
+		height: 30px;
+	}
+	
+	.TabStripItemContentCell
+	{
+		font-family: Tahoma;
+		font-size: 11px;
+		color: #666666;
+		text-align: center;
+		white-space: nowrap;
+		background-image: url(roundcorner_mid.jpg);
+		background-repeat: repeat-x;
+	}
+	
+	.TabStripItemContentCellOver
+	{
+		font-family: Tahoma;
+		font-size: 11px;
+		color: #666666;
+		text-align: center;
+		white-space: nowrap;
+		background-image: url(roundcorner_mid_over.jpg);
+		background-repeat: repeat-x;
+	}
+
+	.TabStripItemOver
+	{
+		background-image: url(mid_over.gif); 
+		cursor: pointer; cursor: auto;
+		background-repeat: repeat-x; 
+		height: 30px;
+	}
+
+	.TabStripSeparator, .TabStripSeparatorOver
+	{
+		background-image: url(mid.gif); 
+		width:1px;
+		padding: 0px;
+	}
+	.TabStripSeparatorContentCell,.TabStripSeparatorContentCellOver
+	{
+		color: #D6D6D6;
+	}
+	
+	.TabStripItemLeftRoundCornerCell
+	{
+		width:12px;
+		background-image: url(roundcorner_left.jpg);
+		background-repeat: no-repeat;
+		background-position: 0px 0px;
+	}
+	
+	.TabStripItemLeftRoundCornerCellOver
+	{
+		width:12px;
+		background-image: url(roundcorner_left_over.jpg);
+		background-repeat: no-repeat;
+		background-position: 0px 0px;
+	}
+	
+	.TabStripItemRightRoundCornerCell
+	{
+		width:12px;
+		background-image: url(roundcorner_right.jpg);
+		background-repeat: no-repeat;
+		background-position: 0px 0px;
+	}
+	
+	.TabStripItemRightRoundCornerCellOver
+	{
+		width:12px;
+		background-image: url(roundcorner_right_over.jpg);
+		background-repeat: no-repeat;
+		background-position: 0px 0px;
+	}
+
+	/* do not change these classes */
+	.menuContainerIframeUnderlay
+	{
+		border: 0px;
+		position : absolute; 
+		visibility : hidden; 
+		top : -2000px;
+		left : 0px; 
+		filter : "progid:DXImageTransform.Microsoft.Alpha(style=0,opacity=0)"; 
+		filter : "Alpha(Opacity='0')";
+		opacity : 0;
+		--moz-opacity : 0;
+
+		background-color: white;
+	}
+	#ob_em_mc
+	{
+		width: 100%;
+		height: 100%;
+		border-collapse: separate;
+		border-spacing: expression(cellSpacing=0);
+		border-spacing: 0px;
+	}
+	#ob_em_mc td
+	{
+		padding: 0px;
+	}
+	/* do not change these classes */
+}
+
+@media print
+{
+	.menuContainerIframeUnderlay
+	{
+		display: none;
+	}	
+}

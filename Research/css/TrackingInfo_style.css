@@ -1,0 +1,64 @@
+﻿
+
+.TrackingInfo_consent
+{
+    background-color: #ffffff;
+	margin-left: 1px;
+    border: 1px;
+	table-layout: initial;
+	font-size: 8pt;
+    overflow: scroll;
+
+}
+
+    .TrackingInfo_consent th  {
+        border: 1px;
+        background-color: #ffffff;
+        border-color: #808080;
+        border-style: solid;
+    }
+
+.TrackingInfo_consent tr td
+{
+	border: 1px;
+    background-color: #ffffff;
+    border-color: #808080;
+    border-style: solid;
+    padding-left: 1px;
+    padding-right: 1px;
+	padding-bottom: 1px;
+	padding-top: 1px;
+    font-size: 8pt;
+    text-align: left;
+    overflow: visible ;
+}
+
+td.locked, th.locked 
+{
+    position:relative;    
+    left:expression((this.parentElement.parentElement.parentElement.parentElement.scrollLeft-2)+'px');
+}  
+
+/* to freeze column cells and its respecitve header*/
+        .FrozenCell
+        { 
+            background-color:#EBEBEB;
+            position: relative;
+            cursor: default;
+            left: expression(document.getElementById("GridViewContainer").scrollLeft-2);
+        }
+        /* for freezing column header*/
+        .FrozenHeader
+        {
+            background-color:#EBEBEB;
+            position: relative;
+            cursor: default;            
+            top: expression(document.getElementById("GridViewContainer").scrollTop-2); 
+            z-index: 10;
+        }
+        /*for the locked columns header to stay on top*/
+        .FrozenHeader.locked
+        {
+            z-index: 99;
+        }
+

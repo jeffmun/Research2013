@@ -1,0 +1,304 @@
+a
+{
+	color: #000000;
+}
+
+body
+{
+	font-family: Times New Roman,Arial,Helvetica,sans-serif;
+	background: #ffffff;
+	color: #000000;   
+	font-size: 8pt;
+	width: 100%;
+}
+
+img {display: none;}
+div.divFooter {display: none;}
+div.divHeader {display: none;}
+table.tblBody tr th {display: none;}
+
+table.tblCalendar
+{
+	table-layout: fixed;
+	width: 100%;
+	border-top: solid 1px #cccccc;
+	border-left: solid 1px #cccccc;
+}
+table.tblCalendar tr td
+{
+	border-bottom: solid 1px #cccccc;
+	border-right: solid 1px #cccccc;
+	font-size: 8pt;
+	padding: 4px;
+	vertical-align: top;
+}
+table.tblCalendar tr td.tdForm {display: none;}
+table.tblCalendar tr.trHeader td
+{
+	background-color: #000000;
+	vertical-align: middle;
+	font-weight: bold;
+	font-size: 12pt;
+	padding: 2px;
+	text-align: center;
+	color: #ffffff;
+}
+table.tblCalendar tr.trHeaderAlt td
+{
+	font-weight: bold;
+	background-color: #aaaaaa;
+	padding: 2px;
+}
+table.tblCalendar tr td a
+{
+	text-decoration: none;
+}
+
+table.tblCrystalReport tr td {padding: 1px;}
+
+label.valuesetlabel
+{font-size: xx-small;
+}
+
+table.tblInputSmall_blue 
+{font-size: smaller;
+}
+
+table.tblInputSmall_green 
+{font-size: smaller;
+}
+
+table.tblInputSmall_white 
+{font-size: smaller;
+}
+
+table.tblInputSmall_blue tr.yellowrow td
+{
+    background-color: #FFF380;
+    text-align: left;
+	font-weight: bold;
+	font-style: italic;
+	border: solid 1px;
+}
+
+table.tblInputSmall_green tr.yellowrow td
+{
+    background-color: #FFF380;
+    text-align: left;
+	font-weight: bold;
+	font-style: italic;
+	border: solid 1px;
+}
+
+table.tblInputSmall_white tr.yellowrow td
+{
+    background-color: #FFF380;
+    text-align: left;
+	font-weight: bold;
+	font-style: italic;
+	border: solid 1px;
+}
+
+
+
+
+
+p.pReportHeader
+{
+	margin: 0px;
+	font-size: 14pt;
+	font-weight: bold;
+	text-align: center;
+	padding: 8px;
+	width: 100%;
+	border-top: solid 1px #cccccc;
+	border-left: solid 1px #cccccc;
+	border-right: solid 1px #cccccc;
+}
+
+table.tblReport
+{
+	table-layout: fixed;
+	width: 100%;
+}
+table.tblReport tr td
+{
+	font-size: 8pt;
+	white-space: nowrap;
+	border: solid 1px #cccccc;
+	vertical-align: top;
+}
+table.tblReport tr td.tdCOMP {background-color: #00ff00;}
+table.tblReport tr td.tdTBD {background-color: #00CC99;}
+table.tblReport tr td.tdSCHED {background-color: #00ffff;}
+table.tblReport tr td.tdNA-GRP {background-color: #ccff00;}
+table.tblReport tr td.tdNA-SS {background-color: #ffcc00;}
+table.tblReport tr td.tdX {background-color: #ff0000;}
+table.tblReport tr td.tdTENT {background-color: #ff0099;}
+table.tblReport tr td.tdDC {background-color: #ffccff;}
+table.tblReport tr td.tdSmallFont {font-size: 6pt;}
+
+table.tblReport tr
+{
+	page-break-before: avoid;
+}
+table.tblReport tr.trTitle
+{
+	page-break-before: auto;
+	page-break-before: avoid;
+}
+table.tblReport tr.trHeader
+{
+	page-break-before: auto;
+	page-break-before: avoid;
+}
+table.tblReport tr.trHeaderAlt
+{
+	page-break-before: auto;
+	page-break-before: avoid;
+}
+table.tblReport tr.trVerticalHeader
+{
+	page-break-before: auto;
+	page-break-before: avoid;
+}
+table.tblReport tr.trDark td
+{
+	background-color: #efefef;
+}
+table.tblReport tr.trTitle td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 14pt;
+	white-space: nowrap;
+	background-color: #cccccc;
+}
+table.tblReport tr.trHeader td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	background-color: #cccccc;
+}
+table.tblReport tr.trHeaderAlt td
+{
+	padding: 4px;
+	font-weight: bold;
+	background-color: #dddddd;
+}
+table.tblReport tr.trVerticalHeader td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	writing-mode: tb-rl;
+}
+table.tblReport tr td a
+{
+	color: #000000;
+	text-decoration: none;
+}
+
+table.tblNonTableReport
+{
+	table-layout: fixed;
+	font-size: 8pt;
+	width: 100%;
+}
+table.tblNonTableReport tr td
+{
+	font-size: 8pt;
+	padding: 2px;
+	white-space: nowrap;
+	text-align: left;
+}
+table.tblNonTableReport tr td.tdHeader
+{
+	text-align: right;
+	font-weight: bold;
+}
+table.tblNonTableReport tr td.tdTitle
+{
+	font-size: 12pt;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+table.tblViewHousehold
+{
+	table-layout: fixed;
+	height: 100%;
+	width: 100%;
+}
+table.tblViewHousehold tr td
+{
+	vertical-align: top;
+	padding: 10px;
+}
+table.tblPersons
+{
+	table-layout: fixed;
+	width: 100%;
+	border-right: solid 1px #cccccc;
+	border-bottom: solid 1px #cccccc;
+}
+table.tblPersons tr td
+{
+	font-size: 8pt;
+	white-space: nowrap;
+	padding: 4px;
+	border-left: solid 1px #cccccc;
+	border-top: solid 1px #cccccc;
+	vertical-align: top;
+}
+table.tblPersons tr.trDark td
+{
+	background-color: #efefef;
+}
+table.tblPersons tr.trTitle td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 8pt;
+	vertical-align: top;
+}
+
+table.tblSubject
+{
+	table-layout: fixed;
+	width: 100%;
+}
+table.tblSubject tr td
+{
+	font-size: 10pt;
+	white-space: nowrap;
+	padding: 4px;
+	border: solid 1px #cccccc;
+	vertical-align: top;
+}
+table.tblSubject tr.trTitle td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 10pt;
+	vertical-align: top;
+}
+
+
+.DoNotPrint
+{
+	display: none;
+}
+
+.smalltext
+{
+    font-size: 8pt;
+}
+.verysmalltext
+{
+    font-size: 6pt;
+}

@@ -1,0 +1,314 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
+using System.Web.Configuration;
+using DotNet.Highcharts;
+using DotNet.Highcharts.Options;
+using DotNet.Highcharts.Helpers;
+using DotNet.Highcharts.Enums;
+using SelectPdf;
+using System.IO;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.xml;
+using iTextSharp.text.pdf;
+using iTextSharp.text.factories;
+using Newtonsoft.Json;
+using Svg;
+using Tek4.Highcharts.Exporting;
+using Obout.Grid;
+using uwac;
+
+
+public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Page
+{
+    public DataTable dt = new DataTable();
+    public string _sortDirection;
+    public string id;
+
+    //raise events on content page for the buttons on master page
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
+    }
+
+    //If the master page default study is changed, update the Measure DDL
+    protected void Master_Study_Changed(object sender, EventArgs e)
+    {
+        Response.Redirect("https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack_all.aspx");
+    }
+
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+
+        lblStudy.Text = Master.Master_studyname;
+
+        //string intvwr = Request.QueryString["ihintervwr"]; string date =
+        //Request.QueryString["ihdate"];
+
+        //if (!IsPostBack)
+        //{
+        //    if (ViewState["mode"] == null) ViewState["mode"] = "AddNew";
+        //    id = Request.QueryString["id"];
+
+        //    lblID.Text = id;
+
+        //    PopulateGV(id);
+
+        //    PopulateStudymeasDDL();
+        //    PopulateNewIDDDL();
+        //}
+        //else
+        //{
+        //    if(ViewState["dt"]!=null)
+        //    {
+        //        dt = (DataTable)ViewState["dt"];
+        //        gvRawData.DataSource = dt;
+        //        gvRawData.DataBind();
+        //    }
+        //}
+
+        //if(intvwr!=null)
+        //{
+        //    txtInterviewer.Text = intvwr;
+        //}
+        //if(date!=null)
+        //{
+        //    txtDate.Text = date;
+        //}
+
+        //panelChart.Controls.Clear();
+
+        
+
+    }
+
+
+
+    protected void LoadIDs()
+    {
+        SQL_utils sql = new SQL_utils();
+
+        DataTable dt = new DataTable();
+
+        if(Master.Master_studyID==1011 | Master.Master_studyID==1015 | Master.Master_studyID==1022 | Master.Master_studyID==1030 )
+        {
+            dt = sql.DataTable_from_SQLstring("select  ID,   txgrp + '...' + ID + '...' + subjstatus as details " +
+                " from uwautism_research_backend..vwmasterstatus_S_txgrp  where txgrp<>'' and ID in " + 
+                    " (select tap_id from uwautism_research_backend..tbl_TxRandomAssign where tap_id not like '%x') and studyID=" + Master.Master_studyID.ToString() + " order by txgrp, ID"); 
+        }
+        else{
+            dt = sql.DataTable_from_SQLstring("select  ID,   txgrp + '...' + ID + '...' + subjstatus as details " + 
+                " from uwautism_research_backend..vwmasterstatus_S_txgrp  where txgrp<>'' and studyID=" + Master.Master_studyID.ToString() + " order by txgrp, ID");
+        }
+
+        //int n1 = Convert.ToInt32(txt1.Text);
+        //int n2 = Convert.ToInt32(txt2.Text);
+        int n1 = 1;
+        int n2 = 1; // dt.Rows.Count;
+
+        string chart_code = "";
+        int counter=0;
+
+        
+        foreach(DataRow row in dt.Rows)
+        {
+            counter++;
+            if (counter >= n1 & counter <= n2)
+            {
+                string id = row["id"].ToString();
+                string details = row["details"].ToString();
+
+                chart_code += "<br/><br/><a href=\"https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack.aspx?id=" + id + "\"   target=\"_blank\" >EDIT " + details + "</a><br/>";
+                chart_code += utilCharts.IntHx_by_wk(Master.Master_studyID, id, details, 500, 400, "raw");
+                
+
+            }
+        }
+
+
+
+        Literal lit = new Literal();
+
+        
+
+        lit.Text = chart_code;
+        panelChart.Controls.Add(lit);
+
+        btnPDF.Visible = true;
+        
+    }
+
+    
+
+    protected void btnLoad_Click(object sender, EventArgs e)
+    {
+        LoadIDs();
+    }
+    protected void btnPDF_Click(object sender, EventArgs e)
+    {
+
+        IntHxCharts_to_pdf();
+        
+        ////using (HighChartsRenderServer server = new HighChartsRenderServer())
+        ////{
+        ////    var response = server.ProcessHighChartsRequest(highChartsData);
+        ////    return File(response, "image.png");
+        ////}
+
+
+
+
+        ////MemoryStream ms = new MemoryStream();
+
+
+        //string filename = "IntHx_graphs.pdf";
+
+        //// Send the data and the appropriate headers to the browser
+        //Response.Clear();
+        //Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+        //Response.ContentType = "application/pdf";
+
+        //Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        //StringWriter sw = new StringWriter();
+        //HtmlTextWriter hw = new HtmlTextWriter(sw);
+        //panelChart.RenderControl(hw);
+        //StringReader sr = new StringReader(sw.ToString());
+        //Document pdfDoc = new Document(PageSize.LETTER, 10f, 10f, 20f, 20f);
+        //HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+        //PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+        //pdfDoc.Open();
+        //pdfDoc.Add(new Chunk("foo"));
+
+        //List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
+        //for (int i = 0; i < list_svg.Count; i++)
+        //{
+        //    Server.HtmlDecode(list_svg[i], hw);  
+        //}
+
+        //htmlparser.Parse(sr);
+        //pdfDoc.Add(new Chunk("foo2"));
+
+        //pdfDoc.Close();
+        //Response.Write(pdfDoc);
+        //Response.End();
+
+    }
+
+
+
+    protected void IntHxCharts_to_pdf()
+    {
+        bool startConversion = true;
+
+        if (startConversion)
+        {
+
+            SelectPdf.HtmlToPdfOptions opt = new HtmlToPdfOptions();
+
+            // get html of the page
+            TextWriter myWriter = new StringWriter();
+            HtmlTextWriter htmlWriter = new HtmlTextWriter(myWriter);
+
+            DateTime now = DateTime.Now;
+
+            string study = Master.Master_studyname;
+            htmlWriter.Write("Intervention Hx graphs: <b>" + Master.Master_studyname + "</b><br/>" + now.ToShortDateString() + "  " + now.ToShortTimeString() + "<br/>");
+
+
+            ////Add the legends
+
+
+            //HtmlForm form = new HtmlForm();
+            //form.Attributes["runat"] = "server";
+            //form.Controls.Add(gv1);
+
+            //form.RenderControl(htmlWriter);
+
+            ////Server.HtmlDecode(panelLegend.ToString(), htmlWriter);
+
+            ////string legend = HttpUtility.HtmlEncode(panelLegend);
+            ////GridView gv1 = (GridView)panelLegend.FindControl("gv1");
+            ////string gv1 = HttpUtility.HtmlDecode(gv1);
+            ////htmlWriter.Write(legend);
+
+            
+            //htmlWriter.Write("<div style=\"font-size: 12px; page-break-after: always\"></div>");
+
+
+
+            List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
+
+            int pagecounter=1;
+            for (int i = 0; i < list_svg.Count; i++)
+            {
+                if ((i + 1) % 6 == 0)
+                {
+                    pagecounter++;
+                    htmlWriter.Write("<div style=\"font-size: 12px; page-break-after: always\"></div>Page " + pagecounter.ToString() + "<br/>");
+                }
+                Server.HtmlDecode(list_svg[i], htmlWriter);
+            }
+
+            // instantiate a html to pdf converter object
+            HtmlToPdf converter = new HtmlToPdf();
+            converter.Options.MinPageLoadTime = 3;
+
+
+
+            // create a new pdf document converting the html string of the page
+            //SelectPdf.PdfDocument doc = converter.ConvertHtmlString(myWriter.ToString(), Request.Url.AbsoluteUri);
+            SelectPdf.PdfDocument doc = converter.ConvertHtmlString(myWriter.ToString());
+
+
+
+
+            //SelectPdf.PdfPage page = doc.AddPage();
+
+            //// create a new pdf font (component standard font)
+            //SelectPdf.PdfFont font1 = doc.AddFont(PdfStandardFont.Helvetica);
+            //font1.Size = 20;
+
+            //// create a new pdf font (system font)
+            //SelectPdf.PdfFont font2 = doc.AddFont(new System.Drawing.Font("Verdana", 15));
+
+            //// define a rendering result object
+            //PdfRenderingResult result;
+
+            // save pdf document
+
+            string datenow = now.Year.ToString() + ((now.Month < 10) ? "0" : "") + now.Month.ToString() + ((now.Day < 10) ? "0" : "") + now.Day.ToString();
+            string hrminnow = ((now.Hour < 10) ? "0" : "") + now.Hour.ToString() + ((now.Minute < 10) ? "0" : "") + now.Minute.ToString();
+
+
+            doc.Save(Response, false, "IntHx_" + Master.Master_studyname + "_" + datenow + "_" + hrminnow + ".pdf");
+            //doc.Save(HttpContext.Current.Response, false, "Sample2.pdf");
+
+            // close pdf document
+            doc.Close();
+
+            //Response.Write(pdfDoc);
+            Response.End();
+
+        }
+        else
+        {
+            //// render web page in browser
+            //base.Render(writer);
+        }
+    }
+
+
+
+
+}

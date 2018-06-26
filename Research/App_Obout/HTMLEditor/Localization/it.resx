@@ -1,0 +1,1264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ToolbarButton.FixedBackColor.ToolTip" xml:space="preserve">
+    <value>Colore di sfondo</value>
+  </data>
+  <data name="ToolbarButton.Bold.ToolTip" xml:space="preserve">
+    <value>Grassetto</value>
+  </data>
+  <data name="ToolbarButton.Copy.ToolTip" xml:space="preserve">
+    <value>Copia</value>
+  </data>
+  <data name="ToolbarButton.Cut.ToolTip" xml:space="preserve">
+    <value>Taglia</value>
+  </data>
+  <data name="ToolbarButton.DesignMode.ToolTip" xml:space="preserve">
+    <value>Modalità modifica</value>
+  </data>
+  <data name="ToolbarButton.FontName.Label" xml:space="preserve">
+    <value>Carattere</value>
+  </data>
+  <data name="ToolbarButton.FixedForeColor.ToolTip" xml:space="preserve">
+    <value>Colore carattere</value>
+  </data>
+  <data name="ToolbarButton.HtmlMode.ToolTip" xml:space="preserve">
+    <value>Testo HTML</value>
+  </data>
+  <data name="ToolbarButton.IncreaseIndent.ToolTip" xml:space="preserve">
+    <value>Aumenta spazio</value>
+  </data>
+  <data name="ToolbarButton.InsertHR.ToolTip" xml:space="preserve">
+    <value>Inserisci riga orizzantole</value>
+  </data>
+  <data name="ToolbarButton.InsertLink.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica Link URL</value>
+  </data>
+  <data name="ToolbarButton.Italic.ToolTip" xml:space="preserve">
+    <value>Italico</value>
+  </data>
+  <data name="ToolbarButton.JustifyCenter.ToolTip" xml:space="preserve">
+    <value>Giustificato centrale</value>
+  </data>
+  <data name="ToolbarButton.JustifyFull.ToolTip" xml:space="preserve">
+    <value>Giustificato</value>
+  </data>
+  <data name="ToolbarButton.JustifyLeft.ToolTip" xml:space="preserve">
+    <value>Giustificato sinistra</value>
+  </data>
+  <data name="ToolbarButton.JustifyRight.ToolTip" xml:space="preserve">
+    <value>Giustificato destra</value>
+  </data>
+  <data name="ToolbarButton.Ltr.ToolTip" xml:space="preserve">
+    <value>da Sinistra a destra (direzione)</value>
+  </data>
+  <data name="DesignPanel.OnPasteFromMSWord" xml:space="preserve">
+    <value>Incolla da MS Word è attivato. Solo ora: {0}</value>
+  </data>
+  <data name="DesignPanel.OnPastePlainText" xml:space="preserve">
+    <value>Incolla testo semplice è attivato. Solo ora: {0}</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.Target.Current" xml:space="preserve">
+    <value>Finestra corrente</value>
+  </data>
+  <data name="DesignPanel.UseVerb" xml:space="preserve">
+    <value>Usa {0}</value>
+  </data>
+  <data name="ContextMenu.SelectAllItem.ToolTip" xml:space="preserve">
+    <value>Seleziona l'intero contenuto</value>
+  </data>
+  <data name="ContextMenu.CutItem.ToolTip" xml:space="preserve">
+    <value>Taglia</value>
+  </data>
+  <data name="ContextMenu.EditLinkItem.ToolTip" xml:space="preserve">
+    <value>Modifica Link URL</value>
+  </data>
+  <data name="ContextMenu.PasteItem.ToolTip" xml:space="preserve">
+    <value>Incolla</value>
+  </data>
+  <data name="ContextMenu.PasteTextItem.ToolTip" xml:space="preserve">
+    <value>Copia testo semplice</value>
+  </data>
+  <data name="ContextMenu.PasteWordItem.ToolTip" xml:space="preserve">
+    <value>Incolla da MS Word</value>
+  </data>
+  <data name="ContextMenu.RemoveLinkItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi Link</value>
+  </data>
+  <data name="ToolbarButton.Header.Label" xml:space="preserve">
+    <value>Intestazione</value>
+  </data>
+  <data name="ToolbarButton.InsertSpecialCharacter.ToolTip" xml:space="preserve">
+    <value>Inserisci carattere speciale</value>
+  </data>
+  <data name="ContextMenu.EditImageItem.ToolTip" xml:space="preserve">
+    <value>Modifica un'immagine</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Button.Cancel" xml:space="preserve">
+    <value>Cancella</value>
+  </data>
+  <data name="Popups.ImageBrowser.Field.PreviewImageHeight" xml:space="preserve">
+    <value>Altezza</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Baseline" xml:space="preserve">
+    <value>Linea di base</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Left" xml:space="preserve">
+    <value>Sinistra</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Height" xml:space="preserve">
+    <value>Altezza</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.HorizontalSpacing" xml:space="preserve">
+    <value>Orizzonatale</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Layout" xml:space="preserve">
+    <value>Grafica</value>
+  </data>
+  <data name="Popups.ImageProperties.Message.EmptyUrl" xml:space="preserve">
+    <value>L'URL dell'immagine non può essere vuota</value>
+  </data>
+  <data name="Popups.ImageProperties.Title" xml:space="preserve">
+    <value>Proprietà Immagine</value>
+  </data>
+  <data name="ToolbarButton.InsertTable.ToolTip" xml:space="preserve">
+    <value>Inserisci tabella</value>
+  </data>
+  <data name="Popups.TableProperties.Field.InsertRemove" xml:space="preserve">
+    <value>Inserisci, rimuovi</value>
+  </data>
+  <data name="Popups.TableProperties.Button.BeforeAfter" xml:space="preserve">
+    <value>Prima/dopo</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CurrentCell" xml:space="preserve">
+    <value>Cella corrente</value>
+  </data>
+  <data name="ContextMenu.EditTableItem.ToolTip" xml:space="preserve">
+    <value>Modifica tabella</value>
+  </data>
+  <data name="Popups.TableProperties.Field.BorderCollapse.Collapse" xml:space="preserve">
+    <value>Unisci</value>
+  </data>
+  <data name="Popups.TableProperties.Field.Columns" xml:space="preserve">
+    <value>Colonne</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BackgroundColor" xml:space="preserve">
+    <value>Colore di sfondo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderColor" xml:space="preserve">
+    <value>Colore bordo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderStyle" xml:space="preserve">
+    <value>Stile bordo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderStyle.Dotted" xml:space="preserve">
+    <value>Punteggiato</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderStyle.None" xml:space="preserve">
+    <value>Nessuno</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.ColorNotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.TableProperties.Field.ApplyTo.Column" xml:space="preserve">
+    <value>Colonna</value>
+  </data>
+  <data name="Popups.TableProperties.Field.BorderCollapse.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderStyle.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellHorizontalAlignment.Center" xml:space="preserve">
+    <value>Centra</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellHorizontalAlignment.Left" xml:space="preserve">
+    <value>Sinistra</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellHorizontalAlignment.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellVerticalAlignment.Baseline" xml:space="preserve">
+    <value>Linea di base</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellVerticalAlignment.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="ContextMenu.RemoveRowItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi riga</value>
+  </data>
+  <data name="ContextMenu.RemoveTableItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi tabella</value>
+  </data>
+  <data name="ContextMenu.InsertRowBelowItem.ToolTip" xml:space="preserve">
+    <value>Inserisci Riga sotto</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Button.Change" xml:space="preserve">
+    <value>Cambia</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Button.ChangeAll" xml:space="preserve">
+    <value>Cambia tutto</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Button.Ignore" xml:space="preserve">
+    <value>Ignora</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Button.IgnoreAll" xml:space="preserve">
+    <value>Ignora tutto</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.NotInDictionary" xml:space="preserve">
+    <value>Non presente nel dizionario</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.NoSuggestions" xml:space="preserve">
+    <value>Nessun suggerimento</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.DeleteButton.Tooltip" xml:space="preserve">
+    <value>Cancella oggetto selezionato</value>
+  </data>
+  <data name="Popups.AddFolderPopup.Field.Name" xml:space="preserve">
+    <value>Nome della nuova cartella</value>
+  </data>
+  <data name="Popups.AddFolderPopup.Message.EmptyName" xml:space="preserve">
+    <value>Il nome della cartella non può essere vuoto</value>
+  </data>
+  <data name="Popups.DeleteFileConfirm.Field.Content" xml:space="preserve">
+    <value>Sei sicuro che tu voglia cancellare il file selezionato? Il file potrebbe essere in uso. Se cancellato, alcune pagine potrebbero non essere visualizzate in modo corretto. Premere OK per confermare la cancellazione</value>
+  </data>
+  <data name="Popups.DeleteFileConfirm.Title" xml:space="preserve">
+    <value>Cancella</value>
+  </data>
+  <data name="Popups.GalleryManager.Message.DuplicateFile" xml:space="preserve">
+    <value>Cartella/File con lo stesso nome già esistente!</value>
+  </data>
+  <data name="Popups.GalleryManager.Message.InvalidFileName" xml:space="preserve">
+    <value>Nome cartella/file non valido</value>
+  </data>
+  <data name="Popups.AddFolderPopup.Title" xml:space="preserve">
+    <value>Aggiungi cartella</value>
+  </data>
+  <data name="Popups.UploadFilePopup.Field.Description" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Popups.UploadImagePopup.Field.Location" xml:space="preserve">
+    <value>Immagine locale</value>
+  </data>
+  <data name="Popups.GalleryManager.Message.InvalidFileExtension" xml:space="preserve">
+    <value>Estensione file non corretta</value>
+  </data>
+  <data name="Popups.ColorPickerPopup.Title" xml:space="preserve">
+    <value>Seleziona colore</value>
+  </data>
+  <data name="ToolbarButton.InsertIcon.ToolTip" xml:space="preserve">
+    <value>Inserisci icona</value>
+  </data>
+  <data name="ContextMenu.EditCellItem.ToolTip" xml:space="preserve">
+    <value>Modifica una cella</value>
+  </data>
+  <data name="ContextMenu.InsertRowAboveItem.ToolTip" xml:space="preserve">
+    <value>Inserisci Riga sopra</value>
+  </data>
+  <data name="Popups.CellProperties.Title" xml:space="preserve">
+    <value>Proprietà cella</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.HorizontalSpacing" xml:space="preserve">
+    <value>Spazio orizzontale</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.AutoPlay" xml:space="preserve">
+    <value>Avvio automatico</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.Loop" xml:space="preserve">
+    <value>Ciclo</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.Quality" xml:space="preserve">
+    <value>Qualità</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.Quality.High" xml:space="preserve">
+    <value>Alta</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.Quality.Low" xml:space="preserve">
+    <value>Bassa</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.Quality.Medium" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.FlashScale" xml:space="preserve">
+    <value>Scala Flash</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.FlashScale.Default" xml:space="preserve">
+    <value>Predefinito</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.FlashScale.ExactFit" xml:space="preserve">
+    <value>Dimensione esatta</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.FlashScale.NoBorder" xml:space="preserve">
+    <value>Nessun bordo</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.Transparency" xml:space="preserve">
+    <value>Trasparenza</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.VerticalSpacing" xml:space="preserve">
+    <value>Spazio verticale</value>
+  </data>
+  <data name="Popups.FlashProperties.Message.EmptyUrl" xml:space="preserve">
+    <value>URL del Flash non può essere vuoto</value>
+  </data>
+  <data name="Popups.FlashBrowser.Field.PreviewFlashHeight" xml:space="preserve">
+    <value>Altezza</value>
+  </data>
+  <data name="Popups.FlashBrowser.Field.PreviewFlashWidth" xml:space="preserve">
+    <value>Larghezza</value>
+  </data>
+  <data name="Popups.FlashBrowser.Field.UploadButton.Tooltip" xml:space="preserve">
+    <value>Carica nuovo oggetto Flash</value>
+  </data>
+  <data name="ContextMenu.EditFlashItem.ToolTip" xml:space="preserve">
+    <value>Modifica un Flash</value>
+  </data>
+  <data name="ContextMenu.RemoveFlashItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi flash</value>
+  </data>
+  <data name="ContextMenu.RemoveImageItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi un'immagine</value>
+  </data>
+  <data name="Popups.MediaBrowser.Field.PreviewFlashHeight" xml:space="preserve">
+    <value>Altezza</value>
+  </data>
+  <data name="Popups.MediaProperties.Field.AutoStart" xml:space="preserve">
+    <value>Avvio automatico</value>
+  </data>
+  <data name="ToolbarButton.InsertFlash.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica flash</value>
+  </data>
+  <data name="ToolbarButton.InsertImage.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica immagine</value>
+  </data>
+  <data name="ToolbarButton.InsertMedia.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica media</value>
+  </data>
+  <data name="Popups.UploadFlashPopup.Field.Location" xml:space="preserve">
+    <value>Flash locale</value>
+  </data>
+  <data name="Popups.UploadMediaPopup.Field.Location" xml:space="preserve">
+    <value>Media locale</value>
+  </data>
+  <data name="ContextMenu.EditMediaItem.ToolTip" xml:space="preserve">
+    <value>Modifica Media</value>
+  </data>
+  <data name="ContextMenu.RemoveMediaItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi media</value>
+  </data>
+  <data name="Popups.FlashBrowser.Title" xml:space="preserve">
+    <value>Sfoglia la galleria oggetti flash</value>
+  </data>
+  <data name="Popups.FlashProperties.Title" xml:space="preserve">
+    <value>Proprietà del Flash</value>
+  </data>
+  <data name="Popups.FlashVideoBrowser.Field.PreviewFlashVideoHeight" xml:space="preserve">
+    <value>Altezza</value>
+  </data>
+  <data name="Popups.FlashVideoBrowser.Field.PreviewFlashVideoWidth" xml:space="preserve">
+    <value>Larghezza</value>
+  </data>
+  <data name="Popups.FlashVideoBrowser.Field.UploadButton.Tooltip" xml:space="preserve">
+    <value>Carica nuovo video flash</value>
+  </data>
+  <data name="ToolbarButton.InsertFlashVideo.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica video flash</value>
+  </data>
+  <data name="ContextMenu.EditFlashVideoItem.ToolTip" xml:space="preserve">
+    <value>Modifica Video in Flash</value>
+  </data>
+  <data name="Popups.FlashProperties.Field.AllowFullScreen" xml:space="preserve">
+    <value>Permetti schermo pieno</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.VideoAutoPlay" xml:space="preserve">
+    <value>Avvio automatico</value>
+  </data>
+  <data name="ContextMenu.EditDivItem.ToolTip" xml:space="preserve">
+    <value>Modifica Contenitore DIV</value>
+  </data>
+  <data name="ContextMenu.RemoveDivItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi Contenitore DIV (compreso contenuto)</value>
+  </data>
+  <data name="ContextMenu.RemoveDivWithoutContentItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi il tag Contenitore DIV</value>
+  </data>
+  <data name="Popups.DivProperties.Title" xml:space="preserve">
+    <value>Proprietà Contenitore DIV</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Overflow.Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Overflow.Hidden" xml:space="preserve">
+    <value>Nascosto</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Overflow.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="ToolbarButton.InsertDiv.ToolTip" xml:space="preserve">
+    <value>Inserisci contenitore DIV</value>
+  </data>
+  <data name="Popups.BgImageProperties.Title" xml:space="preserve">
+    <value>Proprietà immagine di sfondo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImage" xml:space="preserve">
+    <value>Immagine di sfondo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Attachment" xml:space="preserve">
+    <value>Allegati</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Attachment.Fixed" xml:space="preserve">
+    <value>Riparato</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.HorPosition" xml:space="preserve">
+    <value>Posizione orizzontale</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.HorPosition.Center" xml:space="preserve">
+    <value>Centra</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.HorPosition.Left" xml:space="preserve">
+    <value>Sinistra</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.VerPosition.Center" xml:space="preserve">
+    <value>Centra</value>
+  </data>
+  <data name="ContextMenu.EditAnchorItem.ToolTip" xml:space="preserve">
+    <value>Modifica segnaposto</value>
+  </data>
+  <data name="ContextMenu.RemoveAnchorItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi segnaposto</value>
+  </data>
+  <data name="Popups.AnchorProperties.Field.Name" xml:space="preserve">
+    <value>Nome Segnaposto</value>
+  </data>
+  <data name="Popups.AnchorProperties.Message.EmptyName" xml:space="preserve">
+    <value>Il nome non può essere vuoto</value>
+  </data>
+  <data name="Popups.AnchorProperties.Title" xml:space="preserve">
+    <value>Proprietà Segnaposto</value>
+  </data>
+  <data name="ToolbarButton.InsertAnchor.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica segnaposto</value>
+  </data>
+  <data name="Popups.AnchorProperties.Message.DuplicateName" xml:space="preserve">
+    <value>Duplica nome segnaposto</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="ContextMenu.EditButtonItem.ToolTip" xml:space="preserve">
+    <value>Modifica Bottone</value>
+  </data>
+  <data name="ContextMenu.EditCheckBoxItem.ToolTip" xml:space="preserve">
+    <value>Modifica Casella</value>
+  </data>
+  <data name="ContextMenu.EditHiddenItem.ToolTip" xml:space="preserve">
+    <value>Modifica Campo nascosto</value>
+  </data>
+  <data name="ContextMenu.EditPasswordItem.ToolTip" xml:space="preserve">
+    <value>Modifica campo password</value>
+  </data>
+  <data name="ContextMenu.EditRadioItem.ToolTip" xml:space="preserve">
+    <value>Modifica bottone radio</value>
+  </data>
+  <data name="ContextMenu.EditResetItem.ToolTip" xml:space="preserve">
+    <value>Modifica bottone reset</value>
+  </data>
+  <data name="ContextMenu.EditSubmitItem.ToolTip" xml:space="preserve">
+    <value>Modifica bottone invia</value>
+  </data>
+  <data name="ContextMenu.EditTextBoxItem.ToolTip" xml:space="preserve">
+    <value>Modifica CampoTesto Esteso</value>
+  </data>
+  <data name="ContextMenu.RemoveButtonItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi bottone</value>
+  </data>
+  <data name="ContextMenu.RemoveCheckBoxItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi Casella</value>
+  </data>
+  <data name="ContextMenu.RemoveHiddenItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi campo nascosto</value>
+  </data>
+  <data name="ContextMenu.RemovePasswordItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi campo password</value>
+  </data>
+  <data name="ContextMenu.RemoveRadioItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi bottone radio</value>
+  </data>
+  <data name="ContextMenu.RemoveResetItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi bottone reset</value>
+  </data>
+  <data name="ContextMenu.RemoveSubmitItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi bottone Invio</value>
+  </data>
+  <data name="ContextMenu.RemoveTextBoxItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi CampoTesto Esteso</value>
+  </data>
+  <data name="Popups.CheckBoxProperties.Field.Checked" xml:space="preserve">
+    <value>Selezionato</value>
+  </data>
+  <data name="Popups.InputProperties.Field.Button" xml:space="preserve">
+    <value>Bottone</value>
+  </data>
+  <data name="Popups.InputProperties.Field.Hidden" xml:space="preserve">
+    <value>Campo nascosto</value>
+  </data>
+  <data name="Popups.InputProperties.Title" xml:space="preserve">
+    <value>Immetti proprietà</value>
+  </data>
+  <data name="ToolbarButton.InsertButton.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica bottone</value>
+  </data>
+  <data name="ToolbarButton.InsertCheckBox.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica casella di spunta (checkbox)</value>
+  </data>
+  <data name="ToolbarButton.InsertHidden.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica campo nascosto</value>
+  </data>
+  <data name="ToolbarButton.InsertPassword.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica campo password</value>
+  </data>
+  <data name="ToolbarButton.InsertRadio.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica bottone radio</value>
+  </data>
+  <data name="ToolbarButton.InsertReset.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica bottone reset</value>
+  </data>
+  <data name="ToolbarButton.InsertSubmit.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica bottone invio</value>
+  </data>
+  <data name="ToolbarButton.InsertTextBox.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica Testo</value>
+  </data>
+  <data name="ContextMenu.RemoveFormItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi modulo (compreso contenuto)</value>
+  </data>
+  <data name="ContextMenu.RemoveFormWithoutContentItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi tag Modulo</value>
+  </data>
+  <data name="Popups.FormProperties.Field.FormMethod.Get" xml:space="preserve">
+    <value>Metodo invio: Get</value>
+  </data>
+  <data name="Popups.FormProperties.Title" xml:space="preserve">
+    <value>Proprietà modulo</value>
+  </data>
+  <data name="ToolbarButton.InserForm.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica modulo</value>
+  </data>
+  <data name="ContextMenu.MakeEditable.ToolTip" xml:space="preserve">
+    <value>Rendi modificabile</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Center" xml:space="preserve">
+    <value>Centra</value>
+  </data>
+  <data name="ContextMenu.CopyItem.ToolTip" xml:space="preserve">
+    <value>Copia</value>
+  </data>
+  <data name="Popups.UploadFlashVideoPopup.Field.Location" xml:space="preserve">
+    <value>Video Flash locale</value>
+  </data>
+  <data name="Popups.UploadDocumentPopup.Field.Location" xml:space="preserve">
+    <value>Documento locale</value>
+  </data>
+  <data name="QF.QuickFormatting.None" xml:space="preserve">
+    <value>Nessuno</value>
+  </data>
+  <data name="QF.StyleItem.a" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="QF.StyleItem.img" xml:space="preserve">
+    <value>Immagine</value>
+  </data>
+  <data name="ContextMenu.EditFormItem.ToolTip" xml:space="preserve">
+    <value>Modifica Modulo</value>
+  </data>
+  <data name="ToolbarButton.HtmlTextCounter.Label" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="Popups.MediaBrowser.Field.PreviewMediaHeight" xml:space="preserve">
+    <value>Altezza</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.HideControl" xml:space="preserve">
+    <value>Nascondi barra di controllo</value>
+  </data>
+  <data name="ToolbarButton.InsertForm.ToolTip" xml:space="preserve">
+    <value>Inserisci/Modifica modulo</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.Target.New" xml:space="preserve">
+    <value>Nuova finestra</value>
+  </data>
+  <data name="ToolbarButton.BackColorClear.ToolTip" xml:space="preserve">
+    <value>Annulla colore carattere</value>
+  </data>
+  <data name="ToolbarButton.BulletedList.ToolTip" xml:space="preserve">
+    <value>Elenco puntato</value>
+  </data>
+  <data name="ToolbarButton.DecreaseIndent.ToolTip" xml:space="preserve">
+    <value>Diminuisci spazio Indent</value>
+  </data>
+  <data name="ToolbarButton.FontName.DefaultOptionValue" xml:space="preserve">
+    <value>Predefinito</value>
+  </data>
+  <data name="ToolbarButton.FontSize.DefaultOptionValue" xml:space="preserve">
+    <value>Predefinito</value>
+  </data>
+  <data name="ToolbarButton.ForeColorClear.ToolTip" xml:space="preserve">
+    <value>Annulla colore carattere</value>
+  </data>
+  <data name="ToolbarButton.ApplyFormat.ToolTip" xml:space="preserve">
+    <value>Applica copiando il formato</value>
+  </data>
+  <data name="ToolbarButton.ContextMenuButton.ToolTip" xml:space="preserve">
+    <value>Menù contenuti relativi alla posizione corrente</value>
+  </data>
+  <data name="ToolbarButton.GetFormat.ToolTip" xml:space="preserve">
+    <value>Copia formato corrente</value>
+  </data>
+  <data name="ToolbarButton.ToLowerCase.ToolTip" xml:space="preserve">
+    <value>Converti a minuscolo</value>
+  </data>
+  <data name="ToolbarButton.ToUpperCase.ToolTip" xml:space="preserve">
+    <value>Converti a maiuscolo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Button.Browse" xml:space="preserve">
+    <value>Sfoglia</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment" xml:space="preserve">
+    <value>Allineamento</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Absbottom" xml:space="preserve">
+    <value>Allinea in basso</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Absmiddle" xml:space="preserve">
+    <value>Allinea al centro</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Bottom" xml:space="preserve">
+    <value>Fondo</value>
+  </data>
+  <data name="Popups.ImageProperties.Field.AlternateText" xml:space="preserve">
+    <value>Testo alternativo</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellPadding" xml:space="preserve">
+    <value>Spaziatura celle</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellSpacing" xml:space="preserve">
+    <value>Spazio celle</value>
+  </data>
+  <data name="Popups.TableProperties.Field.BorderCollapse" xml:space="preserve">
+    <value>Unisci bordi</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderStyle.Dashed" xml:space="preserve">
+    <value>Puntinato</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderWidth" xml:space="preserve">
+    <value>Larghezza bordo</value>
+  </data>
+  <data name="Popups.TableProperties.Button.ApplyCellPropertis" xml:space="preserve">
+    <value>Applica</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellProperties" xml:space="preserve">
+    <value>Proprietà cella corrente</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CheckedPropertiesTo" xml:space="preserve">
+    <value>selezione proprietà a</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellHorizontalAlignment" xml:space="preserve">
+    <value>Allineamento</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellVerticalAlignment.Bottom" xml:space="preserve">
+    <value>Fondo</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Button.AddToDictionary" xml:space="preserve">
+    <value>Aggiungi personalizzato</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.AddedToCustom" xml:space="preserve">
+    <value>'{0}' aggiunto al dizionario personalizzato</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.AddFolderButton.Tooltip" xml:space="preserve">
+    <value>Aggiungi nuova cartella</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.FileDeleted" xml:space="preserve">
+    <value>'{0}' Cancellato correttamente</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.FileUploaded" xml:space="preserve">
+    <value>'{0}' caricato correttamente</value>
+  </data>
+  <data name="Popups.FlashVideoBrowser.Title" xml:space="preserve">
+    <value>Sfoglia la galleria oggetti video</value>
+  </data>
+  <data name="Popups.ImageBrowser.Title" xml:space="preserve">
+    <value>Sfoglia galleria immagini</value>
+  </data>
+  <data name="Popups.MediaBrowser.Title" xml:space="preserve">
+    <value>Sfoglia galleria media</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.ControlBaseColor" xml:space="preserve">
+    <value>Controlli base colore</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.VerPosition.Bottom" xml:space="preserve">
+    <value>Fondo</value>
+  </data>
+  <data name="Popups.InputProperties.Field.CheckBox" xml:space="preserve">
+    <value>Casella di spunta</value>
+  </data>
+  <data name="Popups.FormProperties.Field.Action" xml:space="preserve">
+    <value>Azione</value>
+  </data>
+  <data name="Popups.UrlBrowser.Title" xml:space="preserve">
+    <value>Sfoglia links predefiniti e galleria documenti</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.CSS" xml:space="preserve">
+    <value>Classe CSS</value>
+  </data>
+  <data name="ToolbarButton.Header.DefaultOptionValue" xml:space="preserve">
+    <value>Predefinito</value>
+  </data>
+  <data name="ToolbarButton.OrderedList.ToolTip" xml:space="preserve">
+    <value>Elenco numerato</value>
+  </data>
+  <data name="ToolbarButton.Paragraph.ToolTip" xml:space="preserve">
+    <value>Crea paragrafo</value>
+  </data>
+  <data name="ToolbarButton.Paste.ToolTip" xml:space="preserve">
+    <value>Incolla</value>
+  </data>
+  <data name="ToolbarButton.PasteText.ToolTip" xml:space="preserve">
+    <value>Copia testo semplice</value>
+  </data>
+  <data name="ToolbarButton.PasteWord.ToolTip" xml:space="preserve">
+    <value>Incolla da MS Word (con pulizia)</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.Target.Parent" xml:space="preserve">
+    <value>Finestra relativa</value>
+  </data>
+  <data name="ToolbarButton.PreviewMode.ToolTip" xml:space="preserve">
+    <value>Anteprima</value>
+  </data>
+  <data name="ToolbarButton.Redo.ToolTip" xml:space="preserve">
+    <value>Ripeti</value>
+  </data>
+  <data name="ToolbarButton.RemoveAlignment.ToolTip" xml:space="preserve">
+    <value>Rimuovi allineamento e paragrafi</value>
+  </data>
+  <data name="ToolbarButton.Print.ToolTip" xml:space="preserve">
+    <value>Stampa contenuto</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.Protocol" xml:space="preserve">
+    <value>Protocollo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Button.OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Middle" xml:space="preserve">
+    <value>Medio</value>
+  </data>
+  <data name="Popups.LinkProperties.Message.EmptyUrl" xml:space="preserve">
+    <value>Il Link URL non può essere vuoto</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellVerticalAlignment.Middle" xml:space="preserve">
+    <value>Medio</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.RefreshButton.Tooltip" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.FolderCreated" xml:space="preserve">
+    <value>Cartella  '{0}' creata in modo corretto</value>
+  </data>
+  <data name="Popups.UploadFilePopup.Field.Location" xml:space="preserve">
+    <value>Locazione</value>
+  </data>
+  <data name="Popups.MediaProperties.Message.EmptyUrl" xml:space="preserve">
+    <value>L'URL del media non può essere vuoto</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Title" xml:space="preserve">
+    <value>Proprietà video Flash</value>
+  </data>
+  <data name="Popups.MediaProperties.Title" xml:space="preserve">
+    <value>Proprietà Media</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Message.EmptyUrl" xml:space="preserve">
+    <value>L'URL del video flash non può essere vuota</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Margin" xml:space="preserve">
+    <value>Margine</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Overflow" xml:space="preserve">
+    <value>Overflow</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Padding" xml:space="preserve">
+    <value>Padding</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImageNotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImageRepeat.No-Repeat" xml:space="preserve">
+    <value>Non Ripetere</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="Popups.InputProperties.Field.Password" xml:space="preserve">
+    <value>Campo pasword</value>
+  </data>
+  <data name="Popups.InputProperties.Field.Radio" xml:space="preserve">
+    <value>Bottone Radio</value>
+  </data>
+  <data name="Popups.FormProperties.Field.FormMethod" xml:space="preserve">
+    <value>Metodo</value>
+  </data>
+  <data name="Popups.FormProperties.Field.FormMethod.NotSet" xml:space="preserve">
+    <value>Non configurato</value>
+  </data>
+  <data name="Popups.FormProperties.Field.FormMethod.Post" xml:space="preserve">
+    <value>Metodo invio: Post</value>
+  </data>
+  <data name="ToolbarButton.MakeNotEditable.ToolTip" xml:space="preserve">
+    <value>Rendi selezione non modificabile</value>
+  </data>
+  <data name="QF.QuickFormatting.Title" xml:space="preserve">
+    <value>Formattazione veloce</value>
+  </data>
+  <data name="QF.StyleItem.div" xml:space="preserve">
+    <value>Blocco contenitore DIV</value>
+  </data>
+  <data name="ToolbarButton.RemoveLink.ToolTip" xml:space="preserve">
+    <value>Rimuovi Link</value>
+  </data>
+  <data name="ToolbarButton.RemoveStyles.ToolTip" xml:space="preserve">
+    <value>Rimuovi Stili</value>
+  </data>
+  <data name="ToolbarButton.Rtl.ToolTip" xml:space="preserve">
+    <value>da Destra a sinistra</value>
+  </data>
+  <data name="ToolbarButton.FontSize.Label" xml:space="preserve">
+    <value>Dimensione</value>
+  </data>
+  <data name="ToolbarButton.SelectAll.ToolTip" xml:space="preserve">
+    <value>Seleziona l'intero contenuto</value>
+  </data>
+  <data name="ToolbarButton.SelectNone.ToolTip" xml:space="preserve">
+    <value>Deseleziona l'intero contenuto</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Right" xml:space="preserve">
+    <value>Destra</value>
+  </data>
+  <data name="Popups.TableProperties.Field.Rows" xml:space="preserve">
+    <value>Righe</value>
+  </data>
+  <data name="Popups.InnerColorsPopup.Title" xml:space="preserve">
+    <value>Seleziona colore</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BackgroundColor.Tooltip" xml:space="preserve">
+    <value>Seleziona colore sfondo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderColor.Tooltip" xml:space="preserve">
+    <value>Seleziona colore bordo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.RemoveBackgroundColor.Tooltip" xml:space="preserve">
+    <value>Rimuovi colore sfondo</value>
+  </data>
+  <data name="Popups.TableProperties.Field.ApplyTo.Row" xml:space="preserve">
+    <value>Riga</value>
+  </data>
+  <data name="Popups.TableProperties.Field.BorderCollapse.Separate" xml:space="preserve">
+    <value>Separa</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellHorizontalAlignment.Right" xml:space="preserve">
+    <value>Destra</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.ReplaceWith" xml:space="preserve">
+    <value>Sostituisci con</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Title" xml:space="preserve">
+    <value>Controllo dizionario</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.NotAllFiles" xml:space="preserve">
+    <value>Errore Server</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.ServerErrorOnCmd" xml:space="preserve">
+    <value>Errore Server sul seguente comando</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.RemoveControlBaseColor.Tooltip" xml:space="preserve">
+    <value>Rimuovi base colore</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.VideoRepeat" xml:space="preserve">
+    <value>Ripeti</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.RemoveBorderColor.Tooltip" xml:space="preserve">
+    <value>Rimuovi colore bordo</value>
+  </data>
+  <data name="ToolbarButton.RemoveDirection.ToolTip" xml:space="preserve">
+    <value>Rimuove tutte le direzioni</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImage.Tooltip" xml:space="preserve">
+    <value>Seleziona immagine di sfondo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.RemoveBgImage.Tooltip" xml:space="preserve">
+    <value>Rimuovi immagine di sfondo</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImageRepeat" xml:space="preserve">
+    <value>Ripeti</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImageRepeat.Repeat" xml:space="preserve">
+    <value>Ripeti</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImageRepeat.Repeat-X" xml:space="preserve">
+    <value>Ripeti-X</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BgImageRepeat.Repeat-Y" xml:space="preserve">
+    <value>Ripeti-Y</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.HorPosition.Right" xml:space="preserve">
+    <value>Destra</value>
+  </data>
+  <data name="Popups.InputProperties.Field.Reset" xml:space="preserve">
+    <value>Bottone Cancella tutto</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.Suggestions" xml:space="preserve">
+    <value>Suggerimenti</value>
+  </data>
+  <data name="ToolbarButton.SpellCheck.ToolTip" xml:space="preserve">
+    <value>Controllo dizionario</value>
+  </data>
+  <data name="Popups.MediaProperties.Field.ShowControls" xml:space="preserve">
+    <value>Visualizza controlli</value>
+  </data>
+  <data name="Popups.InputProperties.Field.Submit" xml:space="preserve">
+    <value>Bottone invia</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.Target" xml:space="preserve">
+    <value>Obiettivo</value>
+  </data>
+  <data name="Popups.LinkProperties.Field.Target.Top" xml:space="preserve">
+    <value>Prima finestra</value>
+  </data>
+  <data name="ToolbarButton.StrikeThrough.ToolTip" xml:space="preserve">
+    <value>Barrato</value>
+  </data>
+  <data name="ToolbarButton.SubScript.ToolTip" xml:space="preserve">
+    <value>Pedice</value>
+  </data>
+  <data name="ToolbarButton.SuperScript.ToolTip" xml:space="preserve">
+    <value>Apice</value>
+  </data>
+  <data name="ToolbarButton.Underline.ToolTip" xml:space="preserve">
+    <value>Sottolineato</value>
+  </data>
+  <data name="ToolbarButton.Undo.ToolTip" xml:space="preserve">
+    <value>Annulla </value>
+  </data>
+  <data name="Popups.LinkProperties.Title" xml:space="preserve">
+    <value>Proprità Link URL</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Tooltip" xml:space="preserve">
+    <value>Aiuti</value>
+  </data>
+  <data name="Popups.ImageBrowser.Field.PreviewImageWidth" xml:space="preserve">
+    <value>Larghezza</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Texttop" xml:space="preserve">
+    <value>CasellaTesto</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Alignment.Top" xml:space="preserve">
+    <value>Alto</value>
+  </data>
+  <data name="Popups.ImageProperties.Field.Spacing" xml:space="preserve">
+    <value>Spaziatura</value>
+  </data>
+  <data name="Popups.ImageProperties.Field.URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.VerticalSpacing" xml:space="preserve">
+    <value>Verticale</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Width" xml:space="preserve">
+    <value>Larghezza</value>
+  </data>
+  <data name="Popups.TableProperties.Field.Span" xml:space="preserve">
+    <value>Span</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.BorderStyle.Solid" xml:space="preserve">
+    <value>Solido</value>
+  </data>
+  <data name="Popups.TableProperties.Field.ApplyTo.Table" xml:space="preserve">
+    <value>Tabella</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellVerticalAlignment" xml:space="preserve">
+    <value>Allineamento Verticale</value>
+  </data>
+  <data name="Popups.TableProperties.Field.CellVerticalAlignment.Top" xml:space="preserve">
+    <value>Alto</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.Undo.Tooltip" xml:space="preserve">
+    <value>Annulla cambiamenti</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.TimeOut" xml:space="preserve">
+    <value>Risposta Server fuori tempo massimo</value>
+  </data>
+  <data name="Popups.SpellCheckPopup.Field.SpellCheckDone" xml:space="preserve">
+    <value>Controllo dizionario completato</value>
+  </data>
+  <data name="Popups.GalleryManager.Field.UploadButton.Tooltip" xml:space="preserve">
+    <value>Carica file</value>
+  </data>
+  <data name="Popups.ImageBrowser.Field.UploadButton.Tooltip" xml:space="preserve">
+    <value>Carica nuova immagine</value>
+  </data>
+  <data name="Popups.UploadFilePopup.Button.OK" xml:space="preserve">
+    <value>Carica</value>
+  </data>
+  <data name="Popups.UploadFilePopup.Title" xml:space="preserve">
+    <value>Carica file</value>
+  </data>
+  <data name="Popups.UploadImagePopup.Title" xml:space="preserve">
+    <value>Carica nuova immagine</value>
+  </data>
+  <data name="Popups.TableProperties.Title" xml:space="preserve">
+    <value>Proprietà tabella</value>
+  </data>
+  <data name="Popups.MediaBrowser.Field.PreviewFlashWidth" xml:space="preserve">
+    <value>Larghezza</value>
+  </data>
+  <data name="Popups.MediaBrowser.Field.UploadButton.Tooltip" xml:space="preserve">
+    <value>Carica nuovo media</value>
+  </data>
+  <data name="Popups.MediaProperties.Field.URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="Popups.UploadFilePopup.Message.UploadError" xml:space="preserve">
+    <value>Errore caricamento</value>
+  </data>
+  <data name="Popups.UploadFlashPopup.Title" xml:space="preserve">
+    <value>Carica nuovo oggetto Flash</value>
+  </data>
+  <data name="Popups.UploadMediaPopup.Title" xml:space="preserve">
+    <value>Carica nuovo media</value>
+  </data>
+  <data name="Popups.MediaProperties.Field.ShowStatusbar" xml:space="preserve">
+    <value>Visualizza barra di stato</value>
+  </data>
+  <data name="Popups.MediaProperties.Field.ShowTracker" xml:space="preserve">
+    <value>Visualizza puntatore</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.URL" xml:space="preserve">
+    <value>URL Video</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.ControlBaseColor.Tooltip" xml:space="preserve">
+    <value>Seleziona controllo base colore</value>
+  </data>
+  <data name="Popups.FlashVideoProperties.Field.VideoProperties" xml:space="preserve">
+    <value>Proprietà Video</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Overflow.Scroll" xml:space="preserve">
+    <value>Scorri</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Overflow.Visible" xml:space="preserve">
+    <value>Visibile</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Attachment.Scroll" xml:space="preserve">
+    <value>Scorri</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.VerPosition" xml:space="preserve">
+    <value>Pozione verticale</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.VerPosition.Top" xml:space="preserve">
+    <value>Alto</value>
+  </data>
+  <data name="ToolbarButton.AnchorsToggle.ToolTip" xml:space="preserve">
+    <value>Toggle Anchors indication</value>
+  </data>
+  <data name="Popups.OkCancelPopup.Field.Value" xml:space="preserve">
+    <value>Valore</value>
+  </data>
+  <data name="Popups.InputProperties.Field.TextBox" xml:space="preserve">
+    <value>CasellaTesto</value>
+  </data>
+  <data name="ToolbarButton.FullScreen.ToolTip" xml:space="preserve">
+    <value>Cambia visualizzazione schermo intero on / off</value>
+  </data>
+  <data name="Popups.UrlBrowser.Field.UploadButton.Tooltip" xml:space="preserve">
+    <value>Carica nuovo Documento</value>
+  </data>
+  <data name="Popups.UploadFlashVideoPopup.Title" xml:space="preserve">
+    <value>Carica nuovo video flash</value>
+  </data>
+  <data name="Popups.UploadDocumentPopup.Title" xml:space="preserve">
+    <value>Carica nuovo Documento</value>
+  </data>
+  <data name="QF.StyleItem.table" xml:space="preserve">
+    <value>Tabella</value>
+  </data>
+  <data name="QF.StyleItem.td" xml:space="preserve">
+    <value>Cella Tabella</value>
+  </data>
+  <data name="QF.StyleItem.text" xml:space="preserve">
+    <value>Testo</value>
+  </data>
+  <data name="QF.StyleItem.tr" xml:space="preserve">
+    <value>Riga tabella</value>
+  </data>
+  <data name="ToolbarButton.PlainTextCounter.Label" xml:space="preserve">
+    <value>Testo</value>
+  </data>
+  <data name="Popups.MediaBrowser.Field.PreviewMediaWidth" xml:space="preserve">
+    <value>Larghezza</value>
+  </data>
+  <data name="Popups.ImportDocumentPopup.Title" xml:space="preserve">
+    <value>Sfoglia la cartella Documenti</value>
+  </data>
+  <data name="ToolbarButton.ImportDocument.ToolTip" xml:space="preserve">
+    <value>Importa Documento</value>
+  </data>
+  <data name="ContextMenu.InsertColumnAfterItem.ToolTip" xml:space="preserve">
+    <value>Inserici colonna a destra</value>
+    <comment>Text shown in this item of context menu</comment>
+  </data>
+  <data name="ContextMenu.InsertColumnBeforeItem.ToolTip" xml:space="preserve">
+    <value>Inserisci colonna a sinistra</value>
+    <comment>Text shown in this item of context menu</comment>
+  </data>
+  <data name="ContextMenu.RemoveColumnItem.ToolTip" xml:space="preserve">
+    <value>Rimuovi Colonna</value>
+    <comment>Text shown in this item of context menu</comment>
+  </data>
+  <data name="ToolbarButton.CancelButton.Text" xml:space="preserve">
+    <value>Cancella</value>
+    <comment>Button's text</comment>
+  </data>
+  <data name="ToolbarButton.CancelButton.ToolTip" xml:space="preserve">
+    <value>Cancella</value>
+    <comment>Toolbar button tooltip</comment>
+  </data>
+  <data name="ToolbarButton.SubmitButton.Text" xml:space="preserve">
+    <value>Invia</value>
+    <comment>Button's text</comment>
+  </data>
+  <data name="ToolbarButton.SubmitButton.ToolTip" xml:space="preserve">
+    <value>Invia</value>
+    <comment>Toolbar button tooltip</comment>
+  </data>
+</root>

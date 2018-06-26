@@ -1,0 +1,87 @@
+a:link
+{
+	color: #0000ff;
+	text-decoration: underline;
+}
+a:visited
+{
+	color: #0000ff;
+	text-decoration: underline;
+}
+a:hover
+{
+	color: #ff0000;
+	text-decoration: none;
+}
+a:active
+{
+	color: #ff0000;
+	text-decoration: none;
+}
+
+body
+{
+	font-family: Futura,Arial,Helvetica,Verdana,Geneva,Swiss,sans-serif;
+	background: #ffffff;
+	color: #000000;
+	font-size: 10pt;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 5pt;
+	padding-right: 5pt;
+	width: 750px;
+}
+
+table.SurveyTable
+{
+	border-top: solid 1px #dddddd;
+	border-left: solid 1px #dddddd;
+	width: 90%;
+	margin-left:auto; 
+	margin-right:auto;    
+}
+
+table.SurveyTable tr th
+{
+	border-right: solid 1px #dddddd;
+	border-bottom: solid 1px #dddddd;
+	padding: 4px;
+	vertical-align: top;
+	text-align: left;
+}
+
+table.SurveyTable tr td
+{
+	border-right: solid 1px #dddddd;
+	border-bottom: solid 1px #dddddd;
+	padding: 4px;
+	vertical-align: top;
+	text-align: left;
+}
+
+table.SurveyTable tr td.center
+{
+	text-align: center;
+}
+
+table.TableQuestion
+{
+	border-top: solid 1px #dddddd;
+	border-left: solid 1px #dddddd;
+	width: 100%;	
+}
+
+table.TableQuestion tr td
+{
+	border-bottom: solid 1px #dddddd;
+	border-right: solid 1px #dddddd;
+	text-align:	center;
+}
+
+table.TableQuestion tr th
+{
+	border-bottom: solid 1px #dddddd;
+	border-right: solid 1px #dddddd;
+	text-align:	left;
+	font-weight: normal;
+}

@@ -1,0 +1,644 @@
+﻿<%@ Page Language="C#" Debug="true"  MasterPageFile="~/UWAC.master"  AutoEventWireup="true" CodeFile="Edit.aspx.cs" Inherits="DataProject_Edit" 
+	 EnableEventValidation="false" Title="Edit Data Project"%>
+ <%@ MasterType VirtualPath="~/UWAC.master" %>
+
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.ASPxHtmlEditor.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxHtmlEditor" TagPrefix="dx" %> 
+
+
+<asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"  />
+	<%--<script type='text/javascript' src='https://code.jquery.com/ui/1.12.1/jquery-ui.min.js' ></script> --%>
+
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery-1.9.0.min.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery-ui.min.js"></script>
+
+
+</asp:Content>
+
+<asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server" >
+		<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true"  EnablePartialRendering="true"></asp:ScriptManager>
+
+	<style type="text/css">
+		.maxWidth {
+			max-width:450px;
+		}
+		.editor {
+			padding-bottom: 8px;
+			padding-right: 1px;
+			width: 100%;
+		} 
+		.container {
+			display: table;
+			width: 100%;
+		}
+		@media(min-width:500px) {
+			.container > * {
+				display: table-cell;
+				vertical-align: top;
+			}
+			.editor {
+				vertical-align: middle;
+				width: 110px;
+				padding-right: 10px;
+				padding-bottom: 0;
+			}
+		}
+		.lastEditor {
+			padding-right: 0; 
+			padding-bottom: 0px;
+		}
+	</style>
+
+	<script type="text/javascript">
+		function DeleteVar(s, e)
+		{
+			var x = s.GetRowValues(e.visibleIndex, "fldpk", UnselectVarInGrid);
+		}
+
+		function UnselectVarInGrid(key)
+		{
+			gridSelVars.UnselectRowsByKey(key);
+		}
+
+		function SubjsetSelectionChanged(s, e) {
+
+			gridSubjCallback.PerformCallback();
+			//varCallback.PerformCallback();
+		}
+		function MeasSelectionChanged(s, e) {
+
+			var num = gridSelMeas.GetSelectedRowCount();
+			selmeas_n.SetText("(" + num + " selected)");
+			selmeas_n2.SetText("(" + num + " selected)");
+			//hideResults();
+
+			//This will update the Meas pivot table
+			gridMeasCallback.PerformCallback();
+
+			//This will update the gridSelMeas
+			gridVarsCallback.PerformCallback();
+		}
+		function VarSelectionChanged(s, e) {
+
+			var num = gridSelVars.GetSelectedRowCount();
+			selvars_n.SetText("(" + num + " selected)");
+			selvars_n2.SetText("(" + num + " selected)");
+
+
+			pivotVarsCallback.PerformCallback();
+
+		}
+
+		function VartypeChanged(s, e)
+		{
+			var x = rblVartype.GetValue();
+			//gridVarsCallback.PerformCallback();
+		}
+
+		//function subjChanged() {
+		//	var num = gridSelSubj.GetSelectedRowCount();
+		//	selsubj_n.SetText("(" + num + " selected)");
+		//	//hideResults();
+		//	gridSubjCallback.PerformCallback();
+		//}
+
+		//function varsChanged() {
+		//	var num = gridSelVars.GetSelectedRowCount();
+		//	selvars_n.SetText("(" + num + " selected)");
+		//	//hideResults();
+		//	gridVarsCallback.PerformCallback();
+		//}
+
+		//function hideResults()
+		//{
+		//	btnLoad.SetVisible(true);
+		//	panelInfo.SetVisible(false);
+
+		//	panelCharts.SetVisible(false);
+		//}
+
+		function ShowSelected(s, e) {
+			var value = s.GetChecked();
+			if (value) {
+				gridSelSubj.SetVisible(true);
+				gridSelMeas.SetVisible(true);
+				gridSelVars.SetVisible(true);
+			}
+			else {
+				gridSelSubj.SetVisible(false);
+				gridSelMeas.SetVisible(false);
+				gridSelVars.SetVisible(false);
+			}
+		}
+
+	</script>
+
+	
+
+	<dx:ASPxHiddenField ID="needBindVars" runat="server" ClientInstanceName="needBindVars">
+	</dx:ASPxHiddenField>
+
+
+
+	<dx:ASPxLabel ID="lbl0" runat="server" Text="Edit Data Project" Font-Size="Medium" Font-Bold="true" ForeColor="Gray"></dx:ASPxLabel>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<dx:ASPxLabel ID="lblPK" runat="server" Text="" Font-Size="Medium" Font-Bold="true" ForeColor="Gray"></dx:ASPxLabel>
+	<br />
+	<br />
+
+	<table>
+		<tr>
+			<%--    First Column with TextBoxes--%>
+		<td style="width: 425px; vertical-align: top">
+				<dx:ASPxLabel ID="lblTitle0" runat="server" Text="Title:" Font-Size="XX-Small"></dx:ASPxLabel>
+				<dx:ASPxLabel ID="lblTitle" runat="server" Width="400px" Font-Size="Medium"></dx:ASPxLabel><br />
+
+				<br />
+				<dx:ASPxLabel ID="lblStatus" runat="server" Text=""  Font-Size="XX-Small"></dx:ASPxLabel>
+			</td>
+
+			<%--    Second Column with Selectors--%>
+			<td>
+					<table>
+					<tr>
+						<td style="vertical-align: top">
+
+						</td>
+						<td style="vertical-align: top; width: 200px">
+				<dx:ASPxButton ID="btnUpdate" runat="server" Text="Update Data Project Settings" OnClick="btnUpdate_OnClick" ClientInstanceName="btnUpdate">
+					<Image IconID="actions_save_16x16devav"></Image>
+				</dx:ASPxButton>
+				<dx:ASPxButton ID="btnNew" runat="server" Text="Save this Data Project"  OnClick="btnUpdate_OnClick">
+					 <Image IconID="actions_save_16x16devav"></Image>
+				</dx:ASPxButton>
+				<br />
+						</td>
+						<td style="width: 50px"></td>
+						<td style="vertical-align: top">
+
+							<dx:ASPxButton ID="btnExploreProject" runat="server" Text="Explore this Data Project"   ClientInstanceName="btnExploreProject" AutoPostBack="true" OnClick="btnExploreProject_OnClick">
+								 <Image IconID="actions_viewsetting_16x16devav"></Image>
+							</dx:ASPxButton>							&nbsp;&nbsp;&nbsp;&nbsp;
+						<td style="width: 50px"></td>
+							<td style="vertical-align: top">
+								<dx:ASPxButton ID="btnFiles" runat="server" Text="Create & View Data Files" OnClick="btnFiles_OnClick" ClientInstanceName="btnbtnCreate">
+									<Image IconID="save_saveall_16x16office2013"></Image>
+								</dx:ASPxButton>
+						</td>
+						<td style="width: 50px"></td>
+							<td style="vertical-align: top">
+							<dx:ASPxButton ID="btnProjects" runat="server" Text="Return To All Data Projects"   ClientInstanceName="btnSets" AutoPostBack="False">
+								 <clientsideevents click="function(s, e) {document.location.href = 'Index.aspx';}"></clientsideevents>
+								<Image IconID="actions_changeview_16x16devav"></Image>
+							</dx:ASPxButton>
+						</td>
+
+												
+
+					</tr>
+				</table>
+
+
+			</td>
+		</tr>
+	</table>
+
+		<%--	</td>
+		</tr>
+	</table>--%>
+
+
+	<br />
+	<br />
+
+
+	<table>
+		<tr>
+			<td style="vertical-align: top">
+				<dx:ASPxCallbackPanel ID="gridSubjCallback" runat="server" OnCallback="gridSubjCallback_OnCallback" ClientInstanceName="gridSubjCallback">
+					<PanelCollection>
+						<dx:PanelContent ID="content2" runat="server">
+							<dx:ASPxLabel ID="title_pivSubj" runat="server" Text="Selected Subjects" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
+							<br />	
+							<dx:ASPxLabel ID="selsubj_n" ClientInstanceName="selsubj_n" runat="server" Text="" Font-Size="small" Font-Bold="true" ForeColor="SkyBlue"></dx:ASPxLabel>
+										
+							<dx:ASPxPivotGrid ID="PivotSelSubj" runat="server" OptionsCustomization-AllowFilter="false"  
+								EncodeHtml="false" >
+								<Fields>
+									<dx:PivotGridField ID="field_subjstatus" Area="RowArea" AreaIndex="0"
+										Caption="Subject Status" FieldName="subjstatus" Options-ShowTotals="false">
+									</dx:PivotGridField>
+									<dx:PivotGridField ID="field_TxGroup" Area="RowArea" AreaIndex="0"
+										Caption="Tx Group" FieldName="txgrp" SortByAttribute="Tx Group">
+									</dx:PivotGridField>
+									<dx:PivotGridField ID="field_Group" Area="ColumnArea" AreaIndex="1"
+										Caption="Group" FieldName="Group" SortByAttribute="Group">
+									</dx:PivotGridField>
+									<dx:PivotGridField ID="field_subjID" Area="DataArea" AreaIndex="0" 
+										Caption="# Subjects" SummaryType="Count" FieldName="subjID">
+									</dx:PivotGridField>
+									<dx:PivotGridField ID="field_sex"  Caption="Sex" FieldName="sex" Area="FilterArea" Visible="false"></dx:PivotGridField>
+									<dx:PivotGridField ID="field_race"  Caption="Race" FieldName="race"  Area="FilterArea" Visible="false"></dx:PivotGridField>
+									<dx:PivotGridField ID="field_ethn"  Caption="Ethnicity" FieldName="ethnicity"  Area="FilterArea" Visible="false"></dx:PivotGridField>
+								</Fields>
+								<OptionsPager AlwaysShowPager="false" RowsPerPage="20" ></OptionsPager>
+								<OptionsView ShowColumnTotals="true" ShowColumnGrandTotals="true" ShowRowGrandTotals="true" ShowFilterHeaders="false"  />
+							</dx:ASPxPivotGrid>
+
+						</dx:PanelContent>
+					</PanelCollection>
+	
+				</dx:ASPxCallbackPanel>
+			</td>
+			<td style="vertical-align: top">
+
+				<table>
+					<tr>
+						
+						<td style="vertical-align: top;" >
+							
+
+						</td>
+						<td style="min-width: 10px;"></td>
+						<td style="vertical-align: top; width: 470px;" >
+							<dx:ASPxCallbackPanel ID="gridMeasCallback" runat="server" OnCallback="gridMeasCallback_OnCallback" ClientInstanceName="gridMeasCallback">
+								<PanelCollection>
+									<dx:PanelContent ID="PanelContent1" runat="server">
+									<table>
+										<tr>
+											<td style="vertical-align: top;">
+												<dx:ASPxLabel ID="ASPxLabel2" runat="server" Text="Selected Measures" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
+												<br />
+												<dx:ASPxLabel ID="selmeas_n" ClientInstanceName="selmeas_n" runat="server" Text="" Font-Size="small" Font-Bold="true" ForeColor="SkyBlue"></dx:ASPxLabel>
+
+										<br />
+										<dx:ASPxPivotGrid ID="PivotSelMeas" runat="server" OptionsCustomization-AllowFilter="false" ClientInstanceName="PivotSelMeas"   
+											OnCustomSummary="PivotSelMeas_Concat"  EncodeHtml="false" >
+											<Fields>
+												<dx:PivotGridField ID="field_meascat" Area="RowArea" AreaIndex="0"
+													Caption="Category" FieldName="Category" Options-ShowTotals="false">
+												</dx:PivotGridField>
+												<dx:PivotGridField ID="field_timepoint" Area="ColumnArea" AreaIndex="0"
+													Caption="TimePt" FieldName="TimePt" SortByAttribute="timepoint">
+												</dx:PivotGridField>
+												<dx:PivotGridField ID="field_meas" Area="DataArea" AreaIndex="0" 
+													Caption="Measure" SummaryType="Custom" FieldName="StudyMeasName">
+												</dx:PivotGridField>
+											</Fields>
+											<OptionsPager AlwaysShowPager="false" RowsPerPage="20" ></OptionsPager>
+											<OptionsView ShowColumnTotals="false" ShowColumnGrandTotals="false" ShowRowGrandTotals="false" ShowFilterHeaders="false"  />
+										</dx:ASPxPivotGrid>
+
+											</td>
+											<td style="vertical-align: top">
+
+											</td>
+										</tr>
+									</table>
+
+
+									</dx:PanelContent>
+								</PanelCollection>
+							</dx:ASPxCallbackPanel>
+
+						</td>
+						<td style="min-width: 10px;"></td>
+						<td style="vertical-align: top; min-width: 800px">
+							<dx:ASPxCallbackPanel ID="pivotVarsCallback" runat="server" OnCallback="pivotVarsCallback_OnCallback" ClientInstanceName="pivotVarsCallback">
+								<PanelCollection>
+									<dx:PanelContent ID="PanelContent3" runat="server">
+									<table>
+										<tr>
+											<td style="vertical-align: top;">
+												<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Selected Variables" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
+												<dx:ASPxButton runat="server" ID="btnExpandV" Text="+" UseSubmitBehavior="false" AutoPostBack="false"  Native="true" >
+													<ClientSideEvents Click="function() { gridProjVars.ExpandAll() }"  />
+												</dx:ASPxButton>
+												<dx:ASPxButton runat="server" ID="btnCollapseV" Text="-" UseSubmitBehavior="false" AutoPostBack="false"  Native="true"  >
+													<ClientSideEvents Click="function() { gridProjVars.CollapseAll() }" />
+												</dx:ASPxButton>												<br />
+												<dx:ASPxLabel ID="selvars_n2" ClientInstanceName="selvars_n2" runat="server" Text="" Font-Size="small" Font-Bold="true" ForeColor="SkyBlue"></dx:ASPxLabel>
+
+										<br />
+
+												<%--OnCustomButtonCallback="gridProjVars_CustomButtonCallback"  --%>
+												<dx:ASPxGridView ID="gridProjVars" runat="server" AutoGenerateColumns="false" ClientInstanceName="gridProjVars">
+											<ClientSideEvents CustomButtonClick="DeleteVar" />
+											<Columns>
+												<dx:GridViewCommandColumn Caption="Del" ButtonRenderMode="Image" VisibleIndex="0" Width="50px">
+													 <CustomButtons>
+														<dx:GridViewCommandColumnCustomButton ID="Delete"   >
+															<Image ToolTip="Delete Variable" Url="~/images/del.png" />
+														</dx:GridViewCommandColumnCustomButton>
+													</CustomButtons>
+												</dx:GridViewCommandColumn>
+												<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="2" GroupIndex="0" Width="100px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="fldname" Caption="Variable" VisibleIndex="0" Width="100px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="1"  Width="300px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="VarType" Caption="VarType" VisibleIndex="3"  Width="100px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="fldpk" Caption="fldpk" Visible="false"></dx:GridViewDataColumn>
+											</Columns>
+											<Settings ShowGroupPanel="True" VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
+											<%--<SettingsPager PageSize="20" EnableAdaptivity="true" >
+												<PageSizeItemSettings Visible="true" ShowAllItem="true" />
+											</SettingsPager>--%>
+											<SettingsPager Mode="ShowAllRecords" />
+											<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="true"   />
+											<GroupSummary>
+												<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count"  />
+											</GroupSummary>
+										</dx:ASPxGridView>
+
+											</td>
+											<td style="vertical-align: top">
+
+											</td>
+										</tr>
+									</table>
+
+
+									</dx:PanelContent>
+								</PanelCollection>
+							</dx:ASPxCallbackPanel>
+
+						</td>
+
+					</tr>
+
+				</table>
+
+
+
+
+			</td>
+		</tr>
+	</table>
+
+	<br />
+	<br />
+
+	<dx:ASPxPageControl ID="Tabs" Width="100%" runat="server" CssClass="dxtcFixed" ActiveTabIndex="0" EnableHierarchyRecreation="True" >
+		<TabPages>
+			<dx:TabPage Text="Edit Title & Summary">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl4" runat="server">
+						<dx:ASPxLabel ID="ASPxLabel4" runat="server" Text="Title:" Font-Size="XX-Small"></dx:ASPxLabel>
+						<dx:ASPxTextBox ID="txtTitle" runat="server" Width="90%" Font-Size="Medium">
+							 <ValidationSettings SetFocusOnError="True" ErrorText="Title must be at least 3 characters long" Display="Dynamic" ErrorTextPosition="Top">
+								<RequiredField IsRequired="True" ErrorText="Title is required" />
+							</ValidationSettings>
+						</dx:ASPxTextBox><br />
+
+						<br />
+						<dx:ASPxHtmlEditor ID="HtmlEditor" runat="server" Height="450px" Width="90%" ActiveView="Preview" >
+							<Settings AllowHtmlView="False"></Settings>
+							<SettingsDialogs>
+								<InsertImageDialog>
+									<SettingsImageUpload UploadFolder="~/UploadFiles/Images/">
+										<ValidationSettings AllowedFileExtensions=".jpe,.jpeg,.jpg,.gif,.png" MaxFileSize="500000">
+										</ValidationSettings>
+									</SettingsImageUpload>
+								</InsertImageDialog>
+							</SettingsDialogs>
+						</dx:ASPxHtmlEditor>
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
+
+			<dx:TabPage Text="Select Subjects">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl1" runat="server">
+
+					   <table>
+						<tr>
+							<td style="vertical-align: top">
+								Select Set of Subjects:<dx:ASPxLabel ID="lblSubj" runat="server" Text="" Font-Bold="true"></dx:ASPxLabel>
+								<dx:ASPxLabel  ID="ASPxLabel3" runat="server" Text="" Font-Bold="true" ForeColor="RoyalBlue" ClientInstanceName="selsubj_n"></dx:ASPxLabel>   
+									<br />
+
+								<%--OnSelectedIndexChanged="cboSubjSet_SelectedIndexChanged" --%>
+								<dx:ASPxComboBox ID="cboSubjSet" runat="server" Width="250px"   ValueField="subjset_pk" OnDataBound="cboSubjSet_DataBound"
+									  ClientInstanceName="cboSubjSet">
+									<ClientSideEvents ValueChanged="SubjsetSelectionChanged"  />
+									<Columns>
+										<dx:ListBoxColumn FieldName="nsubj" Caption="# Subjects" Width="60px" />
+										<dx:ListBoxColumn FieldName="subjset" Caption="Set" Width="200px" />
+									</Columns>
+									<ValidationSettings SetFocusOnError="False" ErrorText="You must select a subject set" Display="Dynamic"  ErrorTextPosition="Top">
+										<RequiredField IsRequired="true" ErrorText="Select subjects" />
+									</ValidationSettings>
+								</dx:ASPxComboBox>
+
+							</td>
+							<td>
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								<dx:ASPxButton ID="ASPxButton1" runat="server" Text="View Subject Sets"   ClientInstanceName="btnSets" AutoPostBack="False" >
+									<clientsideevents click="function(s, e) {document.location.href = 'SubjSets.aspx';}"></clientsideevents>
+								</dx:ASPxButton>
+							</td>
+						</tr>
+					</table>
+
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
+			<dx:TabPage Text="Select Measures">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl2" runat="server">
+						<dx:ASPxLabel ID="title_pivMeas" runat="server" Text="Measures" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
+						<dx:ASPxLabel ID="selmeas_n2" ClientInstanceName="selmeas_n2" runat="server" Text="" Font-Size="small" Font-Bold="true" ForeColor="SkyBlue"></dx:ASPxLabel>
+											
+					<dx:ASPxButton runat="server" ID="btnExpandMeas" Visible="true" Text="+" Font-Size="XX-Small" UseSubmitBehavior="false" AutoPostBack="false"  Native="true" >
+						<ClientSideEvents Click="function() { gridSelMeas.ExpandAll() }" />
+					</dx:ASPxButton>
+					<dx:ASPxButton runat="server" ID="btnCollapseMeas" Visible="true" Text="-"  Font-Size="XX-Small" UseSubmitBehavior="false" AutoPostBack="false"  Native="true"  >
+						<ClientSideEvents Click="function() { gridSelMeas.CollapseAll() }" />
+					</dx:ASPxButton>                                                <br />
+											
+						<dx:ASPxGridView ID="gridSelMeas" runat="server" AutoGenerateColumns="false" ClientInstanceName="gridSelMeas"
+								KeyFieldName="studymeasID"  >
+							<ClientSideEvents SelectionChanged="MeasSelectionChanged" />
+							<Columns>
+								<dx:GridViewCommandColumn SelectAllCheckboxMode="AllPages" ShowSelectCheckbox="True"  VisibleIndex="0" />
+								<dx:GridViewDataColumn FieldName="TimePt" Caption="TimePt" VisibleIndex="0"  GroupIndex="0"  Width="120px"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="StudyMeasName" Caption="StudyMeasure" VisibleIndex="1"  Width="180px"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="Category" Caption="Category" VisibleIndex="2" Width="180px"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="isREL" Caption="is REL?" VisibleIndex="3" Width="70px"></dx:GridViewDataColumn>
+								<dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" VisibleIndex="4" />
+								<dx:GridViewDataColumn FieldName="studymeasID" Caption="studymeasID" Visible="false"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="measureID" Caption="measureID" Visible="false"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="tblname" Caption="tblname" Visible="false"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="MeasName" Caption="MeasName" Visible="false"></dx:GridViewDataColumn>
+							</Columns>
+							<Settings ShowGroupPanel="true" ShowFilterRow="true"  ShowFilterRowMenu="true" 
+									VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
+							<SettingsPager Mode="ShowAllRecords" />
+							<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false" FilterRowMode="OnClick"  />
+							<Settings ShowFilterBar="Visible"  />
+							<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />
+							<GroupSummary>
+								<dx:ASPxSummaryItem FieldName="timepoint_text" SummaryType="Count" />
+							</GroupSummary>
+						</dx:ASPxGridView>
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
+			<dx:TabPage Text="Select Variables">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl3" runat="server">
+
+<%--						<dx:ASPxRadioButtonList  ID="rblVartype" runat="server" RepeatColumns="3" RepeatLayout="Flow"
+							Caption="Choose Variable Type" ClientInstanceName="rblVartype"  >
+							<CaptionSettings Position="Top" />
+							<ClientSideEvents SelectedIndexChanged="VartypeChanged" />
+							<Items>
+								<dx:ListEditItem Value="Continuous" Selected="true" />
+								<dx:ListEditItem Value="Categorical" Selected="false" />
+								<dx:ListEditItem Value="Date" Selected="false" />
+							</Items>
+						</dx:ASPxRadioButtonList>
+						<br />--%>
+
+							<dx:ASPxCallbackPanel ID="gridVarsCallback" runat="server" OnCallback="gridVarsCallback_OnCallback" ClientInstanceName="gridVarsCallback">
+								<PanelCollection>
+									<dx:PanelContent ID="PanelContent2" runat="server">
+										<dx:ASPxLabel ID="title_pivVar" runat="server" Text="Variables" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
+										<dx:ASPxLabel ID="selvars_n" ClientInstanceName="selvars_n" runat="server" Text="" Font-Size="small" Font-Bold="true" ForeColor="SkyBlue"></dx:ASPxLabel>
+						
+										<dx:ASPxButton runat="server" ID="btnExpandVars" Visible="true" Text="+" Font-Size="XX-Small" UseSubmitBehavior="false" AutoPostBack="false"  Native="true" >
+											<ClientSideEvents Click="function() { gridSelVars.ExpandAll() }" />
+										</dx:ASPxButton>
+										<dx:ASPxButton runat="server" ID="btnCollapseVars" Visible="true" Text="-"  Font-Size="XX-Small" UseSubmitBehavior="false" AutoPostBack="false"  Native="true"  >
+											<ClientSideEvents Click="function() { gridSelVars.CollapseAll() }" />
+										</dx:ASPxButton>
+
+										<br />
+
+										<dx:ASPxGridView ID="gridSelVars" runat="server" AutoGenerateColumns="false" ClientInstanceName="gridSelVars"
+											  KeyFieldName="fldpk" >
+											<ClientSideEvents SelectionChanged="VarSelectionChanged" />
+											<Columns>
+												<dx:GridViewCommandColumn SelectAllCheckboxMode="AllPages" ShowSelectCheckbox="True"  VisibleIndex="0"/>
+												<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="2" GroupIndex="0" Width="100px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="fldname" Caption="Variable" VisibleIndex="0" Width="150px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="1" Width="350px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="CoreVar" Caption="Core Var" VisibleIndex="3"  Width="150px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="VarType" Caption="VarType" VisibleIndex="4"  Width="150px"></dx:GridViewDataColumn>
+												 <dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" VisibleIndex="5" />
+												<%--<dx:GridViewDataColumn FieldName="fldpk" Caption="fldpk" Visible="false"></dx:GridViewDataColumn>--%>
+											</Columns>
+											<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
+												VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
+											<SettingsPager Mode="ShowAllRecords" />
+											<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
+											<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />
+
+											<GroupSummary>
+												<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
+											</GroupSummary>
+										</dx:ASPxGridView>
+
+									</dx:PanelContent>
+								</PanelCollection>
+							</dx:ASPxCallbackPanel>
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
+
+
+<%--            OnCustomColumnDisplayText="gridCompvar_OnCustomColumnDisplayText"
+	OnHtmlDataCellPrepared="gridCompvar_OnHtmlDataCellPrepared" OnHtmlRowPrepared="ASPxGridView1_HtmlRowPrepared"    
+	--%>
+			<dx:TabPage Text="Define Composites">
+				<ContentCollection>
+					<dx:ContentControl>
+						Define composite variables.
+						<dx:ASPxGridView ID="gridCompvar" runat="server" DataSourceID="SqlCompvar" AutoGenerateColumns="false" ClientInstanceName="gridCompvar"
+								KeyFieldName="compvar_pk"   >
+							
+							<SettingsDataSecurity AllowInsert="true" AllowDelete="true" AllowEdit="true" />
+							<SettingsEditing EditFormColumnCount="1"/>
+							<Columns>
+								<dx:GridViewCommandColumn ShowNewButtonInHeader="true" ShowEditButton="true" VisibleIndex="0"  ShowDeleteButton="true"></dx:GridViewCommandColumn>
+								<dx:GridViewDataColumn FieldName="compvarname" Caption="Composite Var" ReadOnly="false" VisibleIndex="1"  Width="120px"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="compvarlabel" Caption="Composite Var Label" ReadOnly="false" VisibleIndex="2"  Width="220px"></dx:GridViewDataColumn>
+								<dx:GridViewDataComboBoxColumn FieldName="ref_timepointID" Caption="Reference Timept" ReadOnly="false" >
+									<PropertiesComboBox DataSourceID="SqlTimepoint" ValueField="timepointID" TextField="timepoint_text" />
+									</dx:GridViewDataComboBoxColumn>
+								<dx:GridViewDataColumn FieldName="compvar_pk" ReadOnly="true" Visible="false" ></dx:GridViewDataColumn>
+								<dx:GridViewDataTokenBoxColumn FieldName="vars_csv" Caption="Variables"  >
+									<PropertiesTokenBox DataSourceID="SqlVars" TextField="varlabel" ValueField="var_pk" 
+										AllowCustomTokens="false"  EncodeHtml="false"    ></PropertiesTokenBox> 
+								</dx:GridViewDataTokenBoxColumn>
+								<dx:GridViewDataTokenBoxColumn FieldName="vars_toinvert_csv" Caption="Variables to Invert"  >
+									<PropertiesTokenBox DataSourceID="SqlVars" TextField="varname" ValueField="var_pk" 
+										AllowCustomTokens="false"  EncodeHtml="false"    ></PropertiesTokenBox> 
+								</dx:GridViewDataTokenBoxColumn>
+							</Columns>
+						</dx:ASPxGridView>
+
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
+			
+
+		</TabPages>
+	</dx:ASPxPageControl>
+	<br />
+	<br />
+
+	 <asp:SqlDataSource ID="SqlTimepoint" runat="server" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommandType="text"
+		SelectCommand="select timepointID, timepoint_text from uwautism_research_backend..tbltimepoint where studyID=@studyID order by timepoint">
+		 <SelectParameters>
+			 <asp:SessionParameter SessionField="studyID" Name="studyID" />
+		 </SelectParameters>
+	 </asp:SqlDataSource> 
+
+
+	<asp:SqlDataSource ID="SqlVars" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
+		SelectCommandType="text"
+		SelectCommand="select a.*, fieldlabel, '['+measname +': ' +varname+'] '+ coalesce(fieldlabel,'')+'<br/>' as varlabel from dp.Var a 
+			join def.fld b ON a.fldpk = b.fldpk join def.tbl c ON b.tblpk = c.tblpk 
+			join uwautism_research_backend..tblmeasure d ON c.measureID=d.measureID
+			where dataproj_pk = @dataproj_pk">
+		 <SelectParameters>
+			 <asp:QueryStringParameter QueryStringField="pk" Name="dataproj_pk"  />
+		 </SelectParameters>
+	 </asp:SqlDataSource> 
+
+
+	 <asp:SqlDataSource ID="SqlCompvar" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
+		SelectCommandType="text"
+		SelectCommand="select * from dp.Compvar where dataproj_pk=@dataproj_pk order by compvarname"
+		InsertCommandType="text" InsertCommand="insert into dp.Compvar (compvarname, compvarlabel, ref_timepointID, vars_csv,  vars_toinvert_csv, dataproj_pk) values(@compvarname, @compvarlabel, @ref_timepointID, @vars_csv, @vars_toinvert_csv, @dataproj_pk)" 
+		UpdateCommandType="text" UpdateCommand="update dp.Compvar set compvarname=@compvarname, compvarlabel=@compvarlabel, 
+			ref_timepointID=@ref_timepointID, vars_csv=@vars_csv, vars_toinvert_csv=@vars_toinvert_csv where compvar_pk=@compvar_pk" 
+		 >
+		 <SelectParameters>
+			 <asp:QueryStringParameter QueryStringField="pk" Name="dataproj_pk" />
+		 </SelectParameters>
+		 <InsertParameters>
+			 <asp:Parameter Name="compvarname" Type="string" />
+			 <asp:Parameter Name="compvarlabel" Type="string" />
+			 <asp:Parameter Name="ref_timepointID" Type="Int32" />
+			 <asp:Parameter Name="vars_csv" Type="string" />
+			 <asp:Parameter Name="vars_toinvert_csv" Type="string" />
+			 <asp:QueryStringParameter QueryStringField="pk" Name="dataproj_pk"  />
+		 </InsertParameters>
+		 <UpdateParameters>
+			 <asp:Parameter Name="compvarname" Type="string" />
+			 <asp:Parameter Name="compvarlabel" Type="string" />
+			 <asp:Parameter Name="ref_timepointID" Type="Int32" />
+			 <asp:Parameter Name="vars_csv" Type="string" />
+			 <asp:Parameter Name="vars_toinvert_csv" Type="string" />
+			 <asp:QueryStringParameter QueryStringField="pk" Name="dataproj_pk"  />
+		 </UpdateParameters>
+	 </asp:SqlDataSource> 
+
+
+</asp:Content>
+
+

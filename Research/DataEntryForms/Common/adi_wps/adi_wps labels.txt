@@ -1,0 +1,169 @@
+ad002	2. Age noticed concern (months)
+ad004	4. Onset in hindsight
+ad005	5. First walked unaided
+ad006	6. Bladder control daytime
+ad007	7. Bladder control night
+ad008	8. Acquisition of bowel control
+ad009	9. Age of first single words (months)
+ad010	10.  Age of first phrases (months)
+ad011ev	11. Loss of language skills after acquisition
+ad012ev	12. Level of communicative language before loss
+ad013ev	13. Loss of spontaneous use of at least 5 meaningful words
+ad014ev	14. Loss of communicative intent
+ad015ev	15. Loss of syntactical skills (grammar)
+ad016ev	16. Loss of articulation (pronunciation)
+ad017	17. Age (months) when main loss of language first apparent
+ad018ev	18. Loss of language association with physical illness
+ad019	19. Duration (months) of loss of language skills
+ad020ev	20. Loss of skills for at least 3 months
+ad021ev	21. Loss of purposive hand movements such as grasp
+ad022ev	22. Loss of motor skills such as posture, gait, coordination
+ad023ev	23. Loss of self-help skills such as feeding, dressing, using the toilet
+ad024ev	24. Loss of constructive or imaginative play (puzzles, games, make-believe)
+ad025ev	25. Loss of social engagement and responsiveness (social relatedness, interest, and involvement)
+ad026	26.  Age (months) when main loss of skill first apparent
+ad027ev	27. Association of loss of skills with physical illness
+ad028	28. Duration (months) of loss of skills
+ad029cu	29. Comprehension of simple language
+ad029mo	29. Comprehension of simple language at age 4 to 5
+ad030cu	30. Overall level of language
+ad031cu	31. Use of other's body to communicate
+ad031ev	31. (Ever) use of other's body to communicate
+ad032at	32. Articulation pronunciation at 5 years
+ad032cu	32. Articulation pronunciation (current)
+ad033cu	33. Stereotyped utterances and delayed echolalia
+ad033ev	33. Stereotyped utterances and echolalia (ever)
+ad034cu	34. Social verbalization (current)
+ad034ev	34. Social verbalization (ever)
+ad035cu	35. Reciprocal conversation (current)
+ad035ev	35. Reciprocal conversation (ever)
+ad036cu	36. Inappropriate questions or statements (current)
+ad036ev	36. Inappropriate statements (ever)
+ad037cu	37. Pronominal reversal (current)
+ad037ev	37. Pronominal reversal  (ever)
+ad038cu	38. Neologisms idiosyncratic language (current)
+ad038ev	38.  Neologisms idiosyncratic language (ever)
+ad039cu	39. Verbal rituals (current)
+ad039ev	39. Verbal rituals (ever)
+ad040cu	40. Intonation volume rhythm rate (current)
+ad040ev	40. Intonation volume rhythm rate (ever)
+ad041at	41. Communicative speech at 5 years
+ad041cu	41. Communicative speech (current)
+ad042cu	42. Pointing to express interest (current)
+ad042mo	42. Pointing to express interest at 4 to 5 years
+ad043cu	43. Nodding (current)
+ad043mo	43. Nodding at 4 to 5 years
+ad044cu	44. Head shaking (current)
+ad044mo	44. Head shaking at 4 to 5 years
+ad045cu	45.Conventional instrumental gestures (current)
+ad045mo	45. Conventional instrumental gestures at 4 to 5 years
+ad046cu	46. Attention to voice (current)
+ad046mo	46. Attention to voice at 4 to 5 years
+ad047cu	47. Spontaneous imitation of actions  (current)
+ad047mo	47. Spontaneous imitation of actions at 4 to 5 years
+ad048cu	48. Imaginative play (current)
+ad048mo	48. Imaginative play at 4 to 5 years
+ad049cu	49. Imaginative play with peers  (current)
+ad049mo	49. Imaginative play with peers at 4 to 5 years
+ad050cu	50. Direct gaze (current)
+ad050mo	50. Direct gaze at 4 to 5 years
+ad051cu	51. Social smiling  (current)
+ad051mo	51. Social smiling at 4 to 5 years
+ad052cu	52. Showing and directing attention (current)
+ad052mo	52. Showing and directing attention at 4 to 5 years
+ad053cu	53. Offering to share (current)
+ad053mo	53. Offering to share  at 4 to 5 years
+ad054cu	54. Seeking to share enjoyment with others (current)
+ad054mo	54. Seeking to share enjoyment with others at 4 to 5 years
+ad055cu	55. Offering comfort (current)
+ad055mo	55. Offering comfort at 4 to 5 years
+ad056cu	56. Quality of social overtures (current)
+ad056mo	56. Quality of social overtures at 4 to 5 years
+ad057cu	57. Range of facial expressions to communicate (current)
+ad057mo	57.  Range of facial expressions to communicate at 4 to 5 years
+ad058cu	58. Inappropriate facial expressions (current)
+ad058ev	58. Inappropriate facial expressions (ever)
+ad059cu	59. Appopriateness of social response (current)
+ad059mo	59. Appopriateness of social response(most)
+ad060cu	60. Initiation of appropriate activities  (current)
+ad060mo	60. Initiation of appropriate activities at 4 to 5 years
+ad061cu	61. Imitative social play (current)
+ad061mo	61. Imitative social play at 4 to 5 years
+ad062cu	62. Interest in children (current)
+ad062mo	62.  Interest in children at 4 to 5 years
+ad063cu	63. Response to approaches of other children (current)
+ad063mo	63. I Response to approaches of other children at 4 to 5 years
+ad064cu	64. Group play with peers (current)
+ad064mo	64.  Group play with peers at 4 to 5 years
+ad065cu	65. Frienships (current)
+ad065mo	65. Frienships (past)
+ad066cu	66. Social disinhibition (current)
+ad066mo	66. Social disinhibition after 4 years
+ad067cu	67. Unusual preoccupations (current)
+ad067ev	67. Unusual preoccupations (ever)
+ad068cu	68. Circumscribed interests  (current)
+ad068ev	68. Circumscribed interests (ever)
+ad069cu	69. Repetitive use of objects or interest in parts of objects  (current)
+ad069ev	69.  Repetitive use of objects or interest in parts of objects (ever)
+ad070cu	70. Compulsions rituals  (current)
+ad070ev	70. Compulsions rituals (ever)
+ad071cu	71. Unusual sensory interests (current)
+ad071ev	71. Unusual sensory interests (ever)
+ad072cu	72. Undue general sensitivity to noise (current)
+ad072ev	72. Undue general sensitivity to noise (ever)
+ad073cu	73. Abnormal negative response to sensory stimuli (current)
+ad073ev	73. Abnormal negative response to sensory stimuli (ever)
+ad074cu	74. Difficulty with minor changes in routine or environment  (current)
+ad074ev	74. Difficulty with minor changes in routine or environment (ever)
+ad075cu	75. Resistance to trivial changes in environment (current)
+ad075ev	75. Resistance to trivial changes in environment (ever)
+ad076cu	76. Unusual attachment to objects (current)
+ad076ev	76. Unusual attachment to objects (ever)
+ad077cu	77. Odd hand and finger mannerisims (current)
+ad077ev	77. Odd hand and finger mannerisims (ever)
+ad078cu	78. Other complex or sterotyped movements (current)
+ad078ev	78. Other complex or sterotyped movements (ever)
+ad079cu	79. Midline hand movements (current)
+ad079ev	79. Midline hand movements (ever)
+ad080cu	80. Gait (current)
+ad080mo	80.  Gait at 4 to 5 years
+ad081cu	81. Aggression toward caregivers or family members (current)
+ad081ev	81. Aggression toward caregivers or family members (ever)
+ad082cu	82. Aggression toward noncaregivers or nonfamily members (current)
+ad082ev	82. Aggression toward noncaregivers or nonfamily members(ever)
+ad083cu	83. Self-injury (current)
+ad083ev	83. Self-injury (ever)
+ad084cu	84. Hyperventilation (current)
+ad084ev	84.  Hyperventilation (ever)
+ad085cu	85. Seizures, fainting (current)
+ad085ev	85. Seizures, fainting (ever)
+ad086	86. Age when abnormality first evident
+ad087	87. Special isolated skills
+ad088cu	88. Visuospatial (puzzles, shapes, patterns) (current)
+ad088ev	88. Visuospatial (puzzles, shapes, patterns)(ever)
+ad089cu	89. Memory for detail, dates (current)
+ad089ev	89. Memory for detail, dates (ever)
+ad090cu	90. Musical ability (recognition, composition, absolute pitch, performance) (current)
+ad090ev	90. Musical ability (recognition, composition, absolute pitch, performance)(ever)
+ad091cu	91. Drawing skill (unusually skilled, perspective, or creative approach) (current)
+ad091ev	91. Drawing skill (unusually skilled, perspective, or creative approach) (ever)
+ad092cu	92. Reading ability (current)
+ad092ev	92.  Reading ability (ever)
+ad093cu	93. Computational ability (mental math, etc) (current)
+ad093ev	93. Computational ability (mental math, etc) (ever)
+aDagemos	ADI Age (months)
+aDageym	ADI Age (y-m)
+addate	Date of interview (mm/dd/yy)
+adDOB	Subjects DOB:
+ADIdx	ADI Diagnosis
+ADIdx#	ADI Diagnosis (text)
+adinf	Informant (0=mom, 1=dad, 2=other caregiver, 3=combination, 4 = sibling, 5=other)
+adint	Interviewer initials
+adsex	Sex (0=male, 1=female)
+CommLevel	ADI Communication Level
+CommNVSum	ADI Communication score (Nonverbal sum)
+CommSum	ADI Communication score
+CommVSum	ADI Communication score (Verbal sum)
+Regres	ADI Regressed vs. Early Onset
+RepetSum	ADI Repetitive score
+SocialSum	ADI Social score

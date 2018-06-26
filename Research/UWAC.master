@@ -1,0 +1,290 @@
+﻿<%@ Master Language="C#" Debug="true" AutoEventWireup="true" CodeFile="UWAC.master.cs" Inherits="UWAC" %>
+
+
+<%@ Register TagPrefix="obout" Namespace="Obout.ComboBox" Assembly="obout_ComboBox" %>
+<%@ Register TagPrefix="obout" Namespace="OboutInc.Calendar2" Assembly="obout_Calendar2_Net" %>
+<%@ Register TagPrefix="obout" Namespace="Obout.Interface" Assembly="obout_Interface" %>
+<%@ Register TagPrefix="obout" Namespace="Obout.Grid" Assembly="obout_Grid_NET" %>
+
+<%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %>
+
+<%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor" TagPrefix="obout" %>
+<%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor.ToolbarButton" TagPrefix="obout" %>
+
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+
+
+<!DOCTYPE html>
+
+<html>
+<%--<head runat="server">
+	<title></title>
+	<asp:ContentPlaceHolder id="head" runat="server">
+	</asp:ContentPlaceHolder>
+</head>--%>
+
+<head id="oHead" runat="server">
+	<title id="oTitle" runat="server"></title>
+	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="cache-control" content="no-cache, must-revalidate" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+	<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+
+
+	<link rel="shortcut icon" href="~/images/favicon.gif">
+
+
+	<%-- CSS --%>
+<%--	<link rel="stylesheet" type="text/css" media="screen" href="~/css/JM.css" />--%>
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/main.css" />
+	<link rel="stylesheet" type="text/css" media="print"  href="~/css/main_print.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/dataentryforms.css" />
+	<link rel="stylesheet" type="text/css" media="print"  href="~/css/dataentryforms_print.css" />	
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/GridView_style.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/TrackingInfo_style.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/GridviewScroll.css" />
+<%--	<link rel="stylesheet" type="text/css" media="screen" href="~/App_Obout/Grid/custom_scripts/excel-style/excel-style.css" />--%>
+
+
+<%--	<link rel="stylesheet" type="text/css" media="screen" href="~/App_Obout/EasyMenu/Style/style.css" />--%>
+	<link rel="stylesheet" type="text/css" href="~/css/nrecopivottable.css" />
+
+<%--removed Oct 9 2017--%>
+<%--	<link rel="stylesheet" type="text/css" media="screen" href="~/css/jquery.timepicker.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/jquery.datepick.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/ui-flick.datepick.css" />--%>
+
+		<%--    Select2    see: https://select2.github.io/ --%>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"  />
+
+
+
+
+	<%--<link href="~/App_Obout/Grid/styles/premiere_blue/style.css" rel="Stylesheet" type="text/css" /> 
+	<link href="~/App_Obout/Grid/styles/black_glass/custom_style.css" rel="Stylesheet" type="text/css" /> 
+	<link href="~/App_Obout/Grid/styles/grand_gray/style.css" rel="Stylesheet" type="text/css" /> --%>
+
+
+<%--	<script type="text/javascript">
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date(); a = s.createElement(o),
+		m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-44485911-3', 'washington.edu');
+		ga('send', 'pageview');
+	</script>--%>
+
+<%--    Javascript libraries on the web:  jQuery, Highcharts--%>
+
+<%--	<script type="text/javascript" src="~/Scripts/jquery-3.1.1.js"></script>--%>
+
+
+<%--    were not in use--%>
+<%--	<script  type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>--%>
+<%--	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>--%>
+<%--	<script type="text/javascript" src="https://code.highcharts.com/stock/highstock.js"></script>--%>
+<%--	<script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>--%>
+
+
+<%--    <script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-1.9.0.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-ui.min.js"></script>--%>
+
+
+<%--    temp turned off JM sep 20 2017--%>
+	<%--<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js" ></script>    
+	<script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>--%>
+
+
+	<asp:ContentPlaceHolder id="headContent" runat="server"></asp:ContentPlaceHolder>
+
+
+</head>
+
+
+<body id="oBody" runat="server">
+
+
+<form id="oForm" runat="server">
+
+<div id="divHeader"><asp:PlaceHolder ID="placeholderMasterTitle" runat="server"></asp:PlaceHolder></div>
+<table style="border-spacing: 0px" id="tblBody"  class="tblBody">
+	<tr>
+		<td id="tdCurrentDate">
+			<asp:Label ID="lblDate" runat="server" ></asp:Label>
+
+			<%--DataSourceID="Sql_Studies"--%>
+			<asp:DropDownList ID="ddl_Master_SelectStudyID" runat="server"  ViewStateMode="Enabled" Width="200px" 
+				DataTextField="StudyName" DataValueField="studyID" 
+				 OnSelectedIndexChanged="ddl_Master_SelectStudyID_SelectedIndexChanged"  AutoPostBack="true"  BackColor="LightSteelBlue" >
+			</asp:DropDownList>
+			<asp:Label ID="lblCurrentlyViewing" runat="server" Text="Currently using: " Visible="true" ForeColor="Orange" Font-Size="9pt"  ></asp:Label>
+			<asp:Label ID="lblDefaultStudy" runat="server" Text="-1" Visible="true" ForeColor="Orange" Font-Bold="true" Font-Size="12pt"  ></asp:Label>
+			<asp:Label ID="lblMasterStudyID" runat="server" Text=" " Visible="true" ForeColor="#336699" ></asp:Label>
+			<asp:Label ID="lblMasterStudyIDfull" runat="server" Text=" " Visible="true" ForeColor="#336699" ></asp:Label>
+		</td>
+		<td style="background-color:#336699; text-align: center;">
+			<asp:HyperLink ID="hypDefault" runat="server" NavigateUrl="~/Default.aspx" Target="blank" ForeColor="Lime" Text="What's new"></asp:HyperLink> 
+		</td>
+		<td  style="background-color:#336699; vertical-align: top;">
+<%--			<asp:Button ID="btnManager_Show" runat="server" Visible="false" Text="Show Page Manager" BorderColor="SlateGray" TabIndex="0" BackColor="SteelBlue" Font-Size="8pt" OnClick="btnManager_Show_Click" />
+			<asp:Button ID="btnManager_Hide" runat="server" Visible="false" Text="Hide Page Manager" Font-Size="8pt" OnClick="btnManager_Hide_Click"/>--%>
+			<dx:ASPxRadioButtonList ID="rblMenuSelect" runat="server" RepeatDirection="Horizontal" RepeatColumns="2" RepeatLayout="Flow" Font-Size="8pt" ForeColor="Orange"  
+				Border-BorderStyle="None" Border-BorderWidth="0pt" Paddings-Padding="0" Paddings-PaddingTop="0" OnSelectedIndexChanged="rblMenuSelect_OnSelectedIndexChanged" AutoPostBack="true">
+				<Items>
+					<dx:ListEditItem Value="New menu" Selected="true" />
+					<dx:ListEditItem Value="Old menu" Selected="false" />
+				</Items>
+				<Border BorderStyle="None" BorderWidth="0pt" />
+			</dx:ASPxRadioButtonList>
+			
+		</td>
+		<td id="tdSessionInfo">
+			<asp:Label ID="lblCurrentUser_title" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Size="8pt"  ></asp:Label>
+			<asp:Label ID="lblCurrentUser" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Bold="true" Font-Size="8pt"  ></asp:Label>
+			<br />
+			<asp:Label ID="sqluser" runat="server" Text="" Visible="true" ForeColor="Yellow" Font-Size="9pt"  ></asp:Label>
+			
+<%--            You are currently logged in as: <span id="spnSessionInfo" runat="server" style="font-weight: bold;"></span>
+			&nbsp;&nbsp;<a id="oHelpLink" runat="server" class="whitetext" />--%>
+		</td>
+	</tr>
+</table>
+<asp:Panel ID="Panel_PageManager" runat="server" Visible="false">
+<table id="tblBody2" class="tblBody">
+	<tr>
+		<td id="tdRefdObjects" style="width: 500px">
+			<asp:Button ID="btnShowRedObj" runat="server" Visible="true" Text="Show Ref'd Objects" Font-Size="8pt" OnClick="btnShowRedObj_Click" />
+			<asp:Button ID="btnHideRedObj" runat="server" Visible="false" Text="Hide Ref'd Objects" Font-Size="8pt" OnClick="btnHideRedObj_Click" />
+			<asp:Label ID="lbl1" runat="server"></asp:Label>
+			<asp:GridView ID="gvRefdObj" runat="server" AutoGenerateColumns="true" Font-Size="8pt"></asp:GridView>
+		</td>
+		<td  id="tdRefdObjects2">
+			<asp:TextBox ID="txtObj" runat="server" Font-Size="XX-Small" Width="200px"></asp:TextBox><br />
+			<asp:Button ID="btnInsertObj" runat="server" text="Insert Obj" Font-Size="8pt" OnClick="btnInsertObj_Click" />
+		</td>
+		<td id="tdRefdObjects3"> 
+
+			<asp:Label ID="lblAssignedTo" runat="server" Text="Assigned To:" Font-Size="8pt" ></asp:Label>
+			<asp:TextBox ID="txtAssignedTo" runat="server" Font-Size="8pt" Width="80px"></asp:TextBox><br /><br />
+			
+			<asp:Label ID="lblTestingStatus" runat="server" Text="Testing Status:" Font-Size="8pt" ></asp:Label>       
+			<asp:TextBox ID="txtTestingStatus" runat="server" Font-Size="8pt" Width="120px"></asp:TextBox><br />
+			<asp:Button ID="btnSaveStatus" runat="server" Text="Save" Font-Size="8pt" OnClick="btnSaveStatus_Click" />            
+			
+		</td>
+	</tr>
+</table>
+</asp:Panel>
+
+<asp:Menu	ID="oMenu"
+			runat="server"
+			Orientation="Horizontal"
+			DynamicEnableDefaultPopOutImage="True"
+			StaticEnableDefaultPopOutImage="False"
+			CssClass="MenuBar"
+			StaticMenuItemStyle-CssClass="MenuItem"
+			StaticHoverStyle-CssClass="MenuItemHover"
+			DynamicMenuItemStyle-CssClass="SubMenuItem"
+			DynamicHoverStyle-CssClass="SubMenuItemHover"
+			RenderingMode="Table"
+			Visible="false">
+</asp:Menu>
+
+<dx:ASPxMenu ID="dxMenu" runat="server"  DataSourceID="ASPxSiteMapDataSource1"  EncodeHtml="False" AllowSelectItem="True" 
+	Orientation="Horizontal" BackColor="#a1b5cf" Width="100%" />
+	<dx:ASPxSiteMapDataSource ID="ASPxSiteMapDataSource1" runat="server"  />
+
+
+	<asp:Label ID="masterINFO" runat="server" Text="" ForeColor="Navy" BackColor="WhiteSmoke"></asp:Label>
+	<asp:Label ID="masterERROR" runat="server" Text="" ForeColor="Red" BackColor="WhiteSmoke"></asp:Label>
+	<asp:Button ID="masterDeleteOK" runat="server" Text="OK" BackColor="ForestGreen" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<asp:Button ID="masterDeleteCancel" runat="server" Text="Cancel" BackColor="Red" Visible="true" />
+
+<div id="divBody">
+	<asp:ContentPlaceHolder id="oBodyPlaceHolder" runat="server">
+
+	</asp:ContentPlaceHolder>
+</div>
+
+<%--COMMENTED OUT AUG2017 <br clear="all" />--%>
+	<div class="divFooter" id="divFooter">
+	&#169; Copyright 2004-<% =System.DateTime.Today.Year.ToString() %>, University of Washington Autism Center<br/>
+</div>
+
+
+<%--	<asp:SqlDataSource ID="Sql_Studies" runat="server" SelectCommandType="StoredProcedure"  
+	SelectCommand="spSEC_GetStudies_CanView_OR_Acess_by_User__Short__with_SelectStudy"  
+	ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
+   </asp:SqlDataSource>  --%>
+
+
+</form>
+
+
+
+<%-- JavaScript  (moved to body to avoid the following error: 
+	“The Controls collection cannot be modified because the control contains code blocks” --%>
+
+<%-- The dlcalendar.js script had a conflict with one of the jquery scripts --%>
+<%--<script src="<% =Request.ApplicationPath %>/js/dlcalendar.js" type="text/javascript"></script>--%>
+
+<%--    Added for GridViewScroll    see  http://gridviewscroll.aspcity.idv.tw/     --%>
+	
+<%--    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script> --%>
+
+<%--    <script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-1.9.0.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/gridviewScroll.min.js"></script>--%>
+<%--end GridViewScroll--%>
+
+	
+<%-- This method of referencing javascript files works both FOR PRODUCTION and for LOCALHOST --%>
+
+	<%--    Javascript code on the server  --%>
+
+
+<%--turned off Sep 20 2017--%>
+<%--	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/gridviewScroll.min.js"></script>--%> 
+<%--	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/BrowserWindowSize.js"></script>--%>
+
+<%--	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/Scripts/jquery-3.1.1.js"></script>--%>
+
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/ajax.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/main.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/dhtml.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/validation.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/dataentryforms.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/checkbox.js"></script>
+	
+
+
+
+
+<%--	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/Scripts/jquery-3.1.1.js"></script>--%>
+
+
+<%--removed Oct 9 2017--%>
+<%--	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/Datepair.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery.timepicker.min.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery.datepair.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery.plugin.js"></script>
+	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery.datepick.js"></script>--%>
+
+	<%--    Following tried to move to Head  Feb 22,2017  while working on Admin/studydesign.aspx  but got error: 
+		The Controls collection cannot be modified because the control contains code blocks --%>
+	<script type="text/javascript" src="<%= HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/obout_custom.js"></script>
+
+
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script> 
+
+
+
+</body>
+</html>

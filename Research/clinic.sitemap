@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0">
+  <siteMapNode url="" title="UWAC Clinic" description="UWAC Clinic">
+    <siteMapNode url="" title="Clinic" description="" menuitem="true" roles="Autism&#x20;Clinic&#x20;Operations&#x20;Group">
+      <siteMapNode url="~/Waitlist/waitlist_edit_2.aspx" title="Edit New or Existing Client Info" menuitem="true" />
+      <siteMapNode url="~/Waitlist/waitlist_reports.aspx" title="Clients by Site/Service/Status"  menuitem="true" />
+      <siteMapNode url="~/AC/CHDDrpt.aspx" title="CHDD annual rpt"  menuitem="true" />
+      <siteMapNode url="https://autism.washington.edu/Reports/" title="SQL Reports" description="" menuitem="true" />
+      <siteMapNode url="https://autism.washington.edu/contactlog/" title="Contact Log" description="I am useful text.  Don't Judge." menuitem="true" />
+      <siteMapNode url="google.com" title="Google"  menuitem="true" roles="u_uwautism_ops" />
+    </siteMapNode>
+    <siteMapNode url="" title="Research">
+      <siteMapNode url="https://uwac.autism.washington.edu/research/" title="Go Here For Research" description="" menuitem="true" />
+    </siteMapNode>
+
+
+    <siteMapNode url="" title="Help" description="" menuitem="true" >
+      <siteMapNode url="~/Default.aspx" title="Info about DB Upgrade" description="" menuitem="true" />
+    </siteMapNode>
+
+
+  </siteMapNode>
+</siteMap>

@@ -1,0 +1,46 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="PopUp.master.cs" Inherits="PopUp" %>
+<%@ Import Namespace="System.Configuration" %>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//w3c//dtd xhtml 1.0 strict//en" "http://www.w3.org/tr/xhtml1/dtd/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head id="oHead" runat="server">
+    <title id="oTitle" runat="server"></title>
+    <meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="expires" content="-1" />
+	<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/main.css" />
+	<link rel="stylesheet" type="text/css" media="print" href="~/css/main_print.css" />
+	<script type="text/javascript" src="<% = Request.ApplicationPath %>/js/main.js"></script>
+	<script type="text/javascript" src="<% = Request.ApplicationPath %>/js/ajax.js"></script>
+	<script type="text/javascript" src="<% = Request.ApplicationPath %>/js/dhtml.js"></script>
+	<script type="text/javascript" src="<% = Request.ApplicationPath %>/js/validation.js"></script>
+	<script type="text/javascript" src="<% = Request.ApplicationPath %>/js/dlcalendar.js"></script>
+</head>
+<body>
+<form id="oForm" runat="server">
+
+<%--<div id="divHeader">UW Autism Center Intranet</div>
+<table cellspacing="0" id="tblBody" class="tblBody">
+    <tr>
+        <td id="tdCurrentDate">
+            <script type="text/javascript">document.write(ReturnDate());</script>
+        </td>
+        <td id="tdSessionInfo">
+            You are currently logged in as: <span id="spnSessionInfo" runat="server" style="font-weight: bold;"></span>
+            &nbsp;&nbsp;<a id="oHelpLink" runat="server" />
+        </td>
+    </tr>
+</table>--%>
+
+<div id="divBody">
+<asp:ContentPlaceHolder id="oBodyPlaceHolder" runat="server">
+</asp:ContentPlaceHolder>
+</div>
+
+<%--<br clear="all" /><div class="divFooter" id="divFooter">
+	&#169; Copyright 2004-<% =System.DateTime.Today.Year.ToString() %>, University of Washington Autism Center<br/>
+</div>--%>
+</form>
+<script src="<% = Request.ApplicationPath %>/js/dlcalendar.js" type="text/javascript"></script>
+</body>
+</html>

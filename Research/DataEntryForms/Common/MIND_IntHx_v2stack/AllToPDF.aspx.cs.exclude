@@ -1,0 +1,274 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.Configuration;
+using System.Web.Services;
+using DotNet.Highcharts;
+using DotNet.Highcharts.Options;
+using DotNet.Highcharts.Helpers;
+using DotNet.Highcharts.Enums;
+using Newtonsoft.Json;
+using SelectPdf;
+using System.IO;
+using Svg;
+
+using RenderHighCharts.Entities;
+
+using uwac;
+
+public partial class DataEntryForms_Common_AllToPDF : System.Web.UI.Page
+{
+    public DataTable dt = new DataTable();
+    public string _sortDirection;
+    public string id;
+
+    //raise events on content page for the buttons on master page
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
+    }
+
+    //If the master page default study is changed, update the Measure DDL
+    protected void Master_Study_Changed(object sender, EventArgs e)
+    {
+        Response.Redirect("https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack.aspx");
+    }
+
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        //if (!IsPostBack)
+        //{
+        //    int n = Convert.ToInt16(txtN.Text);
+        //    LoadCharts(n);
+        //}
+
+        //if (hidSVG.Value != "")
+        //{
+
+        //    //var userComment = Request.Form["userInput"]; // Validated, throws error if input includes markup
+        //    //Request.Unvalidated("userInput"); // Validation bypassed
+
+        //    string unvld = Request.Unvalidated[hidSVG.Value];
+
+        //    lblInfo.Text = unvld;
+        //    lblInfo.ForeColor = Color.Lime;
+        //}
+
+        //if (IsPostBack)
+        //{
+            //if (ViewState["chartList"] != null)
+            //{
+            //    List<string> lst = ViewState["chartList"] as List<string>;
+            //    foreach (string s in lst)
+            //    {
+            //        lblInfo.Text += "<br/><br/>" + s;
+            //    }
+            //    lblInfo.ForeColor = Color.Red;
+            //}
+        //}
+    }
+
+    [WebMethod]
+    public static string[] done(List<string> ids)
+    {
+        String[] a = ids.ToArray();
+        return a;
+    }
+
+    public override void VerifyRenderingInServerForm(Control control)
+    {
+        /* Verifies that the control is rendered */
+    }
+
+    protected DataTable GetData(string id)
+    {
+        SQL_utils sql = new SQL_utils();
+
+        DataTable dt = sql.DataTable_from_SQLstring("select * from vwALL_MIND_IntHx_vers2_stacked_for_display  where ID = '" + id + "'");
+
+        return dt;
+
+    }
+
+
+    protected void PopulateChart(string id)
+    {
+        Literal lit = new Literal();
+        lit.Text = utilCharts.IntHx_by_wk(Master.Master_studyID, id, 500, 400);
+        panelChart.Controls.Add(lit);
+
+        HiddenField hid = new HiddenField();
+        hid.ID = "hid" + id;
+        panelChart.Controls.Add(hid);
+
+    }
+
+
+    protected string GetChartHTML(string id)
+    {
+        string s = utilCharts.IntHx_by_wk(Master.Master_studyID, id, 500, 400);
+        return (s);
+    }
+
+
+    protected void LoadCharts(int n)
+    {
+
+        panelChart.Controls.Clear();
+        List<string> chartList = new List<string>();
+        SQL_utils sql = new SQL_utils();
+        DataTable dt = sql.DataTable_from_SQLstring("select id from ALL_MIND_IntHx_vers2_STACKED " +
+            " where studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID = " + Master.Master_studyID.ToString() + ") group by id having count(*)>=1 order by id ");
+
+        int x = (n == 0) ? dt.Rows.Count : n;
+        string id;
+        //for(int i=0; i < dt.Rows.Count; i++)
+        for (int i = 0; i < x; i++)
+        {
+            id = dt.Rows[i].ItemArray[0].ToString();
+
+            //PopulateChart(id);
+            string s = GetChartHTML(id);
+
+            Literal lit = new Literal();
+            lit.Text = s;
+            panelChart.Controls.Add(lit);
+
+            HiddenField hid = new HiddenField();
+            hid.ID = "hid" + id;
+            panelChart.Controls.Add(hid);
+
+            //chartList.Add(s);
+            //hidSVG.Value += s;
+        }
+
+        //ViewState["chartList"] = chartList;
+
+    }
+
+
+    protected void btnLoadGraphs_Click(object sender, EventArgs e)
+    {
+        LoadCharts(3);
+    }
+
+    protected void loadSVG()
+    {
+
+        SQL_utils sql = new SQL_utils();
+        DataTable dt = sql.DataTable_from_SQLstring("select distinct(id) from ALL_MIND_IntHx_vers2_STACKED " +
+            " where studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID = " + Master.Master_studyID.ToString() + ") order by id ");
+
+        string id;
+        //for(int i=0; i < dt.Rows.Count; i++)
+        for (int i = 0; i < 4; i++)
+        {
+            id = dt.Rows[i].ItemArray[0].ToString();
+
+            string hid = "hid" + id;
+            string script = "GetChartSVG(" + id + ")";
+            ClientScript.RegisterClientScriptBlock(this.GetType(), "alertScript", script);
+
+        }
+
+    }
+
+    protected void btnLoadCharts_Click(object sender, EventArgs e)
+    {
+        int n = Convert.ToInt16(txtN.Text);
+        LoadCharts(n);
+    }
+
+    protected void btnPDF_Click(object sender, EventArgs e)
+    {
+        // first the SVG is loaded via the OnClientClick javascript;
+        IntHxCharts_to_pdf();
+
+
+        //List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();
+
+
+
+    }
+
+
+    protected void IntHxCharts_to_pdf()
+    {
+        bool startConversion = true;
+
+        if (startConversion)
+        {
+
+            SelectPdf.HtmlToPdfOptions opt = new HtmlToPdfOptions();
+
+            // get html of the page
+            TextWriter myWriter = new StringWriter();
+            HtmlTextWriter htmlWriter = new HtmlTextWriter(myWriter);
+
+
+            htmlWriter.Write("This page: " + System.IO.Path.GetFileName(HttpContext.Current.Request.Url.ToString()) + "<br/><br/>");
+
+
+            List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
+
+            for (int i = 0; i < list_svg.Count; i++ )
+                {
+                    if((i+1) % 6 ==0)
+                    {
+                        htmlWriter.Write("<div style=\"font-size: 12px; page-break-after: always\">New page</div>");
+                    }
+                    Server.HtmlDecode(list_svg[i], htmlWriter);
+                }
+
+            // instantiate a html to pdf converter object
+            HtmlToPdf converter = new HtmlToPdf();
+            converter.Options.MinPageLoadTime = 3;
+
+
+            // create a new pdf document converting the html string of the page
+            //SelectPdf.PdfDocument doc = converter.ConvertHtmlString(myWriter.ToString(), Request.Url.AbsoluteUri);
+            SelectPdf.PdfDocument doc = converter.ConvertHtmlString(myWriter.ToString());
+
+            //SelectPdf.PdfPage page = doc.AddPage();
+
+            //// create a new pdf font (component standard font)
+            //SelectPdf.PdfFont font1 = doc.AddFont(PdfStandardFont.Helvetica);
+            //font1.Size = 20;
+
+            //// create a new pdf font (system font)
+            //SelectPdf.PdfFont font2 = doc.AddFont(new System.Drawing.Font("Verdana", 15));
+
+            //// define a rendering result object
+            //PdfRenderingResult result;
+            
+            // save pdf document
+            doc.Save(Response, false, "AllIDs.pdf");
+            //doc.Save(HttpContext.Current.Response, false, "Sample2.pdf");
+
+            // close pdf document
+            doc.Close();
+
+            //Response.Write(pdfDoc);
+            Response.End();
+
+        }
+        else
+        {
+            //// render web page in browser
+            //base.Render(writer);
+        }
+    }
+
+
+
+
+
+}

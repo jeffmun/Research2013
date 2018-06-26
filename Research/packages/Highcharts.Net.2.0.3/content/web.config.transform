@@ -1,0 +1,9 @@
+<configuration>
+<system.web>
+<pages>
+  <controls>
+    <add tagPrefix="highcharts" namespace="Highcharts.UI" assembly="Highcharts"/>    
+   </controls>      
+</pages>    
+</system.web>
+</configuration>

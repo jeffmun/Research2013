@@ -1,0 +1,253 @@
+﻿<%@ Master Language="C#" Debug="true" AutoEventWireup="true" CodeFile="UWBudgetTool.master.cs" Inherits="UWAutism" %>
+<%@ Import Namespace="System.Configuration" %>
+<%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//w3c//dtd xhtml 1.0 strict//en" "http://www.w3.org/tr/xhtml1/dtd/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head id="oHead" runat="server">
+	<title id="oTitle" runat="server"></title>
+	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="cache-control" content="no-cache, must-revalidate" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+	<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+
+	<%-- CSS --%>
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/JM.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/main.css" />
+	<link rel="stylesheet" type="text/css" media="print"  href="~/css/main_print.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/dataentryforms.css" />
+	<link rel="stylesheet" type="text/css" media="print"  href="~/css/dataentryforms_print.css" />	
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/GridView_style.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/TrackingInfo_style.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/GridviewScroll.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/App_Obout/Grid/custom_scripts/excel-style/excel-style.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/App_Obout/EasyMenu/Style/style.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/nrecopivottable.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/jquery.timepicker.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/jquery.datepick.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/ui-flick.datepick.css" />
+
+
+	<style type="text/css">
+		tblBudgetToolBody {
+			 background-color:#e8e3d3;
+		}
+
+
+
+	/*BEGIN BODY TABLE STYLES*/
+table.tblBudgetToolBody
+{
+	padding: 0px;
+	border: 0px;
+	font-size:8pt;
+	width: 100%;
+}
+table.tblBudgetToolBody tr td
+{
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-left: 10px;
+	vertical-align: top;
+}
+table.tblBudgetToolBody tr td.selected
+{
+	color: #ffffff;
+	font-weight: bold;
+	background-color: #85754d;
+}
+table.tblBudgetToolBody tr th
+{
+	text-align: left;
+	padding-left: 0px;
+	vertical-align: top;
+	padding: 0px;
+	width: 175px;
+	background-color: #e8e3d3;
+}
+/*END BODY TABLE STYLES*/
+	</style>
+
+	<%--<link href="~/App_Obout/Grid/styles/premiere_blue/style.css" rel="Stylesheet" type="text/css" /> 
+	<link href="~/App_Obout/Grid/styles/black_glass/custom_style.css" rel="Stylesheet" type="text/css" /> 
+	<link href="~/App_Obout/Grid/styles/grand_gray/style.css" rel="Stylesheet" type="text/css" /> --%>
+
+
+	<script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date(); a = s.createElement(o),
+		m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-44485911-3', 'washington.edu');
+		ga('send', 'pageview');
+</script>
+
+
+
+
+
+<%--    Javascript libraries on the web:  jQuery, Highcharts--%>
+	<script src='https://code.jquery.com/jquery-latest.min.js' type='text/javascript'></script>    
+	<script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+<%--	<script type="text/javascript" src="https://code.highcharts.com/stock/highstock.js"></script>--%>
+	<script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<%--    Javascript code on the server  --%>
+	<script type="text/javascript" src="<%# Request.ApplicationPath %>/js/gridviewScroll.min.js"></script>
+
+
+<%--    <script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-1.9.0.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-ui.min.js"></script>--%>
+
+<%--    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>--%>
+
+
+	<%--    Select2    see: https://select2.github.io/--%>
+
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"  />
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<%--	<script type="text/javascript" src="~/Scripts/select2/select2.js"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="~/css/select2.css" />	--%>
+
+
+</head>
+<body id="oBody" runat="server">
+
+
+<form id="oForm" runat="server">
+
+<div id="divHeader" style="background-color:#4b2e83">UW Budget Tool</div>
+<table cellspacing="0" id="tblBody"  class="tblBudgetToolBody" >
+	<tr>
+		<td id="tdCurrentDate">
+			<asp:Label ID="lblDate" runat="server" ></asp:Label>
+
+			<%--DataSourceID="Sql_Studies"--%>
+			<%--<asp:DropDownList ID="ddl_Master_SelectStudyID" runat="server"  ViewStateMode="Enabled" Width="200px" 
+				DataTextField="StudyName" DataValueField="studyID" 
+				 OnSelectedIndexChanged="ddl_Master_SelectStudyID_SelectedIndexChanged"  AutoPostBack="true"  BackColor="LightSteelBlue" >
+			</asp:DropDownList>
+			<asp:Label ID="lblCurrentlyViewing" runat="server" Text="Currently using: " Visible="true" ForeColor="Orange" Font-Size="9pt"  ></asp:Label>
+			<asp:Label ID="lblDefaultStudy" runat="server" Text="-1" Visible="true" ForeColor="Orange" Font-Bold="true" Font-Size="9pt"  ></asp:Label>
+			<asp:Label ID="lblMasterStudyID" runat="server" Text=" " Visible="true" ForeColor="#3F75BA" ></asp:Label>
+			<asp:Label ID="lblMasterStudyIDfull" runat="server" Text=" " Visible="true" ForeColor="#3F75BA" ></asp:Label>--%>
+
+
+		</td>
+		<td  id="tdSessionInfo">
+			<%--<asp:Button ID="btnManager_Show" runat="server" Visible="true" Text="Show Page Manager" BorderColor="SlateGray" TabIndex="0" BackColor="SteelBlue" Font-Size="8pt" OnClick="btnManager_Show_Click" />
+			<asp:Button ID="btnManager_Hide" runat="server" Visible="false" Text="Hide Page Manager" Font-Size="8pt" OnClick="btnManager_Hide_Click"/><br />--%>
+
+		</td>
+		<td id="tdSessionInfo">
+			<asp:Label ID="lblSessionInfoA" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Size="8pt"  ></asp:Label>
+			<asp:Label ID="lblSessionInfo" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Bold="true" Font-Size="8pt"  ></asp:Label>
+			
+<%--            You are currently logged in as: <span id="spnSessionInfo" runat="server" style="font-weight: bold;"></span>
+			&nbsp;&nbsp;<a id="oHelpLink" runat="server" class="whitetext" />--%>
+		</td>
+	</tr>
+</table>
+
+
+<asp:Menu	ID="oMenu"
+			runat="server"
+			Orientation="Horizontal"
+			DynamicEnableDefaultPopOutImage="True"
+			StaticEnableDefaultPopOutImage="False"
+			CssClass="MenuBar"
+			StaticMenuItemStyle-CssClass="MenuItem"
+			StaticHoverStyle-CssClass="MenuItemHover"
+			DynamicMenuItemStyle-CssClass="SubMenuItem"
+			DynamicHoverStyle-CssClass="SubMenuItemHover"
+	RenderingMode="Table">
+</asp:Menu>
+
+	<asp:Label ID="masterINFO" runat="server" Text="" ForeColor="Navy" BackColor="WhiteSmoke"></asp:Label>
+	<asp:Label ID="masterERROR" runat="server" Text="" ForeColor="Red" BackColor="WhiteSmoke"></asp:Label>
+
+
+<div id="divBody">
+<asp:ContentPlaceHolder id="oBodyPlaceHolder" runat="server">
+</asp:ContentPlaceHolder>
+</div>
+
+<br clear="all" /><div class="divFooter" id="divFooter">
+	&#169; Copyright 2004-<% =System.DateTime.Today.Year.ToString() %>, University of Washington Autism Center<br/>
+</div>
+
+
+<%--	<asp:SqlDataSource ID="Sql_Studies" runat="server" SelectCommandType="StoredProcedure"  
+	SelectCommand="spSEC_GetStudies_CanView_OR_Acess_by_User__Short__with_SelectStudy"  
+	ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
+   </asp:SqlDataSource>  --%>
+
+
+</form>
+
+
+
+<%-- JavaScript  (moved to body to avoid the following error: 
+	“The Controls collection cannot be modified because the control contains code blocks” --%>
+
+<%-- The dlcalendar.js script had a conflict with one of the jquery scripts --%>
+<%--<script src="<% =Request.ApplicationPath %>/js/dlcalendar.js" type="text/javascript"></script>--%>
+
+<%--    Added for GridViewScroll    see  http://gridviewscroll.aspcity.idv.tw/     --%>
+	
+<%--    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script> --%>
+
+<%--    <script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-1.9.0.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/gridviewScroll.min.js"></script>--%>
+<%--end GridViewScroll--%>
+
+	
+<%--    FOR PRODUCTION--%>
+
+<%--	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/BrowserWindowSize.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/ajax.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/main.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/dhtml.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/validation.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/dataentryforms.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/checkbox.js"></script>
+
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery.timepicker.min.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/Datepair.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery.datepair.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery.plugin.js"></script>
+	<script type="text/javascript" src="<% =Request.ApplicationPath %>/js/jquery.datepick.js"></script>--%>
+
+
+
+<%--    FOR LOCAL DEVELOPMENT--%>
+	<script type="text/javascript" src="../../js/BrowserWindowSize.js"></script>
+	<script type="text/javascript" src="../../js/ajax.js"></script>
+	<script type="text/javascript" src="../../js/main.js"></script>
+	<script type="text/javascript" src="../../js/dhtml.js"></script>
+	<script type="text/javascript" src="../../js/validation.js"></script>
+	<script type="text/javascript" src="../../js/dataentryforms.js"></script>
+	<script type="text/javascript" src="../../js/checkbox.js"></script>
+
+	<script type="text/javascript" src="../../js/jquery.timepicker.min.js"></script>
+	<script type="text/javascript" src="../../js/Datepair.js"></script>
+	<script type="text/javascript" src="../../js/jquery.datepair.js"></script>
+	<script type="text/javascript" src="../../js/jquery.plugin.js"></script>
+	<script type="text/javascript" src="../../js/jquery.datepick.js"></script>
+	<script type="text/javascript" src="../../js/obout_custom.js"></script>
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script> 
+
+
+
+</body>
+</html>

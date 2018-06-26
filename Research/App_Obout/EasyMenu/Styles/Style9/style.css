@@ -1,0 +1,171 @@
+@media screen
+{
+	.easyMenu
+	{
+		border-bottom: 1px solid Gray;
+		border-right: 1px solid Gray;
+		background-color: #D2C8BD;
+	}
+	
+	.easyMenuItemContainer
+	{
+		border: 1px solid #979797;
+	}
+
+	.easyMenuItem
+	{
+		cursor: auto; cursor: pointer;
+		padding: 0px;
+	}
+	
+	.easyMenuItem a
+	{
+		cursor: auto; cursor: pointer;
+	}
+
+	.easyMenuItemIconCell
+	{
+	}
+
+	.easyMenuItemIconCell a
+	{
+	}
+
+	.easyMenuItemContentCell
+	{
+		font-family: Verdana;
+		font-size: 11px;
+		padding: 2px;
+		white-space: nowrap;
+	}
+
+	.easyMenuItemContentCell a
+	{
+		font-family: Verdana;
+		font-size: 11px;
+		white-space: nowrap;
+	}
+
+	.easyMenuItemOver
+	{
+		cursor: auto; cursor: pointer;
+		padding: 0px;
+	}
+	
+	.easyMenuItemOver a
+	{
+		cursor: auto; cursor: pointer;
+	}
+
+	.easyMenuItemIconCellOver
+	{
+	}
+
+	.easyMenuItemIconCellOver a
+	{
+	}
+
+	.easyMenuItemContentCellOver
+	{
+		font-family: Verdana;
+		font-size: 11px;
+		text-decoration: underline;
+		color: #BE1F38;
+		padding: 2px;
+		white-space: nowrap;
+	}
+
+	.easyMenuItemContentCellOver a
+	{
+		font-family: Verdana;
+		font-size: 11px;
+		text-decoration: underline;
+		color: #BE1F38;
+		white-space: nowrap;
+	}
+
+	.easyMenuSeparator
+	{
+	}
+	
+	.easyMenuSeparatorIconCell
+	{
+	}
+	
+	.easyMenuSeparatorContentCell
+	{
+	}
+
+	.easyMenuSeparatorOver
+	{
+	}
+
+	.easyMenuSeparatorIconCellOver
+	{
+	}
+	
+	.easyMenuSeparatorContentCellOver
+	{
+	}
+
+	.easyMenuItemSubMenuCell
+	{
+		width: 10px;
+		padding-top: 2px;
+		background-image: url(submenu.gif);
+		background-repeat: no-repeat;
+		background-position: 2px 4px;
+		font-family: Verdana;
+		font-size: 1px;
+		height:12px;
+	}
+	
+	.easyMenuItemSubMenuCellOver
+	{
+		width: 10px;
+		padding-top: 2px;
+		background-image: url(submenu.gif);
+		background-repeat: no-repeat;
+		background-position: 2px 4px;
+		font-family: Verdana;
+		font-size: 1px;
+		height:12px;
+	}
+
+	/* do not change these classes */
+	.menuContainerIframeUnderlay
+	{
+		border: 0px;
+		position : absolute; 
+		visibility : hidden; 
+		top : -2000px;
+		left : 0px; 
+		filter : "progid:DXImageTransform.Microsoft.Alpha(style=0,opacity=0)"; 
+		filter : "Alpha(Opacity='0')";
+		opacity : 0;
+		--moz-opacity : 0;
+
+		background-color: White;
+	}
+	#ob_em_mc
+	{
+		width: 100%;
+		height: 100%;
+		border-collapse: separate;
+		border-spacing: expression(cellSpacing=0);
+		border-spacing: 0px;
+	}
+	#ob_em_mc td
+	{
+		padding: 0px;
+	}
+	/* do not change these classes */
+}
+
+@media print
+{
+	.menuContainerIframeUnderlay
+	{
+		display: none;
+	}	
+}

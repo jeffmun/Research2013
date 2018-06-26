@@ -1,0 +1,149 @@
+﻿<%@ Page Language="c#"  validateRequest="false" Debug="true" MasterPageFile="~/UWAC.master" CodeFile="MIND_IntHx_v2stack_all.aspx.cs" AutoEventWireup="True" Inherits="DataEntryForms_Common_MIND_IntHx_v2stack"
+	 Title="IntHx v2 View Charts"   EnableEventValidation="false"  %>
+<%@ MasterType VirtualPath="~/UWAC.master" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
+
+	
+<asp:ScriptManager ID="ScriptManager1" runat="server" ></asp:ScriptManager>
+
+<script type="text/javascript" src="http://code.highcharts.com/modules/offline-exporting.js"></script>
+
+	<script type="text/javascript">
+
+			function mySVG()
+			{
+				var chartList = $("div[id^='chartraw']");
+
+				var allsvg = [];
+				for (var i = 0; i < chartList.length; i++) {                    
+					var cont = document.getElementById(chartList[i].id);
+					var chart = $("#" + chartList[i].id).highcharts();
+					var svg = chart.getSVG();
+					allsvg[i] = svg;
+				}
+
+				var theSVG = JSON.stringify(allsvg);
+				document.getElementById("<%= hidSVG.ClientID %>").value = theSVG;
+
+				return false;
+			}
+
+	</script>
+	<asp:HiddenField ID="hidSVG" runat="server" EnableViewState="true" />
+
+
+	<table>
+		<tr>
+			<td width ="400px">
+					<asp:Label ID="Label1" runat="server" Text="MIND Intervention History vers 2" Font-Bold="true" Font-Size="12"></asp:Label>
+			</td>
+			
+<%--            <td width="300px">
+				<asp:LinkButton ID="LinkButton1" runat="server" PostBackUrl="https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/WeeksGTE40.aspx">View List of ID's with weeks >= 40 hrs</asp:LinkButton>
+			</td>
+			<td>
+				<asp:HyperLink ID="HyperLink1" runat="server" Target="_blank" NavigateUrl="https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/IntHxCat.aspx" Text="IntHx Categories"></asp:HyperLink>
+			</td>
+			<td width="30px"></td>
+			<td>
+				<asp:HyperLink ID="HyperLink2" runat="server" Target="_blank" NavigateUrl="https://uwac.autism.washington.edu/research/stats/GetIntHxData.aspx" Text="Download IntHx Data"></asp:HyperLink>
+			</td>--%>
+
+		</tr>
+		<tr>
+			<td>
+					<asp:Label ID="lblStudy" runat="server" Text="" Font-Bold="true" Font-Size="16"></asp:Label>
+			</td>
+		</tr>
+	</table>
+	<br /><br />
+
+
+	<asp:Label ID="Label7" runat="server" Text=""></asp:Label>
+
+	<asp:Label ID="lblInfo" runat="server" Text=""></asp:Label>
+
+
+	<asp:Label ID="Label2" runat="server" Text="This page will dynamically load plots for all intervention history data in this study.<br/>Be patient, loading may take a while. Once loaded, these graphs can be saved to a PDF file."></asp:Label><br />
+	<br />
+	<asp:Button ID="btnLoad" runat="server" Text="Load Charts" OnClick="btnLoad_Click" />
+
+<%--    <asp:Label ID="lbl1" runat="server" Text="From subject:"></asp:Label>
+	<asp:TextBox ID="txt1" runat="server" Text="1" Width="70px"></asp:TextBox>
+	<asp:Label ID="lbl2" runat="server" Text="  To:"></asp:Label>
+	<asp:TextBox ID="txt2" runat="server" Text="10" Width="70px" ></asp:TextBox>--%>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<asp:Button ID="btnPDF" runat="server" Text="Save to PDF"  OnClientClick="mySVG()" OnClick="btnPDF_Click" Visible="false" />
+
+
+	
+	<asp:Panel ID="panelLegend" runat="server" >
+	<asp:Label ID="lblTitle" runat="server" Text ="Legend for IntHx Categories" Font-Bold="true" Font-Underline="true" Font-Size="Medium" ></asp:Label>		
+	<br /><br />
+	<table>
+		<tr>
+			<td style="vertical-align:top">
+			<%--<obout:Grid ID="GridTxCat" runat="server" DataSourceID="sqlTxCat" AutoGenerateColumns="true"   
+				AllowEdit="false"   OnRowDataBound="GridTxCat_RowDataBound" 
+				AllowPaging="false"  FolderStyle="~/App_Obout/Grid/styles/premiere_blue" PageSize="-1" Width="500px" >
+				<Columns>
+				</Columns>
+			</obout:Grid>--%>
+
+				<asp:GridView ID="gv1" runat="server" DataSourceID="sqlTxCat" AutoGenerateColumns="false">
+					<Columns>
+						<asp:BoundField DataField="txcatID" HeaderText="txcatID" />
+						<asp:TemplateField HeaderText="color">
+							<ItemTemplate>
+								<asp:Label ID="lbl1" runat="server"  Text="_____" BackColor="Yellow" ></asp:Label>
+							</ItemTemplate>
+						</asp:TemplateField>						<asp:BoundField DataField="txcat" HeaderText="txcat" />
+
+					</Columns>
+				</asp:GridView>
+
+<%--								<asp:Label ID="lbl1" runat="server"  Text="_____" BackColor='<%# System.Drawing.ColorTranslator.FromHtml(@"#" + Eval("txcatcolor")) %>' ></asp:Label>--%>
+
+			</td>
+			<td width="50"></td>
+			<td style="vertical-align:top">
+
+
+				
+				<asp:GridView ID="gv2" runat="server" DataSourceID="sqlTxType" AutoGenerateColumns="false">
+					<Columns>
+						<asp:BoundField DataField="txtypeID" HeaderText="txtypeID" />
+						<asp:TemplateField HeaderText="color">
+							<ItemTemplate>
+								<asp:Label ID="lbl1" runat="server" Text="_____" BackColor="Purple"  ></asp:Label>
+							</ItemTemplate>
+						</asp:TemplateField>						<asp:BoundField DataField="txtype" HeaderText="txtype" />
+						<asp:BoundField DataField="txcat" HeaderText="txcat" />
+
+					</Columns>
+				</asp:GridView>
+			</td>
+		</tr>
+	</table>
+
+	</asp:Panel>
+
+<%--    BackColor='<%# System.Drawing.ColorTranslator.FromHtml(@"#" + Eval("txtypecolor")) %>'--%>
+
+  <br /><br />
+	<br />
+	 <asp:Panel ID="panelChart" runat="server"></asp:Panel>
+
+
+	<asp:SqlDataSource ID="sqlTxCat" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
+		SelectCommand="select * from const_MIND_IntHXv2_TxCat">
+	</asp:SqlDataSource>
+
+	<asp:SqlDataSource ID="sqlTxType" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
+		SelectCommand="select a.txtypeID, txtype, txcat, txtypecolor 
+						from const_MIND_IntHXv2_TxType a join const_MIND_IntHXv2_TxCat b ON a.txcatID = b.txcatID
+						order by txcat, txtypeID">
+	</asp:SqlDataSource>
+
+</asp:Content>

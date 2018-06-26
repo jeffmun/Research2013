@@ -1,0 +1,142 @@
+<%@ Register TagPrefix="def" Namespace="DataEntryFramework.Old" %>
+<%@ Page language="c#" Codebehind="eds_catc.aspx.cs" AutoEventWireup="false" Inherits="eds_catc.WebForm1" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<HTML>
+	<HEAD>
+		<title>WebForm1</title>
+		<meta content="Microsoft Visual Studio .NET 7.1" name="GENERATOR">
+		<meta content="C#" name="CODE_LANGUAGE">
+		<meta content="JavaScript" name="vs_defaultClientScript">
+		<meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema">
+	</HEAD>
+	<body>
+		<form id="Form1" method="post" runat="server">
+			<def:dataentrycontroller id="DataEntryController1" runat="server" PrimaryKeyField="catckey" LookupField2="indexnum"
+				LookupField1="edsid" LookupTextBox1LabelText="EDS ID:" LookupTextBox2LabelText="Index Number:" LookupTextBox2Visible="True"></def:dataentrycontroller><br>
+			<TABLE id="table_insert" style="WIDTH: 691px; POSITION: static; HEIGHT: 116px" cellSpacing="1"
+				cellPadding="1" width="691" border="0">
+				<TR>
+					<TD style="WIDTH: 234px"><def:datafieldcontrol id="edsid" runat="server" IsInsertValueRequired="True" IsInsertField="True" FieldLabelText="EDS ID:"
+							DatabaseField="edsid" FieldTextBoxTabIndex="1"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="indexnum" runat="server" IsInsertValueRequired="True" IsInsertField="True" FieldLabelText="Index Number:"
+							DatabaseField="indexnum" FieldTextBoxTabIndex="2" IsDate="False" IsEntryField="False"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="timepoint" runat="server" IsInsertField="True" FieldLabelText="timepoint:" DatabaseField="timepoint"
+							FieldTextBoxTabIndex="3" IsEntryField="True" IsDoubleEntryField="True" FieldDataType="TEXT" ValidList="PRE1A, PRE1B, T1, T2, T3"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 234px"><def:datafieldcontrol id="catcclin" runat="server" IsInsertValueRequired="True" IsInsertField="True" FieldLabelText="clinician:"
+							DatabaseField="catcclin" FieldTextBoxTabIndex="4" IsEntryField="True" IsDoubleEntryField="True" FieldDataType="TEXT" IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="catcdate" runat="server" IsInsertValueRequired="True" IsInsertField="True" FieldLabelText="Date Administered:"
+							DatabaseField="catcdate" FieldTextBoxTabIndex="5" IsDate="True" IsEntryField="True" IsDoubleEntryField="True"
+							FieldDataType="DATE" IsEntryValueRequired="True" MinVal="1/1/1999" FormatString="{0:d}"></def:datafieldcontrol></TD>
+					<TD></TD>
+				</TR>
+			</TABLE>
+			<TABLE id="table_main_controls" style="Z-INDEX: 109; LEFT: 56px; WIDTH: 832px; POSITION: static; TOP: 272px; HEIGHT: 359px"
+				cellSpacing="1" cellPadding="1" width="832" border="0">
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="catc01cu" runat="server" FieldLabelText="1. Circumscribed Interests (current):"
+							DatabaseField="catc01cu" FieldTextBoxTabIndex="6" IsEntryField="True" IsDoubleEntryField="True" FieldDataType="FLOAT" ValidList="0, .5, 1, 2, 3, 8,9"
+							IsEntryValueRequired="True" Visible="False"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl10" runat="server" FieldLabelText="6. Unusual Sensory Interests (current):"
+							DatabaseField="catc06cu" FieldTextBoxTabIndex="16" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="catc01ev" runat="server" FieldLabelText="1. Circumscribed Interests (ever):"
+							DatabaseField="catc01ev" FieldTextBoxTabIndex="7" IsEntryField="True" IsDoubleEntryField="True" FieldDataType="FLOAT" ValidList="0, .5, 1, 2, 3, 8,  9"
+							IsEntryValueRequired="True" Visible="False"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl14" runat="server" FieldLabelText="6. Unusual Sensory Interests (ever):"
+							DatabaseField="catc06ev" FieldTextBoxTabIndex="17" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl1" runat="server" FieldLabelText="2. Unusual Preoccupations (current):"
+							DatabaseField="catc02cu" FieldTextBoxTabIndex="8" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,8,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl11" runat="server" FieldLabelText="7. Hand and Finger Mannerisms (current):"
+							DatabaseField="catc07cu" FieldTextBoxTabIndex="18" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl2" runat="server" FieldLabelText="2. Unusual Preoccupations (ever):"
+							DatabaseField="catc02ev" FieldTextBoxTabIndex="9" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,8,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl15" runat="server" FieldLabelText="7. Hand and Finger Mannerisms (ever):"
+							DatabaseField="catc07ev" FieldTextBoxTabIndex="19" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl3" runat="server" FieldLabelText="3. Repetitive Use (current):"
+							DatabaseField="catc03cu" FieldTextBoxTabIndex="10" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,7,8,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl12" runat="server" FieldLabelText="8. Other Mannerisms (current):"
+							DatabaseField="catc08cu" FieldTextBoxTabIndex="20" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl4" runat="server" FieldLabelText="3. Repetitive Use (ever):"
+							DatabaseField="catc03ev" FieldTextBoxTabIndex="11" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,7,8,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl9" runat="server" FieldLabelText="8. Other Mannerisms (ever):"
+							DatabaseField="catc08ev" FieldTextBoxTabIndex="21" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl5" runat="server" FieldLabelText="4. Difficulties (current):"
+							DatabaseField="catc04cu" FieldTextBoxTabIndex="12" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl18" runat="server" FieldLabelText="9. Excessively Active:" DatabaseField="catc10"
+							FieldTextBoxTabIndex="22" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3" IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl6" runat="server" FieldLabelText="4. Difficulties (ever):" DatabaseField="catc04ev"
+							FieldTextBoxTabIndex="13" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9" IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl17" runat="server" FieldLabelText="10. Injures Self on Purpose:"
+							DatabaseField="catc11" FieldTextBoxTabIndex="23" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl7" runat="server" FieldLabelText="5. Compulsions (current):"
+							DatabaseField="catc05cu" FieldTextBoxTabIndex="14" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl13" runat="server" FieldLabelText="11. Aggresive to Adults:"
+							DatabaseField="catc12" FieldTextBoxTabIndex="24" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD style="WIDTH: 435px"><def:datafieldcontrol id="DataFieldControl8" runat="server" FieldLabelText="5. Compulsions (ever):" DatabaseField="catc05ev"
+							FieldTextBoxTabIndex="15" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3,9" IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+					<TD><def:datafieldcontrol id="DataFieldControl19" runat="server" FieldLabelText="12. Aggresive to Other Children:"
+							DatabaseField="catc13" FieldTextBoxTabIndex="25" IsEntryField="True" IsDoubleEntryField="True" ValidList="0,1,2,3"
+							IsEntryValueRequired="True"></def:datafieldcontrol></TD>
+				</TR>
+			</TABLE>
+			<def:datafieldcontrol id="catccmt" runat="server" FieldLabelText="comment:" DatabaseField="catccmt" FieldTextBoxTabIndex="26"
+				IsEntryField="True" FieldDataType="TEXT" FieldTextBoxTextMode="MultiLine" FieldTextBoxWidth="200px"
+				FieldTextBoxHeight="80px" Width="384px"></def:datafieldcontrol>
+			<TABLE id="table_read_only" style="Z-INDEX: 110; LEFT: 56px; POSITION: static; TOP: 752px"
+				cellSpacing="1" cellPadding="1" width="300" border="0">
+				<TR>
+					<TD><def:datafieldcontrol id="catckey" runat="server" FieldLabelText="catckey:" DatabaseField="catckey" IsReadOnly="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD><def:datafieldcontrol id="createdby" runat="server" FieldLabelText="Created By:" DatabaseField="createdby"
+							FieldDataType="TEXT" IsReadOnly="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD><def:datafieldcontrol id="created" runat="server" FieldLabelText="Created Date:" DatabaseField="created"
+							FieldDataType="DATE" IsReadOnly="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD><def:datafieldcontrol id="updatedby" runat="server" FieldLabelText="Last Updated By:" DatabaseField="updatedby"
+							FieldDataType="TEXT" IsReadOnly="True"></def:datafieldcontrol></TD>
+				</TR>
+				<TR>
+					<TD><def:datafieldcontrol id="updated" runat="server" FieldLabelText="Update Date:" DatabaseField="updated"
+							FieldDataType="DATE" IsReadOnly="True"></def:datafieldcontrol></TD>
+				</TR>
+			</TABLE>
+		</form>
+	</body>
+</HTML>

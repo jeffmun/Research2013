@@ -1,0 +1,155 @@
+a:link{
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+a:hover{
+    color: #ff0000;
+    text-decoration: none;
+}
+
+a:active{
+    color: #ff0000;
+    text-decoration: underline;
+}
+
+a.tree{
+	color: #000000;
+	text-decoration: none;
+}
+a.tree:hover{
+	color: #000000;
+	background-color: #cccccc;
+	text-decoration: underline;
+}
+a.tree:active{
+	color: #000000;
+	background-color: #aaaaaa;
+	text-decoration: underline;
+}
+
+body{
+    width: 90%;
+    margin-left: 25px;
+    margin-right: 25px;
+    margin-top: 25px;
+    font-family: arial;
+}
+
+body.tree{
+    width: 100%;
+    font-size: 8pt;
+    margin-top: 0px;
+    background-color: #eeeeee;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: 0px;
+}
+div.Main{
+    padding-left: 5px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+div.Survey{
+    padding-left: 12px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+div.Page{
+    padding-left: 12px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+div.Question{
+    padding-left: 12px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+div.Answer{
+    padding-left: 12px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+
+h1{
+    font-weight: bold;
+    font-size: 16pt;
+    text-align: center;
+}
+
+h2{
+    font-weight: bold;
+}
+
+img{
+    border: 0px;
+}
+
+img.tree{
+	background-color: #cccccc;
+}
+
+label
+{
+	font-weight: bold;
+}
+
+table.main{
+    width: 100%;
+    margin-left:auto;
+    margin-right:auto;
+    border-left: solid 1px #cccccc;
+    border-top: solid 1px #cccccc;
+}
+
+table.main tr td{
+    padding: 10px;
+    text-align: left;
+    border-right: solid 1px #cccccc;
+    border-bottom: solid 1px #cccccc;
+}
+table.main tr th{
+    font-size: 14pt;
+    font-weight: bold;
+    text-align: left;
+    padding-bottom: 10px;
+    border-right: solid 1px #cccccc;
+    border-bottom: solid 1px #cccccc;
+}
+
+table.edit{
+    width: 100%;
+    margin-left:auto;
+    margin-right:auto;
+    border-left: solid 1px #cccccc;
+    border-top: solid 1px #cccccc;
+
+}
+table.edit tr td{
+    padding: 5px;
+    text-align: left;
+    vertical-align: top;
+    border-right: solid 1px #cccccc;
+    border-bottom: solid 1px #cccccc;
+}
+table.edit tr th{
+    padding: 5px;
+    font-size: 10pt;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: top;
+    padding-bottom: 10px;
+    border-right: solid 1px #cccccc;
+    border-bottom: solid 1px #cccccc;
+    background: #eeeeee;
+}
+
+.smallText{
+    font-size: 8pt;
+    font-style: italic;
+}
+
+.redText
+{
+	color: #ff0000;
+}

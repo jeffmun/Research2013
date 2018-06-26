@@ -1,0 +1,92 @@
+﻿.gvBlack
+{
+  color:Black;
+  border-color:Gray;
+}
+.gvGray
+{
+  color:Gray;
+  border-color:Gray;
+}
+.gvDkRed
+{
+  color:Maroon;
+    border-color:Gray;
+}
+.gvRed
+{
+  color:Red;
+    border-color:Gray;
+}
+.gvBlue
+{
+  color:Blue;
+  border-color:Gray;
+}
+.gvPurple
+{
+  color:Purple;
+  border-color:Gray;
+}
+
+.gvNavy
+{
+  color:Navy;
+  border-color:Gray;
+}
+
+.gvGreen
+{
+  color:Green;
+  border-color:Gray;
+}
+.gvSkyblue
+{
+  color:skyblue;
+  border-color:Gray;
+}
+.gvLime
+{
+  color:Lime;
+  border-color:Gray;
+}
+.gvRoyalBlue
+{
+  color:royalblue;
+  border-color:Gray;
+}
+.gvTeal
+{
+  color:Teal;
+  border-color:Gray;
+}
+.gvBlueViolet
+{
+  color:BlueViolet;
+  border-color:Gray;
+}
+.gvOrange
+{
+  color:Orange;
+  border-color:Gray;
+}
+
+/* FOR LINKS */
+.gvBlue a
+{
+  color:Blue;
+  border-color:Gray;
+}
+
+
+
+
+/* with BOLD */
+
+.gvBoldBlack
+{
+  color:Black;
+  border-color:Gray;
+  font-weight:bold;
+}
+

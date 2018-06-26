@@ -1,0 +1,253 @@
+body
+{
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	background: #ffffff;
+	color: black;   
+	font-size: 8pt;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+
+
+.boldsmalllabel
+{
+	font-weight: bold;
+	font-size: 8pt;
+}
+
+.ctrllookuptextboxlabel
+{
+	font-size: 8pt;
+	width: 100px;
+	color: black;
+}
+
+.ctrlstatelabel
+{
+	font-weight: bold;
+	font-size: 12pt;
+	color: black;
+}
+
+.ctrlnotificationlabel
+{
+	font-size: 8pt;
+	color: red;
+}
+
+
+.ctrllookuptextbox
+{
+	font-size: 8pt;
+	width: 100px;
+	color: black;
+}
+
+.fieldlabel
+{
+	font-weight: normal;
+	font-size: 8pt;
+	width: 200px;
+	color: black;
+}
+
+
+.boldfieldlabel
+{
+	font-weight: bold;
+	font-size: 8pt;
+	width: 200px;
+	color: black;
+}
+
+.fielderrorlabel
+{
+	font-size: 8pt;
+	color: red;
+	width: 200px;
+
+}
+
+
+.fieldoverridecheckbox
+{
+	font-size: 8pt;
+	color: black;
+}
+
+.fieldtextbox
+{
+	font-size: 8pt;
+	color: black;
+}
+
+
+
+.selectedfieldtextbox
+{
+	font-size: 8pt;
+	color: black;
+	background-color: #ffff66;
+	border-width: 2px;
+}
+
+table td TD280
+{
+	width: 280px;
+}
+
+.valuesetlabelStyle
+{
+	font-size: 7pt;
+	color: Blue;
+	background-color: #FFFFFF;
+	border-width: 1px;
+	width: 250px;
+}
+
+
+/* Default style for <DIV> tag around each data entry field */
+div.dataentryfield table tr td
+{
+	border-style:none;
+	padding: 0px;
+	
+}
+
+div.dataentryfield input
+{
+	/* border:solid 1px black */
+}
+
+div.dataentryfield textarea
+{
+	/* border:solid 1px black; */
+	
+
+}
+
+
+/* styles for a layout table with no grid lines */
+table.layout
+{
+	border-style:none;
+	border-collapse: collapse;
+}
+
+table.layout tr td
+{
+	font-weight: normal;
+	font-size: 8pt;
+	border-style:none;
+	padding: 2px;
+
+}
+
+
+/* styles for a layout table with visible grid lines */
+table.grid
+{
+	border:solid 1px black;
+	border-collapse: collapse;
+
+}
+
+table.grid tr td
+{
+	font-weight: normal;
+	font-size: 8pt;
+	border:solid 1px black;
+	padding: 2px;
+	
+}
+
+
+table.grid tr td.heading
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+}
+
+
+input
+{
+    font-size: 10pt;
+    font-family: Verdana,Helvetica,Arial,sans-serif;
+}
+
+input.disabled
+{
+	background-color: #cccccc;
+}
+
+table.tblController
+{
+	padding: 0px;
+    background: #efefef;
+}
+
+table.tblController tr 
+{
+	padding: 0px;
+}
+
+
+table.tblController tr td
+{
+	padding: 0px;
+}
+
+
+div.divDataEntryFields table tr td
+{
+	padding: 0px;
+}
+
+
+/* New styles for tx actions page */
+table.txMainTable
+{
+	border:solid 1px black;
+	border-collapse: collapse;
+	width: 600px
+
+}
+
+table.txMainTable tr td
+{
+	font-weight: normal;
+	font-size: 6pt;
+	border:solid 1px black;
+	padding: 2px;
+	
+}
+
+
+table.txMainTable tr td.heading
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+}
+
+table.txMainTable tr th
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+	font-size: 10pt;
+}
+
+table.txMainTable tr td.majorheading
+{
+	font-weight: bold;
+	font-size: 8pt;
+}
+
+table.txMainTable tr td.minorheading
+{
+	font-weight: bold;
+	font-size: 6pt;
+	color: black;
+	background-color: gainsboro;
+}

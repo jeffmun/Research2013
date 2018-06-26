@@ -1,0 +1,1147 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NReco.PivotData.Extensions</name>
+    </assembly>
+    <members>
+        <member name="T:NReco.PivotData.CubeKeywordFilter">
+            <summary>
+            Implements cube filter by list of keywords.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.DifferencePivotTable">
+            <summary>
+            Pivot table wrapper that calculates difference between values (by row or column).
+            </summary>
+            <remarks>
+            Use this class to calculate difference values. 
+            It is possible to specify which measure(s) should be calculated as percents if pivot table has several measures.
+            <example>
+            <code>
+            PivotTable originalPvtTbl;
+            var diffPvtTbl = new DifferencePivotTable(originalPvtTbl, DifferencePivotTable.DifferenceMode.PreviousColumn);
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="P:NReco.PivotData.DifferencePivotTable.Percentage">
+            <summary>
+            Flag which indicates whether difference should be presented as percentage (false by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.DifferencePivotTable.RoundDigits">
+            <summary>
+            Number of fractional digits in the percentage values.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.DifferencePivotTable.#ctor(NReco.PivotData.IPivotTable,NReco.PivotData.DifferencePivotTable.DifferenceMode)">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.DifferencePivotTable"/> instance by specified <see cref="T:NReco.PivotData.IPivotTable"/> and percentage mode.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.DifferencePivotTable.#ctor(NReco.PivotData.IPivotTable,NReco.PivotData.DifferencePivotTable.DifferenceMode,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.PercentagePivotTable"/> instance by specified <see cref="T:NReco.PivotData.IPivotTable"/>, percentage mode and measure index.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.DifferencePivotTable.DifferenceMode">
+            <summary>
+            Specifies the mode of a difference calculation.
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.DifferencePivotTable.DifferenceMode.PreviousRow">
+            <summary>
+            Difference from previous row value.
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.DifferencePivotTable.DifferenceMode.NextRow">
+            <summary>
+            Difference from next row value.
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.DifferencePivotTable.DifferenceMode.PreviousColumn">
+            <summary>
+            Difference from previous column value.
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.DifferencePivotTable.DifferenceMode.NextColumn">
+            <summary>
+            Difference from next column value.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.FixedPivotData">
+            <summary>
+            Fixed-size implementation of <see cref="T:NReco.PivotData.IPivotData"/> that provides memory-efficient read-only access to the <see cref="T:NReco.PivotData.PivotDataState"/>.
+            </summary>
+            <remarks>
+            <see cref="T:NReco.PivotData.FixedPivotData"/> was specially designed for querying large cubes with minimal memory consuption and initialization time.
+            Typical slicing operation that iterates through all cube values with <see cref="M:NReco.PivotData.FixedPivotData.GetEnumerator"/> is performed with
+            minimal possible memory consuption and almost fast as <see cref="T:NReco.PivotData.PivotData"/>. 
+            On the first indexer access dictionary-based indexes are initialized (this may take up to several seconds for really big cubes)
+            and after that individual values are also returned fast.  
+            </remarks>
+        </member>
+        <member name="M:NReco.PivotData.FixedPivotData.#ctor(System.String[],NReco.PivotData.IAggregatorFactory,NReco.PivotData.PivotDataState)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NReco.PivotData.FixedPivotData"/> with specified configuration and data from <see cref="T:NReco.PivotData.PivotDataState"/>.
+            </summary>
+            <param name="dimensions">array of dimensions</param>
+            <param name="aggregator">aggregator factory</param>
+            <param name="pvtState">data that should be accessed</param>
+        </member>
+        <member name="T:NReco.PivotData.IPivotDataSource">
+            <summary>
+            Represents a component that provides input data for <see cref="M:NReco.PivotData.PivotData.ProcessData(System.Collections.Generic.IEnumerable{System.Collections.Generic.IDictionary{System.String,System.Object}})"/> method.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.IPivotDataSource.ReadData(System.Action{System.Collections.IEnumerable,System.Func{System.Object,System.String,System.Object}})">
+            <summary>
+            Read data and provide it as <see cref="T:System.Collections.IEnumerable"/> and access handler for specified callback.
+            </summary>
+            <param name="handler">data callback handler</param>
+        </member>
+        <member name="T:NReco.PivotData.PaginatePivotTable">
+            <summary>
+            Pivot table wrapper for rows and columns pagination.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.PrevNextValueText">
+            <summary>
+            Get or set placeholder value for pager prev/next groups.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.IncludePrevNextGroups">
+            <summary>
+            Include special prev/next groups into pivot table.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PaginatePivotTable.#ctor(NReco.PivotData.IPivotTable,NReco.PivotData.PaginatePivotTable.Page,NReco.PivotData.PaginatePivotTable.Page)">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.PaginatePivotTable"/> instance.
+            </summary>
+            <param name="pivotTable">underlying pivot table</param>
+            <param name="rowPage">page segment for rows</param>
+            <param name="columnPage">page segment for columns</param>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.Columns">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.Columns"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.Rows">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.Rows"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.ColumnKeys">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.ColumnKeys"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.RowKeys">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.RowKeys"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PaginatePivotTable.PivotData">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.PivotData"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PaginatePivotTable.GetValue(NReco.PivotData.ValueKey,NReco.PivotData.ValueKey)">
+            <summary>
+            <see cref="M:NReco.PivotData.IPivotTable.GetValue(NReco.PivotData.ValueKey,NReco.PivotData.ValueKey)"/>
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PaginatePivotTable.Page">
+            <summary>
+            Represents table segment (offset and limit).
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PercentagePivotTable">
+            <summary>
+            Pivot table wrapper that calculates percentage values (by grand total, row or column totals).
+            </summary>
+            <remarks>
+            Use this class to calculate pivot table percentage values. 
+            It is possible to specify which measure(s) should be calculated as percents if pivot table has several measures.
+            <example>
+            <code>
+            PivotTable originalPvtTbl;
+            var percentPvtTbl = new PercentagePivotTable(originalPvtTbl, PercentagePivotTable.PercentageMode.ColumnTotal);
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="P:NReco.PivotData.PercentagePivotTable.RoundDigits">
+            <summary>
+            Number of fractional digits in the percentage values.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PercentagePivotTable.#ctor(NReco.PivotData.IPivotTable,NReco.PivotData.PercentagePivotTable.PercentageMode)">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.PercentagePivotTable"/> instance by specified <see cref="T:NReco.PivotData.IPivotTable"/> and percentage mode.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PercentagePivotTable.#ctor(NReco.PivotData.IPivotTable,NReco.PivotData.PercentagePivotTable.PercentageMode,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.PercentagePivotTable"/> instance by specified <see cref="T:NReco.PivotData.IPivotTable"/>, percentage mode and measure index.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PercentagePivotTable.#ctor(NReco.PivotData.IPivotTable,NReco.PivotData.PercentagePivotTable.PercentageMode,System.Int32[])">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.PercentagePivotTable"/> instance by specified <see cref="T:NReco.PivotData.IPivotTable"/>, percentage mode and measure indexes.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PercentagePivotTable.PercentageMode">
+            <summary>
+            Specifies the mode of a percentage calculation.
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.PercentagePivotTable.PercentageMode.GrandTotal">
+            <summary>
+            % of grand total
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.PercentagePivotTable.PercentageMode.RowTotal">
+            <summary>
+            % of row 
+            </summary>
+        </member>
+        <member name="F:NReco.PivotData.PercentagePivotTable.PercentageMode.ColumnTotal">
+            <summary>
+            % of column
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PivotDataConfiguration">
+            <summary>
+            Represents configuration used for constructing <see cref="T:NReco.PivotData.PivotData"/> by <see cref="T:NReco.PivotData.PivotDataFactory"/>.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotDataConfiguration.Dimensions">
+            <summary>
+            List of dimensions (dimension usually defined as field name from input data source)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotDataConfiguration.Aggregators">
+            <summary>
+            List of aggregators configurations
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotDataConfiguration.LazyTotals">
+            <summary>
+            Lazy totals option (see <see cref="P:NReco.PivotData.PivotData.LazyTotals"/> for details). Default value is True.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.AggregatorFactoryConfiguration">
+            <summary>
+            Represents configuration used for constructing <see cref="T:NReco.PivotData.IAggregatorFactory"/> instance by <see cref="T:NReco.PivotData.PivotDataFactory"/>. 
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.AggregatorFactoryConfiguration.Name">
+            <summary>
+            Name of the aggregator registered with <see cref="T:NReco.PivotData.PivotDataFactory"/>.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.AggregatorFactoryConfiguration.Params">
+            <summary>
+            Parameters required for initializing concrete <see cref="T:NReco.PivotData.IAggregatorFactory"/>.
+            </summary>
+            <remarks>In most cases this is parameters passed to the constructor of specified aggregator factory class.</remarks>
+        </member>
+        <member name="M:NReco.PivotData.PivotDataExtensions.ProcessData(NReco.PivotData.PivotData,NReco.PivotData.IPivotDataSource)">
+            <summary>
+            Processes data from specified <see cref="T:NReco.PivotData.IPivotDataSource"/> instance. 
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PivotDataFactory">
+            <summary>
+            Factory component that creates <see cref="T:NReco.PivotData.PivotData"/> instance by <see cref="T:NReco.PivotData.PivotDataConfiguration"/>.
+            </summary>
+            <remarks>
+            <see cref="T:NReco.PivotData.PivotDataFactory"/> is useful when <see cref="T:NReco.PivotData.PivotData"/> configuration is constructed dynamically 
+            (for example with some UI by the user). By default all common implementations of <see cref="T:NReco.PivotData.IAggregatorFactory"/>
+            are automatically registered; all custom aggregators may be registered with <see cref="M:NReco.PivotData.PivotDataFactory.RegisterAggregator(System.String,System.Type,System.Func{System.Type,System.Object[],NReco.PivotData.IAggregatorFactory},System.Func{NReco.PivotData.IAggregatorFactory,System.Object[]})"/> method.
+            </remarks>
+        </member>
+        <member name="M:NReco.PivotData.PivotDataFactory.RegisterAggregator(System.String,System.Type,System.Func{System.Type,System.Object[],NReco.PivotData.IAggregatorFactory},System.Func{NReco.PivotData.IAggregatorFactory,System.Object[]})">
+            <summary>
+            Register new aggregator that can be recognized by <see cref="T:NReco.PivotData.PivotDataFactory"/>.
+            </summary>
+            <param name="name">aggregator name</param>
+            <param name="t">aggregator factory type</param>
+            <param name="create">handler that creates <see cref="T:NReco.PivotData.IAggregatorFactory"/> by type and parameters set</param>
+            <param name="getParams">handler that returns parameters by <see cref="T:NReco.PivotData.IAggregatorFactory"/> instance</param>
+            <returns>current instance of <see cref="T:NReco.PivotData.PivotDataFactory"/> (useful for chaining register calls)</returns>
+        </member>
+        <member name="M:NReco.PivotData.PivotDataFactory.Create(NReco.PivotData.PivotDataConfiguration)">
+            <summary>
+            Creates a new <see cref="T:NReco.PivotData.PivotData"/> instance by specified <see cref="T:NReco.PivotData.PivotDataConfiguration"/>.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PivotDataFactory.GetConfiguration(NReco.PivotData.IPivotData)">
+            <summary>
+            Returns <see cref="T:NReco.PivotData.PivotDataConfiguration"/> by specified <see cref="T:NReco.PivotData.PivotData"/> instance.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PivotTableConfiguration">
+            <summary>
+            Represents <see cref="T:NReco.PivotData.PivotTable"/> configuration (used by <see cref="T:NReco.PivotData.PivotTableFactory"/>).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotTableConfiguration.Rows">
+            <summary>
+            List of PivotTable row dimensions (can be null)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotTableConfiguration.Columns">
+            <summary>
+            List of PivotTable column dimensions (can be null)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotTableConfiguration.Measures">
+            <summary>
+            Indexes of measures that should be used for building pivot table.
+            </summary>
+            <remarks>
+            Applicable only if <see cref="T:NReco.PivotData.PivotData"/> is configured for multiple aggregators with <see cref="T:NReco.PivotData.CompositeAggregatorFactory"/>.
+            </remarks>
+        </member>
+        <member name="P:NReco.PivotData.PivotTableConfiguration.OrderKeys">
+            <summary>
+            Dimension keys order settings.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotTableConfiguration.SortByValue">
+            <summary>
+            Sort by specified axis keys by table cell values (specified by index and aggregator index). 
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.PivotTableConfiguration.PreserveGroupOrder">
+            <summary>
+            Preserves grouping order when sort by value is specified.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.PivotTableFactory">
+            <summary>
+            Creates <see cref="T:NReco.PivotData.PivotTable"/> instance by specifed <see cref="T:NReco.PivotData.PivotData"/> and <see cref="T:NReco.PivotData.PivotTableConfiguration"/>.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.PivotTableFactory.RegisterDimensionComparer(System.String,System.Collections.Generic.IComparer{System.Object})">
+            <summary>
+            Register custom comparer for the keys of specified dimension.
+            </summary>
+            <param name="dimension">dimension name</param>
+            <param name="dimKeyComparer">custom comparer implementation</param>
+        </member>
+        <member name="M:NReco.PivotData.PivotTableFactory.Slice(NReco.PivotData.IPivotData,System.String[],System.Int32[])">
+            <summary>
+            Slices data cube according to the pivot table configuration (dimensions/measures).
+            </summary>
+            <param name="pvtData">data cube instance</param>
+            <param name="dims">pivot table dimensions</param>
+            <param name="measures">pivot table measures</param>
+            <returns>data cube that contains only specified dimensions/measures</returns>
+        </member>
+        <member name="M:NReco.PivotData.PivotTableFactory.Create(NReco.PivotData.IPivotData,NReco.PivotData.PivotTableConfiguration)">
+            <summary>
+            Creates <see cref="T:NReco.PivotData.PivotTable"/> instance by specifed <see cref="T:NReco.PivotData.PivotData"/> and <see cref="T:NReco.PivotData.PivotTableConfiguration"/>.
+            </summary>
+            <param name="pvtData">multidimensional dataset instance</param>
+            <param name="config">pivot table configuration</param>
+            <returns><see cref="T:NReco.PivotData.PivotTable"/> instance initialized and configured according to specified configuration</returns>
+        </member>
+        <member name="M:NReco.PivotData.PivotTableFactory.GetDimensionComparer(System.String)">
+            <summary>
+            Resolves comparer for the keys of the specified dimension.
+            </summary>
+            <param name="dimension">dimension name</param>
+            <returns>a comparer for the specified dimension</returns>
+        </member>
+        <member name="T:NReco.PivotData.TopPivotTable">
+            <summary>
+            Pivot table wrapper that limits table by top N rows or columns.
+            </summary>
+            <remarks>
+            Use this class to limit pivot table rows and/or columns. 
+            All rows or columns that exceed specified limit are grouped into special 'other' group (default label is '...').
+            If underlying pivot table uses grouped labels (several dimensions for rows/columns) several 'other' groups may be produced to show correct 
+            values inside groups.
+            <example>
+            <code>
+            PivotTable originalPvtTbl;
+            var topPvtTbl = new TopPivotTable(originalPvtTbl, PercentagePivotTable.PercentageMode.ColumnTotal);
+            </code>
+            </example>
+            </remarks>	
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.ColumnOtherKey">
+            <summary>
+            Special 'other' key used for column dimensions.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.RowOtherKey">
+            <summary>
+            Special 'other' key used for row dimensions.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.IncludeOtherGroups">
+            <summary>
+            Gets or sets flag that determines whether to include into pivot table rows/columns that exceed limits as 'other' groups (true by default). 
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.TopPivotTable.#ctor(NReco.PivotData.IPivotTable,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:NReco.PivotData.TopPivotTable"/> instance.
+            </summary>
+            <param name="pivotTable">underlying pivot table</param>
+            <param name="rowsLimit">limit for table rows</param>
+            <param name="columnsLimit">limit for table columns</param>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.Columns">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.Columns"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.Rows">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.Rows"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.ColumnKeys">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.ColumnKeys"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.RowKeys">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.RowKeys"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.PivotData">
+            <summary>
+            <see cref="P:NReco.PivotData.IPivotTable.PivotData"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.TopPivotTable.GetValue(NReco.PivotData.ValueKey,NReco.PivotData.ValueKey)">
+            <summary>
+            <see cref="M:NReco.PivotData.IPivotTable.GetValue(NReco.PivotData.ValueKey,NReco.PivotData.ValueKey)"/>
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.TopPivotTable.OtherKey">
+            <summary>
+            Represents special 'other' dimension key used in <see cref="T:NReco.PivotData.TopPivotTable"/> for grouping rows/columns that exceed limit.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.TopPivotTable.OtherKey.Text">
+            <summary>
+            Gets or sets 'other' key label text (default value is '...').
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.File.IFileSystem">
+            <summary>
+            Abstract filesystem interface used by reader and writer components.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.File.IFileSystem.Delete(System.String)">
+            <summary>
+            Removes specified file
+            </summary>
+            <param name="fileName">The name of the file to be deleted</param>
+        </member>
+        <member name="M:NReco.PivotData.File.IFileSystem.GetInputStream(System.String)">
+            <summary>
+            Returns <see cref="T:System.IO.Stream"/> for reading contents of the specified file
+            </summary>
+            <param name="fileName">File name to read</param>
+        </member>
+        <member name="M:NReco.PivotData.File.IFileSystem.GetOutputStream(System.String)">
+            <summary>
+            Returns <see cref="T:System.IO.Stream"/> for writing to the specified file
+            </summary>
+            <param name="fileName">File name for writing</param>
+        </member>
+        <member name="T:NReco.PivotData.File.LocalFileSystem">
+            <summary>
+            Implementation of <see cref="T:NReco.PivotData.File.IFileSystem"/> for local filesystem.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.CsvSource">
+            <summary>
+            Provides input data for <see cref="T:NReco.PivotData.PivotData"/> from CSV stream.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.CsvSource.Headers">
+            <summary>
+            Get or set explicit list of CSV column headers (overrides CSV column names if present).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.CsvSource.RowsLimit">
+            <summary>
+            Get or set a limit for maximum number of CSV rows to read.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.CsvSource.#ctor(System.IO.TextReader)">
+            <summary>
+            Initializes new <see cref="T:NReco.PivotData.Input.CsvSource"/> instance with specified <see cref="T:System.IO.TextReader"/>.
+            </summary>
+            <param name="csvRdr">TextReader for CSV data</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.CsvSource.#ctor(System.IO.TextReader,CsvHelper.Configuration.CsvConfiguration)">
+            <summary>
+            Initializes new <see cref="T:NReco.PivotData.Input.CsvSource"/> instance with specified <see cref="T:System.IO.TextReader"/> and CSV configuration.
+            </summary>
+            <param name="csvRdr">TextReader for CSV data</param>
+            <param name="cfg">CSV reader configuration settings</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.CsvSource.ReadData(System.Action{System.Collections.IEnumerable,System.Func{System.Object,System.String,System.Object}})">
+            <summary>
+            Reads data from CSV reader and provides it as IEnumerable with field access handler to the specified callback.
+            </summary>
+            <param name="handler">callback handler</param>
+        </member>
+        <member name="T:NReco.PivotData.Input.CubeFileReader">
+            <summary>
+            Implements reader that loads <see cref="T:NReco.PivotData.IPivotData"/> from files (pair of .cfg and .dat)
+            previously created by <see cref="!:CubeFileWriter"/>.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.CubeFileReader.FileSystem">
+            <summary>
+            Gets or sets filesystem implementation used for reading file contents.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.CubeFileReader.PivotDataFactory">
+            <summary>
+            Gets or sets PivotData factory component.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.CubeFileReader.FileName">
+            <summary>
+            Gets the name of cube file.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.CubeFileReader.FixedPivotDataThreshold">
+            <summary>
+            Gets or sets threshold when reader uses <see cref="T:NReco.PivotData.FixedPivotData"/> implementation for accessing cube values.
+            </summary>
+            <remarks>If number of cube values greater than threshold reader uses <see cref="T:NReco.PivotData.FixedPivotData"/> implementation instead of <see cref="T:NReco.PivotData.PivotData"/>. Default value is 1000000.</remarks>
+        </member>
+        <member name="M:NReco.PivotData.Input.CubeFileReader.#ctor(System.String)">
+            <summary>
+            Initializes new <see cref="!:CubeFileWriter"/> instance with specified file name
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.CubeFileReader.Read">
+            <summary>
+            Returns new <see cref="T:NReco.PivotData.PivotData"/> instance initialized with data from pair of cube files.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.DbCommandSource">
+            <summary>
+            Provides input data for <see cref="T:NReco.PivotData.PivotData"/> from data reader of the specified ADO.NET <see cref="T:System.Data.IDbCommand"/> instance.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.DbCommandSource.#ctor(System.Data.IDbCommand)">
+            <summary>
+            Initializes a new <see cref="T:NReco.PivotData.Input.DbCommandSource"/> instance with specified ADO.NET <see cref="T:System.Data.IDbCommand"/> instance.
+            </summary>
+            <param name="dbCmd">db command instance initialized with SELECT command and DB connection</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.DbCommandSource.ReadData(System.Action{System.Collections.IEnumerable,System.Func{System.Object,System.String,System.Object}})">
+            <summary>
+            Reads data from data reader and provides it as IEnumerable with field access handler to the specified callback.
+            </summary>
+            <param name="handler">callback handler</param>
+        </member>
+        <member name="T:NReco.PivotData.Input.DerivedValueSource">
+            <summary>
+            Derived values wrapper for another <see cref="T:NReco.PivotData.IPivotDataSource"/>.
+            </summary>
+            <remarks>
+            <see cref="T:NReco.PivotData.Input.DerivedValueSource"/> is used for transforming input values (define derived values, parse values etc).
+            </remarks>
+        </member>
+        <member name="M:NReco.PivotData.Input.DerivedValueSource.#ctor(NReco.PivotData.IPivotDataSource)">
+            <summary>
+            Initializes a new <see cref="!:DerviedValueSource"/> with specified <see cref="T:NReco.PivotData.IPivotDataSource"/>
+            </summary>
+            <param name="source">original data source instance</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.DerivedValueSource.Register(System.String,System.Func{System.Func{System.Object,System.String,System.Object},System.Func{System.Object,System.String,System.Object}})">
+            <summary>
+            Register derived field handler.
+            </summary>
+            <param name="fieldName">resulting field name</param>
+            <param name="getValueHandler">handler that accepts original field accessor and returns accessor for derived field value</param>
+            <returns>current instance of <see cref="T:NReco.PivotData.Input.DerivedValueSource"/> (useful for chaining Register calls)</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.DerivedValueSource.ReadData(System.Action{System.Collections.IEnumerable,System.Func{System.Object,System.String,System.Object}})">
+            <summary>
+            Reads data from underlying source and provides extended data (with derived fields) to specified callback handler.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.GroupedSourceReader">
+            <summary>
+            <see cref="T:NReco.PivotData.Input.GroupedSourceReader"/> populates <see cref="T:NReco.PivotData.PivotData"/> with pre-aggregated values provided by underlying <see cref="T:NReco.PivotData.IPivotDataSource"/>.
+            </summary>
+            <remarks><see cref="T:NReco.PivotData.Input.GroupedSourceReader"/> is useful for cases when <see cref="T:NReco.PivotData.PivotData"/> should be loaded from already aggregated data
+            (typical case is result of SQL GROUP BY) for in-memory processing.</remarks>
+        </member>
+        <member name="P:NReco.PivotData.Input.GroupedSourceReader.AggregatorStateComposers">
+            <summary>
+            Gets a list of <see cref="T:NReco.PivotData.Input.GroupedSourceReader.IAggregatorStateComposer"/> for aggregators supported by this reader.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.GroupedSourceReader.IAggregatorStateComposer">
+            <summary>
+            Represents component that composes aggregator state object for <see cref="T:NReco.PivotData.Input.GroupedSourceReader"/>.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.GroupedSourceReader.SingleAggregatorStateComposer">
+            <summary>
+            Composes single-valued aggregator state object.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.GroupedSourceReader.ArrayAggregatorStateComposer">
+            <summary>
+            Composes array-based aggregator state object.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.JsonSource">
+            <summary>
+            Provides input data for <see cref="T:NReco.PivotData.PivotData"/> from JSON stream.
+            </summary>
+            <remarks>
+            <see cref="T:NReco.PivotData.Input.JsonSource"/> can read both array of objects (like '[ { ... }, { .... }]' or array of values (like '[ [...], [...] ]').
+            For array of values <see cref="P:NReco.PivotData.Input.JsonSource.Headers"/> should be specified.
+            </remarks>
+            <example>
+            Read data from array of values:
+            <code>
+            var inputJson = "[ [2015, true, 250 ], [2016, false, 100], [2016, true, 68] ]";
+            var jsonSource = new JsonSource( new StringReader(inputJson) ) { 
+              Headers = new[] { "year", "active", "value" }
+            };
+            var pvtData = new PivotData(new[]{"year","active"}, SumAggregatorFactory("value") );
+            pvtData.ProcessData(jsonSource);
+            </code>
+            </example>
+            <example>
+            Read data from array of objects:
+            <code>
+            var inputJson = "[ 
+              {"year": 2015, "active": true, "value": 250 },
+              {"year": 2016, "active": false, "value": 100 },
+              {"year": 2016, "active": true, "value": 68}
+            ]";
+            var jsonSource = new JsonSource( new StringReader(inputJson) );
+            var pvtData = new PivotData(new[]{"year","active"}, SumAggregatorFactory("value") );
+            pvtData.ProcessData(jsonSource);	
+            </code>
+            </example>
+        </member>
+        <member name="P:NReco.PivotData.Input.JsonSource.Headers">
+            <summary>
+            Get or set explicit list of headers for JSON array values.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.JsonSource.RowsLimit">
+            <summary>
+            Get or set a limit for maximum number of CSV rows to read.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.JsonSource.#ctor(System.IO.TextReader)">
+            <summary>
+            Initializes new <see cref="T:NReco.PivotData.Input.JsonSource"/> instance with specified <see cref="T:System.IO.TextReader"/>.
+            </summary>
+            <param name="jsonRdr">TextReader for JSON data</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.JsonSource.ReadData(System.Action{System.Collections.IEnumerable,System.Func{System.Object,System.String,System.Object}})">
+            <summary>
+            Reads data from CSV reader and provides it as IEnumerable with field access handler to the specified callback.
+            </summary>
+            <param name="handler">callback handler</param>
+        </member>
+        <member name="T:NReco.PivotData.Input.SourceReader">
+            <summary>
+            Generic source reader implementation that aggregates data provided by specified <see cref="T:NReco.PivotData.IPivotDataSource"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.SourceReader.#ctor(NReco.PivotData.IPivotDataSource,NReco.PivotData.PivotDataConfiguration)">
+            <summary>
+            Initializes a new <see cref="T:NReco.PivotData.Input.SourceReader"/> with specified <see cref="T:NReco.PivotData.IPivotDataSource"/> and <see cref="T:NReco.PivotData.PivotDataConfiguration"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.SourceReader.#ctor(NReco.PivotData.IPivotDataSource,NReco.PivotData.PivotDataConfiguration,NReco.PivotData.PivotDataFactory)">
+            <summary>
+            Initializes a new <see cref="T:NReco.PivotData.Input.SourceReader"/> with specified <see cref="T:NReco.PivotData.IPivotDataSource"/>, <see cref="T:NReco.PivotData.PivotDataConfiguration"/>
+            and <see cref="T:NReco.PivotData.PivotDataFactory"/> instance.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.SourceReader.Read">
+            <summary>
+            Returns new <see cref="T:NReco.PivotData.PivotData"/> instance initialized with <see cref="T:NReco.PivotData.PivotDataConfiguration"/> settings and data from specified <see cref="T:NReco.PivotData.IPivotDataSource"/>.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Input.Value.DatePartValue">
+            <summary>
+            Implements date part handlers for <see cref="T:NReco.PivotData.Input.DerivedValueSource"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.DatePartValue.YearHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor for year number of source <see cref="T:System.DateTime"/> value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>year value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.DatePartValue.MonthNumberHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor for month number (1-12) of source <see cref="T:System.DateTime"/> value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>month number value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.DatePartValue.DayHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor for day number value of source <see cref="T:System.DateTime"/> value
+            </summary>
+            <param name="getValue">source value provider</param>
+            <returns>day number value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.DatePartValue.QuarterHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor for quarter number (1,2,3 or 4) of source <see cref="T:System.DateTime"/> value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>quarter number value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.DatePartValue.DateOnlyHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accesor for date-only part of source <see cref="T:System.DateTime"/> value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>date-only value accessor</returns>
+        </member>
+        <member name="T:NReco.PivotData.Input.Value.FormatValue">
+            <summary>
+            Implements formatting handlers for <see cref="T:NReco.PivotData.Input.DerivedValueSource"/>
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Input.Value.FormatValue.FormatProvider">
+            <summary>
+            Get or set <see cref="T:System.IFormatProvider"/> instance used for formatting values.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.FormatValue.#ctor(System.String)">
+            <summary>
+            Initializes a new <see cref="T:NReco.PivotData.Input.Value.FormatValue"/> instance with specified format string
+            </summary>
+            <param name="fmt">format string (only argument is context field value)</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.FormatValue.#ctor(System.String,System.String[])">
+            <summary>
+            Initializes a new <see cref="T:NReco.PivotData.Input.Value.FormatValue"/> instance with specified format string
+            </summary>
+            <param name="fmt">format string</param>
+            <param name="argFields">list of fields used for getting values of formatting agruments</param>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.FormatValue.FormatHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that composes a string from one (or more) source value
+            </summary>
+            <param name="getValue">source value accessor</param>
+            <returns>formatted string value accessor</returns>
+        </member>
+        <member name="T:NReco.PivotData.Input.Value.ParseValue">
+            <summary>
+            Implements parse handlers for <see cref="T:NReco.PivotData.Input.DerivedValueSource"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.ParseValue.ParseIntegerHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that parses an integer from a string value
+            </summary>
+            <param name="getValue">original field value accessor</param>
+            <returns>integer value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.ParseValue.ParseDoubleHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that parses a double from a string value
+            </summary>
+            <param name="getValue">source value provider</param>
+            <returns>double value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.ParseValue.ParseDateTimeHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that parses <see cref="T:System.DateTime"/> from a string value
+            </summary>
+            <param name="getValue">original field value accessor</param>
+            <returns>DateTime value accessor</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.ParseValue.ParseDecimalHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that parses a decimal from a string value
+            </summary>
+            <param name="getValue">original field value accessor</param>
+            <returns>decimal value accessor</returns>
+        </member>
+        <member name="T:NReco.PivotData.Input.Value.RegexMatchValue">
+            <summary>
+            Implements regular expression match handler for <see cref="T:NReco.PivotData.Input.DerivedValueSource"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.RegexMatchValue.IsMatchHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that returns regex match result for specified field value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>boolean match result value (True or False)</returns>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.RegexMatchValue.MatchHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that returns regex match value for specified field value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>matched string value</returns>
+        </member>
+        <member name="T:NReco.PivotData.Input.Value.RegexReplaceValue">
+            <summary>
+            Implements regular expression replace handler for <see cref="T:NReco.PivotData.Input.DerivedValueSource"/>
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Input.Value.RegexReplaceValue.ReplaceHandler(System.Func{System.Object,System.String,System.Object})">
+            <summary>
+            Returns value accessor that returns regex replace result for specified field value
+            </summary>
+            <param name="getValue">original value accessor</param>
+            <returns>replace result value (string)</returns>
+        </member>
+        <member name="T:NReco.PivotData.Output.CubeFileWriter">
+            <summary>
+            Implements writer component that saves <see cref="T:NReco.PivotData.PivotData"/> (both configuration 
+            and aggregated values) into pair of two files (.cfg and .dat)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.CubeFileWriter.FileName">
+            <summary>
+            Get cube file name for this writer.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Output.CubeFileWriter.#ctor(System.String)">
+            <summary>
+            Initializes new <see cref="T:NReco.PivotData.Output.CubeFileWriter"/> instance with specified file name
+            </summary>
+            <param name="fileName">relative (to <see cref="!:Environment.CurrentDirectory"/>) or absolute path and file name</param>
+            <remarks>file name should be without extension (or this may be a path to .cfg file)</remarks>
+        </member>
+        <member name="M:NReco.PivotData.Output.CubeFileWriter.#ctor(System.String,NReco.PivotData.File.IFileSystem)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NReco.PivotData.Output.CubeFileWriter"/> with specified file name and <see cref="T:NReco.PivotData.File.IFileSystem"/> instance
+            </summary>
+            <param name="fileName">relative (to <see cref="!:Environment.CurrentDirectory"/>) or absolute path and file name</param>
+            <param name="fileSystem">filesystem implementation</param>
+            <remarks>file name should be without extension (as alternative this may be a path to .cfg file)</remarks>
+        </member>
+        <member name="M:NReco.PivotData.Output.CubeFileWriter.Write(NReco.PivotData.IPivotData,NReco.PivotData.PivotDataConfiguration)">
+            <summary>
+            Writes specified <see cref="T:NReco.PivotData.IPivotData"/> data and configuration into the pair of two files (.cfg and .dat)
+            </summary>
+            <param name="pvtData"></param>
+        </member>
+        <member name="T:NReco.PivotData.Output.PivotTableCsvWriter">
+            <summary>
+            Renders pivot table report into CSV format.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableCsvWriter.FormatKey">
+            <summary>
+            Gets or sets custom formatting handler for table row/column labels (key,dimension)->(label).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableCsvWriter.FormatValue">
+            <summary>
+            Gets or sets custom formatting handler for table cell values (measure,measure index)->(value)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableCsvWriter.FormatMeasureHeader">
+            <summary>
+            Gets or sets custom formatting handler for measure headers (applicable only if several measures are used)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableCsvWriter.FormatDimensionLabel">
+            <summary>
+            Gets or sets custom formatting handler for dimension labels.
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Output.PivotTableCsvWriter.Write(NReco.PivotData.IPivotTable)">
+            <summary>
+            Renders pivot table into Excel worksheet using data from specified <see cref="T:NReco.PivotData.PivotTable"/> instance.
+            </summary>
+            <param name="pvtTbl">configured PivotTable view instance</param>
+        </member>
+        <member name="T:NReco.PivotData.Output.PivotTableExcelWriter">
+            <summary>
+            Renders pivot table report into Excel format (XLSX).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.FormatKey">
+            <summary>
+            Gets or sets function for formatting dimension key values.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.FormatMeasureHeader">
+            <summary>
+            Gets or sets custom formatting handler for measure headers (applicable only if several measures are used)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.FormatValue">
+            <summary>
+            Gets or sets custom formatting handler for table cell values (measure,measure index)->(value)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.FormatDimensionLabel">
+            <summary>
+            Gets or sets custom formatting handler for dimension labels.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.StartCellRow">
+            <summary>
+            Gets or sets pivot table starting cell row index (default is 1).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.StartCellColumn">
+            <summary>
+            Gets or sets pivot table starting cell column index (default is 1).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.RepeatKeysInGroups">
+            <summary>
+            Repeat keys in group of the same dimension (no repeat by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableExcelWriter.RepeatDuplicateKeysAcrossDimensions">
+            <summary>
+            Repeat duplicate keys across dimensions in one group (repeat for both rows and columns by default).
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Output.PivotTableExcelWriter.Write(NReco.PivotData.IPivotTable)">
+            <summary>
+            Renders pivot table into Excel worksheet using data from specified <see cref="T:NReco.PivotData.PivotTable"/> instance.
+            </summary>
+            <param name="pvtTbl">configured PivotTable view instance</param>
+        </member>
+        <member name="M:NReco.PivotData.Output.PivotTableExcelWriter.CreateStyles(OfficeOpenXml.ExcelWorksheet)">
+            <summary>
+            Defines default named styles ("pvtRow", "pvtColumn").
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Output.PivotTableHtmlWriter">
+            <summary>
+            Renders pivot table report into HTML format.
+            </summary>
+            <remarks>
+            <example>
+            Next code illustrates how to render data represented by <see cref="T:NReco.PivotData.PivotTable"/> instance into HTML format:
+            <code>PivotTable pvtTbl; // lets assume we already have configured PivotTable instance
+            var htmlRes = new StringWriter();
+            var pvtHtmlWr = new PivotTableHtmlWriter(htmlRes);
+            pvtHtmlWr.ValueFormat = "{0:0.##}";
+            pvtHtmlWr.Write(pvtTbl);
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.ColumnHeaderClass">
+            <summary>
+            Gets or sets CSS class for table column header cells ('pvtColumn' by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RowHeaderClass">
+            <summary>
+            Gets or sets CSS class for table row header cells ('pvtRow' by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.MeasureHeaderClass">
+            <summary>
+            Gets or sets CSS class for measure header cells ('pvtMeasure' by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.TableClass">
+            <summary>
+            Gets or sets CSS class for HTML table ('pvtTable' by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.FormatKey">
+            <summary>
+            Gets or sets custom formatting handler for table row/column labels (key,dimension)->(label).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.FormatValue">
+            <summary>
+            Gets or sets custom formatting handler for table cell values (measure,measure index)->(value)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.FormatMeasureHeader">
+            <summary>
+            Gets or sets custom formatting handler for measure headers (applicable only if several measures are used)
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.FormatDimensionLabel">
+            <summary>
+            Gets or sets custom formatting handler for dimension labels.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RenderSortIndexAttr">
+            <summary>
+            Gets or sets flag which indicates whether writer should render "data-sort-index" attributes.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RenderKeyIndexAttr">
+            <summary>
+            Gets or sets flag which indicates whether writer should render "data-sort-index" attributes.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RenderValueIndexAttr">
+            <summary>
+            Gets or sets flag which indicates whether writer should render "data-value-index" attributes.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RenderDimensionLabel">
+            <summary>
+            Get or sets dimension label rendering option (by default both column and row dimension labels are rendered).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RenderTheadTbody">
+            <summary>
+            Get or sets flag which indicates whether writer should render headers in THEAD/TBODY section.
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.SubtotalRows">
+            <summary>
+            Include subtotal rows into resulting pivot table (false by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.SubtotalColumns">
+            <summary>
+            Include subtotal columns into resulting pivot table (false by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RepeatKeysInGroups">
+            <summary>
+            Repeat keys in group of the same dimension (no repeat by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.RepeatDuplicateKeysAcrossDimensions">
+            <summary>
+            Repeat duplicate keys across dimensions in one group (repeat for both rows and columns by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableHtmlWriter.AllowHtml">
+            <summary>
+            Allow HTML in dimension labels/headers/formatted values (false by default).
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Output.PivotTableHtmlWriter.Write(NReco.PivotData.IPivotTable)">
+            <summary>
+            Renders pivot table as HTML report using data from specified <see cref="T:NReco.PivotData.PivotTable"/> instance.
+            </summary>
+            <param name="pvtTbl">configured PivotTable view instance</param>
+        </member>
+        <member name="T:NReco.PivotData.Output.PivotTableJsonWriter">
+            <summary>
+            Serializes pivot table data to JSON string.
+            </summary>
+            <remarks>
+            This writer produces the following JSON structure by any <see cref="T:NReco.PivotData.IPivotTable"/>:
+            <code>
+            {
+            	Columns : ["C1", "C2"], // column dimensions
+            	ColumnKeys : [ ["C1_val1", "C1_val2"], [ "C2_val" ] ], // array of dimension keys for each column
+            	Rows : ["R1"], // row dimensions
+            	RowKeys : [ ["R1_val1", "R1_val2", "R3_val3"] ], // array of dimension keys for each row	
+            	Values : [	// array of rows, each row is array of column values
+            		[ row_0_col0_value, row_0_col1_value],
+            		[ row_1_col0_value, row_1_col1_value],
+            		[ row_2_col0_value, row_2_col1_value]
+            	],
+            	GrandTotal : total_value, // depends on cube measures configuration 
+            	ColumnTotals : [ col_0_subtotal_value, col_1_subtotal_value ], // array of values for column sub-totals
+            	RowTotals : [ row_0_subtotal_value, row_1_subtotal_value, row_2_subtotal_value ], // array of values for row sub-totals
+            	MeasureLabels : ["Count", "Sum of amount"] // array of measure names
+            }
+            </code>
+            <b>Important notice:</b> value type depends on the number of cube measures. 
+            If cube has only 1 measure values are written as primitive types (numbers or strings).
+            Otherwise value is an array like: 
+            <code>GrandTotal : [70 /* count */, 564.4 /* sum of amount */ ]</code>.
+            </remarks>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableJsonWriter.IncludeValues">
+            <summary>
+            Get or sets flag which indicates whether writer should include pivot table values into JSON (true by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableJsonWriter.IncludeTotals">
+            <summary>
+            Get or sets flag which indicates whether writer should include pivot table values into JSON (true by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableJsonWriter.FormatMeasureHeader">
+            <summary>
+            Gets or sets custom formatting handler for measure headers (JSON: 'MeasureLabels' array).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableJsonWriter.FormatDimensionLabel">
+            <summary>
+            Gets or sets custom formatting handler for dimension labels (JSON: 'Columns' and 'Rows' arrays).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableJsonWriter.FormatKey">
+            <summary>
+            Gets or sets custom formatting handler for table row/column labels (key,dimension)->(label).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableJsonWriter.FormatValue">
+            <summary>
+            Gets or sets custom formatting handler for table cell values (measure,measure index)->(value)
+            </summary>
+        </member>
+        <member name="M:NReco.PivotData.Output.PivotTableJsonWriter.Write(NReco.PivotData.IPivotTable)">
+            <summary>
+            Serializes pivot table to JSON string.
+            </summary>
+        </member>
+        <member name="T:NReco.PivotData.Output.PivotTableWriterBase">
+            <summary>
+            Base class for Pivot Table writers with common rendering options. 
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableWriterBase.TotalsRowHeaderText">
+            <summary>
+            Gets or sets title text for totals row header (Totals by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableWriterBase.TotalsColumnHeaderText">
+            <summary>
+            Gets or sets title text for totals column header (Totals by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableWriterBase.TotalsRow">
+            <summary>
+            Include totals row into resulting pivot table (true by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableWriterBase.TotalsColumn">
+            <summary>
+            Include totals column into resulting pivot table (true by default).
+            </summary>
+        </member>
+        <member name="P:NReco.PivotData.Output.PivotTableWriterBase.GrandTotal">
+            <summary>
+            Include grand totals value into resulting pivot table (true by default).
+            </summary>
+        </member>
+    </members>
+</doc>

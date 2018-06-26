@@ -1,0 +1,1 @@
+for /D /R %%i in (_vti_*) do rd /S /Q %%i

@@ -1,0 +1,49 @@
+
+<%@ Page language="c#" Codebehind="gen_ados_lookup.aspx.cs" AutoEventWireup="false" Inherits="gen_ados_wps.gen_ados_lookup" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<HTML>
+	<ui:header id="uiHeader" selectedmenu="dataentryform" runat="server"></ui:header>
+	<body>
+		<div class="divHeader" id="divHeader">UW Autism Center Intranet</div>
+		<table class="tblBody" cellSpacing="0">
+			<tr>
+				<th id="thLeftNavigation">
+					<ui:leftnavigation id="uiLeftNavigation" selectedmenu="dataentry" runat="server"></ui:leftnavigation></th>
+				<td>
+					<form id="Form1" method="post" runat="server">
+						<DIV>
+							<b>Lookup GEN ADOS</b></DIV>
+						<P>
+							<br/>
+							<br/>
+							<asp:Label id="lblErrors" runat="server" Width="352px" Height="32px" ForeColor="Red" Visible="False"></asp:Label><br/>
+							<br/>
+							GEN&nbsp;ID: &nbsp;<asp:TextBox id="txtID" runat="server"></asp:TextBox>&nbsp;
+							<asp:Button id="cmdLookup" runat="server" Text="Lookup"></asp:Button><br/>
+							<br/>
+						</P>
+						<P>
+							<a href="ados_wps_mod1.aspx">Click to Enter New ADOS-WPS Module 1</a><br/>
+							<br/>
+							<a href="ados_wps_mod2.aspx">Click to Enter New ADOS-WPS Module 2</a><br/>
+							<br/>
+							<a href="ados_wps_mod3.aspx">Click to Enter New ADOS-WPS Module 3</a><br/>
+							<br/>
+							<a href="ados_wps_mod4.aspx">Click to Enter New ADOS-WPS Module 4</a><br/>
+							<br/>
+							<a href="ados_g_mod1.aspx">Click to Enter New ADOS-G Module 1</a><br/>
+							<br/>
+							<a href="ados_g_mod2.aspx">Click to Enter New ADOS-G Module 2</a><br/>
+							<br/>
+							<a href="ados_g_mod3.aspx">Click to Enter New ADOS-G Module 3</a><br/>
+							<br/>
+							<a href="ados_g_mod4.aspx">Click to Enter New ADOS-G Module 4</a><br/>
+							<br/>
+						</P>
+					</form>
+				</td>
+			</tr>
+		</table>
+		<ui:footer id="uiFooter" selectedmenu="dataentry" runat="server"></ui:footer>
+	</body>
+</HTML>

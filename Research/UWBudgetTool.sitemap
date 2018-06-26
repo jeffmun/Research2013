@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+
+		<siteMapNode url="~/" title="X" description="" menuitem="true"  roles="Autism Research Group">
+		<siteMapNode url="~/" title="Home" description="" menuitem="true"  roles="Autism Research Group">
+			<siteMapNode url="~/StaffList.aspx" title="Staff Contact List" description="" menuitem="true" />
+			<siteMapNode url="~/MyInfo.aspx" title="My Info." description="" menuitem="true" />
+			<siteMapNode url="~/Info/MyADinfo.aspx" title="My Permissions" description="" menuitem="true" />
+			<siteMapNode url="https://autism.washington.edu/IISADMPWD/aexp2b.asp" title="Change Password" description="" menuitem="true" />
+		</siteMapNode>
+		
+	<siteMapNode url="~/" title="My Budgets" description="">
+		<siteMapNode url="~/" title="My Budgets" description="" menuitem="true"  roles="Autism Research Group"/>
+			<siteMapNode url="~/StaffList.aspx" title="Staff Contact List" description="" menuitem="true" />
+			<siteMapNode url="~/MyInfo.aspx" title="My Info." description="" menuitem="true" />
+			<siteMapNode url="~/Info/MyADinfo.aspx" title="My Permissions" description="" menuitem="true" />
+			<siteMapNode url="https://autism.washington.edu/IISADMPWD/aexp2b.asp" title="Change Password" description="" menuitem="true" />
+		</siteMapNode>
+				
+			
+		<siteMapNode url="~/Help/" title="Help" description="" menuitem="true" roles="Autism Research Group" >
+			<siteMapNode url="http://www.google.com" title="Help 1" description="" menuitem="true" />
+			<siteMapNode url="http://www.google.com" title="Help 2" description="" menuitem="true" />
+	</siteMapNode>
+	</siteMapNode>
+      
+</siteMap>

@@ -1,0 +1,245 @@
+label
+{
+	font-size: 10pt;
+}
+
+span.spnBigBoldText
+{
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+table.tblGraphReport
+{
+	width: 90%;
+	margin-bottom: 50px;
+	border-top: solid 1px #26044a;
+	border-left: solid 1px #26044a;
+}
+table.tblGraphReport tr td
+{
+	padding: 4px;
+	font-size: 10pt;
+	border-bottom: solid 1px #26044a;
+	border-right: solid 1px #26044a;
+}
+table.tblGraphReport tr td.tdGraphBar
+{
+	width: 66%;
+	background: #e6ecf5;
+	width: 500px;
+	padding-left: 0px;
+	vertical-align: middle;
+}
+table.tblGraphReport tr td.tdCaption
+{
+	width: 20%;
+}
+table.tblGraphReport tr td.tdCount
+{
+	width: 7%;
+}
+table.tblGraphReport tr td.tdPercent
+{
+	width: 7%;
+}
+table.tblGraphReport tr td.tdSummary
+{
+	background: #dcdcdc;
+	font-weight: bold;
+}
+table.tblGraphReport tr th
+{
+	padding: 8px;
+	font-size: 12pt;
+	font-weight: bold;
+	border-bottom: solid 1px #26044a;
+	border-right: solid 1px #26044a;
+}
+
+table.tblInput
+{
+    background-color: #efefef;
+	margin-left: 10px;
+    border: 0px;
+	width: 95%;
+}
+table.tblInput tr.trTitle td
+{
+	background-color: #336699;
+    font-weight: bold;
+    color: #ffffff;
+	padding: 4px;
+	text-align: center;
+}
+table.tblInput tr td
+{
+    padding: 8px;
+    color: #000000;
+    font-size: 10pt;
+    text-align: left;
+}
+table.tblInput tr td.tdHeader
+{
+	background-color: #a1b5cf;
+    font-weight: bold;
+}
+
+table.tblScale
+{
+	width: 100%;
+}
+table.tblScale tr td
+{
+	padding: 4px;
+	text-align: center;
+	width: 20%;
+	border-bottom: 0px;
+}
+
+table.tblSearchResults
+{
+	width: 75%;
+    background-color: #efefef;
+}
+table.tblSearchResults tr td
+{
+    font-size: 12px;
+    padding: 4px;
+}
+table.tblSearchResults tr td.tdHeader
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+}
+table.tblSearchResults tr td.tdBorder
+{
+	border-right: solid 1px #a1b5cf;
+	border-bottom: solid 1px #a1b5cf;
+}
+
+table.tblSurveyResponses
+{
+	width: 70%;
+	margin-bottom: 50px;
+	border-top: solid 1px #26044a;
+	border-left: solid 1px #26044a;
+}
+table.tblSurveyResponses tr td
+{
+	padding: 4px;
+	font-size: 10pt;
+	border-bottom: solid 1px #26044a;
+	border-right: solid 1px #26044a;
+	width: 75%;
+}
+table.tblSurveyResponses tr td.tdHeader
+{
+	background-color: #a1b5cf;
+	padding: 8px;
+	font-size: 10pt;
+	font-weight: bold;
+	border-bottom: solid 1px #26044a;
+	border-right: solid 1px #26044a;
+	width: 25%;
+}
+
+table.tblResultsForm
+{
+	width: 95%;
+	margin-left: 10px;
+}
+table.tblResultsForm tr td
+{
+	background-color: #efefef;
+	padding: 8px;
+	font-size: 10pt;
+}
+table.tblResultsForm tr td.tdHeader
+{
+	font-weight: bold;
+	font-size: 16pt;
+	background-color: #a1b5cf;
+}
+
+table.SurveyTable
+{
+    border-top: solid 1px #a1b5cf;
+    border-left: solid 1px #a1b5cf;
+    width: 90%;
+    margin-left:auto; 
+    margin-right:auto;    
+}
+
+table.SurveyTable tr td.tdHeader
+{
+	font-size: 12px;
+	font-weight: bold;
+    border-right: solid 1px #a1b5cf;
+    border-bottom: solid 1px #a1b5cf;
+    background-color: #a1b5cf;
+    padding: 4px;
+    vertical-align: top;
+    text-align: left;
+}
+
+table.SurveyTable tr td
+{
+	font-size: 12px;
+    border-right: solid 1px #a1b5cf;
+    border-bottom: solid 1px #a1b5cf;
+    padding: 4px;
+    vertical-align: top;
+    text-align: left;
+}
+table.SurveyTable tr td.center
+{
+    text-align: center;
+}
+
+table.TableQuestion
+{
+    border-top: solid 1px #dddddd;
+    border-left: solid 1px #dddddd;
+	width: 100%;	
+}
+
+table.TableQuestion tr td
+{
+    border-bottom: solid 1px #dddddd;
+    border-right: solid 1px #dddddd;
+	text-align:	center;
+}
+
+table.TableQuestion tr th
+{
+    border-bottom: solid 1px #dddddd;
+    border-right: solid 1px #dddddd;
+	text-align:	center;
+}
+
+table.InnerTable
+{
+	border: 0px;
+	padding: 0px;
+}
+
+table.InnerTable tr td
+{
+	border: 0px;
+	padding: 4px;
+}
+.small_text
+{
+    font-family: Futura,Arial,Helvetica,Verdana,Geneva,Swiss,sans-serif;
+    background: #ffffff;
+    color: #000000;
+    font-size: 8pt;
+    font-weight: normal;
+}
+.QuestionText
+{
+	font-family: Futura,Arial,Helvetica,Verdana,Geneva,Swiss,sans-serif;
+    font-size: 12pt;
+    font-weight: bold;
+}

@@ -1,0 +1,176 @@
+﻿summary_tbl
+	.F {font-weight: bold}
+	.M {font-weight: bold}
+	.N {font-style: italic}
+	.ges1 {background-color: yellow}
+	.ges2 {background-color: yellow-orange}
+	.ges3 {background-color: orange}
+	.ges4 {background-color: orange-red}
+	.ges5 {background-color: red}
+	
+	
+/*	 table {table-layout: fixed;  width=100%}  */
+	 
+    .basic_tbl {border-collapse: collapse; }
+    .basic_tbl td                                          { border: 1px solid gainsboro}
+    .basic_tbl th                                          { background-color: gainsboro}
+
+	
+/*	.outer_measvars_tbl table {table-layout: fixed; max_width=1600px; width=100%} */
+	.outer_measvars_tbl td:nth-child(1)                               { background-color: aliceblue; width=60%}
+	.outer_measvars_tbl td:nth-child(2)                               { background-color: purple; width=40%}
+
+	
+	.measvars_tbl {border-collapse: collapse; }
+    .measvars_tbl td                                          { border: 1px solid gainsboro}
+    .measvars_tbl th                                          { background-color: gainsboro}
+
+	/*
+	.measvars_tbl th:first-child                               { background-color: cyan; width=500px}
+	.measvars_tbl th:last-child                               { background-color: green; width=1000px}
+	*/
+	
+	.measvars_tbl td:nth-child(1)                               { background-color: yellow; width=25%}
+	.measvars_tbl td:nth-child(2)                               { background-color: orange; width=50%}
+	
+	.ges1 {background-color: yellow;}
+	.ges2 {background-color: orange;}
+	.ges3 {background-color: red;}
+	
+
+	
+	
+	.uvMeans_Summary_tbl {border-collapse: collapse; }
+	.uvMeans_Summary_tbl_bottom  { border-bottom: 2px solid gainsboro}
+	
+
+    .xt {border-collapse: collapse; }
+    .xt td                                          { border: 1px solid gainsboro}
+    .xt th                                          { background-color: aliceblue}
+    .xt th:last-child                               { background-color: gainsboro}
+    .xt > tbody > tr  > td:first-child              { background-color: aliceblue}
+    .xt > tbody > tr:last-child  > td               { background-color: gainsboro}
+    .xt > tbody > tr  > td:last-child               { background-color: gainsboro}
+
+    .xt_        {background-color: white; border-collapse: collapse;}
+    .xt_corner  {background-color: cornflowerblue}
+    .xt_colhead {background-color: aliceblue}
+    .xt_rowhead {background-color: aliceblue}
+    .xt_tot     {text-align: center; background-color: gainsboro}
+    .xt_cell    {text-align: center;   border: 1px solid gainsboro}
+
+	.xt_mini {font-size: 10px; color: #555555}
+
+	mean_head {font-size: 20px; text-decoration: underline}
+
+	model_head {font-size: 24px; background-color: gainsboro}
+	dv_head {font-size: 20px; background-color: #99ccff}
+
+	.pivot {border-collapse: collapse; }
+    .pivot td               { border: 1px solid gainsboro}
+	.pivot_rowhead 			{  background-color: whitesmoke; text-align: left}
+	.pivot_rowhead_total	{  background-color: #eff3ff; text-align: left; font-style: italic}
+	.pivot_rowhead_total1	{  background-color: #eff3ff; text-align: left; font-style: italic}
+	.pivot_colhead 			{  background-color: whitesmoke; text-align: center}
+	.pivot_colhead_total	{  background-color: #edf8e9; text-align: center; font-style: italic}
+	.pivot_colhead_total2	{  background-color: #edf8e9; text-align: center; font-style: italic}
+
+	.pivot_cellhead 		{  background-color: gainsboro; text-align: center}
+	.pivot_cellr0c0		 		{  background-color: white; text-align: center}
+	.pivot_cell_center 		{  background-color: white; text-align: center}
+	.pivot_cell_right		{  background-color: white; text-align: right}
+
+	.pivot_cell_totalr0c0		{  background-color: white; text-align: center; font-style: italic}
+
+	.pivot_cell_total1r1c0		{  background-color: #eff3ff; text-align: center; font-style: italic}
+	.pivot_cell_total2r2c0		{  background-color: #bdd7e7; text-align: center; font-style: italic}
+	.pivot_cell_total3r3c0		{  background-color: #6baed6; text-align: center; font-style: italic}
+
+
+	.pivot_cell_total1r0c1		{  background-color: #edf8e9; text-align: center; font-style: italic}
+	.pivot_cell_total2r0c2		{  background-color: #bae4b3; text-align: center; font-style: italic}
+	.pivot_cell_total3r0c3		{  background-color: #74c476; text-align: center; font-style: italic}
+
+	.pivot_cell_total2r1c1		{  background-color: #b2e2e2; text-align: center; font-style: italic}
+	.pivot_cell_total3r2c1		{  background-color: #1c9099; text-align: center; font-style: italic}
+	.pivot_cell_total3r1c2		{  background-color: green; text-align: center; font-style: italic}
+
+
+	.pivot_cell_total4r4c0		{  background-color: #4292c6; text-align: center; font-style: italic}
+	.pivot_cell_total4r3c1		{  background-color: #4292c6; text-align: center; font-style: italic}
+	.pivot_cell_total4r2c2		{  background-color: #4292c6; text-align: center; font-style: italic}
+	.pivot_cell_total4r1c3		{  background-color: #4292c6; text-align: center; font-style: italic}
+	.pivot_cell_total4r0c4		{  background-color: #4292c6; text-align: center; font-style: bold italic}
+
+	.pivot_cell_total1r1c0b		{  background-color: #eff3ff; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total2r2c0b		{  background-color: #bdd7e7; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total3r3c0b		{  background-color: #6baed6; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total1r0c1b		{  background-color: #edf8e9; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total2r0c2b		{  background-color: #bae4b3; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total3r0c3b		{  background-color: #74c476; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total2r1c1b		{  background-color: #b2e2e2; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total3r2c1b		{  background-color: #1c9099; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total3r1c2b		{  background-color: green  ; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total4r4c0b		{  background-color: #4292c6; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total4r3c1b		{  background-color: #4292c6; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total4r2c2b		{  background-color: #4292c6; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total4r1c3b		{  background-color: #4292c6; text-align: center; font-weight:bold; font-style: italic}
+	.pivot_cell_total4r0c4b		{  background-color: #4292c6; text-align: center; font-weight:bold; font-style: italic}
+
+
+
+	.pivot_cellMean			{  background-color: white; text-align: right; font-weight: bold}
+	.pivot_cellN_right		{  background-color: white; color: grey; text-align: right}
+	.pivot_cellN_center		{  background-color: white; color: grey; text-align: center}
+
+error_text {color: red}
+measname {color: navy; font-weight: bold; font-size: 24px;}
+
+.cor {border-collapse: collapse;}
+.cor_m9   {background-color: #67000d; font-size: 12px}
+.cor_m8   {background-color: #a50f15; font-size: 12px}
+.cor_m7   {background-color: #cb181d; font-size: 12px}
+.cor_m6   {background-color: #ef3b2c; font-size: 12px}
+.cor_m5   {background-color: #fb6a4a; font-size: 12px}
+.cor_m4   {background-color: #fc9272; font-size: 12px}
+.cor_m3   {background-color: #fcbba1; font-size: 12px}
+.cor_m2   {background-color: #fee0d2; font-size: 12px}
+.cor_m1   {background-color: #fff5f0; font-size: 12px}
+.cor_m0   {background-color: #ffffff; font-size: 12px}
+.cor_p1   {background-color: #f7fbff; font-size: 12px}
+.cor_p2   {background-color: #deebf7; font-size: 12px}
+.cor_p3   {background-color: #c6dbef; font-size: 12px}
+.cor_p4   {background-color: #9ecae1; font-size: 12px}
+.cor_p5   {background-color: #6baed6; font-size: 12px}
+.cor_p6   {background-color: #4292c6; font-size: 12px}
+.cor_p7   {background-color: #2171b5; font-size: 12px}
+.cor_p8   {background-color: #08519c; font-size: 12px}
+.cor_p9   {background-color: #08306b; font-size: 12px}
+
+.cor_head {font-size: 10px; background-color: #dddddd}
+.cor_diag {font-size: 10px; background-color: #dddddd; text-align: center}
+
+cor_n {font-size: 8px; color: #777777}
+cor_r {font-size: 12px }
+cor_rns {font-size: 12px; text-decoration: line-through}
+cor_note {font-size: 10px }
+
+
+
+
+    .showhidebutton {
+        display: block;
+        height: 20px;
+        width: 100px;
+        background: lightgreen;
+        text-align: center;
+        padding: 5px;
+        font: 15px Tahoma;
+        border: 1px solid black;
+        text-decoration: none;
+        list-style:none;
+        margin: 10px 0px 10px 0px;
+    }
+
+	
+	

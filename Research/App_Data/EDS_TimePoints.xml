@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TimePoints>
+	<TimePoint>
+		<TimePointID>T1</TimePointID>
+		<TimePointName>Time 1</TimePointName>
+	</TimePoint>
+	<TimePoint>
+		<TimePointID>T1.5</TimePointID>
+		<TimePointName>Time 1.5</TimePointName>
+	</TimePoint>
+	<TimePoint>
+		<TimePointID>2</TimePointID>
+		<TimePointName>Time 2</TimePointName>
+	</TimePoint>
+	<TimePoint>
+		<TimePointID>T3-full</TimePointID>
+		<TimePointName>Time 3</TimePointName>
+	</TimePoint>
+	<TimePoint>
+		<TimePointID>FollowUp</TimePointID>
+		<TimePointName>Follow-Up</TimePointName>
+	</TimePoint>
+</TimePoints>

@@ -1,0 +1,1074 @@
+/*************************************************************************
+THIS CSS IS SET UP SO THAT ALL OF THE DIFFERENT STYLES ARE LISTED 
+ALPHABETICALLY AND GROUPED BY TAG OR CLASS NAME. THE FIRST SET OF 
+ITEMS LISTED ARE HTML TAGGED STYLES. WITHIN THIS SET ARE THE
+VARIOUS CLASSES FOR THAT TAG. THE SECOND SET OF ITEMS ARE THE 
+INDIVIDUAL CLASSES.
+***************************************************************************/
+/**************************************************************************
+				BEGIN HTML TAGGED STYLES
+***************************************************************************/
+/*BEGIN LINK STYLES*/
+a
+{
+	color: #26044a;
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	text-decoration: underline;
+}
+
+a:active
+{
+	color: #ff0000;
+}
+a:hover
+{
+	text-decoration: none;
+}
+/*END LINK STYLES*/
+
+/*
+html, body {
+	height: 100%;
+}
+	*/
+
+body
+{
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	background: #ffffff;
+	color: black;   
+	font-size: 10pt;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	height: 100%;
+}
+
+div.divReportLibraryHeader
+{
+	padding: 4px;
+	background-color: #a1b5cf;
+	font-weight: bold;
+	padding-left: 5px;
+}
+div.divReportLibraryHeaderAlt
+{
+	padding: 4px;
+	background-color: #e6ecf5;
+	padding-left: 20px;
+}
+div.divReportLibraryReport
+{
+	padding: 2px;
+	padding-left: 35px;
+	background-color: #f5f5f5;
+}
+
+/*BEGIN HEADER STYLES*/
+h1
+{
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	font-size: 24pt;
+	text-align: left;
+}
+
+h2
+{
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	font-size: 16pt;
+	text-align: left;
+}
+
+h3
+{
+	margin-top: 0pt;
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	font-size: 14pt;
+	text-align: left;
+}
+h3.h3Title
+{
+	text-align: center;
+	background-color: #a1b5cf;
+	padding: 8px;
+}
+
+h4
+{
+	margin-top: 0pt;
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	font-size: 12pt;
+	text-align: left;
+}
+
+h5
+{
+	margin-top: 0pt;
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	font-size: 10pt;
+	text-align: left;
+}
+/*END HEADER STYLES*/
+
+img
+{
+	border: 0px;
+}
+
+img.imgNavPoint
+{
+	margin-right: 8px;
+}
+
+/*BEGIN FORM ELEMENT STYLES*/
+input
+{
+	font-size: 10pt;
+}
+
+input.disabled
+{
+	background-color: #eeeeee;
+}
+
+input.elmDisabled
+{
+	color: #000000;
+	background-color: #cccccc;
+}
+
+select.elmDisabled
+{
+	background-color: #cccccc;
+	color: #000000;
+}
+textarea.elmDisabled
+{
+	background-color: #cccccc;
+	color: #000000;
+}
+
+label
+{
+	font-weight: bold;
+}
+label.lblNotBold
+{
+	font-weight: normal;
+}
+/*END FORM ELEMENT STYLES*/
+
+p
+{
+	margin-right: 10px;
+	margin-left: 10px;
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	text-align: left;
+}
+p.pError
+{
+	color: #ff0000;
+	font-weight: bold;
+}
+p.pHeader
+{
+	margin: 0px;
+	background-color: #336699;
+	color: #ffffff;
+	text-align: center;
+	font-weight: bold;
+}
+p.pNoPadding
+{
+	padding: 0px;
+	margin: 1px;
+}
+
+p.pReportHeader
+{
+	margin: 0px;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	padding: 8px;
+	background-color: #a1b5cf;
+	width: 100%;
+	border: solid 1px #26044a;
+}
+
+/*BEGIN BODY TABLE STYLES*/
+table.tblBody
+{
+	padding: 0px;
+	border: 0px;
+	font-size:8pt;
+	width: 100%;
+}
+table.tblBody tr td
+{
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-left: 10px;
+	vertical-align: top;
+}
+table.tblBody tr td.selected
+{
+	color: #ffffff;
+	font-weight: bold;
+	background-color: #26044a;
+}
+table.tblBody tr th
+{
+	text-align: left;
+	padding-left: 0px;
+	vertical-align: top;
+	padding: 0px;
+	width: 175px;
+	background-color: #a1b5cf;
+}
+/*END BODY TABLE STYLES*/
+
+/*BEGIN MY INFO TABLE STYLES*/
+table.tblMyInfo
+{
+	width: 45%;
+	margin-right: 2px;
+}
+table.tblMyInfo tr td
+{
+	padding: 2px;
+	font-size: 8pt;
+	background-color: #efefef;
+}
+table.tblMyInfo tr.trTitle td
+{
+	text-align: center;
+	background-color: #336699;
+	color: #ffffff;
+	font-weight: bold;
+	padding: 4px;
+}
+table.tblMyInfo tr td.tdHeader
+{
+	background-color: #a1b5cf;
+	text-align: center;
+	font-weight: bold;
+	padding: 4px;
+}
+/*END MY INFO TABLE STYLES*/
+
+/*****************************************************************************
+BEGIN FORMS TABLE STYLES
+*****************************************************************************/
+table.tblInput
+{
+	background-color: #efefef;
+	margin-left: 10px;
+	width: 95%;
+}
+table.tblInput tr.trTitle td
+{
+	background-color: #336699;
+	font-weight: bold;
+	color: #ffffff;
+	padding: 4px;
+	text-align: center;
+	vertical-align: top;
+}
+table.tblInput tr td
+{
+	background-color: #efefef;
+	padding: 8px;
+	color: #000000;
+	font-size: 10pt;
+	text-align: left;
+}
+table.tblInput tr td.tdHeader
+{
+	background-color: #336699;
+	font-weight: bold;
+	color: #ffffff;
+	padding: 4px;
+}
+table.tblInput tr td.tdHeaderAlt
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+	padding: 4px;
+}
+table.tblInput tr th.right
+{
+	text-align: right;
+}
+table.tblInput tr td.buttonCell
+{
+	padding: 8px;
+	text-align: center;
+}
+table.tblInput tr td.center
+{
+	text-align: center;
+}
+table.tblInput tr td.tdBorder
+{
+	border-bottom: solid 1px #a1b5cf;
+	border-right: solid 1px #a1b5cf;
+	padding: 4px;
+}
+
+table.tblInput tr.trDark td
+{
+	background-color: #dedede;
+}
+
+table.tblInputSmall
+{
+	background-color: #efefef;
+	margin-left: 10px;
+	border: 0px;
+	width: 95%;
+}
+
+table.tblInputSmall_green
+{
+	background-color: #41A317;
+	margin-left: 2px;
+	border: 0px;
+	width: 95%;
+}
+
+table.tblInputSmall_green tr td
+{
+	background-color: #41A317;
+	border: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	color: #000000;
+	font-size: 8pt;
+	text-align: left;
+}
+
+
+table.tblInputSmall_blue
+{
+	background-color: #82CAFA;
+	margin-left: 2px;
+	border: 0px;
+	width: 95%;
+	font-size: 8pt;
+
+}
+
+table.tblInputSmall_blue tr td
+{
+	background-color: #82CAFA;
+	border: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	color: #82CAFA;
+	font-size: 8pt;
+	text-align: left;
+}
+
+table.tblInputSmall_white
+{
+	background-color: #FFFFFF;
+	margin-left: 2px;
+	border: 0px;
+	width: 95%;
+	font-size: 8pt;
+
+}
+
+table.tblInputSmall_white tr td
+{
+	background-color: #FFFFFF;
+	border: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	color: #FFFFFF;
+	font-size: 8pt;
+	text-align: left;
+}
+
+
+table.tblInputSmall tr.trTitle td
+{
+	background-color: #336699;
+	font-weight: bold;
+	color: #ffffff;
+	padding: 4px;
+	text-align: center;
+	font-size: 8pt;
+}
+table.tblInputSmall tr td
+{
+	background-color: #efefef;
+	border: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	color: #000000;
+	font-size: 8pt;
+	text-align: left;
+}
+
+table.tblInputSmall_blue tr.yellowrow td
+{
+	background-color: #FFF380;
+	text-align: left;
+	font-weight: bold;
+	font-style: italic;
+}
+
+table.tblInputSmall_green tr.yellowrow td
+{
+	background-color: #FFF380;
+	text-align: left;
+	font-weight: bold;
+	font-style: italic;
+}
+
+table.tblInputSmall_white tr.yellowrow td
+{
+	background-color: #FFF380;
+	text-align: left;
+	font-weight: bold;
+	font-style: italic;
+}
+
+table.tblInputSmall_blue tr.plainrow td
+{
+	background-color: #efefef;
+	text-align: left;
+	font-weight: normal;
+	font-style: normal;
+}
+table.tblInputSmall_green tr.plainrow td
+{
+	background-color: #efefef;
+	text-align: left;
+	font-weight: normal;
+	font-style: normal;
+}
+
+table.tblInputSmall_white tr.plainrow td
+{
+	background-color: #efefef;
+	text-align: left;
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+
+table.tblInputSmall tr td.TARight   { text-align:right; } 
+table.tblInputSmall tr td.TALeft    { text-align:left; } 
+table.tblInputSmall tr td.TALeftBold    { text-align:left; font-weight: bold;} 
+table.tblInputSmall tr td.TACenter  { text-align:center; }
+table.tblInputSmall tr td.TACenterBold    { text-align:center; font-weight: bold;} 
+
+
+table.tblInputSmall tr td label {font-size: 8pt;}
+table.tblInputSmall tr td input {font-size: 8pt;}
+table.tblInputSmall tr td select {font-size: 8pt;}
+
+table.tblInputSmall tr td.tdHeader
+{
+	background-color: #336699;
+	font-weight: bold;
+	color: #ffffff;
+	padding: 4px;
+	font-size: 8pt;
+}
+table.tblInputSmall tr td.tdHeaderAlt
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+	padding: 2px;
+}
+/*****************************************************************************
+END FORMS TABLE STYLES
+*****************************************************************************/
+
+/*****************************************************************************
+BEGIN REPORT/CALENDAR SECTION STYLES
+*****************************************************************************/
+/*BEGIN CALENDAR TABLE STYLES*/
+table.tblCalendar
+{
+	width: 100%;
+	font-size: 8pt;
+}
+table.tblCalendar tr td
+{
+	white-space: nowrap;
+	border-bottom: solid 1px #26044a;
+	border-left: solid 1px #bbbbbb;
+	padding: 8px;
+	font-size: 8pt;
+}
+table.tblCalendar tr td.tdWrap
+{
+	white-space: normal;
+}
+table.tblCalendar tr.trDark
+{
+	background-color: #efefef;
+}
+table.tblCalendar tr.trHeader td
+{
+	background-color: #336699;
+	vertical-align: middle;
+	font-weight: bold;
+	font-size: 14pt;
+	padding: 2px;
+	text-align: center;
+	color: #ffffff;
+}
+table.tblCalendar tr.trHeaderAlt td
+{
+	font-weight: bold;
+	background-color: #a1b5cf;
+	padding: 2px;
+}
+/*END CALENDAR TABLE STYLES*/
+
+/*BEGIN REPORT TABLE STYLES*/
+table.tblReport
+{
+	font-size: 10pt;
+	width: 100%;
+	border-top: solid 1px #26044a;
+	border-right: solid 1px #26044a;
+}
+table.tblReport caption
+{
+	background-color: #a1b5cf;
+	border-left: solid 1px #26044a;
+	border-right: solid 1px #26044a;
+	border-top: solid 1px #26044a;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 8px;
+	text-align: center;
+}
+table.tblReport tr
+{
+	background-color: #ffffff;
+}
+table.tblReport tr.trDark
+{
+	background-color: #efefef;
+}
+table.tblReport tr.trVerticalHeader td
+{
+	background-color: #336699;
+	vertical-align: middle;
+	font-weight: bold;
+	text-align: center;
+	color: #ffffff;
+	writing-mode: tb-rl;
+}
+table.tblReport tr td
+{
+	border-bottom: solid 1px #26044a;
+	border-left: solid 1px #26044a;
+	padding: 4px;
+	white-space: nowrap;
+}
+table.tblReport tr td.tdWrap
+{
+	white-space: normal;
+}
+
+table.tblReport tr td.tdCOMP {background-color: #00FF00;}
+table.tblReport tr td.tdTBD {background-color: #00CC99;}
+table.tblReport tr td.tdSCHED {background-color: #00FFFF;}
+table.tblReport tr td.tdNA-GRP {background-color: #CCFF00;}
+table.tblReport tr td.tdNA-SS {background-color: #FFCC00;}
+table.tblReport tr td.tdX {background-color: #FF0000;}
+table.tblReport tr td.tdTENT {background-color: #FF0099;}
+table.tblReport tr td.tdDC {background-color: #FFCCFF;}
+
+table.tblReport tr.trHeader td
+{
+	background-color: #336699;
+	vertical-align: middle;
+	font-weight: bold;
+	text-align: center;
+	color: #ffffff;
+}
+
+table.tblReport tr.trHeader td a
+{
+	color: #ffffff;
+}
+
+table.tblReport tr.trTitle td
+{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	padding: 4px;
+	background-color: #a1b5cf;
+}
+table.tblReport tr.trHeaderAlt td
+{
+	font-weight: bold;
+	background-color: #a1b5cf;
+}
+table.tblReport tr td.tdHeader
+{
+	background-color: #a1b5cf;
+	vertical-align: middle;
+	font-weight: bold;
+	text-align: center;
+}
+table.tblReport tr td.tdHeaderAlt
+{
+	font-weight: bold;
+	background-color: #e6ecf5;
+}
+
+table.tblReportLibrary
+{
+	width: 100%;
+	border: solid 1px #26044a;
+	font-size: 10pt;
+	background-color: #f5f5f5;
+}
+table.tblReportLibrary tr td
+{
+	padding: 4px;
+	padding-left: 20px;
+}
+table.tblReportLibrary tr.trTitle td
+{
+	padding: 4px;
+	background-color: #336699;
+	color: #ffffff;
+	font-weight: bold;
+	text-align: center;
+	font-size: 14pt;
+}
+
+table.tblNonTableReport
+{
+	font-size: 8pt;
+	width: 100%;
+}
+table.tblNonTableReport tr td
+{
+	font-size: 8pt;
+	padding: 2px;
+	white-space: nowrap;
+	text-align: left;
+}
+table.tblNonTableReport tr td.tdHeader
+{
+	text-align: right;
+	font-weight: bold;
+}
+table.tblNonTableReport tr td.tdTitle
+{
+	font-size: 12pt;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+table.tblCrystalReport tr td {padding: 0px;}
+/*END REPORT TABLE STYLES*/
+/*****************************************************************************
+END REPORT/CALENDAR SECTION STYLES
+*****************************************************************************/
+
+/*****************************************************************************
+BEGIN HOUSEHOLD SECTION STYLES
+*****************************************************************************/
+table.tblPersons
+{
+	border-top: 1px solid #26044a;
+	border-left: 1px solid #26044a;
+	width: 100%;
+}
+table.tblPersons tr td
+{
+	border-bottom: 1px solid #26044a;
+	border-right: 1px solid #26044a;
+	font-size: 10pt;
+	padding: 4px;
+	vertical-align: top;
+}
+table.tblPersons tr.trHeader td
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+	text-align: center;
+}
+table.tblPersons tr.trTitle td
+{
+	background-color: #336699;
+	color: #ffffff;
+	font-weight: bold;
+	text-align: center;
+}
+table.tblPersons tr.trDark td
+{
+	background-color: #efefef;
+}
+
+table.tblAddress
+{
+	width: 100%;
+	border: 1px solid #26044a;
+	margin-bottom: 10px;
+}
+table.tblAddress tr td
+{
+	padding: 2px;
+	padding-left: 8px;
+}
+table.tblAddress tr.trHeader td
+{
+	background-color: #336699;
+	color: #ffffff;
+	font-weight: bold;
+	text-align: center;
+}
+table.tblAddress tr td.tdLabel
+{
+	font-weight: bold;
+	width: 20%;
+	text-align: right;
+}
+table.tblAddress tr td input
+{
+	width: 350px;
+}
+
+table.tblViewHousehold
+{
+	width: 100%;
+}
+table.tblViewHousehold tr td
+{
+	font-size: 10pt;
+	padding: 4px;
+	vertical-align: top;
+}
+table.tblViewHousehold tr.trTitle td
+{
+	background-color: #336699;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 10pt;
+	text-align: center;
+	padding: 5px;
+}
+/*****************************************************************************
+END HOUSEHOLD SECTION STYLES
+*****************************************************************************/
+
+
+
+/*****************************************************************************
+				END HTML TAG STYLE DEFINITION
+
+				BEGIN CLASS STYLE DEFINITION
+******************************************************************************/
+
+.fullWidth
+{
+	width: 100%;
+}
+
+.center
+{
+	text-align: center;
+}
+
+.error
+{
+	color: #ff0000;
+}
+
+.footer
+{
+	font-weight: bold;
+	background-color: #26044a;	/*38,4,74*/
+	color: #ffffff;
+}
+
+.grayout
+{
+	color: black;
+	font-family: Verdana,Helvetica,Arial,sans-serif;
+	background: #efefef;
+}
+
+.nodisplay
+{
+	display: none;
+}
+
+.DisplayForPrintOnly
+{
+	display: none;
+}
+
+.smalltext
+{
+	font-size: 8pt;
+}
+
+label.smalltext
+{
+	font-size: 8pt;
+}
+
+
+.verysmalltext
+{
+	font-size: 6pt;
+}
+
+.title
+{
+	font-size: 20pt;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: middle;
+	padding-left: 50px;
+}
+
+.underline
+{
+	text-decoration: underline;
+}
+
+/**************************************************************************
+					WHITETEXT CLASSES
+***************************************************************************/
+.whitetext
+{
+	color: #ffffff;
+	font-weight: bold;
+}
+
+a.whitetext
+{
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+a.whitetext:visited
+{
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+a.whitetext:active
+{
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+a.whitetext:hover
+{
+	color: #ffffff;
+	text-decoration: none;
+}
+
+
+/**************************************************************************
+					used to override ui framework td padding
+					DF: 1/25/05
+***************************************************************************/
+
+/* used to override ui framework td padding */
+table.default tr td
+{
+	padding: 0px;
+}
+
+
+/* used to override ui framework td padding */
+div.default table tr td
+{
+	padding: 5px;
+}
+
+/* styles for a layout table with no grid lines */
+table.layout
+{
+	border-style:none;
+	border-collapse: collapse;
+}
+
+table.layout tr td
+{
+	font-weight: normal;
+	font-size: 8pt;
+	border-style:none;
+	padding: 2px;
+
+}
+
+
+table.layout tr td.heading
+{
+	background-color: #a1b5cf;
+	font-size: 8pt;
+	font-weight: bold;
+	border: solid 1px black;
+	padding: 2px;
+
+}
+
+
+/* styles for a layout table with visible grid lines */
+table.grid
+{
+	border:solid 1px black;
+	border-collapse: collapse;
+
+}
+
+table.grid tr td
+{
+	font-weight: normal;
+	font-size: 8pt;
+	border:solid 1px black;
+	padding: 2px;
+	white-space: nowrap;
+}
+
+
+table.grid tr td.heading
+{
+	background-color: #a1b5cf;
+	font-weight: bold;
+}
+
+/*
+.MenuBar
+{
+	background-color: #a1b5cf;
+	margin: 0px 0px 10px 0px;
+	padding: 4px;
+	text-align: center;
+	width: 100%;
+}
+*/
+
+.MenuBar
+{
+	background-color:   #a1b5cf;  
+	width: 100%;
+	padding: 0px;
+	text-align: center;
+}
+
+.MenuItem
+{
+	background-color:    #a1b5cf; 
+	width:100%; 
+	font-size: 8pt;
+	font-weight: bold;
+	padding: 2px;
+}
+
+.MenuItemHover
+{
+	background-color: #336699;
+	color: #ffffff;
+}
+.SubMenuItem
+{
+	background-color: #a1b5cf;
+	font-size: 8pt;
+	padding: 2px;
+	text-align: left;
+}
+.SubMenuItemHover
+{
+	background-color: #336699;
+	color: #ffffff;
+}
+
+#tdCurrentDate
+{
+	background-color: #336699;
+	color: #ffffff;
+	font-size: 7pt;
+	margin: 0px;
+	padding: 4px;
+	text-align: left;
+}
+#tdSessionInfo
+{
+	background-color: #336699;
+	color: #ffffff;
+	font-size: 7pt;
+	margin: 0px;
+	padding: 4px;
+	text-align: right;
+}
+#divFooter
+{
+	font-size: 6pt;
+	background-color: #26044a;
+	color: #ffffff;
+	text-align: center;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #336699;
+	border-top: 2px solid #26044a;
+	border-bottom: 2px solid #26044a;
+}
+
+#divHeader
+{
+	background-color: #26044a;
+	color: #ffffff;
+	font-size: 12pt;
+	font-style: italic;
+	font-variant: small-caps;
+	font-weight: bold;
+	margin: 0px;
+	padding: 0px 5px 5px 0px;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+}
+#tdNavigation
+{
+	margin: 0px;
+	padding: 0px;
+/*
+	background-color: #336699;
+	font-size: 8pt;
+	font-weight: normal;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: middle;
+*/
+}
+#divBody
+{
+	margin: 6px 6px 6px 6px;
+	width: 100%;
+}
+

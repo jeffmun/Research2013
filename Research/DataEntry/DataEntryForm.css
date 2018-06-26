@@ -1,0 +1,33 @@
+﻿/* For data entry forms only. */
+
+/* Separate the main page visually. */
+.mainPanel { clear:both; padding-top:10px }
+
+/* The workhorse styles of the data entry form. */
+.main { clear:both; float:left }
+.indent { clear:both; float:left; padding-left:20px }
+
+.main_bold { font-style:bold; }
+
+
+.continue { float:left }
+.key { float:left; padding-left:20px }
+
+.collection:after 
+{ 
+  content: ".";
+  display: block;
+  height: 0px;
+  clear: both;
+  visibility: hidden;
+}
+
+.label { clear:both; float:left; width:300px; padding-top:6px }
+
+/* Headers and bylines */
+h2,h3,h4,h5,h6 { clear:both; padding-top:10px }
+.legend { clear:both; font-style:italic } 
+
+/* Table heading and subheadings. */
+thead { font-weight:bold }
+.subhead { font-weight:bold; background-color:#cccccc }

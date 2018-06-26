@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+	<siteMapNode url="~/" title="Home" description="">
+		<siteMapNode url="~/" title="Home" description="" menuitem="true"  roles="Autism Research Group">
+			<siteMapNode url="~/StaffList.aspx" title="Staff Contact List" description="" menuitem="true" />
+			<siteMapNode url="~/MyInfo.aspx" title="My Info." description="" menuitem="true" />
+			<siteMapNode url="~/Info/MyADinfo.aspx" title="My Permissions" description="" menuitem="true" />
+			<siteMapNode url="https://autism.washington.edu/IISADMPWD/aexp2b.asp" title="Change Password" description="" menuitem="true=" />
+			<siteMapNode url="google.com" title="Autism Research Group"  menuitem="true"  roles="Autism Research Group" />
+			<siteMapNode url="google.com" title="u_uwautism_ops"  menuitem="true"  roles="u_uwautism_ops" />
+		</siteMapNode>
+		
+		
+			
+		<siteMapNode url="" title="Clinic" description="" menuitem="true" roles="Autism&#x20;Clinic&#x20;Operations&#x20;Group">
+			<siteMapNode url="~/Waitlist/waitlist_edit_2.aspx" title="Edit New or Existing Client Info" menuitem="true" />
+			<!--<siteMapNode url="~/Waitlist/waitlist_intake_page.aspx" title="Printable Intake Face Page"  menuitem="true" />-->
+			<siteMapNode url="~/Waitlist/waitlist_reports.aspx" title="Clients by Site/Service/Status"  menuitem="true" />
+			
+			<siteMapNode url="~/AC/CHDDrpt.aspx" title="CHDD annual rpt"  menuitem="true" />
+			<siteMapNode url="https://autism.washington.edu/Reports/" title="SQL Reports" description="" menuitem="true" />
+			<siteMapNode url="https://autism.washington.edu/contactlog/" title="Contact Log" description="I am useful text.  Don't Judge." menuitem="true" />
+		</siteMapNode>
+		
+		<siteMapNode url="~/WebCal/" title="WebCal" description="" menuitem="true" roles="Autism Research Group">
+			<siteMapNode url="~/WebCal/ScheduleMiscAction.aspx" title="Schedule Misc. Action" description="" menuitem="true" />
+		</siteMapNode>
+
+
+		<!-- DF: 4/9 remove screening for now -->
+		<!--<siteMapNode url="~/Screening/" title="Screening" description="" menuitem="true" roles="Autism Research Group">
+			<siteMapNode url="~/Screening/screening_surveys.asp" title="Screening Surveys" description="" menuitem="true" />
+			<siteMapNode url="~/Screening/screening_reports.asp" title="Screening Reports" description="" menuitem="true" />
+			<siteMapNode url="~/Screening/Admin/" title="Screening Admin" description="" menuitem="true" roles="IT Staff Group" />
+		</siteMapNode>-->
+
+		<siteMapNode url="~/Household/" title="Persons/Household" description="" menuitem="true" roles="Autism Research Group">
+			<siteMapNode url="~/Applications/PersonAttributes/EditPersonAttributes.aspx" title="Person Attributes" description="" menuitem="true" />
+			<siteMapNode url="~/Tracking/Household.aspx" title="Household Info (*NEW*)" description="" menuitem="true" />
+			<siteMapNode url="~/Tracking/Subject.aspx" title="Subject Info (*NEW*)" description="" menuitem="true" />    
+		</siteMapNode>
+		<siteMapNode url="~/Measures/" title="Measures/Actions/Subj" description="" menuitem="true" roles="Autism Research Group" helpfile="/Help/MeasuresHelp.aspx">
+			<siteMapNode url="~/Measures/Search.aspx" title="Advanced Search" description="" menuitem="true" />
+			<siteMapNode url="~/Measures/MeasureSummaries.aspx" title="Measure Summaries" description="" menuitem="true" helpfile="/Help/MeasuresHelp.aspx#MeasureSummaries" />
+			<siteMapNode url="~/StudyDesign/EditMeasure.aspx" title="Measure Meta-Data" description="" menuitem="true" />
+			<siteMapNode url="~/Measures/New_and_Improved_DataStatus_AtoZ.aspx" title="New-Improved Data Status (sorted A-Z)" description="" menuitem="true" />
+			<siteMapNode url="~/Measures/New_and_Improved_DataStatus_Action.aspx" title="New-Improved Data Status (sorted by Action)" description="" menuitem="true" />
+
+		</siteMapNode>
+		<siteMapNode url="~/Info/TrackingInfo.aspx" title="Study Info" description="" menuitem="true" roles="Autism Research Group" >
+			<siteMapNode url="~/Info/TrackingInfo.aspx" title="Tracking Info" description="" menuitem="true" />
+			<siteMapNode url="~/Info/MeasureList.aspx" title="Measure List" description="" menuitem="true" />
+			<siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info/Data Dictionary" description="" menuitem="true" />
+			<siteMapNode url="~/Tracking/ActionList.aspx" title="Action List" description="" menuitem="true" />
+			<siteMapNode url="~/Info/ConsentList.aspx" title="Consent List" description="" menuitem="true" />
+			<siteMapNode url="~/Info/StudyDesign.aspx" title="Study Design" description="" menuitem="true" />
+			<siteMapNode url="~/Tracking/StudyNs.aspx" title="Study N's" description="" menuitem="true" />      
+			<siteMapNode url="~/Info/LabStaffInfo.aspx" title="Manage Staff Permissions" description="" menuitem="true" />
+			<siteMapNode url="~/Info/StaffAccess.aspx" title="View Staff Permissions Details" description="" menuitem="true" />
+
+			<siteMapNode url="" title="Tadpole" description="" menuitem="true" >
+				<siteMapNode url="~/Study/Tadpole/AdverseEvents.aspx" title="Adverse Events report" description="" menuitem="true" />
+				<siteMapNode url="~/DataEntryForms/Common/TadpoleTXlog/TadpoleTXlog.aspx" title="Enter Tadpole TX logs" description="" menuitem="true" roles="TadpoleTXlogs" />
+				<siteMapNode url="~/Study/Tadpole/TadpoleTXlog_list.aspx" title="List of Entered Tadpole TX logs" description="" menuitem="true" roles="TadpoleTXlogs" />
+				<siteMapNode url="~/Study/Tadpole/TadpoleTXlog_REPORT.aspx" title="Tadpole TX Logs Report" description="" menuitem="true" roles="TadpoleTXlogs" />
+				<siteMapNode url="~/Study/Tadpole/Tadpole_andTadpole_TX.aspx" title="Tadpole and Tadpole TX Subject Status" description="" menuitem="true" roles="TadpoleTXlogs" />
+				<siteMapNode url="~/Study/Tadpole/Randomization_Tadpole.aspx" title="TxGroup Descriptive Summary" description="" menuitem="true" roles="TadpoleTXlogs" />
+				<siteMapNode url="~/Study/Tadpole/LO.aspx" title="Tadpole Learning Opps" description="" menuitem="true" />
+			</siteMapNode>
+
+			<siteMapNode url="" title="PATH" description="" menuitem="true" >
+				<siteMapNode url="~/Study/PATH/Path_and_Path_TX.aspx" title="PATH - PATH_TX Subject status" description="" menuitem="true"   />
+				<siteMapNode url="~/Study/PATH/PATHdates.aspx" title="PATH Assessment and Tx Dates" description="" menuitem="true"   />
+				<siteMapNode url="~/Study/PATH/upload_instructions.aspx" title="Video upload instructions" description="" menuitem="true"   />
+			</siteMapNode>
+			<siteMapNode url="" title="IBIS" description="" menuitem="true" >
+				<siteMapNode url="~/Study/IBIS_2/IBIS_Vinelands.aspx" title="IBIS Vinelands" description="" menuitem="true"   />
+				<!--<siteMapNode url="~/Study/IBIS_2/IBIS2_Vinelands.aspx" title="IBIS-2 Vinelands" description="" menuitem="true"   />-->
+			</siteMapNode>
+
+		</siteMapNode>
+
+
+		<siteMapNode url="~/Reports/" title="Reports" description="" menuitem="true" roles="Autism Research Group" helpfile="/Help/ReportsHelp.aspx">
+			<siteMapNode url="~/Reports/" title="Report Library" description="" menuitem="true" />
+			<siteMapNode url="~/Reports/Custom/UserDefinedReport.aspx" title="User-Defined Report" description="" menuitem="true" />
+			<siteMapNode url="~/Reports/ReportSearch.aspx" title="Search for a Report" description="" menuitem="true" />
+			<siteMapNode url="https://autism.washington.edu/Reports/" title="SQL Reports" description="" menuitem="true" roles="IT Staff Group"/>
+			<siteMapNode url="~/Reports/EditReport.aspx" title="Edit Report" description="" menuitem="true" roles="IT Staff Group" />
+			<siteMapNode url="https://autism.washington.edu/SQLReports/Pages/Report.aspx?ItemPath=%2fTracking+Summary%2fEthnicity_and_Gender_Info" title="Enrollment Report" description="" menuitem="true" />
+		</siteMapNode>
+		
+		<siteMapNode url="~/DataEntry/Default.aspx" title="Data Entry" description="" menuitem="true" roles="Autism Research Group">
+			<siteMapNode url="~/DataEntry/Default.aspx" title="Select a study" description="" menuitem="true" />
+			<siteMapNode url="~/DataEntry/DataToEnterList.aspx" title="Search for Data to Enter" description="" menuitem="true" />
+			<siteMapNode url="~/Info/ResetVerified.aspx" title="Reset/Delete Items" description="" menuitem="true" />
+			<siteMapNode url="~/Analysis/ScoringErrors.aspx" title="Scoring errors" description="" menuitem="true" />
+			<siteMapNode url="~/DataEntryForms/Common/TadpoleTXlog/TadpoleTXlog.aspx" title="Tadpole TX logs" description="" menuitem="true" />
+			<siteMapNode url="R:/Scoring/UWAC_Scoring_Computer.RDP" title="UWAC Scoring Computer" description="" menuitem="true" roles="Scoring Computer Group" />
+			<siteMapNode url="~/DataEntryForms/editlayout.aspx" title="Edit DE Forms Labels &amp; Layout" description="Edit the layout and field meta data" menuitem="true"/>
+			<siteMapNode url="~/DataEntry/ExternalSites.aspx" title="External Sites" description="" menuitem="true">
+				<siteMapNode url="https://www.autismtools.org/isaactools/login.cfm" title="ATN Data Entry: Isaac" description="" menuitem="true" />
+				<siteMapNode url="https://washington-ssc.rexdb.net/" title="Simons Data Entry: Rexdb (need Firefox)" description="" menuitem="true" />
+				<siteMapNode url="https://nihace.bic.mni.mcgill.ca/owl-0.94/index.php?login=1" title="IBIS OWL Intranet" description="" menuitem="true" />
+			</siteMapNode>
+		</siteMapNode>
+
+
+		<!--OLD DATA header<siteMapNode url="~/Data/DataViewer.aspx" title="Data" description="" menuitem="true" roles="Autism Research Group" >-->
+			<siteMapNode url="~/Stats/DataProject.aspx" title="Data" description="" menuitem="true" roles="Autism Research Group" >
+
+				
+				<!--			<siteMapNode url="~/Data/GetData.aspx" title="Measure Summary" description="" menuitem="true" />   -->
+<!--			<siteMapNode url="~/Data/SubjectSummary.aspx" title="Subject Summary" description="" menuitem="true" />  -->
+		<!--  <siteMapNode url="~/Data/GetData.aspx" title="Get Data Files" description="" menuitem="true" /> -->
+
+				<!--https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack_all.aspx-->
+				
+				<siteMapNode url="~/Stats/DataProject.aspx" title="Data Projects" description="" menuitem="true" />
+				<siteMapNode url="~/Tracking/DATAdates.aspx" title="Review Data Dates" description="" menuitem="true" />
+				<siteMapNode url="~/stats/DATAvalues.aspx" title="View Longitudinal Data" description="" menuitem="true" />
+				<siteMapNode url="~/stats/IntHxCharts.aspx" title="View IntHx Data" description="" menuitem="true" />
+				<siteMapNode url="~/Reliability/Rel_Tracking.aspx" title="Reliability tracking" description="" menuitem="true" />
+				<siteMapNode url="~/Stats/StudyApprovers.aspx" title="List of Approvers" description="" menuitem="true" />
+
+				<siteMapNode url="" title="Old stuff" description="" menuitem="true" >
+				
+				<siteMapNode url="~/Data/DataViewer.aspx" title="*NEW* Get Data Files" description="" menuitem="true" />
+			<siteMapNode url="~/Data/GrantDataAccess.aspx" title="Review Data Access" description="" menuitem="true" />
+			<siteMapNode url="~/Analysis/getdata.aspx" title="Download Data" description="" menuitem="true" />
+				<siteMapNode url="~/Analysis/getdata.aspx" title="Download Data" description="" menuitem="true" />
+				</siteMapNode>
+
+				<siteMapNode url="" title="Genetics" description="" menuitem="true" >
+					<siteMapNode url="~/genetics/search_gev.aspx" title="Search gene events" description="" menuitem="true"   />
+					<siteMapNode url="~/genetics/upload_gev.aspx" title="Upload gene events" description="" menuitem="true"   />
+				</siteMapNode>
+
+				
+				<!--      <siteMapNode url="~/Reliability/Rel_TrackReliability.aspx" title="Reliability" description="" menuitem="true" /> -->
+
+
+			<!--
+			<siteMapNode url="~/DataSummary/GetDataFiles.aspx" title="Analysis (ORIG Menu)" description="" menuitem="true" helpfile="/Help/DataSummary.html">
+				Not used <siteMapNode url="~/DataSummary/SingleSubject/" title="Single-Subject Data" description="" menuitem="true" helpfile="/Help/DataSummary.html" />
+				<siteMapNode url="~/DataSummary/GetDataFiles.aspx" title="Get Data Files" description="" menuitem="true" roles="Data Analysts Group" />
+				<siteMapNode url="~/DataAnalysisProject/AnalysisProjectList.aspx" title="Analysis Projects" description="" menuitem="true" roles="" />
+				<siteMapNode url="~/DataSummary/CreateSPSSFiles.aspx" title="Create SPSS Files" description="" menuitem="true" />
+				<siteMapNode url="~/DataSummary/CreateSPSSMatchFile.aspx" title="Match SPSS Data Files" description="" menuitem="true" />
+		 
+				<siteMapNode url="~/DataEntry/DataStorage/SearchStorageUnits.aspx" title="Data Storage" description="" menuitem="true">
+					<siteMapNode url="~/DataEntry/DataStorage/EnterStorageUnit.aspx" title="Enter Storage Unit" description="" menuitem="true" />
+					<siteMapNode url="~/DataEntry/DataStorage/SearchStorageUnits.aspx" title="Search Storage Units" description="" menuitem="true" />
+				</siteMapNode>
+			</siteMapNode>
+			 -->
+		</siteMapNode>
+		<siteMapNode url="~/StudyDesign/Default.aspx" title="Study Design" description="" menuitem="true" roles="Autism Research Group" >
+			<siteMapNode url="~/Info/StudyDesign.aspx" title="View/Edit Study Design" description="" menuitem="true" />
+			<siteMapNode url="~/StudyDesign/Default.aspx" title="Study Design Reports" description="" menuitem="true" />
+			<!--
+						<siteMapNode url="~/StudyDesign/EditMeasure.aspx" title="Edit Measure Info" description="" menuitem="true" roles="IT Staff Group"/>
+						<siteMapNode url="~/StudyDesign/DataTableInfo/EditDataTableInfo.aspx" title="Edit Data Table Info." description="" menuitem="true" roles="IT Staff Group" />
+						<siteMapNode url="~/StudyDesign/EditStudy.aspx" title="Edit Study" description="" menuitem="true" roles="IT Staff Group" />
+						-->
+			<siteMapNode url="~/StudyDesign/StudyPlanning.aspx" title="Testing Projections" description="" menuitem="true" />
+		</siteMapNode>
+		<siteMapNode url="~/Documents/SearchDocs.aspx" title="Documents" description="" menuitem="true" roles="Autism Research Group" helpfile="/Help/DocumentsHelp.aspx">
+			<siteMapNode url="~/Documents/SearchDocs.aspx" title="Search for Documents" description="" menuitem="true" helpfile="/Help/DocumentsHelp.aspx" />
+			<siteMapNode url="~/Documents/UploadDocument.aspx" title="Upload New Document" description="" menuitem="true" helpfile="/Help/DocumentsHelp.aspx" />
+			<siteMapNode url="~/Documents/MeasureDocumentation.aspx" title="Measure Documentation" description="" menuitem="true" helpfile="/Help/DocumentsHelp.aspx" />
+			
+			<siteMapNode url="~/Info/DataDictionary.aspx" title="Data Dictionary" description="" menuitem="true" helpfile="/Help/DocumentsHelp.aspx" />
+			<siteMapNode url="~/Help/Help.aspx?Section=Documents" title="Documents Help" description="" menuitem="true" />
+			<siteMapNode url="~/Admin/MailLabels.aspx" title="Addresses/Mailing Labels" description="" menuitem="true" />
+		</siteMapNode>
+
+		<siteMapNode url="~/NDAR/" title="NDAR" description="" menuitem="true" roles="Autism Research Group" >
+			<!--<siteMapNode url="~/NDAR/Measures_by_study.aspx" title="Measures by study" description="" menuitem="true" />
+			<siteMapNode url="~/NDAR/ACEsummary.aspx" title="ACE summary" description="" menuitem="true" />
+			<siteMapNode url="~/NDAR/NDARcsv.aspx" title="NDAR files" description="" menuitem="true" />-->
+			<siteMapNode url="~/NDAR/GUIDinfo.aspx" title="GUID Info" description="" menuitem="true" roles="NDARgroup" />
+			<siteMapNode url="~/NDAR/NDARapi.aspx" title="NDAR Data Definitions" description="" menuitem="true" roles="NDARgroup" />
+		</siteMapNode>
+		
+		<siteMapNode url="~/Help/" title="Help" description="" menuitem="true" roles="Autism Research Group" >
+			<siteMapNode url="~/Track/Subject.aspx" title="Track Single Subject" description="" menuitem="true" />
+			<siteMapNode url="~/Track/Measures.aspx" title="Track Measures" description="" menuitem="true" />
+			<siteMapNode url="~/Track/Actions.aspx" title="Track Actions" description="" menuitem="true" />
+			<siteMapNode url="~/Track/Subjects.aspx" title="Track Subjects" description="" menuitem="true" />
+			<siteMapNode url="~/_Test/connstrings.aspx" title="Test Conn Strings" description="" menuitem="true" />
+			<siteMapNode url="~/Help/Help.aspx?Section=Reports" title="Reports Help" description="" menuitem="true" />
+			<siteMapNode url="~/Help/Help.aspx?Section=Measures" title="Measures/Actions Help" description="" menuitem="true" />
+			<siteMapNode url="~/Help/Help.aspx?Section=Notes" title="Notes Help" description="" menuitem="true" />
+			<siteMapNode url="~/Help/Help.aspx?Section=Documents" title="Documents Help" description="" menuitem="true" />
+			<siteMapNode url="~/Help/Help.aspx?Section=DatabaseTerms" title="Database Terms" description="" menuitem="true" />
+			<siteMapNode url="~/Help/OnlineAccessRequest.aspx" title="Online Access Request" description="" menuitem="true" />
+			<siteMapNode url="~/Info/netid_request.aspx" title="UW NETID Request" description="" menuitem="true" />
+			<siteMapNode url="~/Help/ServiceRequest/Request.aspx" title="Service/Help Request" description="" menuitem="true" roles="x"/>
+		</siteMapNode>
+
+		<siteMapNode url="~/Applications/" title="Applications" description="" menuitem="false">
+			<siteMapNode url="~/Applications/DataAnalysisProject/" title="Data Analysis Project" description="" />
+			<siteMapNode url="~/Applications/PersonAttributes/" title="Person Attributes" description="" />
+			<siteMapNode url="~/Applications/TXTracking/" title="Treatment Study Tracking" description="" />
+		</siteMapNode>
+		<siteMapNode url="~/Help/" title="Help" description="" menuitem="false" />
+		
+		<siteMapNode url="~/service_request/" title="Service Request" description="" menuitem="false" />
+		<siteMapNode url="~/BehaviorSummaries/" title="Behavior Summaries" description="" menuitem="false" />
+	</siteMapNode>
+</siteMap>

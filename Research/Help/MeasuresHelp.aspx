@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//w3c//dtd xhtml 1.0 strict//en" "http://www.w3.org/tr/xhtml1/dtd/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>UW Autism Center Intranet - Help</title>
+	<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" media="screen" href="/css/help.css" />
+</head>
+<body>
+
+<h1>Help for Viewing and Editing Actions/Measures</h1>
+<h2>Contents</h2>
+<h3>Measure Summaries</h3>
+<ul>
+	<li><a href="#MeasureSummaries">Measure Summaries</a></li>
+</ul>
+<h3>Searching Features</h3>
+<ul>
+	<li><a href="#SimpleSearchActions">Simple Search: Searching for Actions</a></li>
+	<li><a href="#SimpleSearchMeasures">Simple Search: Searching for Measures</a></li>
+	<li><a href="#SimpleSearchSubjects">Advanced Search: Searching for Subjects</a></li>
+	<li><a href="#SimpleSearchActions">Advanced Search: Searching for Actions</a></li>
+	<li><a href="#SimpleSearchMeasures">Advanced Search: Searching for Measures</a></li>
+</ul>
+<h3>Editing Features</h3>
+<ul>
+	<li><a href="#EditingSubjects">Editing Subjects</a></li>
+	<li><a href="#EditingActions">Editing Actions</a></li>
+	<li><a href="#SchedulingActions">Scheduling Actions</a></li>
+	<li><a href="#EditingMeasures">Editing Measures</a></li>
+</ul>
+<a name="MeasureSummaries" />
+<h2>Measure Summaries</h2>
+<p>
+	In the &quot;Measure Summaries&quot; section, you can download a list of all of the Measures for
+	all of the Subjects in a given study in a MS Excel format. Select the study you wish to view and
+	click the &quot;Submit&quot; button. You will be prompted to open or save the Excel file. This
+	process is very resource intensive and may take more than a minute to run. Please be patient.
+</p>
+<h2>Searching Features</h2>
+<p>
+	There are two ways to get to the &quot;Measures/Actions&quot; section of the site. First, you can click the
+	&quot;Measures/Actions&quot; menu item on the left navigation. Entering this way, you are presented with a
+	simple form by which you can search for Actions or Measures. As well, you can enter by clicking
+	a link on one of the reports in the <a href="<%=Request.ApplicationPath %>/help/ReportsHelp.aspx">&quot;Reports&quot;</a> section of the site.
+</p>
+<p>
+	There are two search types: simple and advanced. When you click the &quot;Measures/Actions&quot; link on the
+	left navigation you are presented with the simple search form. A sub-menu item of &quot;Advanced
+	Search&quot; appears under the &quot;Measures/Actions&quot; menu item. Clicking this link will take you to the
+	advanced search page.
+</p>
+<a name="SimpleSearchActions" />
+<h3>Simple Search: Searching for Actions</h3>
+<p>
+	To search for Actions from the simple search page, click the &quot;Actions&quot; radio button option. You
+	will notice that an &quot;Actions&quot; drop-down list appears. When you select a study from the &quot;Study&quot;
+	drop-down list, the &quot;Actions&quot; drop-down list is populated with all of the Actions for the
+	selected study. As well, there is a Subject ID text box on the form. In order to submit the
+	simple search form, you must select a study and either a enter Subject ID into the text box or
+	select an Action from the drop-down list. However, you can enter both a Subject ID and an Action.
+</p>
+<h4>Searching by Subject ID</h4>
+<p>
+	When you enter a Subject ID (but do not select an Action), a search is performed to make sure
+	that the Subject ID is valid. If it is not valid, an error message is displayed. If it is valid,
+	you will be presented with a list of all of the Actions for that Subject and Study. Included in
+	this list are the following six columns:
+</p>
+<ol>
+	<li><b>Action</b> - the name of the Action</li>
+	<li><b>Action Type</b> - the type of Action (phone call, visit, etc.)</li>
+	<li><b>Action Status</b> - the Status of the Action for the Subject</li>
+	<li><b>Resp. For</b> - the Staff Member responsible for completing the Action</li>
+	<li><b>Comp. By</b> - the Staff Member who completed the Action</li>
+	<li><b>Date Done</b> - the date the Action was completed</li>
+</ol>
+<p>
+	The list of Actions that is returned is sortable by any of the columns listed above in both
+	ascending and descending order by clicking the up and down arrows in the column headers. The
+	item in the &quot;Action&quot; column is a link that will take you to the &quot;Edit Action&quot; page where you
+	can edit the Action you selected for the Subject.
+</p>
+<h4>Searching by Action</h4>
+<p>
+	When you select an Action from the drop-down list (but do not enter a Subject ID), you are
+	presented with a list of all of the Subjects for that Action and Study. Included in this list are
+	the following six columns:
+</p>
+<ol>
+	<li><b>Subject</b> - the ID of the Subject</li>
+	<li><b>Subject Status</b> - the Status of the Subject</li>
+	<li><b>Action Status</b> - the Status of the Action for the Subject</li>
+	<li><b>Resp. For</b> - the Staff Member responsible for completing the Action</li>
+	<li><b>Comp. By</b> - the Staff Member who completed the Action</li>
+	<li><b>Date Done</b> - the date the Action was completed</li>
+</ol>
+<p>
+	The list of Subjects that is returned is sortable by any of the columns listed above in both
+	ascending and descending order by clicking the up and down arrows in the column headers. The
+	item in the &quot;Subject&quot; column is a link that will take you to the &quot;Edit Action&quot; page where you
+	can edit the Action for the Subject you selected.
+</p>
+<h4>Searching by Subject ID and Action</h4>
+<p>
+	When you select an Action from the drop-down list and enter a Subject ID, a search is performed
+	to make sure that the Subject ID is valid. If it is not valid, an error message is displayed.
+	If it is valid, you will be directed to the Edit Action page for the Action and Subject ID you
+	entered.
+</p>
+<a name="SimpleSearchMeasures" />
+<h3>Simple Search: Searching for Measures</h3>
+<p>
+	To search for Measures from the simple search page, click the &quot;Measures&quot; radio button option. You
+	will notice that a &quot;Measures&quot; drop-down list appears. When you select a study from the &quot;Study&quot;
+	drop-down list, the &quot;Measures&quot; drop-down list is populated with all of the Measures for the
+	selected study. As well, there is a Subject ID text box on the form. In order to submit the
+	simple search form, you must select a study and either a enter Subject ID into the text box or
+	select a Measures from the drop-down list. However, you can enter both a Subject ID and a Measure.
+</p>
+<h4>Searching by Subject ID</h4>
+<p>
+	When you enter a Subject ID (but do not select a Measure), a search is performed to make sure
+	that the Subject ID is valid. If it is not valid, an error message is displayed. If it is valid,
+	you will be presented with a list of all of the Measures for that Subject and Study. Included in
+	this list are the following seven columns:
+</p>
+<ol>
+	<li><b>Measure</b> - the name of the Measure</li>
+	<li><b>Measure Status</b> - the Status and Status Detail of Measure</li>
+	<li><b>Action</b> - the Action in which the Measure should be collected</li>
+	<li><b>Action Status</b> - the Status of the Action</li>
+	<li><b>Resp. For</b> - the Staff Member responsible for completing the Action</li>
+	<li><b>Comp. By</b> - the Staff Member who completed the Action</li>
+	<li><b>Date Done</b> - the date the Action was completed</li>
+</ol>
+<p>
+	The list of Measures that is returned is sortable by any of the columns listed above in both
+	ascending and descending order by clicking the up and down arrows in the column headers. The
+	item in the &quot;Measure&quot; column is a link that will take you to the &quot;Edit Measure&quot; page where you
+	can edit the Measure you selected for the Subject.
+</p>
+<h4>Searching by Measure</h4>
+<p>
+	When you select a Measure from the drop-down list (but do not enter a Subject ID), you are
+	presented with a list of all of the Subjects for that Measure and Study. Included in this list are
+	the following eight columns:
+</p>
+<ol>
+	<li><b>Subj. ID</b> - the ID of the Subject</li>
+	<li><b>Subj. Status</b> - the Status of the Subject</li>
+	<li><b>Measure</b> - the name of the Measure</li>
+	<li><b>Meas. Status</b> - the Status and Status Detail of the Measure for the Subject</li>
+	<li><b>Action</b> - the name of the Action</li>
+	<li><b>Action Status</b> - the Status of the Action for the Subject</li>
+	<li><b>Resp. For</b> - the Staff Member responsible for completing the Action</li>
+	<li><b>Comp. By</b> - the Staff Member who completed the Action</li>
+	<li><b>Date Done</b> - the date the Action was completed</li>
+</ol>
+<p>
+	The list of Subjects that is returned is sortable by any of the columns listed above in both
+	ascending and descending order by clicking the up and down arrows in the column headers. The
+	item in the &quot;Subject Status&quot; column is a link that will take you to the &quot;Edit Subject&quot; page where
+	you can edit information about the Subject. The item in the &quot;Meas. Status&quot; column is a link to
+	the &quot;Edit Measure&quot; page where you can edit the Measure for the Subject you selected. The item in
+	the &quot;Action Status&quot; column is a link to the &quot;Edit Action&quot; page where you can edit the Action for
+	the Subject you selected.
+</p>
+<h4>Searching by Subject ID and Action</h4>
+<p>
+	When you select an Action from the drop-down list and enter a Subject ID, a search is performed
+	to make sure that the Subject ID is valid. If it is not valid, an error message is displayed.
+	If it is valid, you will be directed to the Edit Action page for the Action and Subject ID you
+	entered.
+</p>
+<a name="SimpleSearchSubjects" />
+<h3>Advanced Search: Searching for Subjects</h3>
+<p>
+	Coming Soon!
+</p>
+<a name="SimpleSearchActions" />
+<h3>Advanced Search: Searching for Actions</h3>
+<p>
+	Coming Soon!
+</p>
+<a name="SimpleSearchMeasures" />
+<h3>Advanced Search: Searching for Measures</h3>
+<p>
+	Coming Soon!
+</p>
+<h2>Editing Features</h2>
+<a name="EditingSubjects" />
+<h3>Editing Subjects</h3>
+<p>
+	When you go to the &quot;Edit Subject&quot; page, you have the ability to change the Subject Status and
+	Subject Status Detail as well as add or change the Notes for a given Subject. You are presented
+	with two drop-down lists: one for Subject Status and one for Subject Status Detail. When you
+	change the value of the Subject Status drop-down list, the Subject Status Detail drop-down is
+	populated with the appropriate items for the selected Subject Status. To update these items,
+	simply make your edits and click the &quot;Submit&quot; button.
+</p>
+<a name="EditingActions" />
+<h3>Editing Actions</h3>
+<p>
+	When you go to the &quot;Edit Action&quot; page, you have the ability to change several of the items for a
+	the Action as it applies to a Subject. On the page you will see three drop-down lists: one to
+	select the Staff Member responsible for completing the Action, one to select the Staff Member who
+	actually completed the Action, and one to set the Action Status for the Action. As well, there are
+	three text boxes with calndar controls to select the date the Action was done, a starting due date,
+	and an ending due date. There is also a large text area in which to enter notes about the Action as
+	it applies to the Subject. To update any of these items, enter in the correct information and click
+	the &quot;Save Changes&quot; button. Depending on the value selected in the &quot;Action Status&quot;
+	drop-down list, the &quot;Comp. By&quot; and &quot;Date Done&quot; fields become required.
+</p>
+<p>
+	Beneath the &quot;Edit Action&quot; form, there is also a list of all of the Measures that are to be
+	collected in the Action along with their Measure Status, Date Collected, and the Clinician
+	responsible for collecting them. Each item in the &quot;Measure&quot; column is a link to the &quot;Edit
+	Measure&quot; page for that Measure. Items in this column that are flagged with an asterisk (*) have
+	notes associated with them. To view the notes, move your mouse over the link and a tool-tip will
+	appear. As well, there is a check box next to each Measure and two buttons beneath the list of
+	Measures. Checking some of the Measures and clicking the &quot;Edit Checked Measures&quot; button
+	will allow you to edit all of the Measures by applying the same value for the Measure Status, etc.
+	to each Measure. Checking some of the Measures and clicking the &quot;Move Checked Measures to New
+	Action&quot; button allows you to move the Measures to another Action. The Actions to which you are
+	allowed to move the Measures are determined by the following rules:
+</p>
+<ul>
+	<li>
+		If the CURRENT Action's status is NOT set to &quot;Canceled&quot;, the measures can be moved to
+		any &quot;Session&quot;, &quot;Phone Call&quot;, or &quot;Receive Item&quot; action whose status
+		is NOT set to &quot;Complete&quot;, &quot;Incompl/Need to FollowUp&quot;, &quot;Need to FollowUp&quot;,
+		&quot;Canceled&quot;, and &quot;NA for Group&quot;.
+	</li>
+	<li>
+		If the CURRENT Action's status IS set to &quot;Canceled&quot;, the measures can be moved to any
+		&quot;Session&quot;, &quot;Phone Call&quot;, or &quot;Receive Item&quot; action whose status is
+		NOT set to &quot;Canceled&quot;.
+	</li>
+	<li>
+		If the Study that the Action is in is a &quot;Family Study&quot; (such as GEN or FEIN, where
+		multiple members of the same household are subjects in the study), the same rules above apply,
+		but you can also move the measures to another family member's actions which meet the above
+		rules. However, it is STRONGLY recommended that you only do this when absolutely necessary, as
+		it makes tracking much more challenging.
+	</li>
+</ul>
+<p>
+	For some Subjects, there is a link to the Subject's Behavior Summary that appears underneath these
+	buttons. This link appears if a Behavior Summary exists for the subject. As well, if there are any
+	Measures assigned to the Action, a list of the Measures will appear in a table underneath the
+	Action form. Basic Measure information is displayed indicating the name of the Measure, it's
+	status, the date it was collected, and the clinician who administered the Measure. There are links
+	to the Edit Measure page (from the Measure column) and to the Data Entry Form (from the Data Entry
+	column) if the form exists. There are two buttons that allow you to edit any combination of the
+	Measures in the Action. The first button allows you to update the status, clinician, date done,
+	and notes for the selected. The form to edit the Measures will open in a new window. The
+	information you enter into this form will be applied to all of the Measures you selected. The
+	second button allows you to move the selected Measures to a new Action. The Actions that you are
+	allowed to move the Measures are determined by the following rules:
+</p>
+<ul>
+	<li>
+		If the CURRENT Action's status is NOT set to &quot;Canceled&quot;, the Measures can be moved to
+		any &quot;Session&quot;, &quot;Phone Call&quot;, or &quot;Receive Item&quot; Action whose status
+		is NOT set to &quot;Complete&quot;, &quot;Incompl/Need to FollowUp&quot;, &quot;Need to
+		FollowUp&quot;, &quot;Canceled&quot;, and &quot;NA for Group&quot;.
+	</li>
+	<li>
+		If the CURRENT Action's status IS set to &quot;Canceled&quot;, the Measures can be moved to any
+		&quot;Session&quot;, &quot;Phone Call&quot;, or &quot;Receive Item&quot; action whose status is
+		NOT set to &quot;Canceled&quot;.
+	</li>
+	<li>
+		If the Study that the Action is in is a &quot;Family Study&quot; (such as GEN or FEIN, where
+		multiple members of the same household are subjects in the study), the same rules above apply,
+		but you can also move the measures to another family member's actions which meet the above
+		rules. However, it is STRONGLY recommended that you only do this when absolutely necessary,
+		as it makes tracking much more challenging.
+	</li>
+</ul>
+<p>
+	When you click the &quot;Save Changes&quot; button on the Edit Action form, the following takes place:
+</p>
+<ul>
+	<li>
+		The Action's information is updated with the information entered in the form.
+	</li>
+	<li>
+		If the Action is a Phone Call and the Status is &quot;Complete&quot; or &quot;Declined to
+		Complete&quot;, an entry is made into the Household Contact Log.
+	</li>
+	<li>
+		If the Action is the GEN Lab Visit and the Status is set to &quot;Complete&quot;,
+		&quot;Canceled&quot;, &quot;NA for group&quot;, &quot;Scheduled&quot;, &quot;NA due to Subj
+		Status&quot;, &quot;Tentative&quot;, or &quot;Declined to complete&quot; a flag is set to move
+		them onto various GEN Reports. (These are basically the post-Sept. 2003 families).
+	</li>
+	<li>
+		Any &quot;triggers&quot; that have been defined for the Action are executed. A trigger is
+		piece of code that automatically change other actions' or measures' attributes based on the
+		status of a &quot;triggering&quot; action.
+	</li>
+</ul>
+<a name="SchedulingActions" />
+<h3>Scheduling Actions</h3>
+<p>
+	The Schedule Action page allows you to set the date, start and end times, and location of an
+	Action. You can also set the Assistant Status and add Assistant Notes (generally this should
+	only be used when you're not sure who the Assistant(s) will be; if you know who the Assistant(s)
+	will be, just add them to the action from the Edit Action page). When you submit this page, the
+	Action Status for the Action is always set to &quot;Scheduled&quot;. There are several checks are done to
+	make sure that there are no scheduling conflicts with Subjects, staff, rooms, dates, and times.
+	The following things are checked:
+</p>
+<ul>
+	<li>
+		The Subject you are scheduling does not have any conflicts. That is, if the Subject is also
+		in another Study and has an appointment on the same date/time. (The Subject CAN be scheduled
+		on the same date/time for different Actions in the SAME Study.)
+	</li>
+	<li>
+		The Staff Member you are scheduling does not have any conflicts. That is, the staff member
+		is not scheduled to be with two different Subjects at the same time. (The staff member CAN be
+		scheduled on the same date/time for different Actions for the SAME Subject.) 
+	</li>
+	<li>
+		The Location you are scheduling does not have any conflicts. That is, the location is not
+		scheduled for different subjects at the same time. (The location CAN be scheduled on the
+		same date/time for different Actions for the SAME subject.) There are certain locations where
+		this rule does not apply such as, &quot;Home Visit&quot;, &quot;Out of Town&quot;,
+		&quot;Phone&quot;, etc. The intranet only looks up other reservations in the tracking database;
+		it is not integrated with the SOS scheduling utility. 
+	</li>
+	<li>
+		If the Status of the Action that you are scheduling is set to &quot;Canceled&quot;, a NEW
+		Action is created, copying all of the OLD action's information and scheduling it with the NEW
+		information. The measures for the old action are then moved to the new action.
+	</li>
+</ul>
+<p>
+	Given the fourth point above, the best way to cancel and reschedule an Action is to first set the
+	Action's status to &quot;Canceled&quot;, then go to the Schedule Action page for this Action and change the
+	date/time/etc. This will create the new, correctly scheduled Action.
+</p>
+<a name="EditingMeasures" />
+<h3>Editing Measures</h3>
+<p>
+	When you go to the &quot;Edit Measure&quot; page, you have the ability to change several of the items for a
+	the Measure as it applies to a Subject. On the page you will see three drop-down lists: one to
+	one to select the Measure Status for the Measure, one to select the Measure Status Detail for the
+	Measure, and one to select the Staff Member who completed the Action. As well, there is a text
+	box with a calndar control to select the date the Action was done, and a large text are to enter
+	notes about the Action as it applies to the Subject. To update any of these items, enter in the
+	correct information and click the &quot;Submit&quot; button.
+</p>
+<p>
+	When you change the item in the &quot;Measure Status&quot; drop-down list, the items in the &quot;Measure Status
+	Detail&quot; list are changed based on the selected Measure Status. The form cannot be submitted
+	unless all of the fields (except the &quot;Notes&quot; field) contain valid values.
+</p>
+</body>
+</html>

@@ -1,0 +1,399 @@
+﻿<%@ Page Language="c#" Debug="true" MasterPageFile="~/UWAC.master"
+    CodeFile="Waitlist_edit.aspx.cs" AutoEventWireup="true" Inherits="Info_Waitlist_Edit" Title="Waitlist" %>
+
+<%--EnableEventValidation="false"--%>
+
+<%@ MasterType VirtualPath="~/UWAC.master" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
+
+    <br />
+
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
+
+
+
+        <asp:Label ID="lblInfo" runat="server" Text=""></asp:Label>
+    <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Always" EnableViewState="true"   ChildrenAsTriggers="true">
+        <ContentTemplate>
+
+                <table style="vertical-align: top; width: 95%">
+        <tr>
+            <td>
+                <asp:Label ID="lblNewClientFName" runat="server" Text="New Client First Name"></asp:Label>
+                <asp:TextBox ID="TextBoxNewClientFName" AutoPostBack="True" runat="server" OnTextChanged="TextBoxNewClientName_TextChanged" OnDataBinding="TextBoxNewClientName_TextChanged"></asp:TextBox>
+            </td>
+            <td>
+                <asp:Label ID="lblNewClientLName" runat="server" Text="New Client Last Name"></asp:Label>
+                <asp:TextBox ID="TextBoxNewClientLName" 
+                    AutoPostBack="True" runat="server" OnTextChanged="TextBoxNewClientName_TextChanged" OnDataBinding="TextBoxNewClientName_TextChanged"></asp:TextBox>
+            </td>
+            <td>
+                <asp:Button ID="btnCreateNewClient" runat="server" OnClick="btnCreateNewClient_Click" Text="Create New Client" />
+            </td>
+        </tr>
+    </table>
+
+    <hr />
+
+             <asp:Label ID="LabelCheckBox1" runat="server" Text="Include Archived Clients in Dropdown List"></asp:Label>
+                        <asp:CheckBox ID="CheckBox1" runat="server" OnCheckedChanged="CheckBox1_CheckedChanged"   AutoPostBack="true" />
+            <br />
+                        <asp:Label ID="lblDropDownList1" runat="server" Text="Client"></asp:Label>
+                        <asp:DropDownList ID="DropDownList1" runat="server" AutoPostBack="True" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged"></asp:DropDownList>
+        <%--                <asp:SqlDataSource ID="SqlDataSource_Waitlist_DDL_1" runat="server"
+                            ConnectionString="<%$ ConnectionStrings:waitlistConnectionString %>"
+                            SelectCommand="SELECT DISTINCT [LName], [FName], [ClientID] FROM [Clients] 
+                            ORDER BY [LName], [FName] "></asp:SqlDataSource>--%>
+                  
+                       
+                    
+
+
+    <table style="text-align: right; width: 95%">
+    
+        <tr>
+            <td style="vertical-align:top">
+ 
+                <b>
+                    <asp:Label ID="LabelDemographics" runat="server" Text="Demographics"></asp:Label></b>
+                <br />
+                <b>
+                <asp:Label ID="Label1" runat="server" Text="Contact Date" ></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox1" runat="server"  ></asp:TextBox>
+                <br />
+                
+                <%--<asp:Label ID="Label3" runat="server" Text="Cancellations"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox3" runat="server"></asp:TextBox>
+                <br />--%>
+                <asp:Label ID="Label4" runat="server" Text="Last Name"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox4" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label5" runat="server" Text="First Name"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox5" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label6" runat="server" Text="Initial"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox6" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label7" runat="server" Text="DOB"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox7" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label8" runat="server" Text="Age"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox8" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label9" runat="server" Text="Gender"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox9" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label10" runat="server" Text="Guardian Last Name"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox10" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label11" runat="server" Text="Guardian First Name"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox11" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label12" runat="server" Text="Guardian Relationship"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox12" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label17" runat="server" Text="Home Phone"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox17" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label18" runat="server" Text="Work Phone"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox18" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label19" runat="server" Text="Cell Phone"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox19" runat="server"></asp:TextBox>
+                <br />
+                    
+                <asp:Label ID="LabelEmail" runat="server" Text="Email"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBoxEmail" runat="server"></asp:TextBox>
+                <br /></b>
+                <asp:Label ID="Label13" runat="server" Text="Address"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox13" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label14" runat="server" Text="City"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox14" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label15" runat="server" Text="State"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox15" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label16" runat="server" Text="Zip Code"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox16" runat="server"></asp:TextBox>
+                <br />
+                <b>
+                <asp:Label ID="Label23" runat="server" Text="Primary Insurance"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox23" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label24" runat="server" Text="Secondary Insurance"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox24" runat="server"></asp:TextBox>
+                <br />
+                    </b>
+                <asp:Label ID="Label28" runat="server" Text="Referral Category"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox28" runat="server"></asp:TextBox>
+                <br />
+                
+                <asp:Label ID="Label20" runat="server" Text="PCP"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox20" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label21" runat="server" Text="PCP Facility"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox21" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label22" runat="server" Text="School District"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox22" runat="server"></asp:TextBox>
+                <br />
+                
+                
+                
+            </td>
+            <td style="vertical-align:top">
+                   
+                <b>
+                    <asp:Label ID="LabelIntake" runat="server" Text="Intake"></asp:Label></b>
+                <br />
+                <asp:Label ID="Label2" runat="server" Text="ID"></asp:Label>
+                &nbsp;
+                <asp:TextBox ID="TextBox2" runat="server" Enabled="false"></asp:TextBox> 
+                
+                <br />
+                <asp:Label ID="Label26" runat="server" Text="Intake Staff"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox26" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label27" runat="server" Text="Site Requested"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox27" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label29" runat="server" Text="Packet Mailed"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox29" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label30" runat="server" Text="Packet Returned"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox30" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label46" runat="server" Text="Chart Type"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox46" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label37" runat="server" Text="Interest Checked"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox37" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label38" runat="server" Text="2nd Interest Check"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox38" runat="server"></asp:TextBox>
+                <br />
+
+                <br />
+
+                <b>
+                    <asp:Label ID="LabelScheduling" runat="server" Text="Scheduling"></asp:Label></b>
+                <br />
+
+                <asp:Label ID="Label31" runat="server" Text="Chart Email Sent"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox31" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label32" runat="server" Text="Pre-Auth Email Sent"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox32" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label33" runat="server" Text="Pre-Auth Given"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox33" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label34" runat="server" Text="Billing Consulation Complete"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox34" runat="server"></asp:TextBox>
+                <br />
+                <%--<asp:Label ID="Label35" runat="server" Text="Packet Checked"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox35" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label36" runat="server" Text="2nd Packet Check"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox36" runat="server"></asp:TextBox>
+                <br />--%>
+                
+                <%--<asp:Label ID="Label39" runat="server" Text="Archive Letter Sent"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox39" runat="server"></asp:TextBox>
+                <br />--%>
+                <asp:Label ID="Label40" runat="server" Text="Schedule Attempt 1"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox40" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label41" runat="server" Text="Schedule Attempt 2"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox41" runat="server"></asp:TextBox>
+                <br />
+                <%--asp:Label ID="Label42" runat="server" Text="Deadline Letter"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox42" runat="server" OnTextChanged="TextBox42_TextChanged"></asp:TextBox>
+                <br />--%>
+
+                <asp:Label ID="Label44" runat="server" Text="Scheduling Packet Sent"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox44" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label47" runat="server" Text="Scheduled With"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox47" runat="server"></asp:TextBox>
+                <br />
+                                
+                <asp:Label ID="Label45" runat="server" Text="First Appointment"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox45" runat="server"></asp:TextBox>
+                <br />
+
+                                <asp:Label ID="Label43" runat="server" Text="Scheduled w/ Family"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox43" runat="server"></asp:TextBox>
+                <br />
+                <br />
+                <br />
+               
+                 <asp:Button ID="btnSaveChanges" runat="server" Visible="True" Text="Save Changes" OnClick="btnSaveChanges_Click" AutoPostBack="true" Height="46px" Width="284px"  />
+                  
+                 </td>
+            <td style="vertical-align:top">
+                
+                <b>
+                    <asp:Label ID="LabelServices" runat="server" Text="Services"></asp:Label></b>
+                <br />
+
+                <asp:Label ID="Label59" runat="server" Text="Primary Service"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox59" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label60" runat="server" Text="Status"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox60" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label61" runat="server" Text="Secondary Service"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox61" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label62" runat="server" Text="Status"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox62" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label63" runat="server" Text="3rd Service"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox63" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label64" runat="server" Text="Status"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox64" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label65" runat="server" Text="4th Service"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox65" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label66" runat="server" Text="Status"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox66" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label67" runat="server" Text="5th Service"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox67" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label68" runat="server" Text="Status"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox68" runat="server"></asp:TextBox>
+                <br />
+
+                
+           
+                
+                <br />
+                <b>
+                    <asp:Label ID="LabelDiagnoses" runat="server" Text="Diagnoses"></asp:Label></b>
+                <br />
+                <asp:Label ID="Label52" runat="server" Text="Diagnosis"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox52" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label53" runat="server" Text="Diagnosis"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox53" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label54" runat="server" Text="Diagnosis"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox54" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label55" runat="server" Text="Diagnosed By"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox55" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label56" runat="server" Text="Position"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox56" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label57" runat="server" Text="Referral Source"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox57" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label58" runat="server" Text="Referral Position"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox58" runat="server"></asp:TextBox>
+                <br />
+                 <br />
+                
+
+                 <b><asp:Label ID="Label25" runat="server" Text="Archive"></asp:Label></b>
+                &nbsp;
+                <%-- <asp:TextBox ID="TextBox25" runat="server"></asp:TextBox> --%>
+                <asp:CheckBox ID="CheckBox25" runat="server" />
+                <br />
+                <asp:Label ID="Label48" runat="server" Text="Archive Reasons"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox48" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label49" runat="server" Text="Archive Date"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox49" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label50" runat="server" Text="Archive Staff"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox50" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label51" runat="server" Text="Purge Records"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox51" runat="server" ></asp:TextBox>
+                <br />
+ 
+               
+                
+               
+
+            </td>
+        </tr>
+    </table>
+            <br />
+    <table style="text-align: right; width: 95%">
+                <tr>
+            <td><b>
+                <asp:Label ID="Label69" runat="server" Text="Initial Comment"></asp:Label></b>
+                &nbsp;<asp:TextBox ID="TextBox69" runat="server" Wrap="True" Rows="10" TextMode="multiline" Height="60px" Width="500px"></asp:TextBox>
+                <br />
+                </td>
+                    <td>
+                <%--<asp:Label ID="Label70" runat="server" Text="Follow-Up Comment"></asp:Label>
+                &nbsp;<asp:TextBox ID="TextBox70" runat="server"  Wrap="True" Rows="10" TextMode="multiline" Height="44px" Width="148px"></asp:TextBox>
+                <br />--%>
+                <b><asp:Label ID="Label71" runat="server" Text="Scheduling Comment"></asp:Label></b>
+                &nbsp;<asp:TextBox ID="TextBox71" runat="server" Wrap="True" Rows="10" TextMode="multiline" Height="60px" Width="500px"></asp:TextBox>
+                <br />
+                        </td>
+                    </tr>
+</table>
+
+
+  
+   
+        </ContentTemplate>
+
+        <Triggers>
+            <asp:AsyncPostBackTrigger ControlID="CheckBox1" EventName="CheckedChanged"  />
+
+            <asp:PostBackTrigger ControlID="DropDownList1"   />
+            <asp:PostBackTrigger ControlID="btnSaveChanges"   />
+
+
+        </Triggers>
+    </asp:UpdatePanel>
+
+
+
+     
+
+   <%-- <br />
+    <hr />
+    <br />
+
+    <asp:GridView ID="GridView1" runat="server" AllowSorting="True"
+        AutoGenerateColumns="False" DataSourceID="SqlDataSource5" ShowFooter="True"
+        OnRowDataBound="GridView1_RowDataBound">
+        <Columns>
+            <asp:CheckBoxField DataField="Archive" HeaderText="Archive" SortExpression="Archive" />
+            <asp:BoundField DataField="Site" HeaderText="Site" SortExpression="Site" />
+            <asp:BoundField DataField="SvcReq" HeaderText="SvcReq" SortExpression="SvcReq" />
+            <asp:BoundField DataField="SvcStatus" HeaderText="SvcStatus" SortExpression="SvcStatus" />
+            <asp:BoundField DataField="DOB" HeaderText="DOB" SortExpression="DOB" />
+            <asp:BoundField DataField="LName" HeaderText="LName" SortExpression="LName" />
+            <asp:BoundField DataField="SvcReq2" HeaderText="SvcReq2" SortExpression="SvcReq2" />
+            <asp:BoundField DataField="Ins" HeaderText="Ins" SortExpression="Ins" />
+            <asp:BoundField DataField="InfoRtn" HeaderText="InfoRtn" SortExpression="InfoRtn" />
+        </Columns>
+    </asp:GridView>
+
+    <asp:SqlDataSource ID="SqlDataSource5" runat="server" ConnectionString="<%$ ConnectionStrings:waitlistConnectionString %>" 
+        SelectCommand="SELECT DISTINCT * FROM [vw_getWaitlist] 
+        WHERE (([Site] IS NOT NULL) 
+        AND ([SvcStatus] NOT LIKE '%' + @SvcStatus + '%')) 
+        ORDER BY [Site], [SvcReq], [SvcStatus]">
+        <SelectParameters>
+            <asp:Parameter DefaultValue="No Paperwork" Name="SvcStatus" Type="String" />
+        </SelectParameters>
+    </asp:SqlDataSource>--%>
+
+</asp:Content>
+

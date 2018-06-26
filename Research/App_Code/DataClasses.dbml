@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="uwac" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=autism-sql;Initial Catalog=uwac;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="uwacConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.tClient" Member="tClients">
+    <Type Name="tClient">
+      <Column Name="clientID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="personID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="insurance1" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="insurance2" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="pcp" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="pcp_affiliation" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="school_district" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="intake_staffID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="uwacsiteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="created" Type="System.DateTime" DbType="SmallDateTime" CanBeNull="true" />
+      <Column Name="createdBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="updated" Type="System.DateTime" DbType="SmallDateTime" CanBeNull="true" />
+      <Column Name="updatedBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="tClient_tClient_Diagnosi" Member="tClient_Diagnosis" ThisKey="clientID" OtherKey="clientID" Type="tClient_Diagnosi" />
+      <Association Name="tClient_tClient_Event" Member="tClient_Events" ThisKey="clientID" OtherKey="clientID" Type="tClient_Event" />
+      <Association Name="tClient_tClient_IntakeDoc" Member="tClient_IntakeDocs" ThisKey="clientID" OtherKey="clientID" Type="tClient_IntakeDoc" />
+      <Association Name="tClient_tClient_ServiceReq" Member="tClient_ServiceReqs" ThisKey="clientID" OtherKey="clientID" Type="tClient_ServiceReq" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tClient_Diagnosis" Member="tClient_Diagnosis">
+    <Type Name="tClient_Diagnosi">
+      <Column Name="clientdiagID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="clientID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="diagID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="diagBy" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="diagPosition" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="referralSource" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="referralPosition" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="notes" Type="System.String" DbType="VarChar(250)" CanBeNull="true" />
+      <Column Name="created" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="createdBy" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="updated" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="updatedBy" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Association Name="tClient_tClient_Diagnosi" Member="tClient" ThisKey="clientID" OtherKey="clientID" Type="tClient" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tClient_Event" Member="tClient_Events">
+    <Type Name="tClient_Event">
+      <Column Name="client_eventID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="clientID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="eventID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="eventBeginDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="eventCompleteDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="eventstatusID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="eventNotes" Type="System.String" DbType="VarChar(250)" CanBeNull="true" />
+      <Column Name="created" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="createdBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="updated" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="updatedBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="tClient_tClient_Event" Member="tClient" ThisKey="clientID" OtherKey="clientID" Type="tClient" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tClient_IntakeDoc" Member="tClient_IntakeDocs">
+    <Type Name="tClient_IntakeDoc">
+      <Column Name="cl_intakedocID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IntakeDocID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="clientID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="intakedoc_statusID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="sentDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="returnDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="notes" Type="System.String" DbType="VarChar(250)" CanBeNull="true" />
+      <Column Name="created" Type="System.DateTime" DbType="SmallDateTime" CanBeNull="true" />
+      <Column Name="createdBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="updated" Type="System.DateTime" DbType="SmallDateTime" CanBeNull="true" />
+      <Column Name="updatedBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="tClient_tClient_IntakeDoc" Member="tClient" ThisKey="clientID" OtherKey="clientID" Type="tClient" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tClient_ServiceReq" Member="tClient_ServiceReqs">
+    <Type Name="tClient_ServiceReq">
+      <Column Name="servicereqID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="clientID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="uwacsiteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="servicetypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="servreq_statusID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="internal" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="created" Type="System.DateTime" DbType="SmallDateTime" CanBeNull="true" />
+      <Column Name="createdBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="updated" Type="System.DateTime" DbType="SmallDateTime" CanBeNull="true" />
+      <Column Name="updatedBy" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="tClient_tClient_ServiceReq" Member="tClient" ThisKey="clientID" OtherKey="clientID" Type="tClient" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Function Name="dbo.sp_INSERT_Default_Events" Method="sp_INSERT_Default_Events">
+    <Parameter Name="clientID" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_INSERT_Default_IntakeDocs" Method="sp_INSERT_Default_IntakeDocs">
+    <Parameter Name="clientID" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_INSERT_Service_Specific_IntakeDocs" Method="sp_INSERT_Service_Specific_IntakeDocs">
+    <Parameter Name="clientID" Type="System.Int32" DbType="Int" />
+    <Parameter Name="servicetypeID" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.spGetCols" Method="spGetCols">
+    <Parameter Name="tbl" Type="System.String" DbType="VarChar(100)" />
+    <ElementType Name="spGetColsResult">
+      <Column Name="column_name" Type="System.String" DbType="NVarChar(128)" CanBeNull="true" />
+      <Column Name="DATA_TYPE" Type="System.String" DbType="NVarChar(128)" CanBeNull="true" />
+      <Column Name="CHARACTER_MAXIMUM_LENGTH" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </ElementType>
+  </Function>
+</Database>

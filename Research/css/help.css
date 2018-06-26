@@ -1,0 +1,117 @@
+body
+{
+    font-size: 10pt;
+    color: #000000;
+    font-family: Arial;
+    background-color: #ffffcc;
+}
+
+dl
+{
+	margin-left: 50px;
+	margin-right: 10px;
+}
+dl dt
+{
+	font-weight: bold;
+}
+dl dd
+{
+	margin-left: 20px;
+	padding-bottom: 16px;
+}
+h1
+{
+    font-weight: bold;
+    font-size: 16pt;
+    color: #000000;
+    text-align: center;
+}
+h2
+{
+    font-weight: bold;
+    font-size: 14pt;
+    color: #000000;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+h3
+{
+    font-weight: bold;
+    font-size: 12pt;
+    color: #000000;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+h4
+{
+    font-weight: bold;
+    font-size: 10pt;
+    color: #000000;
+    margin-left: 30px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    text-decoration: underline;
+}
+h5
+{
+    font-weight: bold;
+    font-size: 10pt;
+    color: #000000;
+    margin-left: 35px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+	font-style: italic;
+}
+img
+{
+	border: 0px;
+	float: right;
+}
+ol
+{
+    margin-left: 75px;
+    margin-right: 10px;
+}
+ol li ol
+{
+	margin-left: 40px;
+	margin-bottom: 16px;
+	margin-top: 16px;
+}
+p
+{
+    margin-left: 40px;
+    margin-right: 10px;
+    margin-top: 0px;
+    padding-top: 0px;
+}
+table
+{
+	font-size: 10pt;
+	border-top: solid 1px, #aaaaaa;
+	border-right: solid 1px, #aaaaaa;
+}
+table tr td
+{
+	vertical-align: top;
+	font-size: 10pt;
+	padding: 4px;
+	border-bottom: solid 1px, #aaaaaa;
+	border-left: solid 1px, #aaaaaa;
+}
+table tr th
+{
+	vertical-align: top;
+	font-size: 10pt;
+	padding: 4px;
+	border-bottom: solid 1px, #aaaaaa;
+	border-left: solid 1px, #aaaaaa;
+}
+ul
+{
+    margin-left: 75px;
+    margin-right: 10px;
+}

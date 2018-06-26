@@ -1,0 +1,88 @@
+﻿<%@ Page Language="c#" Debug="true" MasterPageFile="~/UWAC.master"
+    CodeFile="Waitlist_reports.aspx.cs" AutoEventWireup="true" Inherits="Info_Waitlist_Reports" Title="Waitlist" %>
+
+<%--EnableEventValidation="false"--%>
+
+<%@ MasterType VirtualPath="~/UWAC.master" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
+
+    <asp:sqldatasource id="SqlDataSource1" runat="server" connectionstring="<%$ ConnectionStrings:waitlistConnectionString %>"> </asp:sqldatasource>
+
+       <asp:scriptmanager id="ScriptManager1" runat="server"></asp:scriptmanager>
+    
+    <asp:updatepanel id="UpdatePanel1" runat="server" updatemode="Always" enableviewstate="true" childrenastriggers="true">
+        <ContentTemplate>   
+
+            <br />
+ <table>
+
+        <tr>
+            <td>
+                <asp:label id="lblInfo0" runat="server" text="Site"></asp:label>
+                &nbsp;
+    <asp:dropdownlist id="DropDownList1" runat="server" autopostback="True" onselectedindexchanged="DropDowns_SelectedIndexChanged"></asp:dropdownlist>
+                <br />
+            </td>
+            <td>
+                <asp:label id="lblInfo1" runat="server" text="Service"></asp:label>
+                &nbsp;
+    <asp:dropdownlist id="DropDownList2" runat="server" autopostback="True" onselectedindexchanged="DropDowns_SelectedIndexChanged"></asp:dropdownlist>
+                <br />
+            </td>
+            <td>
+                <asp:label id="lblInfo2" runat="server" text="Status"></asp:label>
+                &nbsp;
+    <asp:dropdownlist id="DropDownList3" runat="server" autopostback="True" onselectedindexchanged="DropDowns_SelectedIndexChanged"></asp:dropdownlist>
+                <br />
+            </td>
+        </tr>
+    </table>
+            <br />
+    <hr />
+            <br />
+
+                <asp:GridView ID="GridView1" runat="server" AllowSorting="True"
+        AutoGenerateColumns="False"  ShowFooter="False" DataKeyNames="ClientID" 
+        OnRowDataBound="GridView1_RowDataBound" OnRowCreated ="GridView1_RowDataBound"
+                     OnSorting="GridView1_Sorting"
+                    OnRowCommand="GridView1_OnRowCommand"
+                   >
+        <Columns>
+            <%--<asp:CheckBoxField DataField="Archive" HeaderText="Archive" SortExpression="Archive" />--%>
+            <asp:TemplateField ShowHeader="False">
+            <ItemTemplate>
+                <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Edit"
+                    Text="Edit" CommandArgument='<%# Eval("ClientID") %>' />
+            </ItemTemplate>
+            </asp:TemplateField>
+            <asp:BoundField DataField="Site" HeaderText="Site" SortExpression="Site"/>
+            <asp:BoundField DataField="Service" HeaderText="Service" SortExpression="Service"/>
+            <asp:BoundField DataField="SvcStatus" HeaderText="SvcStatus" SortExpression="SvcStatus"/>
+            <asp:BoundField DataField="DOB" HeaderText="DOB" SortExpression="DOB"/>
+            <asp:BoundField DataField="LName" HeaderText="LName" SortExpression="LName"/>
+<%--            <asp:BoundField DataField="SvcReq2" HeaderText="SvcReq2" SortExpression="SvcReq2" />--%>
+            <asp:BoundField DataField="Ins" HeaderText="Ins"  SortExpression="Ins"/>
+            <asp:BoundField DataField="InfoRtn" HeaderText="InfoRtn" SortExpression="InfoRtn" />
+        </Columns>
+    </asp:GridView>
+            <br />
+            <hr />
+                <asp:label id="lblInfo" runat="server" text=""></asp:label>
+
+        </ContentTemplate>
+
+        <Triggers>
+            <asp:PostBackTrigger ControlID="DropDownList1"   />            
+            <asp:PostBackTrigger ControlID="DropDownList2"   />            
+            <asp:PostBackTrigger ControlID="DropDownList3"   />
+        </Triggers>
+    </asp:updatepanel>
+
+
+
+
+    <asp:sqldatasource id="SqlDataSource5" runat="server" connectionstring="<%$ ConnectionStrings:waitlistConnectionString %>"> </asp:sqldatasource>
+
+</asp:Content>
+

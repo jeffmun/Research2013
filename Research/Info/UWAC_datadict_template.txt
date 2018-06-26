@@ -1,0 +1,1 @@
+FieldName	DataType	DataTypeLength	FieldLabel	MinVal	MaxVal	ValidList	MissVal

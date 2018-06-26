@@ -1,0 +1,185 @@
+a
+{
+	color: #000000;
+}
+
+body
+{
+	font-family: Times New Roman,Arial,Helvetica,sans-serif;
+	background: #ffffff;
+	color: #000000;   
+	font-size: 8pt;
+	width: 100%;
+}
+
+img {display: none;}
+div.divFooter {display: none;}
+div.divHeader {display: none;}
+table.tblBody tr th {display: none;}
+
+tblCalendar
+{
+	width: 100%;
+	empty-cells: show;
+	border-top: solid 1px #000000;
+	border-left: solid 1px #000000;
+}
+
+tblCalendar tr td
+{
+	border-bottom: solid 1px #000000;
+	border-right: solid 1px #000000;
+}
+
+tblCalendar tr td.tdForm {display: none;}
+
+/******* This section will fix the way Crystal Reports renders HTML *******/
+table.tblCrystalReport {border: 0px;}
+table.tblCrystalReport tr td {border: 0px; padding: 1px;}
+table.tblCrystalReport tr td table {border: 0px;}
+table.tblCrystalReport tr td table tr td {border: 0px;}
+table.tblCrystalReport tr td table tr td table {border-left: solid 1px #000000; border-top: solid 1px #000000;}
+table.tblCrystalReport tr td table tr td table tr td {border-right: solid 1px #000000; border-bottom: solid 1px #000000;}
+table.tblCrystalReport tr td table tr td table tr td table {border: 0px;}
+table.tblCrystalReport tr td table tr td table tr td table tr td {border: 0px;}
+/******* This section will fix the way Crystal Reports renders HTML *******/
+
+p.pReportHeader
+{
+	margin: 0px;
+	font-size: 14pt;
+	font-weight: bold;
+	text-align: center;
+	padding: 8px;
+	width: 100%;
+	border-top: solid 1px #cccccc;
+	border-left: solid 1px #cccccc;
+	border-right: solid 1px #cccccc;
+}
+
+table.tblReport
+{
+	width: 100%;
+	empty-cells: show;
+}
+table.tblReport tr td
+{
+	font-size: 8pt;
+/*	white-space: nowrap;*/
+	empty-cells: show;
+	padding: 4px;
+	border: solid 1px #cccccc;
+	vertical-align: top;
+}
+table.tblReport tr.trTitle td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 14pt;
+	white-space: nowrap;
+}
+table.tblReport tr.trHeader td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+}
+table.tblReport tr.trVerticalHeader td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	writing-mode: tb-rl;
+}
+table.tblReport tr td a
+{
+	color: #000000;
+	text-decoration: none;
+}
+
+table.tblNonTableReport
+{
+	font-size: 8pt;
+	width: 100%;
+}
+table.tblNonTableReport tr td
+{
+	font-size: 8pt;
+	padding: 2px;
+	white-space: nowrap;
+	text-align: left;
+}
+table.tblNonTableReport tr td.tdHeader
+{
+	text-align: right;
+	font-weight: bold;
+}
+table.tblNonTableReport tr td.tdTitle
+{
+	font-size: 12pt;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+table.tblViewHousehold
+{
+	width: 100%;
+	empty-cells: show;
+}
+
+table.tblPersons
+{
+	width: 100%;
+	empty-cells: show;
+}
+table.tblPersons tr td
+{
+	font-size: 10pt;
+	white-space: nowrap;
+	empty-cells: show;
+	padding: 4px;
+	border: solid 1px #cccccc;
+	vertical-align: top;
+}
+table.tblPersons tr.trTitle td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 10pt;
+	vertical-align: top;
+}
+table.tblSubject
+{
+	width: 100%;
+	empty-cells: show;
+}
+table.tblSubject tr td
+{
+	font-size: 10pt;
+	white-space: nowrap;
+	empty-cells: show;
+	padding: 4px;
+	border: solid 1px #cccccc;
+	vertical-align: top;
+}
+table.tblSubject tr.trTitle td
+{
+	padding: 4px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 10pt;
+	vertical-align: top;
+}
+
+
+.DoNotPrint
+{
+	display: none;
+}
+
+.smalltext
+{
+    font-size: 8pt;
+}

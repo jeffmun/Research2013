@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutismCenterWebConfig>
+	<WebSiteTitle>UW Autism Center Database</WebSiteTitle>
+	
+
+	<!-- Development  -->
+	
+	<TrackingConnectionString>INTEGRATED SECURITY=TRUE;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;</TrackingConnectionString>
+	<DataConnectionString>INTEGRATED SECURITY=TRUE;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_data;</DataConnectionString>
+	
+	
+	
+	<AnalysisConnectionString_IIS_USER>INTEGRATED SECURITY=false;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=dev_uwautism_research_analysis;User ID=iis_user;Password=6jB?yc$h!3bK;</AnalysisConnectionString_IIS_USER>
+	<AnalysisConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=dev_uwautism_research_analysis;</AnalysisConnectionString>
+	<DMStatConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=DMStat;</DMStatConnectionString>
+	<FinMartConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=v0130p.host.s.uw.edu;PERSIST SECURITY INFO=True;User=NETID\jeffmun;Password=0987!@KLm;INITIAL CATALOG=FinMart;</FinMartConnectionString>
+	<publicwebConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=v0130p.host.s.uw.edu;PERSIST SECURITY INFO=True;User=NETID\jeffmun;Password=0987!@KLm;INITIAL CATALOG=publicweb;</publicwebConnectionString>
+	<NDARConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=NDAR;</NDARConnectionString>
+
+	<VTrackingConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=172.28.203.80;USER=NETID\jeffmun;Password=0987!@KLm;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;</VTrackingConnectionString>
+
+
+	<OnlineAccessRequestEmail>jeffmun@u.washington.edu</OnlineAccessRequestEmail>
+	<ErrorMessageEmail>jeffmun@u.washington.edu</ErrorMessageEmail>
+	<SessionDuration>10</SessionDuration>
+	<BehaviorSummaryLocation>\\Autism-fs01\Behavior Summaries</BehaviorSummaryLocation>
+	<DocumentLocation>\\Autism-FS01\WebDocs_Test$\</DocumentLocation>
+	<SPSSFileLocation>\\Autism-FS01\Data Summaries\SPSS_Code_Web_TEST\</SPSSFileLocation>
+	<SPSSDataLocation>\\Autism-FS01\Data Summaries\Data\</SPSSDataLocation>
+	<SPSSFileLocationWeb>/DataSummary/SPSSCode/</SPSSFileLocationWeb>
+	<SPSSOutputLocation>\\Autism-FS01\Data Summaries\Output\</SPSSOutputLocation>
+	<WebSiteRootURL>>https://uwac.autism.washington.edu/research/</WebSiteRootURL>
+
+	
+
+	<!-- Production
+	<TrackingConnectionString_IIS_User>INTEGRATED SECURITY=false;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;User ID=iis_user;Password=6jB?yc$h!3bK;</TrackingConnectionString_IIS_User>
+	<DataConnectionString_IIS_USER>INTEGRATED SECURITY=false;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_data;User ID=iis_user;Password=6jB?yc$h!3bK;</DataConnectionString_IIS_USER>
+	<AnalysisConnectionString_IIS_USER>INTEGRATED SECURITY=false;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_analysis;User ID=iis_user;Password=6jB?yc$h!3bK;</AnalysisConnectionString_IIS_USER>
+	<TrackingConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;</TrackingConnectionString>
+	<DataConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_data;</DataConnectionString>
+	<AnalysisConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_analysis;</AnalysisConnectionString>
+	<NDARConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=NDAR;</NDARConnectionString>
+	<DMStatConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=DMStat;</DMStatConnectionString>
+	<OnlineAccessRequestEmail>madhug@u.washington.edu</OnlineAccessRequestEmail>
+	<ErrorMessageEmail>conarroe@u.washington.edu</ErrorMessageEmail>
+	<SessionDuration>10</SessionDuration>
+	<BehaviorSummaryLocation>\\Autism-fs01\Behavior Summaries</BehaviorSummaryLocation>
+	<DocumentLocation>\\Autism-FS01\WebDocs$\</DocumentLocation>
+	<SPSSFileLocation>\\Autism-FS01\Data Summaries\SPSS_Code_Web\</SPSSFileLocation>
+	<SPSSDataLocation>\\Autism-FS01\Data Summaries\Data\</SPSSDataLocation>
+	<SPSSFileLocationWeb>/DataSummary/SPSSCode/</SPSSFileLocationWeb>
+	<SPSSOutputLocation>\\Autism-FS01\Data Summaries\Output\</SPSSOutputLocation>
+	<WebSiteRootURL>https://uwac.autism.washington.edu/research/</WebSiteRootURL>
+ -->
+
+
+
+
+</AutismCenterWebConfig>

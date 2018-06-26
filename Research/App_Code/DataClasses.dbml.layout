@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataClasses">
+  <DataContextMoniker Name="/DataClassesDataContext" />
+  <nestedChildShapes>
+    <classShape Id="7c106e7c-2a12-4a53-91d2-49adcd927c66" isExpanded="false" absoluteBounds="0.75, 1.375, 2, 0.45">
+      <DataClassMoniker Name="/DataClassesDataContext/tClient" />
+      <nestedChildShapes>
+        <elementListCompartment Id="026faeec-3c5f-4498-8ae1-3c436302ce2b" absoluteBounds="0.76500000000000012, 1.835, 1.9700000000000002, 2.7493082682291665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="4fe4e1c7-9bdd-47af-a0ba-1b75cb6db02f" isExpanded="false" absoluteBounds="3.375, 0.625, 2.25, 0.45">
+      <DataClassMoniker Name="/DataClassesDataContext/tClient_Diagnosi" />
+      <nestedChildShapes>
+        <elementListCompartment Id="8e2fac58-99f8-4b31-bf20-764e67050afc" absoluteBounds="3.3899999999999997, 1.085, 1.9700000000000002, 2.5570068359375" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 1.375); (3.375 : 1.075)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/DataClassesDataContext/tClient/tClient_tClient_Diagnosi" />
+      <nodes>
+        <classShapeMoniker Id="7c106e7c-2a12-4a53-91d2-49adcd927c66" />
+        <classShapeMoniker Id="4fe4e1c7-9bdd-47af-a0ba-1b75cb6db02f" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="08b4980f-e675-4bed-9f6e-61d2996065d3" isExpanded="false" absoluteBounds="0.625, 2.875, 2, 0.45">
+      <DataClassMoniker Name="/DataClassesDataContext/tClient_Event" />
+      <nestedChildShapes>
+        <elementListCompartment Id="99ab70d0-2fce-4363-8df1-95a6555af453" absoluteBounds="0.64000000000000012, 3.335, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(1.6875 : 1.825); (1.6875 : 2.875)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DataClassesDataContext/tClient/tClient_tClient_Event" />
+      <nodes>
+        <classShapeMoniker Id="7c106e7c-2a12-4a53-91d2-49adcd927c66" />
+        <classShapeMoniker Id="08b4980f-e675-4bed-9f6e-61d2996065d3" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="0d8e2f4d-c21b-45f2-9c9d-ac85488ee58b" isExpanded="false" absoluteBounds="3.25, 1.5, 2, 0.45">
+      <DataClassMoniker Name="/DataClassesDataContext/tClient_IntakeDoc" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0b773742-2c66-4bc9-bbcc-858c501788e9" absoluteBounds="3.2649999999999997, 1.96, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 1.6625); (3.25 : 1.6625)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DataClassesDataContext/tClient/tClient_tClient_IntakeDoc" />
+      <nodes>
+        <classShapeMoniker Id="7c106e7c-2a12-4a53-91d2-49adcd927c66" />
+        <classShapeMoniker Id="0d8e2f4d-c21b-45f2-9c9d-ac85488ee58b" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="f4753021-e480-4789-91a2-f81ae4f46ab3" isExpanded="false" absoluteBounds="3.25, 2.25, 2, 0.45">
+      <DataClassMoniker Name="/DataClassesDataContext/tClient_ServiceReq" />
+      <nestedChildShapes>
+        <elementListCompartment Id="87b722ff-6c2f-4b8f-9304-4e9c8d605185" absoluteBounds="3.265, 2.71, 1.9700000000000002, 2.1724039713541665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 1.825); (3.25 : 2.25)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/DataClassesDataContext/tClient/tClient_tClient_ServiceReq" />
+      <nodes>
+        <classShapeMoniker Id="7c106e7c-2a12-4a53-91d2-49adcd927c66" />
+        <classShapeMoniker Id="f4753021-e480-4789-91a2-f81ae4f46ab3" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>
