@@ -455,6 +455,8 @@ public partial class Tracking_Household2 : BasePage // OboutInc.oboutAJAXPage
 			x[i] = Convert.ToInt32(oRecord[fldname].ToString());
 			i++;
 		}
+		
+		string foo = "";
 
 		return x;
 	}
