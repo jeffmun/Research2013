@@ -457,6 +457,7 @@ public partial class Tracking_Household2 : BasePage // OboutInc.oboutAJAXPage
 		}
 		
 		string foo = "";
+		string bar = "";
 
 		return x;
 	}
