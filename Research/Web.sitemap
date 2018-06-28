@@ -36,7 +36,7 @@
 
 		<siteMapNode url="~/Household/" title="Persons/Household" description="" menuitem="true" roles="Autism Research Group">
 			<siteMapNode url="~/Applications/PersonAttributes/EditPersonAttributes.aspx" title="Person Attributes" description="" menuitem="true" />
-			<siteMapNode url="~/Tracking/Household.aspx" title="Household Info (*NEW*)" description="" menuitem="true" />
+			<siteMapNode url="~/Tracking/Household2.aspx" title="Household Info (*NEW*)" description="" menuitem="true" />
 			<siteMapNode url="~/Tracking/Subject.aspx" title="Subject Info (*NEW*)" description="" menuitem="true" />    
 		</siteMapNode>
 		<siteMapNode url="~/Measures/" title="Measures/Actions/Subj" description="" menuitem="true" roles="Autism Research Group" helpfile="/Help/MeasuresHelp.aspx">

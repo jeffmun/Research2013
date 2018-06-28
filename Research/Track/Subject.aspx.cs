@@ -548,12 +548,12 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 		if (Request.QueryString["ID"] != null)
 		{
 			int hhid = sql.IntScalar_from_SQLstring("select householdID from vwMasterStatus_S where ID='" + Request.QueryString["ID"] + "' and studyID=" + Master.Master_studyID.ToString());
-			Response.Redirect("~/Tracking/Household.aspx?hhID=" + hhid.ToString());
+			Response.Redirect("~/Tracking/Household2.aspx?hhID=" + hhid.ToString());
 		}
 		else if (Request.QueryString["subjID"] != null)
 		{
 			int hhid = sql.IntScalar_from_SQLstring("select householdID from vwMasterStatus_S where subjID='" + Request.QueryString["subjID"] + "' and studyID=" + Master.Master_studyID.ToString());
-			Response.Redirect("~/Tracking/Household.aspx?hhID=" + hhid.ToString());
+			Response.Redirect("~/Tracking/Household2.aspx?hhID=" + hhid.ToString());
 		}
 
 	}

@@ -133,7 +133,7 @@
 		<td  style="background-color:#336699; vertical-align: top;">
 <%--			<asp:Button ID="btnManager_Show" runat="server" Visible="false" Text="Show Page Manager" BorderColor="SlateGray" TabIndex="0" BackColor="SteelBlue" Font-Size="8pt" OnClick="btnManager_Show_Click" />
 			<asp:Button ID="btnManager_Hide" runat="server" Visible="false" Text="Hide Page Manager" Font-Size="8pt" OnClick="btnManager_Hide_Click"/>--%>
-			<dx:ASPxRadioButtonList ID="rblMenuSelect" runat="server" RepeatDirection="Horizontal" RepeatColumns="2" RepeatLayout="Flow" Font-Size="8pt" ForeColor="Orange"  
+			<dx:ASPxRadioButtonList ID="rblMenuSelect" runat="server" RepeatDirection="Horizontal" RepeatColumns="2" RepeatLayout="Flow" Font-Size="8pt" ForeColor="Orange"  Visible="false" 
 				Border-BorderStyle="None" Border-BorderWidth="0pt" Paddings-Padding="0" Paddings-PaddingTop="0" OnSelectedIndexChanged="rblMenuSelect_OnSelectedIndexChanged" AutoPostBack="true">
 				<Items>
 					<dx:ListEditItem Value="New menu" Selected="true" />
@@ -202,8 +202,6 @@
 
 	<asp:Label ID="masterINFO" runat="server" Text="" ForeColor="Navy" BackColor="WhiteSmoke"></asp:Label>
 	<asp:Label ID="masterERROR" runat="server" Text="" ForeColor="Red" BackColor="WhiteSmoke"></asp:Label>
-	<asp:Button ID="masterDeleteOK" runat="server" Text="OK" BackColor="ForestGreen" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<asp:Button ID="masterDeleteCancel" runat="server" Text="Cancel" BackColor="Red" Visible="true" />
 
 <div id="divBody">
 	<asp:ContentPlaceHolder id="oBodyPlaceHolder" runat="server">

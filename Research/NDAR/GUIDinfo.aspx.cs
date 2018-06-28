@@ -17,7 +17,7 @@ using System.Drawing;
 using System.Text;
 using uwac;
 
-public partial class NDAR_GUIDinfo : System.Web.UI.Page
+public partial class NDAR_GUIDinfo : BasePage //System.Web.UI.Page
 {
 	private SqlConnection oConn = new SqlConnection();
 	private ReadConfig oConfig = new ReadConfig();
@@ -39,6 +39,7 @@ public partial class NDAR_GUIDinfo : System.Web.UI.Page
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
 		GetCurrentDefaultStudyID();
+		Session["guid_studyID"] = Master.Master_studyID.ToString();
 		loadgrid();
 	}
 
@@ -51,6 +52,9 @@ public partial class NDAR_GUIDinfo : System.Web.UI.Page
 		oConn.Open();
 
 		GetCurrentDefaultStudyID();
+
+		Session["guid_studyID"] = Master.Master_studyID.ToString();
+		lblStudyname_ContentPage.Text = Master.Master_studyname;
 
 		if (!IsPostBack)
 		{
@@ -84,23 +88,30 @@ public partial class NDAR_GUIDinfo : System.Web.UI.Page
 
 	protected void loadgrid()
 	{
-
-		Panel_gv.Controls.Clear();
-		GridView agv = new AutoGridView("backend", "exec spSEC__GUIDstatus_by_studyID " + _content_studyID.ToString() + ", ''"
-			, "gv4", false, "l,l,l,l,l,hyp4,hide,l,l,l,l,l,l,l,hyp4,hide",
-			"gvBlack,gvPurple,gvBlack,gvBlack,gvBlack,gvBlue,gvBlue,gvDkRed,gvDkRed,gvDkRed,gvDkRed,gvBlack,gvBlack,gvBlack,gvBlue"
-			,""
-			, "");
-
-
-		agv.RowDataBound += agv_RowDataBound;
-
-		Label lbl = new Label(); lbl.Font.Bold = true; lbl.Text = "<br/>NDAR GUID INFO" ; lbl.Font.Size = 12;
-
-		Panel_gv.Controls.Add(lbl);
-		Panel_gv.Controls.Add(agv);
-
 		SQL_utils sql = new SQL_utils("backend");
+
+		//string sqlcode = "exec spSEC__GUIDstatus_by_studyID " + Master.Master_studyID.ToString() + ", ''";
+		//DataTable dtguid = sql.DataTable_from_SQLstring(sqlcode);
+
+		//gridGuid.DataSource = dtguid;
+		//gridGuid.DataBind();
+
+
+		//Panel_gv.Controls.Clear();
+		//GridView agv = new AutoGridView("backend", "exec spSEC__GUIDstatus_by_studyID " + _content_studyID.ToString() + ", ''"
+		//	, "gv4", false, "l,l,l,l,l,hyp4,hide,l,l,l,l,l,l,l,hyp4,hide",
+		//	"gvBlack,gvPurple,gvBlack,gvBlack,gvBlack,gvBlue,gvBlue,gvDkRed,gvDkRed,gvDkRed,gvDkRed,gvBlack,gvBlack,gvBlack,gvBlue"
+		//	,""
+		//	, "");
+
+
+		//agv.RowDataBound += agv_RowDataBound;
+
+		//Label lbl = new Label(); lbl.Font.Bold = true; lbl.Text = "<br/>NDAR GUID INFO" ; lbl.Font.Size = 12;
+
+		//Panel_gv.Controls.Add(lbl);
+		//Panel_gv.Controls.Add(agv);
+
 
 		DataTable dt = sql.DataTable_from_SQLstring(       "select -1 personID, '--select subject for Invalid GUID--' IDlabel " +
 				"union select a.personID, b.ID + '...' + GUID_status as IDlabel " + 

@@ -94,11 +94,6 @@
 	<tr>
 		<td colspan="2">
 			<input type="submit" name="btnSubmit" value=" Submit " />
-<%--			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="https://uwac.autism.washington.edu/research/tracking/CreateHousehold.aspx">Create New Household</a>--%>
-			<%--DF: 4/9 add app path--%>
-			<%--<input type="button" name="btnAddNew" value="Create New Household" onclick="document.location = '/Household/CreateHousehold.aspx?HouseholdID=0';" />--%>
-<%--			<input type="button" name="btnAddNew" value="Create New Household" onclick="document.location = '<% =Request.ApplicationPath %>/Tracking/CreateHousehold.aspx';" />--%>
 		</td>
 	</tr>
 	<tr><td>
@@ -122,10 +117,7 @@
 	<HeaderStyle CssClass="trHeader" />
 	<Columns>
 	<%--DF: 4/9 added ~ --%>
-<%--        /Tracking/Household.aspx?hhID=5363--%>
-
-<%--		<asp:HyperLinkColumn HeaderText="&nbsp;" DataNavigateUrlFormatString="~/Tracking/Household.aspx?hhID={0}" DataNavigateUrlField="HouseholdID" Text="Edit" />--%>
-		<asp:HyperLinkColumn HeaderText="Household Name" DataNavigateUrlFormatString="~/Tracking/Household.aspx?hhID={0}" DataNavigateUrlField="HouseholdID" DataTextField="HouseholdName" />
+		<asp:HyperLinkColumn HeaderText="Household Name" DataNavigateUrlFormatString="~/Tracking/Household2.aspx?hhID={0}" DataNavigateUrlField="HouseholdID" DataTextField="HouseholdName" />
 		<asp:BoundColumn HeaderText="Person Name" DataField="FullName" />
 		<asp:BoundColumn HeaderText="DOB" DataField="DOB" />
 		<asp:BoundColumn HeaderText="Gender" DataField="Sex" />

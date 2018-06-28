@@ -909,7 +909,7 @@ namespace Household
 			int hhID = Convert.ToInt32(Request.QueryString["HouseholdID"].ToString());
 			if(hhID > 0)
 			{
-				Response.Redirect("~/Tracking/Household.aspx?hhID=" + hhID.ToString());
+				Response.Redirect("~/Tracking/Household2.aspx?hhID=" + hhID.ToString());
 			}
 
 		}

@@ -235,7 +235,7 @@
                              <DataItemTemplate>
                                    <dx:ASPxHyperLink ID="ASPxHyperLink2" runat="server" Text="Details" NavigateUrl='<%#string.Format("subject.aspx?ID={0}",Eval("ID")) %>'>
                                    </dx:ASPxHyperLink>&nbsp;&nbsp;
-                                   <dx:ASPxHyperLink ID="ASPxHyperLink1" runat="server" Text="Household" NavigateUrl='<%#string.Format("~/Tracking/household.aspx?hhID={0}",Eval("householdID")) %>'>
+                                   <dx:ASPxHyperLink ID="ASPxHyperLink1" runat="server" Text="Household" NavigateUrl='<%#string.Format("~/Tracking/household2.aspx?hhID={0}",Eval("householdID")) %>'>
                                    </dx:ASPxHyperLink>
                              </DataItemTemplate>
                         </dx:GridViewDataHyperLinkColumn>

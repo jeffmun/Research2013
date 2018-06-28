@@ -2,7 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using DevExpress.Web.Data;
 using uwac;
 
@@ -20,48 +25,6 @@ namespace uwac
 		//	//
 		//}
 
-		public static bool BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)
-		{
-			bool result = false;
-
-			SQL_utils sql = new SQL_utils(db);
-
-			var pkval="";
-			var pkfld="";
-
-			foreach (DictionaryEntry key in e.Keys)
-			{
-				pkfld = (key.Key == null) ? null : key.Key.ToString();
-				pkval = (key.Value == null) ? null : key.Value.ToString();
-
-			}
-
-			if(pkfld != "" && pkval != "")
-			{
-				try
-				{
-					string log_code1 = String.Format("select * from {0} where {1} = {2} for xml auto", tbl, pkfld, pkval);
-					string contents = sql.StringScalar_from_SQLstring(log_code1);
-
-					string log_code2 = String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) values('{0}','{1}',{2},'{3}',getdate(),cast(SESSION_CONTEXT(N'netid') as varchar))"
-						, tbl, pkfld, pkval, contents);
-
-					string del_code = String.Format("Delete from {0} where {1}={2}", tbl, pkfld, pkval);
-
-					sql.NonQuery_from_SQLstring(log_code2);
-					sql.NonQuery_from_SQLstring(del_code);
-					result = true;
-				}
-				catch(Exception ex)
-				{
-
-				}
-			}
-			sql.Close();
-			return result;
-		}
-
-
 
 		public static bool BuildInsertSqlCode(ASPxDataInsertingEventArgs e, string tbl, string db)
 		{
@@ -77,38 +40,51 @@ namespace uwac
 			List<string> insert_vals = new List<string>();
 
 
+
 			foreach (DictionaryEntry newentry in e.NewValues)
 			{
 				var newval = (newentry.Value == null) ? null : newentry.Value.ToString();
 
-				if (newval != null)
+				//make sure the field in contained in the table 
+				int hasfld = flds.AsEnumerable().Where(f => f.Field<string>("column_name") == newentry.Key.ToString().ToLower()).Count();
+
+				if (hasfld > 0)
 				{
-					string data_type = flds.AsEnumerable()
-										.Where(f => f.Field<string>("column_name") == newentry.Key.ToString().ToLower())
-										.Select(f => f["data_type"]).First().ToString();
+					if (newval != null)
+					{
+						string data_type = flds.AsEnumerable()
+											.Where(f => f.Field<string>("column_name") == newentry.Key.ToString().ToLower())
+											.Select(f => f["data_type"]).First().ToString();
 
-					List<string> char_types = new List<string> { "char", "varchar", "text", "memo", "nvarchar", "date", "datetime", "smalldatetime" };
+						List<string> char_types = new List<string> { "char", "varchar", "text", "memo", "nvarchar", "date", "datetime", "smalldatetime" };
 
-					string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
+						string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
 
-					insert_flds.Add(String.Format("{0}", newentry.Key));
-					insert_vals.Add(String.Format("{0}{1}{0}", quote_holder, newentry.Value));
+						insert_flds.Add(String.Format("{0}", newentry.Key));
+						insert_vals.Add(String.Format("{0}{1}{0}", quote_holder, newentry.Value));
 
+					}
 				}
 			}
 
 			if (insert_vals.Count > 0)
 			{
 
-				if (hasCreated.ToLower() == "created")
+				if (hasCreated != null)
 				{
-					insert_flds.Add("created");
-					insert_vals.Add("getdate()"); 
+					if (hasCreated.ToLower() == "created")
+					{
+						insert_flds.Add("created");
+						insert_vals.Add("getdate()");
+					}
 				}
-				if (hasCreatedBy.ToLower() == "createdby")
+				if (hasCreatedBy != null)
 				{
-					insert_flds.Add("createdby");
-					insert_vals.Add("cast(SESSION_CONTEXT(N'netid') as varchar)");
+					if (hasCreatedBy.ToLower() == "createdby")
+					{
+						insert_flds.Add("createdby");
+						insert_vals.Add("cast(SESSION_CONTEXT(N'netid') as varchar)");
+					}
 				}
 
 				
@@ -158,8 +134,12 @@ namespace uwac
 				{
 					foreach (DictionaryEntry oldentry in e.OldValues)
 					{
+						var newfld = newentry.Key.ToString().ToLower();
+						var oldfld = oldentry.Key.ToString().ToLower();
+
 						if (newentry.Key == oldentry.Key)
 						{
+
 							var newval = (newentry.Value == null) ? null : newentry.Value.ToString();
 							var oldval = (oldentry.Value == null) ? null : oldentry.Value.ToString();
 							string newval_audit;
@@ -167,7 +147,7 @@ namespace uwac
 
 							if (newval != null)
 							{
-								newval_audit = (newval.Length > 250) ? newval.ToString().Substring(0, 250) : newval;
+								newval_audit = (newval.Length > 1000) ? newval.ToString().Substring(0, 1000) : newval;
 
 							}
 							else
@@ -176,7 +156,7 @@ namespace uwac
 							}
 							if (oldval != null)
 							{
-								oldval_audit = (oldval.Length > 250) ? oldval.ToString().Substring(0, 250) : oldval;
+								oldval_audit = (oldval.Length > 1000) ? oldval.ToString().Substring(0, 1000) : oldval;
 							}
 							else
 							{
@@ -184,28 +164,53 @@ namespace uwac
 							}
 
 
-							if (newval != oldval)
+							//if oldval is null - go get the real one
+							if(oldval == null)
 							{
-								string data_type = flds.AsEnumerable()
-									.Where(f => f.Field<string>("column_name") == newentry.Key.ToString().ToLower())
-									.Select(f => f["data_type"]).First().ToString();
+								SQL_utils sql2 = new SQL_utils(db);
+								string oldval_from_DB = sql2.StringScalar_from_SQLstring(String.Format("select {0} from {1} where cast({2} as varchar) = '{3}'"
+									, oldfld, tbl, pkfld, pkvalue));
 
-								List<string> char_types = new List<string> { "char", "varchar", "text", "memo", "nvarchar", "date", "datetime", "smalldatetime" };
+								oldval = oldval_from_DB;
 
-								string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
+								oldval_audit = (oldval_from_DB.Length > 1000) ? oldval_from_DB.ToString().Substring(0, 1000) : oldval_from_DB;
+							}
 
-								string newentry_dblquotes = newentry.Value.ToString().Replace("'","''");
-								
 
-								string upd = String.Format("{0}={1}{2}{1} ", newentry.Key, quote_holder, newentry_dblquotes);
+							//new value is not null AND old value is null or empty = update to newval (even if empty string)
+							bool update_to_empty = ((newval == "" || newval != null) && !String.IsNullOrEmpty(oldval)) ? true : false;
+							bool update_to_value = (!String.IsNullOrEmpty(newval) ) ? true : false;
 
-								string changeaudit = String.Format("insert into AuditChanges(pk,pkfldname,tblname,fldname,oldvalue,newvalue,updated,updatedby) " +
-									"values( {0},'{1}','{2}','{3}','{4}','{5}',getdate(), cast(SESSION_CONTEXT(N'netid') as varchar))"
-									, pkvalue, pkfld, tbl, newentry.Key, oldval_audit, newval_audit);
+							if (newval == null) newval = "";
+							if (oldval == null) oldval = "";
 
-								auditchanges.Add(changeaudit);
-								fldupdates.Add(upd);
 
+							if (true)
+							//if (update_to_empty || update_to_value)
+							{
+								if (newval != oldval)
+								{
+									string data_type = flds.AsEnumerable()
+										.Where(f => f.Field<string>("column_name") == newentry.Key.ToString().ToLower())
+										.Select(f => f["data_type"]).First().ToString();
+
+									List<string> char_types = new List<string> { "char", "varchar", "text", "memo", "nvarchar", "date", "datetime", "smalldatetime" };
+
+									string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
+
+									string newentry_dblquotes = newentry.Value.ToString().Replace("'", "''");
+
+
+									string upd = String.Format("{0}={1}{2}{1} ", newentry.Key, quote_holder, newentry_dblquotes);
+
+									string changeaudit = String.Format("insert into AuditChanges(pk,pkfldname,tblname,fldname,oldvalue,newvalue,updated,updatedby) " +
+										"values( {0},'{1}','{2}','{3}','{4}','{5}',getdate(), cast(SESSION_CONTEXT(N'netid') as varchar))"
+										, pkvalue, pkfld, tbl, newentry.Key, oldval_audit, newval_audit);
+
+									auditchanges.Add(changeaudit);
+									fldupdates.Add(upd);
+
+								}
 							}
 						}
 					}
@@ -277,6 +282,74 @@ namespace uwac
 
 		}
 
+
+		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)
+		{
+
+			SQL_utils sql = new SQL_utils(db);
+
+			var pkval = "";
+			var pkfld = "";
+
+			foreach (DictionaryEntry key in e.Keys)
+			{
+				pkfld = (key.Key == null) ? null : key.Key.ToString();
+				pkval = (key.Value == null) ? null : key.Value.ToString();
+
+			}
+
+			if (pkfld != "" && pkval != "")
+			{
+				try
+				{
+					string log_code1 = String.Format("select * from {0} where {1} = {2} for xml raw, elements", tbl, pkfld, pkval);
+					string contents = sql.StringScalar_from_SQLstring(log_code1);
+
+					string log_code2 = String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) values('{0}','{1}',{2},'{3}',getdate(),cast(SESSION_CONTEXT(N'netid') as varchar))"
+						, tbl, pkfld, pkval, contents);
+
+					string del_code = String.Format("Delete from {0} where {1}={2}", tbl, pkfld, pkval);
+
+					sql.NonQuery_from_SQLstring(log_code2);
+					sql.NonQuery_from_SQLstring(del_code);
+				}
+				catch (Exception ex)
+				{
+
+				}
+			}
+			sql.Close();
+
+
+			string result = RecoverDeletedRecord(tbl, db, 1);
+
+
+
+
+			return result;
+		}
+
+		public static string RecoverDeletedRecord(string tbl, string db, int pkval)
+		{
+			string result = "The following record has been deleted:<br/><br/>";
+			SQL_utils sql = new SQL_utils(db);
+
+			string myXml = sql.StringScalar_from_SQLstring("select top 1 contents from auditdeletes order by deleteditemPK desc");
+
+			
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.LoadXml(myXml);
+			var rownodes = xdoc.ChildNodes;
+
+			foreach(XmlNode child in rownodes[0].ChildNodes)
+			{
+				if(child.InnerText != "") result += String.Format("{0} = {1}{2}", child.Name, child.InnerText, "<br/>");
+			}
+
+			result += "<br/><br/><i>This record can be recovered if needed.  Contact Jeff.</i>";
+
+			return result;
+		}
 
 	}
 }
