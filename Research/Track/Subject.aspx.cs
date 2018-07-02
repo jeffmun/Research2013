@@ -244,30 +244,38 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 
 		DataTable dt = sql.DataTable_from_SQLstring(String.Format("select * from vwMasterStatus_S where studyID={0} and ID = '{1}'", Master.Master_studyID.ToString(), myID));
 
-		string subjid = dt.AsEnumerable().Select(t => t.Field<int>("subjID")).First().ToString();
-		string id = dt.AsEnumerable().Select(t => t.Field<string>("ID")).First().ToString();
-		string ss = dt.AsEnumerable().Select(t => t.Field<string>("subjstatus")).First().ToString();
-		string ssd = dt.AsEnumerable().Select(t => t.Field<string>("subjstatusdetail") == null ? string.Empty : t.Field<string>("subjstatusdetail")).First().ToString();
+		if (dt.Rows.Count > 0)
+		{
+			string subjid = dt.AsEnumerable().Select(t => t.Field<int>("subjID")).First().ToString();
+			string id = dt.AsEnumerable().Select(t => t.Field<string>("ID")).First().ToString();
+			string ss = dt.AsEnumerable().Select(t => t.Field<string>("subjstatus")).First().ToString();
+			string ssd = dt.AsEnumerable().Select(t => t.Field<string>("subjstatusdetail") == null ? string.Empty : t.Field<string>("subjstatusdetail")).First().ToString();
 
-		//string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("Notes")).First().ToString();
-		string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("Notes")==null ? string.Empty : t.Field<string>("Notes")).First().ToString();
-		string groupname = dt.AsEnumerable().Select(t => t.Field<string>("Groupname")).First().ToString();
+			//string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("Notes")).First().ToString();
+			string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("Notes") == null ? string.Empty : t.Field<string>("Notes")).First().ToString();
+			string groupname = dt.AsEnumerable().Select(t => t.Field<string>("Groupname")).First().ToString();
 
-		string ssID = dt.AsEnumerable().Select(t => t.Field<int>("subjstatusID")).First().ToString();
-		string ssdID = dt.AsEnumerable().Select(t => t.Field<int>("subjstatusdetailID")).First().ToString();
+			string ssID = dt.AsEnumerable().Select(t => t.Field<int>("subjstatusID")).First().ToString();
+			string ssdID = dt.AsEnumerable().Select(t => t.Field<int>("subjstatusdetailID")).First().ToString();
 
-		hidSubjID.Value = subjid;
-		lblID.Text = id;
-		lblSS.Text = ss;
-		lblSSD.Text = ssd;
-		lblNotes.Text = ssnotes;
-		txtNotes.Text = ssnotes;
-		lblGroup.Text = groupname;
+			hidSubjID.Value = subjid;
+			lblID.Text = id;
+			lblSS.Text = ss;
+			lblSSD.Text = ssd;
+			lblNotes.Text = ssnotes;
+			txtNotes.Text = ssnotes;
+			lblGroup.Text = groupname;
 
-		var x = CboSS.Items.FindByText(ss);
+			var x = CboSS.Items.FindByText(ss);
 
-		FillCboSSD(ssID);
-		sql.Close();
+			FillCboSSD(ssID);
+			sql.Close();
+
+		}
+		else 
+		{
+			Response.Redirect("~/Track/Subject.aspx");
+		}
 	}
 
 

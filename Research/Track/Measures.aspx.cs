@@ -16,8 +16,9 @@ using uwac;
 using uwac.trk;
 using System.Web.UI;
 using DevExpress.XtraPivotGrid.Data;
+using DevExpress.Data.Filtering;
 
-public partial class Tracking_Measures : System.Web.UI.Page
+public partial class Tracking_Measures : BasePage //System.Web.UI.Page
 {
 	//private string ID;
 	private string meas_csv;
@@ -45,12 +46,26 @@ public partial class Tracking_Measures : System.Web.UI.Page
 		//pivotM.FieldValueTemplate = new FieldValueTemplate();
 		//pivotM.CellTemplate = new CellTemplate();
 
+		string filter = "";
 		bool isCallback = IsCallback;
 		bool isPostback = IsPostBack;
+		if (Request.QueryString["studymeasID"] != null)
+		{
+			var smID = Request.QueryString["studymeasID"];
+			SQL_utils sql = new SQL_utils("backend");
+			int measureID = sql.IntScalar_from_SQLstring(String.Format("select measureID from tblstudymeas where studymeasID={0}", smID));
+			int timept = sql.IntScalar_from_SQLstring(String.Format("select timepointID from tblstudymeas where studymeasID={0}", smID));
+			sql.Close();
+
+			//gridLkupMeas.GridView.Selection.SelectRowByKey(measureID);
+			filter = String.Format("[StudyMeasID] = {0}", smID);
+		}
 
 		if (!IsCallback && !IsPostBack)
 		{
-			LoadEntities();
+			gvM.Visible = true;
+
+		//			LoadEntities();
 		}
 
 		if (IsPostBack && Session["M_data"] != null)
@@ -59,6 +74,9 @@ public partial class Tracking_Measures : System.Web.UI.Page
 
 		sliderValue.Value = Master.Colorlevel.ToString();
 		txtColorLevel.Text = Master.Colorlevel.ToString();
+
+		//Still to fix
+		//if(filter != "") gvM.FilterExpression = filter;
 
 	}
 
@@ -233,24 +251,24 @@ public partial class Tracking_Measures : System.Web.UI.Page
 	protected void gvM_DataBinding(object sender, EventArgs e)
 	{
 
-		//if (ViewState["needBind"] != null && (bool)ViewState["needBind"])
-		if (ViewState["needBind"].ToString() == "true")
-		{
-			UpdateSelectParameters();
+		////if (ViewState["needBind"] != null && (bool)ViewState["needBind"])
+		//if (ViewState["needBind"].ToString() == "true")
+		//{
+		//	UpdateSelectParameters();
 
-			DataTable dt = M_GetData("gvM", meas_csv, tp_csv, group_csv, measstatus_csv, subjstatus_csv, DEstatus_csv, IncludeREL);
+		//	DataTable dt = M_GetData("gvM", meas_csv, tp_csv, group_csv, measstatus_csv, subjstatus_csv, DEstatus_csv, IncludeREL);
 
-			if (dt.Rows.Count > 0)
-			{
-				gvM.DataSource = Session["M_data"];
-			}
+		//	if (dt.Rows.Count > 0)
+		//	{
+		//		gvM.DataSource = Session["M_data"];
+		//	}
 
-			if (meas_csv + tp_csv.ToString() + group_csv.ToString() + measstatus_csv.ToString() + subjstatus_csv.ToString() == "")
-			{ btnLoad.Text = "Load Measures"; }
-			else { btnLoad.Text = "Load Selected Measures"; }
+		//	if (meas_csv + tp_csv.ToString() + group_csv.ToString() + measstatus_csv.ToString() + subjstatus_csv.ToString() == "")
+		//	{ btnLoad.Text = "Load Measures"; }
+		//	else { btnLoad.Text = "Load Selected Measures"; }
 
 
-		}
+		//}
 
 	}
 
@@ -408,14 +426,14 @@ public partial class Tracking_Measures : System.Web.UI.Page
 	protected void gvM_OnBeginRefresh(object sender, EventArgs e)
 	{
 		Debug.Print("gvM_OnBeginRefresh              gvM.RowCount=" + gvM.DetailRows.VisibleCount.ToString());
-		gvM.DataSource = Session["M_data"];
-		gvM.DataBind();
+		//gvM.DataSource = Session["M_data"];
+		//gvM.DataBind();
 	}
 
 	protected void gvM_OnBeforeColumnSortingGrouping(object sender, EventArgs e)
 	{
-		gvM.DataSource = Session["M_data"];
-		gvM.DataBind();
+		//gvM.DataSource = Session["M_data"];
+		//gvM.DataBind();
 		Debug.Print("gvM_OnBeforeColumnSortingGrouping    gvM.RowCount=" + gvM.DetailRows.VisibleCount.ToString());
 	}
 
@@ -438,26 +456,26 @@ public partial class Tracking_Measures : System.Web.UI.Page
 
 	protected void pivotM_DataBinding(object sender, EventArgs e)
 	{
-		//if (ViewState["needBind"] != null && (bool)ViewState["needBind"])
-		if (ViewState["needBind"].ToString() == "true")
-		{
-			UpdateSelectParameters();
+		////if (ViewState["needBind"] != null && (bool)ViewState["needBind"])
+		//if (ViewState["needBind"].ToString() == "true")
+		//{
+		//	UpdateSelectParameters();
 
-			DataTable dt = M_GetData("pivotM", meas_csv, tp_csv, group_csv, measstatus_csv, subjstatus_csv, DEstatus_csv, IncludeREL);
+		//	DataTable dt = M_GetData("pivotM", meas_csv, tp_csv, group_csv, measstatus_csv, subjstatus_csv, DEstatus_csv, IncludeREL);
 
-			if (dt.Rows.Count > 0)
-			{
-				pivotM.DataSource = Session["M_data"];
-			}
-
-
-			if (meas_csv + tp_csv.ToString() + group_csv.ToString() + measstatus_csv.ToString() + subjstatus_csv.ToString() == "")
-			{ btnLoad.Text = "Load Measures"; }
-			else { btnLoad.Text = "Load Selected Measures"; }
+		//	if (dt.Rows.Count > 0)
+		//	{
+		//		pivotM.DataSource = Session["M_data"];
+		//	}
 
 
-			Debug.Print("!!!! pivotM_DataBinding            pivotM.RowCount=" + pivotM.RowCount.ToString());
-		}
+		//	if (meas_csv + tp_csv.ToString() + group_csv.ToString() + measstatus_csv.ToString() + subjstatus_csv.ToString() == "")
+		//	{ btnLoad.Text = "Load Measures"; }
+		//	else { btnLoad.Text = "Load Selected Measures"; }
+
+
+		//	Debug.Print("!!!! pivotM_DataBinding            pivotM.RowCount=" + pivotM.RowCount.ToString());
+		//}
 
 	}
 
@@ -468,8 +486,8 @@ public partial class Tracking_Measures : System.Web.UI.Page
 	protected void pivotM_OnBeginRefresh(object sender, EventArgs e)
 	{
 		Debug.Print("pivotM_OnBeginRefresh              pivotM.RowCount=" + pivotM.RowCount.ToString());
-		pivotM.DataSource = Session["M_data"];
-		pivotM.DataBind();
+		//pivotM.DataSource = Session["M_data"];
+		//pivotM.DataBind();
 	}
 
 

@@ -1,8 +1,28 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="code6.aspx.cs" Inherits="Tracking_code6" %>
 
-<%@ Register TagPrefix="obout" Namespace="Obout.ListBox" Assembly="obout_ListBox" %>
+
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
+
+    <script type="text/javascript">
+        function grid_SelectionChanged(s,e) {
+            s.GetSelectedFieldValues("studyname",GetSelectedFieldValuesCallback);
+        }
+        function GetSelectedFieldValuesCallback(values) {
+            selList.BeginUpdate();
+            try {
+                selList.ClearItems();
+                for(var i=0;i<values.length;i++) {
+                    selList.AddItem(values[i]);
+                }
+            } finally {
+                selList.EndUpdate();
+            }
+            document.getElementById("selCount").innerHTML=gridStudy.GetSelectedRowCount();
+        }
+    </script>
 
     <br />
     <br />
@@ -16,7 +36,7 @@
 
     <table>
         <tr>
-            <td style="vertical-align:top" width="500px">
+            <td style="vertical-align:top; width:500px">
 
                 <asp:Button ID="btnGetIDList" runat="server" OnClick="btnGetIDList_Click" Text="Download stacked code6 file (.csv)" />
 
@@ -46,26 +66,45 @@
 
     <br />
     <br />
-    <table>
+    <table >
         <tr>
+            <td></td>
             <td>Select Studies:</td>
-        <td><i>UNDER CONSTRUCTION</i><br />Select Groups:  <obout:OboutButton ID="btnLoadGroups" runat="server" OnClick="btnLoadGroups_Click" Text="refresh" Font-Size="XX-Small" ></obout:OboutButton></td>
+<%--        <td><i>UNDER CONSTRUCTION</i><br />Select Groups:  <asp:Button ID="btnLoadGroups" runat="server" OnClick="btnLoadGroups_Click" Text="refresh" Font-Size="XX-Small" ></asp:Button></td>--%>
         </tr>
         <tr>
-            <td style="vertical-align:top">
-                <obout:ListBox ID="lstStudy" runat="server"  SelectionMode="Multiple" OnSelectedIndexChanged="lstStudy_SelectedIndexChanged" ></obout:ListBox>
+            <td style="vertical-align:top; padding:10px"> 
+                <dx:ASPxListBox ID="selList" ClientInstanceName="selList" runat="server"  Height="350px" Width="100%" />&nbsp;&nbsp;&nbsp;
+                <br />
+                    Selected count: <span id="selCount" style="font-weight: bold">0</span>
+                
+
+            </td>
+            <td style="vertical-align:top; padding:10px" >
+                <dx:ASPxGridView id="gridStudy" runat="server" ClientInstanceName="gridStudy"
+                     KeyFieldName="studyID">
+                    <Columns>
+                        <dx:GridViewCommandColumn ShowSelectCheckbox="true" SelectAllCheckboxMode="AllPages" />
+                        <dx:GridViewDataColumn FieldName="studyname" Caption="Study"></dx:GridViewDataColumn>
+                    </Columns>
+                    <ClientSideEvents SelectionChanged="grid_SelectionChanged" />
+                    <SettingsPager PageSize="15"></SettingsPager>
+                </dx:ASPxGridView>
             </td>
             <td style="vertical-align:top">
-                <obout:ListBox ID="lstGroup" runat="server" ></obout:ListBox>
+
             </td>
         </tr>
+
     </table>
 
         <br />
 
     <asp:Button ID="btnPivot" runat="server" OnClick="btnPivot_Click" Text="Create wide code6 file, with Filters" />
-    <obout:OboutCheckBox ID="chkXLSX" runat="server" Text="Save to .xlsx" ></obout:OboutCheckBox>
-    <obout:OboutCheckBox ID="chkDisplayOnPage" runat="server" Text="Display on page" ></obout:OboutCheckBox>
+
+    <asp:CheckBox ID="chkXLSX" runat="server" Text="Save to .xlsx" ></asp:CheckBox>
+    <asp:CheckBox ID="chkDisplayOnPage" runat="server" Text="Display on page" ></asp:CheckBox>
+
         <asp:Label ID="lblSelectOne" runat="server" Visible="false" Text="Select the output method." Font-Size="XX-Small" ForeColor="Red"></asp:Label>
         <br />
         <br />
@@ -73,6 +112,8 @@
     <asp:Panel ID="panel_wide" runat="server" >
 
     </asp:Panel>
+
+
 
 </asp:Content>
 

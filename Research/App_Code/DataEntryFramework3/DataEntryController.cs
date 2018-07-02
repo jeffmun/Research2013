@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Text;
 using System.Collections.Generic;
+using System.Web.UI;
 using uwac;
 
 namespace DataEntryFramework3
@@ -293,6 +294,8 @@ namespace DataEntryFramework3
 		//JM **new
 		private LinkButton _studymeasLinkButton;
 		private LinkButton _subjects_for_studymeasLinkButton;
+		private HyperLink _resetsingleLinkButton;
+		private HyperLink _deleteLinkButton;
 		//private LinkButton _measinfoLinkButton;
 
 		private Label _subjectInfoLabel;
@@ -1834,20 +1837,50 @@ namespace DataEntryFramework3
 							 )
 		{
 
+			int subjID;
+			//Lookup the subjID if we can
+			if (this.SubjID.ToString() == "-1"
+			&& this.StudySubjectIDString != ""
+			&& this.StudyMeasID > 0)
+			{
+				SQL_utils sql = new SQL_utils("backend");
+				subjID = sql.IntScalar_from_SQLstring(String.Format("select subjID from vwMasterStatus_S where ID='{0}' and studyID in (select studyID from tblstudymeas where studymeasID={1})"
+					, this.StudySubjectIDString, this.StudyMeasID));
+
+			} else 
+			{
+				subjID = this.SubjID;
+			}
 
 			//JM regardless of formstate, we want the linkButton visible 
 
 			_studymeasLinkButton.Text = string.Format("Details for {0}", this.StudySubjectIDString);
-			//_studymeasLinkButton.PostBackUrl = "~/Measures/MeasuresBySubject.aspx?SubjectID=" + this.SubjID.ToString();
-			_studymeasLinkButton.PostBackUrl = "~/Track/Subject.aspx?subjID=" +  this.SubjID.ToString();
+			_studymeasLinkButton.PostBackUrl = "~/Track/Subject.aspx?subjID=" +  subjID.ToString();
 			_studymeasLinkButton.Visible = true;
 
-			_subjects_for_studymeasLinkButton.Text = string.Format("Subjects for {0}", this.StudyMeasName);
-			_subjects_for_studymeasLinkButton.PostBackUrl = "~/Measures/SubjectsByMeasure.aspx?studymeasID=" + this.StudyMeasID.ToString();
+
+			_subjects_for_studymeasLinkButton.Text = string.Format("All subjects for {0}", this.StudyMeasName);
+			_subjects_for_studymeasLinkButton.PostBackUrl = "~/Track/Measures.aspx?studymeasID=" + this.StudyMeasID.ToString();
 			_subjects_for_studymeasLinkButton.Visible = true;
 
 
+			_resetsingleLinkButton.Text = string.Format("Reset to single-entered", this.StudyMeasName, this.StudySubjectIDString);
+			_resetsingleLinkButton.ForeColor = Color.DarkGreen;
+			_resetsingleLinkButton.NavigateUrl = String.Format("~/Info/ResetVerified.aspx?mode=reset&studymeasID={0}&pkval={1}", this.StudyMeasID.ToString(), this.PrimaryKeyVal.ToString());
+			_resetsingleLinkButton.Target = "_blank";
+			_resetsingleLinkButton.Visible = false;
+
+
+
+			_deleteLinkButton.Text = string.Format("Delete {0} for {1}", this.StudyMeasName, this.StudySubjectIDString);
+			_deleteLinkButton.ForeColor = Color.DarkRed;
+			_deleteLinkButton.NavigateUrl = String.Format("~/Info/ResetVerified.aspx?mode=delete&studymeasID={0}&pkval={1}", this.StudyMeasID.ToString(), this.PrimaryKeyVal.ToString());
+			_deleteLinkButton.Target = "_blank";
+			_deleteLinkButton.Visible = false;
+
+
 			_subjectInfoLabel.Text = "Quick Links:";
+			_subjectInfoLabel.Width = 200;
 			_subjectInfoLabel.Font.Bold = true;
 			_subjectInfoLabel.Visible = true;
 
@@ -1855,14 +1888,6 @@ namespace DataEntryFramework3
 			 //_measinfolinkbutton.postbackurl = "~/info/editdatadictionary.aspx?studymeasid=" + this.studymeasid.tostring();
 			 //_measinfolinkbutton.Visible=true;
 			
-			//if (this.StudySubjectIDString != null)
-			//{
-			//    _studymeasLinkButton.Text = string.Format("StudyMeas for {0}", this.StudySubjectIDString);
-			//}
-			//else
-			//{
-			//    _studymeasLinkButton.Text = " ";
-			//}
 
 			switch (FormState)
 			{
@@ -1908,6 +1933,7 @@ namespace DataEntryFramework3
 					_scoreButton.Visible = false;
 					_createNewStudyMeasureDDL.Visible = false;
 					_newStudyMeasureLabel.Visible = false;
+					_deleteLinkButton.Visible = true;
 
 					//JM new
 					if (studymeasidQSParam != null)
@@ -1934,6 +1960,7 @@ namespace DataEntryFramework3
 					_scoreButton.Visible = true;
 					_createNewStudyMeasureDDL.Visible = false;
 					_newStudyMeasureLabel.Visible = false;
+					_deleteLinkButton.Visible = true;
 
 					//JM new
 					if (studymeasidQSParam != null)
@@ -2016,6 +2043,8 @@ namespace DataEntryFramework3
 					_createNewStudyMeasureDDL.Visible = false;
 					_newStudyMeasureLabel.Visible = false;
 
+					_resetsingleLinkButton.Visible = true;
+					_deleteLinkButton.Visible = true;
 
 					//JM new
 					if (studymeasidQSParam != null)
@@ -2578,7 +2607,10 @@ namespace DataEntryFramework3
 			//_measinfoLinkButton = new LinkButton();
 			_subjects_for_studymeasLinkButton = new LinkButton();
 
+			_resetsingleLinkButton = new HyperLink();
 			
+			_deleteLinkButton = new HyperLink();
+
 			////label to hold warning that scoring is out-of-date.
 			//_lblNeedsScoring = new Label();
 			//_lblNeedsScoring.Text = "MEASURE HAS BEEN UPDATED AND NEEDS TO BE SCORED";
@@ -2614,12 +2646,14 @@ namespace DataEntryFramework3
 			this.Controls.Add(_subjectInfoLabel);
 			this.Controls.Add(_studymeasLinkButton);
 			this.Controls.Add(_subjects_for_studymeasLinkButton);
+			this.Controls.Add(_resetsingleLinkButton);
+			this.Controls.Add(_deleteLinkButton);
 			//this.Controls.Add(_measinfoLinkButton);
 
 		}
 
 
-		
+
 
 
 
@@ -2678,6 +2712,10 @@ namespace DataEntryFramework3
 			_studymeasLinkButton.RenderControl(writer);
 			writer.Write("<br><br>");
 			_subjects_for_studymeasLinkButton.RenderControl(writer);
+			writer.Write("<br><br>");
+			_deleteLinkButton.RenderControl(writer);
+			writer.Write("<br><br>");
+			_resetsingleLinkButton.RenderControl(writer);
 			writer.RenderEndTag(); // td
 			// writer.Write("<br><br>");
 			// _measinfoLinkButton.RenderControl(writer);

@@ -196,6 +196,8 @@ namespace DataEntryFramework
 		public static string RECORD_ERROR_STARTDOUBLEENTRY = "RECORD_ERROR_STARTDOUBLEENTRY";
 		public static string RECORD_SUCCESS_NODATA = "RECORD_SUCCESS_NODATA";
 		public static string RECORD_ERROR_NODATA = "RECORD_ERROR_NODATA";
+		public static string RECORD_SUCCESS_DELETE = "RECORD_SUCCESS_DELETE";
+		public static string RECORD_ERROR_DELETE = "RECORD_ERROR_DELETE";
 
 
 	}

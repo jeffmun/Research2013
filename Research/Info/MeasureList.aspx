@@ -2,29 +2,51 @@
  Inherits="Info_MeasureList" Title="Measure List" %>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+
+
  <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
 
 
     <asp:ScriptManager ID="ScriptManager1" runat="server">
     </asp:ScriptManager>
 
+     <script>
+         function ToggleGrid(s) {
+             var isvisible = grid.GetVisible();
+             if (isvisible) {
+                 grid.SetClientVisible(false);
+                 btnToggleGrid.SetText("Show measures");
+             } else {
+                 grid.SetClientVisible(true);
+                 btnToggleGrid.SetText("Hide measures");
+             }
+         }
+        function ToggleGrid2(s) {
+             var isvisible = grid2.GetVisible();
+             if (isvisible) {
+                 grid2.SetClientVisible(false);
+                 btnToggleGrid2.SetText("Show study measures");
+             } else {
+                 grid2.SetClientVisible(true);
+                 btnToggleGrid2.SetText("Hide study measures");
+             }
+         }
+
+     </script>
 
  
  <br />
  <br />
- <table>
+<asp:Label ID="lblStudyname_ContentPage" runat="server" Text=" " Font-Size="Large" Font-Bold="true"></asp:Label>
+
+<table>
  <tr>
- <td width = "500px">             <asp:Label ID="lblINTRO_studyname" runat="server" Text=" " Font-Size="Medium" Font-Bold="false"></asp:Label>
-            <asp:Label ID="lblStudyname_ContentPage" runat="server" Text=" " Font-Size="Medium" Font-Bold="true"></asp:Label></td>
- <td width="200px"><asp:Label ID="Label1" runat="server" Text="sort table by:" ForeColor="Navy" Font-Size="Smaller" ></asp:Label>
-     <asp:DropDownList ID="ddl_sortmethod" runat="server"  ForeColor="Navy" OnSelectedIndexChanged="Change_SortMethod" AutoPostBack="true">
-        <asp:ListItem Text="Measure Name" Value="measname" />
-        <asp:ListItem Text="Category" Value="Category" />
-        <asp:ListItem Text="Method" Value="method" />
-        <asp:ListItem Text="Focus" Value="Focus" />
-     </asp:DropDownList></td>
-     <td >
-         <asp:Button ID="btnRefresh" runat="server" Font-Size="X-Small" Text="Refresh" OnClick="btnRefresh_Click" />
+     <td style="width:500px">
+         <asp:Label ID="lblINTRO_studyname" runat="server" Text="Measure List" Font-Size="Medium" Font-Bold="true" Font-Underline="true"></asp:Label>
+     </td>
+     <td style="width:200px">
+         <dx:ASPxButton ID="btnToggleGrid" runat="server" ClientInstanceName="btnToggleGrid" Text="Hide Measures" ClientSideEvents-Click="ToggleGrid" AutoPostBack="false" ></dx:ASPxButton>
      </td>
  </tr>
  </table>
@@ -33,53 +55,95 @@
 
      <br />
      <br />
-     <asp:Label ID="Label2" runat="server" Text="Click on the measure name for detailed info." Font-Italic="true" ForeColor="Navy" Font-Size="X-Small" ></asp:Label>
-     <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="false" DataSourceID="sql_measlist">
-     <Columns>
-     
-     <asp:TemplateField><HeaderTemplate>mID</HeaderTemplate><ItemTemplate><asp:Label ID="measureID" runat="server" ForeColor="Gray" Text='<%#  DataBinder.Eval(Container.DataItem, "[measureID]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>Category</HeaderTemplate><ItemTemplate><asp:Label ID="Category" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Category]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>MeasName</HeaderTemplate><ItemTemplate><asp:HyperLink ID="MeasName" runat="server" Target="_blank" Font-Bold="true" Text='<%#  DataBinder.Eval(Container.DataItem, "[MeasName]") %>' NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[MeasInfoLink]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>MeasFullName</HeaderTemplate><ItemTemplate><asp:Label ID="MeasFullName" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[MeasFullName]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
+     <asp:Label ID="Label2" runat="server" Text="Click on the measure name for detailed info." Font-Italic="true" ForeColor="Navy" Font-Size="X-Small"  ></asp:Label>
 
-     <asp:TemplateField ItemStyle-HorizontalAlign="Center"><HeaderTemplate>Time Points</HeaderTemplate><ItemTemplate><asp:Label ID="lblTPpattern" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[TPpattern]") %>'  ></asp:Label></ItemTemplate></asp:TemplateField>
-
-     <asp:TemplateField><HeaderTemplate>Data Form</HeaderTemplate><ItemTemplate><asp:HyperLink ID="DataForm_link" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[DataForm_LinkLabel]") %>'  NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[DataForm_Link]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>Data Entry</HeaderTemplate><ItemTemplate><asp:HyperLink ID="DataForm_link" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[DE_LinkLabel]") %>'  NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[DE_Link]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
-
-     <asp:TemplateField><HeaderTemplate>Respondent</HeaderTemplate><ItemTemplate><asp:Label ID="Respondent" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Respondent]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>Method</HeaderTemplate><ItemTemplate><asp:Label ID="Method" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Method]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>Focus</HeaderTemplate><ItemTemplate><asp:Label ID="Focus" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Focus]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-
-     <asp:TemplateField><HeaderTemplate>Desc Stats</HeaderTemplate><ItemTemplate><asp:HyperLink ID="Desc_link" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Desc_LinkLabel]") %>'  NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[Desc_Link]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
-   
-     
-           <asp:TemplateField><HeaderTemplate>DataTable</HeaderTemplate><ItemTemplate><asp:Label ID="DataTable" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[DataTable]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-<%--
-     <asp:TemplateField><HeaderTemplate>UW NDAR view</HeaderTemplate><ItemTemplate><asp:HyperLink ID="UW_NDARview" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[UW_NDARview]") %>'  NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[UW_NDARviewLink]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>NDAR Data Dict</HeaderTemplate><ItemTemplate><asp:HyperLink ID="ViewNDARdatadict" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[ViewNDARdatadict]") %>'  NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[NDARlink]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
---%>
-     <asp:TemplateField><HeaderTemplate>Numrecs</HeaderTemplate><ItemTemplate><asp:Label ID="Numrecs" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[# recs]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-
-     <asp:TemplateField><HeaderTemplate>Scoring Proc</HeaderTemplate><ItemTemplate><asp:HyperLink ID="Scoring_Proc" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Scoring_Proc]") %>'    NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[ScoreProcLink]") %>'></asp:HyperLink></ItemTemplate></asp:TemplateField>
-
-     <asp:TemplateField><HeaderTemplate># Docs</HeaderTemplate><ItemTemplate><asp:Label ID="Num_Docs_Meas" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[Num_Docs_Meas]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>Admin time</HeaderTemplate><ItemTemplate><asp:Label ID="AdminTime" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[AdminTime]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-     <asp:TemplateField><HeaderTemplate>Data Entry time</HeaderTemplate><ItemTemplate><asp:Label ID="DEesttime" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[DEesttime]") %>'></asp:Label></ItemTemplate></asp:TemplateField>
-        
-              
-              </Columns>
-
-     </asp:GridView>
  
+     <dx:ASPxGridView ID="grid" runat="server" ClientInstanceName="grid"    Styles-AlternatingRow-BackColor="Whitesmoke" 
+         DataSourceID="sql_measlist">
+         <Settings ShowGroupPanel="true" />
+         <SettingsPager PageSize="50"></SettingsPager>
+         <Columns>
+            <dx:GridViewDataColumn FieldName="measureID" Caption="mID" />
+            <dx:GridViewDataColumn FieldName="Category" />
+
+             <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Measure">
+                <DataItemTemplate>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='~/info/MeasureInfo.aspx?measureID=<%# Eval("measureID") %>' Font-Bold="true">
+                    </dx:ASPxHyperLink>
+                </DataItemTemplate>
+            </dx:GridViewDataHyperLinkColumn>
+
+            <dx:GridViewDataColumn FieldName="MeasFullName" Caption="Measure Full Name" />
+
+            <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="DE Link">
+                <DataItemTemplate>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text="DataEntry" NavigateUrl='<%# Eval("DE_Link") %>'>
+                    </dx:ASPxHyperLink>
+                </DataItemTemplate>
+            </dx:GridViewDataHyperLinkColumn>
+
+            <dx:GridViewDataHyperLinkColumn FieldName="DataForm_Link" Caption="Form Links">
+                <DataItemTemplate>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_Form" runat="server" Text="Form" NavigateUrl='<%# Eval("DataForm_Link") %>'>
+                    </dx:ASPxHyperLink>
+                </DataItemTemplate>
+            </dx:GridViewDataHyperLinkColumn>
+
+            <dx:GridViewDataColumn FieldName="Respondent" />
+            <dx:GridViewDataColumn FieldName="Method" />
+            <dx:GridViewDataColumn FieldName="Focus" />
+            <dx:GridViewDataColumn FieldName="# studies using" />
+            <dx:GridViewDataColumn FieldName="DataTable" />
+            <dx:GridViewDataColumn FieldName="# recs" />
+
+            <dx:GridViewDataHyperLinkColumn FieldName="Scoring_Proc" Caption="Scoring Proc">
+                <DataItemTemplate>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_ScoreProc" runat="server" Text='<%# Eval("Scoring_Proc") %>' NavigateUrl='<%# Eval("ScoreProcLink") %>'>
+                    </dx:ASPxHyperLink>
+                </DataItemTemplate>
+            </dx:GridViewDataHyperLinkColumn>
+             
+            <dx:GridViewDataColumn FieldName="Num_Docs_Meas" Caption="# Docs Meas" />
+            <dx:GridViewDataColumn FieldName="NumManuals" Caption="# Manuals" />
+            <dx:GridViewDataColumn FieldName="NumArticles" Caption="# Articles" />
+            <dx:GridViewDataColumn FieldName="AdminTime" Caption="Admin Time" />
+            <dx:GridViewDataColumn FieldName="DEesttime" Caption="DE estim time" />
+            <%--<dx:GridViewDataColumn FieldName="tblpk" />--%>
+         </Columns>
+     </dx:ASPxGridView>
+
 
      <br /><br /><br />
-     <asp:Label id="sm_label" runat="server" Text="Study Measure List" Font-Bold="true" Font-Underline="true" Font-Size="Medium"></asp:Label><br />
-     <asp:button runat="server"  Text="Sort by Measure" OnClick="sm_sort_1" Font-Size="Smaller" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-     <asp:button runat="server"  Text="Sort by Time point" OnClick="sm_sort_2" Font-Size="Smaller" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-     <asp:button runat="server"  Text="Sort by studymeasID" OnClick="sm_sort_3" Font-Size="Smaller" />
+
+
+
+<table>
+ <tr>
+     <td style="width:500px">
+         <asp:Label ID="Label1" runat="server" Text="Study Measure List" Font-Size="Medium" Font-Bold="true" Font-Underline="true"></asp:Label>
+     </td>
+     <td style="width:200px">
+         <dx:ASPxButton ID="btnToggleGrid2" runat="server" ClientInstanceName="btnToggleGrid2" Text="Hide Study Measures" ClientSideEvents-Click="ToggleGrid2" AutoPostBack="false" ></dx:ASPxButton>
+     </td>
+ </tr>
+ </table>
      <br />
-     <br />
+
+
+      <dx:ASPxGridView ID="grid2" runat="server" ClientInstanceName="grid2"    Styles-AlternatingRow-BackColor="Whitesmoke" 
+         DataSourceID="sql_studymeas">
+         <Settings ShowGroupPanel="true" />
+         <SettingsPager PageSize="50"></SettingsPager>
+         <Columns>
+            <dx:GridViewDataColumn FieldName="mID" Caption="mID" />
+            <dx:GridViewDataColumn FieldName="Measname" Caption="Measure" />
+            <dx:GridViewDataColumn FieldName="TimePoint" Caption="TimePoint" />
+            <dx:GridViewDataColumn FieldName="studymeasID" Caption="smID" />
+            <dx:GridViewDataColumn FieldName="StudyMeasName" Caption="StudyMeasName" />
+
+             </Columns>
+          </dx:ASPxGridView>
+
 
      <asp:Panel id="sm_panel" runat="server">
      </asp:Panel> 
@@ -87,11 +151,22 @@
 
 <%-- UW_NDARview, UW_NDARviewLink , ViewNDARdatadict, NDARlink--%>
 
-     <asp:SqlDataSource ID="sql_measlist" runat="server" SelectCommandType="Text" SelectCommand="exec spStudyDesign__MeasureList_by_StudyID @sortmethod" ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
-    
-     <SelectParameters><asp:ControlParameter ControlID="ddl_sortmethod" Name="sortmethod" DefaultValue="measname" PropertyName="SelectedValue" /></SelectParameters>
+     <asp:SqlDataSource ID="sql_measlist" runat="server" SelectCommandType="Text"
+         SelectCommand="select *  from vwStudyDesign__MeasureList where measureID in (select measureID from tblstudymeas where studyID = @studyID) " 
+         ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
+         <SelectParameters>
+                 <asp:SessionParameter SessionField="master_studyID" Name="studyID" DbType="Int32" />
+         </SelectParameters>
      </asp:SqlDataSource>
 
  
+     <asp:SqlDataSource ID="sql_studymeas" runat="server" SelectCommandType="Text"
+         SelectCommand="select measureID mID, Measname, TimePoint_text as TimePoint, studymeasID, StudyMeasName from vwMasterStatus_StudyMeas where studyID = @studyID order by Measname, TimePoint_text" 
+         ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
+         <SelectParameters>
+             <asp:SessionParameter SessionField="master_studyID" Name="studyID" DbType="Int32" /></SelectParameters>
+     </asp:SqlDataSource>
+
+
  
  </asp:Content>

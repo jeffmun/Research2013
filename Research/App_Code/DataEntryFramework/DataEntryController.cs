@@ -844,6 +844,14 @@ namespace DataEntryFramework
 
 					break;
 
+				// user clicked insert button
+				case "_deleteButton":
+
+
+					string dellink = String.Format("~/delete.aspx?tbl={0}&pkfld={1}&pkval={2}", this.DatabaseTable, this.PrimaryKeyField, this.PrimaryKeyVal);					
+
+					break;
+
 
 				// score
 				case "_scoreButton":

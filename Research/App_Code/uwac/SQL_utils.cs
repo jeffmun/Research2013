@@ -331,6 +331,39 @@ namespace uwac
 			}
 		}
 
+
+		public DataSet DataSet_from_SQLstring(string sSQL)
+		{
+			SqlCommand oCmd = new SqlCommand();
+
+			oCmd.Connection = oSqlConn;
+			oCmd.CommandText = sSQL;
+			oCmd.CommandTimeout = 90;
+			oCmd.CommandType = CommandType.Text;
+
+			try
+			{
+
+				SqlDataAdapter adapter = new SqlDataAdapter(oCmd);
+				DataSet ds = new DataSet();
+				adapter.Fill(ds);
+				adapter.Dispose();
+
+				return ds;
+
+			}
+			catch (Exception ex)
+			{
+				string x = ex.Message;
+				//QQQ temp
+				DataSet dt2 = new DataSet();
+				return dt2;
+				//throw new System.Exception("An Error!2  sSQL={" + sSQL + "} ", ex);
+			}
+		}
+
+		
+
 		#endregion .............................from.string....
 
 		#region ..............................from.PROCS....

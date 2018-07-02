@@ -14,11 +14,11 @@ using AutismCenterBase.Utilities;
 using System.IO;
 using System.Drawing;
 using System.Text;
+using uwac;
 
 
 
-
-public partial class Info_ResetVerified : System.Web.UI.Page
+public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();
@@ -44,42 +44,13 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 	{
 		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
 
-
-		oConn.ConnectionString = ConfigurationManager.ConnectionStrings["TRACKING_CONN_STRING"].ToString();
-		oConn.Open();
-		oConnData.ConnectionString = ConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ToString();
-		oConnData.Open();
-
-
-		oDBLookup = new DBLookup(oConn);
-		GetCurrentDefaultStudyID();
-
 	}
 
 
-	protected void GetCurrentDefaultStudyID()
-	{
-
-
-		SqlCommand sqlCmd = new System.Data.SqlClient.SqlCommand("exec spSEC_Get_Default_StudyID_for_User", oConn);
-		DataTable dt = new DataTable();
-		SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
-		sqlAdapter.Fill(dt);
-
-		foreach (DataRow row in dt.Rows)
-		{
-			_content_studyID = Convert.ToInt16(row["defaultstudyID"]);
-			_content_studyname = Convert.ToString(row["studyname"]);
-		 
-		}
-
-
-	}
 
 	//If the master page default study is changed, update the Measure DDL
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
-		GetCurrentDefaultStudyID();
 		Populate_Studymeas_DDL();
 		Populate_ID_DDL(0);
 		Populate_IDdelete_DDL(0);
@@ -96,7 +67,7 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
-		
+
 		//UpdpatePanel01.RegisterAsyncPostBackControl(); 
 
 
@@ -112,6 +83,38 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 			ddl_Clin.Visible = false;
 
 			Populate_delSubj_ID_DDL();
+
+			if (Request.QueryString["mode"] == "delete")
+			{
+				int studymeasID = Convert.ToInt32(Request.QueryString["studymeasID"].ToString());
+				string pkval = Request.QueryString["pkval"].ToString();
+
+				ddl_studymeasID.SelectedValue = studymeasID.ToString();
+				ddl_IDdelete.SelectedValue = pkval;
+
+				Populate_IDdelete_DDL(studymeasID);
+				//Populate_IDmove_DDL(studymeasID);
+				//Populate_delSubj_ID_DDL(studymeasID);
+
+				panelDelete.Visible = true;
+			}
+			else if (Request.QueryString["mode"] == "reset")
+			{
+				int studymeasID = Convert.ToInt32(Request.QueryString["studymeasID"].ToString());
+				string pkval = Request.QueryString["pkval"].ToString();
+
+				ddl_studymeasID.SelectedValue = studymeasID.ToString();
+
+				Populate_ID_DDL(studymeasID);
+
+				ddl_ID.SelectedValue = pkval;
+
+				btnReset.Visible = true;
+				//Populate_IDdelete_DDL(studymeasID);
+				//Populate_IDmove_DDL(studymeasID);
+				//Populate_delSubj_ID_DDL(studymeasID);
+
+			}
 		}
 	}
 
@@ -122,18 +125,13 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 	#region ==== Populate DDLs ====
 	protected void Populate_Studymeas_DDL()
 	{
-		//DropDownList ddl_studymeasID = (DropDownList)FindControl("ddl_studymeasID");
 
+		SQL_utils sql = new SQL_utils("backend");
+		string sqlcode = "select 0 studymeasID, '---Measure---' studymeasname union select studymeasID, studymeasname + ' ['+timepoint_text+']' as studymeasname from vwStudymeas where studyID = " + Master.Master_studyID.ToString() + " order by studymeasname";
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConn;
-		sqlCmd.CommandType = CommandType.Text;
-		sqlCmd.CommandText = "select 0 studymeasID, '---Measure---' studymeasname union select studymeasID, studymeasname + ' ['+timepoint_text+']' as studymeasname from vwStudymeas where studyID = " + _content_studyID.ToString() + " order by studymeasname";
+		DataTable dtSM = sql.DataTable_from_SQLstring(sqlcode);
+		sql.Close();
 
-
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
 
 		ddl_studymeasID.DataSource = dtSM;
 		ddl_studymeasID.DataTextField = "studymeasname";
@@ -144,26 +142,18 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void Populate_ID_DDL(int studymeasID)
 	{
-		//DropDownList ddl_studymeasID = (DropDownList)FindControl("ddl_studymeasID");
 
+		SQL_utils sql = new SQL_utils("data");
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spID_and_Indexnum_by_smID";
-		sqlCmd.Parameters.Add("studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("clin", SqlDbType.VarChar,100);
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studymeasID", ddl_studymeasID.SelectedValue, "int"));
+		ps.Add(sql.CreateParam("clin", ddl_Clin.SelectedValue, "text"));
+		ps.Add(sql.CreateParam("mode", "1,4", "text"));
 
-		sqlCmd.Parameters["studymeasID"].Value = studymeasID;
-		sqlCmd.Parameters["clin"].Value = ddl_Clin.SelectedValue;
+		
+		DataTable dtSM = sql.DataTable_from_ProcName("spID_and_Indexnum_by_smID", ps);
+		sql.Close();
 
-		sqlCmd.Parameters.Add("mode", SqlDbType.VarChar, 10);
-		sqlCmd.Parameters["mode"].Value = "1,4";  //  dbl ent, and no data
-
-
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
 
 		ddl_ID.DataSource = dtSM;
 		ddl_ID.DataTextField = "IDindex";
@@ -177,25 +167,17 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void Populate_IDdelete_DDL(int studymeasID)
 	{
-		//DropDownList ddl_studymeasID = (DropDownList)FindControl("ddl_studymeasID");
 
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spID_and_Indexnum_by_smID";
-		sqlCmd.Parameters.Add("studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("clin", SqlDbType.VarChar, 100);
+		SQL_utils sql = new SQL_utils("data");
 
-		sqlCmd.Parameters["studymeasID"].Value = studymeasID;
-		sqlCmd.Parameters["clin"].Value = ddl_Clin.SelectedValue;
-
-		sqlCmd.Parameters.Add("mode", SqlDbType.VarChar, 10);
-		sqlCmd.Parameters["mode"].Value = "0,1,4";  // single ent, dbl ent, and no data
-
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studymeasID", ddl_studymeasID.SelectedValue, "int"));
+		ps.Add(sql.CreateParam("clin", ddl_Clin.SelectedValue, "text"));
+		ps.Add(sql.CreateParam("mode", "0,1,4", "text"));
+		
+		DataTable dtSM = sql.DataTable_from_ProcName("spID_and_Indexnum_by_smID", ps);
+		sql.Close();
 
 		ddl_IDdelete.DataSource = dtSM;
 		ddl_IDdelete.DataTextField = "IDindex";
@@ -212,20 +194,16 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void Populate_StudyMeas_New_DDL(int studymeasID)
 	{
-		//DropDownList ddl_studymeasID = (DropDownList)FindControl("ddl_studymeasID");
+
+		SQL_utils sql = new SQL_utils("data");
+
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studymeasID", studymeasID.ToString(), "int"));
+
+		DataTable dtSM = sql.DataTable_from_ProcName("spDEF__Potential_Movable_Studymeas", ps);
+		sql.Close();
 
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spDEF__Potential_Movable_Studymeas";
-		sqlCmd.Parameters.Add("studymeasID", SqlDbType.Int);
-
-		sqlCmd.Parameters["studymeasID"].Value = studymeasID;
-
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
 
 		ddl_Studymeas_New.DataSource = dtSM;
 		ddl_Studymeas_New.DataTextField = "studymeasname";
@@ -238,25 +216,17 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void Populate_IDmove_DDL(int studymeasID)
 	{
-		//DropDownList ddl_studymeasID = (DropDownList)FindControl("ddl_studymeasID");
+		
+		SQL_utils sql = new SQL_utils("data");
 
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studymeasID", studymeasID.ToString(), "int"));
+		ps.Add(sql.CreateParam("clin", ddl_Clin.SelectedValue, "text"));
+		ps.Add(sql.CreateParam("mode", "0,1,4", "text"));
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spID_and_Indexnum_by_smID";
-		sqlCmd.Parameters.Add("studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("clin", SqlDbType.VarChar, 100);
+		DataTable dtSM = sql.DataTable_from_ProcName("spID_and_Indexnum_by_smID", ps);
+		sql.Close();
 
-		sqlCmd.Parameters["studymeasID"].Value = studymeasID;
-		sqlCmd.Parameters["clin"].Value = ddl_Clin.SelectedValue;
-
-		sqlCmd.Parameters.Add("mode", SqlDbType.VarChar, 10);
-		sqlCmd.Parameters["mode"].Value = "0,1,4";  // single ent, dbl ent, and no data
-
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
 
 		ddl_IDmove.DataSource = dtSM;
 		ddl_IDmove.DataTextField = "IDindex";
@@ -270,15 +240,12 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void LoadTxLogClins()
 	{
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.Text;
-		sqlCmd.CommandText = "select clinname, siteclinname from vwTadpoleTxLog_Clins order by siteclinname";
 
 
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
+		SQL_utils sql = new SQL_utils("data");
+		string sqlcode = "select clinname, siteclinname from vwTadpoleTxLog_Clins order by siteclinname";
+		DataTable dtSM = sql.DataTable_from_SQLstring(sqlcode);
+		sql.Close();
 
 
 		ddl_Clin.DataSource = dtSM;
@@ -291,20 +258,16 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void Populate_delSubj_ID_DDL()
 	{
-		//DropDownList ddl_studymeasID = (DropDownList)FindControl("ddl_studymeasID");
 
 
-		//Only allow if you are in the "Admin" group
+		SQL_utils sql = new SQL_utils("backend");
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConn;
-		sqlCmd.CommandType = CommandType.Text;
-		sqlCmd.CommandText = "select -1 subjID, '--select--' idgrp union select subjID, ID + ' (' + groupname + ')' as idgrp from vwMasterStatus_S where groupID in (select groupID from dbo.fnSEC_Allowed_ADMIN_Groups_by_User()) " + 
-			" and studyID = " + _content_studyID.ToString();
+		string sqlcode = "select -1 subjID, '--select--' idgrp union select subjID, ID + ' (' + groupname + ')' as idgrp from vwMasterStatus_S where groupID in (select groupID from dbo.fnSEC_Allowed_ADMIN_Groups_by_User()) " +
+			" and studyID = " + Master.Master_studyID.ToString();
 
-		SqlDataReader sqlddl_reader = sqlCmd.ExecuteReader();
-		DataTable dtSM = new DataTable();
-		dtSM.Load(sqlddl_reader);
+		DataTable dtSM = sql.DataTable_from_SQLstring(sqlcode);
+		sql.Close();
+
 
 
 		if (dtSM.Rows.Count > 1)
@@ -507,19 +470,14 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 
 	protected void ResetForm(object sender, EventArgs e)
 	{
-			  
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spDEF_RESET_Verified_to_0";
-		sqlCmd.Parameters.Add("studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("pk", SqlDbType.Int);
 
-		sqlCmd.Parameters["studymeasID"].Value = Convert.ToInt16(ddl_studymeasID.SelectedValue);
-		sqlCmd.Parameters["pk"].Value = Convert.ToInt16(ddl_ID.SelectedValue);
+		SQL_utils sql = new SQL_utils("data");
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studymeasID", ddl_studymeasID.SelectedValue, "int"));
+		ps.Add(sql.CreateParam("pk", ddl_ID.SelectedValue, "int"));
+		sql.NonQuery_from_ProcName("spDEF_RESET_Verified_to_0", ps);
 
 
-		sqlCmd.ExecuteNonQuery();
 
 		Populate_ID_DDLs();
 
@@ -553,21 +511,14 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 	protected void DeleteRecord(object sender, EventArgs e)
 	{
 			  
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spDEF_DELETE_to_XML_RAW";
-		sqlCmd.Parameters.Add("studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("pk", SqlDbType.Int);
+		SQL_utils sql = new SQL_utils("data");
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studymeasID", ddl_studymeasID.SelectedValue, "int"));
+		ps.Add(sql.CreateParam("pk", ddl_IDdelete.SelectedValue, "int"));
+		sql.NonQuery_from_ProcName("spDEF_DELETE_to_XML_RAW", ps);
 
 
-		sqlCmd.Parameters["studymeasID"].Value = Convert.ToInt16(ddl_studymeasID.SelectedValue);
-		sqlCmd.Parameters["pk"].Value = Convert.ToInt16(ddl_IDdelete.SelectedValue);
-
-
-
-		sqlCmd.ExecuteNonQuery();
-
+		
 		Populate_ID_DDLs();
 
 		btnReset.Visible = false;
@@ -585,28 +536,24 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 		if (Convert.ToInt32(ddl_delSubj1.SelectedValue) == Convert.ToInt32(ddl_delSubj2.SelectedValue))
 		{
 
-			SqlCommand sqlCmd = new SqlCommand();
-			sqlCmd.Connection = oConn;
-			sqlCmd.CommandType = CommandType.StoredProcedure;
-			sqlCmd.CommandText = "spDeleteSubject_from_web";
-			sqlCmd.Parameters.Add("subjID", SqlDbType.Int);
-			sqlCmd.Parameters.Add("code", SqlDbType.VarChar, 50);
 
+			SQL_utils sql = new SQL_utils("backend");
+			List<SqlParameter> ps = new List<SqlParameter>();
+			ps.Add(sql.CreateParam("subjID", ddl_delSubj1.SelectedValue, "int"));
+			ps.Add(sql.CreateParam("code", "Confirm deletion of " + Convert.ToString(ddl_delSubj1.SelectedValue), "text"));
 			
-
-			sqlCmd.Parameters["subjID"].Value = Convert.ToInt32(ddl_delSubj1.SelectedValue);
-			sqlCmd.Parameters["code"].Value = "Confirm deletion of " + Convert.ToString(ddl_delSubj1.SelectedValue);
-
-	 
-
+			
 			try
 			{
-				sqlCmd.ExecuteNonQuery();
+				sql.NonQuery_from_ProcName("spDeleteSubject_from_web", ps);
+
 			}
-			catch(SqlException exc)
+			catch (SqlException exc)
 			{
 				error_label.Text = exc.Message;
 			}
+
+			sql.Close();
 
 			Populate_delSubj_ID_DDL();
 
@@ -625,22 +572,15 @@ public partial class Info_ResetVerified : System.Web.UI.Page
 	protected void MoveRecord(object sender, EventArgs e)
 	{
 
-		SqlCommand sqlCmd = new SqlCommand();
-		sqlCmd.Connection = oConnData;
-		sqlCmd.CommandType = CommandType.StoredProcedure;
-		sqlCmd.CommandText = "spDEF__Update_StudymeasID_for_entered_Measure";
-		sqlCmd.Parameters.Add("old_studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("new_studymeasID", SqlDbType.Int);
-		sqlCmd.Parameters.Add("pk", SqlDbType.Int);
+		SQL_utils sql = new SQL_utils("data");
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("old_studymeasID", ddl_studymeasID.SelectedValue, "int"));
+		ps.Add(sql.CreateParam("new_studymeasID", ddl_Studymeas_New.SelectedValue, "int"));
+		ps.Add(sql.CreateParam("pk", ddl_IDmove.SelectedValue, "int"));
+		sql.NonQuery_from_ProcName("spDEF__Update_StudymeasID_for_entered_Measure", ps);
 
+		sql.Close();
 
-		sqlCmd.Parameters["old_studymeasID"].Value = Convert.ToInt16(ddl_studymeasID.SelectedValue);
-		sqlCmd.Parameters["new_studymeasID"].Value = Convert.ToInt16(ddl_Studymeas_New.SelectedValue);
-		sqlCmd.Parameters["pk"].Value = Convert.ToInt16(ddl_IDmove.SelectedValue);
-
-
-
-		sqlCmd.ExecuteNonQuery();
 
 		Populate_ID_DDLs();
 

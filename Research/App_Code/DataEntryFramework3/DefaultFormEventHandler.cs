@@ -80,32 +80,39 @@ namespace DataEntryFramework3
 
 				else
 				{
-					SQL_utils sqlx = new SQL_utils("data");
-					string user = sqlx.GetUserNameFromIdentity();
-					sqlx.Close();
 
-					string _sqlInsert = String.Format("EXEC sec.spSetUserContext {0}; ", user);
+					string _sqlInsert = GetSetUserContextSyntax();
+
+
+					//Check that subject ID exists 
+					var smID = dec.StudyMeasID;
+					var id = dec.SubjID;
+
 
 
 					// build and return sqlInsert SqlCommand object
 					_sqlInsert += "INSERT INTO " + dec.DatabaseTable + " (";
 					bool first = true;
+
+					//******************** Fields ********************
 					foreach (DataFieldControl d in dec.InsertDataFields.Values)
 					{
 						_sqlInsert += ((!first)?",":"") + d.DatabaseField;
 						first = false;
 					}
 
-					_sqlInsert += "," + dec.VerifiedField + ", studymeasid";
+					_sqlInsert += "," + dec.VerifiedField + ", studymeasid, created, createdBy"; //JM added created etc here so that 
 					_sqlInsert += ") VALUES (";
-		
+
+
+					//******************** Values ********************
 					first = true;
 					foreach (DataFieldControl d in dec.InsertDataFields.Values)
 					{
 						_sqlInsert += ((!first)?",":"") + "@" + d.DatabaseField;
 						first = false;
 					}
-					_sqlInsert += ", @" + dec.VerifiedField + ",@studymeasid";
+					_sqlInsert += ", @" + dec.VerifiedField + ",@studymeasid, getdate(), sec.systemuser()";
 					_sqlInsert += ");";
 
 					_sqlInsert += " SELECT t.*, st.studyname + ': ' + sm.studymeasname as studymeasname FROM " + dec.DatabaseTable +  " t join uwautism_research_backend..tblstudymeas sm ";
@@ -159,11 +166,7 @@ namespace DataEntryFramework3
 				else
 				{
 
-					SQL_utils sqlx = new SQL_utils("data");
-					string user = sqlx.GetUserNameFromIdentity();
-					sqlx.Close();
-
-					string _sqlUpdate = String.Format("EXEC sec.spSetUserContext {0}; ", user);
+					string _sqlUpdate = GetSetUserContextSyntax();
 
 
 					// make sqlUpdate SqlCommand
@@ -174,9 +177,16 @@ namespace DataEntryFramework3
 						_sqlUpdate += ((!first)?",":"") + d.DatabaseField + "=@" + d.DatabaseField;
 						first = false;
 					}
-		
+
+					_sqlUpdate += ",updated = getdate()" ;
+					_sqlUpdate += ",updatedBy = sec.systemuser()";
+
+
 					_sqlUpdate += "," + dec.VerifiedField + "=@" + dec.VerifiedField + " ";
 					_sqlUpdate += " WHERE " + dec.PrimaryKeyField + "=@" + dec.PrimaryKeyField + "; ";
+
+					_sqlUpdate += String.Format("exec def.LogDatData '{0}',@{1},'{1}',0;",
+						 dec.DatabaseTable, dec.PrimaryKeyField);
 
 					//Add sql to call scoring sp after saving, if requested
 					// - this will update the reliability data if studymeasID is part of any reliability coding 
@@ -219,11 +229,8 @@ namespace DataEntryFramework3
 
 				else
 				{
-					SQL_utils sqlx = new SQL_utils("data");
-					string user = sqlx.GetUserNameFromIdentity();
-					sqlx.Close();
 
-					string _sqlSelect = String.Format("EXEC sec.spSetUserContext {0}; ", user);
+					string _sqlSelect = GetSetUserContextSyntax();
 
 					_sqlSelect += "SELECT t.*, st.studyname + ': ' + sm.studymeasname as studymeasname  FROM " + dec.DatabaseTable + " t join uwautism_research_backend..tblstudymeas sm ";
 					_sqlSelect +=  " on t.studymeasid=sm.studymeasid ";
@@ -271,11 +278,10 @@ namespace DataEntryFramework3
 					_sqlLookup += " AND t.studymeasid=@studymeasid ";
 					_sqlLookup += " AND (" + dec.PrimaryKeyField + " = @pk OR @pk IS NULL) ";
 					*/
-					SQL_utils sqlx = new SQL_utils("data");
-					string user = sqlx.GetUserNameFromIdentity();
-					sqlx.Close();
 
-					string _sqlLookup = String.Format("EXEC sec.spSetUserContext {0}; ", user);
+
+
+					string _sqlLookup = GetSetUserContextSyntax();
 					_sqlLookup += "SELECT t.*, st.studyname + ': ' + sm.studymeasname as studymeasname  FROM " + dec.DatabaseTable + " t join uwautism_research_backend..tblstudymeas sm ";
 					_sqlLookup +=  " on t.studymeasid=sm.studymeasid ";
 					_sqlLookup += " join uwautism_research_backend..tblstudy st on st.studyid=sm.studyid ";
@@ -321,18 +327,41 @@ namespace DataEntryFramework3
 
 				else
 				{
-					string _sqlUpdateVerified = "UPDATE " + dec.DatabaseTable + " SET " + dec.VerifiedField + " = @" + 
+
+					string _sqlUpdateVerified = GetSetUserContextSyntax();
+
+
+					_sqlUpdateVerified = "UPDATE " + dec.DatabaseTable + " SET " + dec.VerifiedField + " = @" + 
 						dec.VerifiedField + " WHERE (" + dec.PrimaryKeyField + " = @" + dec.PrimaryKeyField + "); ";
-					
-					_sqlUpdateVerified += "SELECT t.*,  st.studyname + ': ' + sm.studymeasname as studymeasname  FROM " + dec.DatabaseTable + " t join uwautism_research_backend..tblstudymeas sm ";
-					_sqlUpdateVerified +=  " on t.studymeasid=sm.studymeasid ";
-					_sqlUpdateVerified += " join uwautism_research_backend..tblstudy st on st.studyid=sm.studyid ";
+
+
+					_sqlUpdateVerified += String.Format("exec def.LogDatData '{0}',@{1},'{1}',0;",
+						 dec.DatabaseTable, dec.PrimaryKeyField);
+
+					_sqlUpdateVerified += GetSetUserContextSyntax();
+
+					_sqlUpdateVerified += "SELECT t.*,  st.studyname + ': ' + sm.studymeasname as studymeasname  FROM " + dec.DatabaseTable + " t ";
+					_sqlUpdateVerified += " JOIN uwautism_research_backend..tblstudymeas sm  ON t.studymeasid=sm.studymeasid ";
+					_sqlUpdateVerified += " JOIN uwautism_research_backend..tblstudy st ON st.studyid=sm.studyid ";
 					_sqlUpdateVerified += " WHERE " + dec.PrimaryKeyField + " = @" + dec.PrimaryKeyField;
 
 
 					return new SqlCommand(_sqlUpdateVerified, DBConnection);
 				}
 			}
+		}
+
+		
+
+		protected string GetSetUserContextSyntax()
+		{
+			SQL_utils sqlx = new SQL_utils("data");
+			string user = sqlx.GetUserNameFromIdentity();
+			sqlx.Close();
+
+			string usercontext = String.Format("EXEC uwautism_research_backend.sec.spSetUserContext '{0}'; ", user);
+			usercontext += String.Format("EXEC uwautism_research_data.sec.spSetUserContext '{0}'; ", user);
+			return usercontext;
 		}
 
 		private SqlConnection _DBConnection = null;
@@ -407,7 +436,7 @@ namespace DataEntryFramework3
 		}
 
 		
-		/*
+		/*DOUBLE
 		 * Execute sqlCommand.
 		 * 
 		 * Read values returned by command back into fields.
@@ -425,6 +454,8 @@ namespace DataEntryFramework3
 			//loop over fields and fetch values from columns of resultset
 			foreach (DataFieldControl dfc in dec.AllDataFields.Values) 
 			{
+				var value = r[dfc.DatabaseField].ToString();
+				var fld = dfc.DatabaseField;
 				dfc.FieldTextBoxText = r[dfc.DatabaseField].ToString();
 			}
 
@@ -581,6 +612,84 @@ namespace DataEntryFramework3
 		}
 		
 		
+		public virtual bool CheckIfIDExists(DataEntryController dec)
+		{
+			bool exists = false;
+			SQL_utils sql = new SQL_utils("backend");
+
+			//Check that subject ID exists 
+			var smID = dec.SelectedNewStudyMeasID;
+
+			string ID = dec.InsertDataFields["ID"].FieldTextBoxText;
+			var indexnum = dec.InsertDataFields["INDEXNUM"].FieldTextBoxText;
+
+			if(ID=="")
+			{
+				dec.Notifications.Add(string.Format("Please enter an ID."));
+				dec.FormError = true;
+				return exists;
+			}
+
+
+			int subjID = -1;
+			try
+			{
+				subjID = sql.IntScalar_from_SQLstring(String.Format("select coalesce(subjID,-1) subjID from vwMasterStatus_S where ID='{0}' and studyID=(select studyID from tblstudymeas where studymeasID={1})"
+				, ID, smID));
+			}
+			catch (Exception)
+			{ }
+
+			exists = (subjID > 0) ? true : false;
+			sql.Close();
+
+			if(!exists)
+			{
+				dec.Notifications.Add(string.Format("The ID '{0}' does not exist in this study.", ID));
+				dec.FormError = true;
+			}
+
+			return exists;
+
+		}
+		public virtual bool CheckForUniqueIndexnum(DataEntryController dec)
+		{
+			bool isunique = false;
+
+			SQL_utils sql = new SQL_utils("data");
+
+			//Check that subject ID exists 
+			int smID = dec.SelectedNewStudyMeasID;
+
+			string ID = dec.InsertDataFields["ID"].FieldTextBoxText;
+			int indexnum = Convert.ToInt32(dec.InsertDataFields["INDEXNUM"].FieldTextBoxText);
+			string tblname = dec.DatabaseTable;
+
+			string sqlcode = String.Format("select count(*) as n from {0} where ID='{1}' and studymeasID={2} and indexnum={3}"
+				, tblname, ID, smID, indexnum);
+
+			int numrecs = -1;
+			try
+			{
+
+				numrecs = sql.IntScalar_from_SQLstring(sqlcode);
+			}
+			catch(Exception)
+			{ }
+
+			isunique = (numrecs > 0) ? false : true;
+			sql.Close();
+
+			if (!isunique)
+			{
+				dec.Notifications.Add(string.Format("The indexnum value of '{0}' is already in use for '{1}'.", indexnum, ID));
+				dec.FormError = true;
+			}
+
+			return isunique;
+
+		}
+
 		public virtual void DoInsert(DataEntryController dec)
 		{
 
@@ -606,7 +715,17 @@ namespace DataEntryFramework3
 
 					// do insert
 					SqlCommand insertSqlCommand = GetInsertSqlCommand(dec);
-					DoCommand(dec, insertSqlCommand, dec.InsertDataFields, dec.SelectedNewStudyMeasID, Verified.CREATED);
+
+
+					bool IDexists = CheckIfIDExists(dec);
+					bool HasUniqueIndexnum = false;
+					if (IDexists)
+					{
+						HasUniqueIndexnum = CheckForUniqueIndexnum(dec);
+					}
+					
+					if(IDexists && HasUniqueIndexnum)
+						DoCommand(dec, insertSqlCommand, dec.InsertDataFields, dec.SelectedNewStudyMeasID, Verified.CREATED);
 				}
 			}
 
@@ -640,6 +759,8 @@ namespace DataEntryFramework3
 				dec.FormError = true;
 			}
 		}
+
+
 
 		public virtual void DoSaveEnterering(DataEntryController dec)
 		{

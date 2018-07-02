@@ -354,7 +354,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 			lblMasterStudyIDfull.Text = master_studyIDfull.ToString();
 		}
 		//ViewState["studyID"] = master_studyID;
-		
+		Session["master_studyID"] = master_studyID.ToString();
 	}
 
 

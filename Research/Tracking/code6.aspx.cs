@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using NReco.PivotData;
-using NReco.PivotData.File;
 using NReco.PivotData.Output;
-using OfficeOpenXml;
+
 
 
 using uwac;
 
-public partial class Tracking_code6 : System.Web.UI.Page
+public partial class Tracking_code6 : BasePage //System.Web.UI.Page
 {
 
 
@@ -33,9 +29,15 @@ public partial class Tracking_code6 : System.Web.UI.Page
 			ddlLab.DataSource = dt;
 			ddlLab.DataBind();
 
-			
 
 			sql.Close();
+		}
+		else{
+			if(Session["labstudies"] != null)
+			{
+				gridStudy.DataSource = (DataTable)Session["labstudies"];
+				gridStudy.DataBind();
+			}
 		}
 	}
 
@@ -50,13 +52,15 @@ public partial class Tracking_code6 : System.Web.UI.Page
 			" order by a.studyname");
 
 
-		lstStudy.DataValueField = "studyID";
-		lstStudy.DataTextField = "studyname";
+		//lstStudy.DataValueField = "studyID";
+		//lstStudy.DataTextField = "studyname";
 
-		lstStudy.DataSource = dt;
-		lstStudy.DataBind();
+		//lstStudy.DataSource = dt;
+		//lstStudy.DataBind();
 
-
+		Session["labstudies"] = dt;
+		gridStudy.DataSource = dt;
+		gridStudy.DataBind();
 
 		sql.Close();
 	}
@@ -72,11 +76,11 @@ public partial class Tracking_code6 : System.Web.UI.Page
 		DataTable dt = sql.DataTable_from_SQLstring("select groupID, '(' + studyname + ') ' + groupname  as groupname from tblgroup a join tblStudy b ON a.studyID = b.studyID " + 
 			" where a.studyID in (" + grps + ") ");
 
-		lstGroup.DataValueField = "groupID";
-		lstGroup.DataTextField = "groupname";
+		//lstGroup.DataValueField = "groupID";
+		//lstGroup.DataTextField = "groupname";
 
-		lstGroup.DataSource = dt;
-		lstGroup.DataBind();
+		//lstGroup.DataSource = dt;
+		//lstGroup.DataBind();
 
 
 
@@ -168,9 +172,13 @@ public partial class Tracking_code6 : System.Web.UI.Page
 
 		if (labID > 0)
 		{
-			var x = lstStudy.SelectedValue;
+			//var x = lstStudy.SelectedValue;
 
-			if (lstStudy.SelectedValue == "")
+
+			var x2 = gridStudy.GetSelectedFieldValues("studyID");
+
+			if (x2.Count == 0)
+			//if (lstStudy.SelectedValue == "")
 			{
 				lblSelectOne.Text = "Select some studies.";
 				lblSelectOne.Visible = true;
@@ -185,9 +193,12 @@ public partial class Tracking_code6 : System.Web.UI.Page
 			{
 				SQL_utils sql = new SQL_utils("backend");
 
+				string study_csv = String.Join(",", x2);
+
 				List<SqlParameter> ps = new List<SqlParameter>();
 				ps.Add(sql.CreateParam("labID", labID.ToString(), "int"));
-				ps.Add(sql.CreateParam("study_csv", lstStudy.SelectedValue, "text"));
+				//ps.Add(sql.CreateParam("study_csv", lstStudy.SelectedValue, "text"));
+				ps.Add(sql.CreateParam("study_csv", study_csv, "text"));
 
 				DataTable dt = sql.DataTable_from_ProcName("spCode6_person_by_Lab", ps);
 
@@ -238,16 +249,11 @@ public partial class Tracking_code6 : System.Web.UI.Page
 	}
 	protected void btnLoadGroups_Click(object sender, EventArgs e)
 	{
-
-		
-		LoadListBox_Group(lstStudy.SelectedValue);
-
-
-
+		//LoadListBox_Group(lstStudy.SelectedValue);
 	}
 	protected void lstStudy_SelectedIndexChanged(object sender, Obout.ListBox.ListBoxItemEventArgs e)
 	{
-		string x = lstStudy.SelectedValue;
+		//string x = lstStudy.SelectedValue;
 	}
 	protected void btnSingle_Click(object sender, EventArgs e)
 	{

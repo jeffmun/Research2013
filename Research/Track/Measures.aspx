@@ -298,12 +298,15 @@
                     <dx:ASPxLabel ID="Mstatus" runat="server" Text=""  Font-Size="10" Font-Bold="true" ForeColor="Silver"></dx:ASPxLabel>
                     <br />
                     <asp:HiddenField ID="hidEditingPk" runat="server"></asp:HiddenField>
-                    <dx:ASPxGridView ID="gvM" runat="server"    AutoGenerateColumns="false"  ClientInstanceName="gvm" Visible="false"
+                    <dx:ASPxGridView ID="gvM" runat="server"    AutoGenerateColumns="false"  ClientInstanceName="gvm" Visible="false" DataSourceID="sql__sms"
                          KeyFieldName="StudyMeasSubjID"  OnHtmlDataCellPrepared="gvM_HtmlDataCellPrepared" OnStartRowEditing="gvM_OnStartRowEditing" 
-                        OnRowUpdating="gvM_OnRowUpdating" OnDataBinding="gvM_DataBinding" OnBeforeColumnSortingGrouping="gvM_OnBeforeColumnSortingGrouping"    >
-                     
+                        OnRowUpdating="gvM_OnRowUpdating" OnDataBinding="gvM_DataBinding" OnBeforeColumnSortingGrouping="gvM_OnBeforeColumnSortingGrouping" 
+                         >
                         <ClientSideEvents  EndCallback="function(s, e) {ASPxClientHint.Update();}"   />
-                                            <SettingsExport EnableClientSideExportAPI="true" FileName="Measures"></SettingsExport>
+                        <SettingsExport EnableClientSideExportAPI="true" FileName="Measures"></SettingsExport>
+                        <Settings ShowFilterBar="Visible" ShowHeaderFilterButton="true"  />
+                        <SettingsFilterControl ViewMode="Visual" ShowAllDataSourceColumns="true" ></SettingsFilterControl>
+                        <SettingsPager PageSize="20"></SettingsPager>
                       <Toolbars>
                         <dx:GridViewToolbar EnableAdaptivity="true">
                             <Items>
@@ -359,6 +362,7 @@
                                 </DataItemTemplate>
                             </dx:GridViewDataColumn>
                             <dx:GridViewDataColumn FieldName="Notes" VisibleIndex="11" Width="100"></dx:GridViewDataColumn>                             
+                            <dx:GridViewDataColumn FieldName="StudyMeasID" ReadOnly="true" Visible="true"></dx:GridViewDataColumn>                             
                             <dx:GridViewDataColumn FieldName="StudyMeasSubjID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>                             
                             <dx:GridViewDataColumn FieldName="ActionID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>                             
                             <dx:GridViewCommandColumn ShowEditButton="true" ShowCancelButton="true"  ></dx:GridViewCommandColumn>
@@ -451,7 +455,7 @@
 
 
 
-                <dx:ASPxPivotGrid ID="pivotM" runat="server" OnDataBinding="pivotM_DataBinding"   Visible="false"  Width="95%" 
+                <dx:ASPxPivotGrid ID="pivotM" runat="server" OnDataBinding="pivotM_DataBinding"   Visible="false"  Width="95%" DataSourceID="sql__sms"
                      OnCustomCellDisplayText="pivotM_CustomCellDisplayText"  OnCustomCellStyle="pivotM_CustomCellStyle"
                      OnBeginRefresh="pivotM_OnBeginRefresh"   
                      EnableCallbackAnimation="true">
@@ -484,6 +488,16 @@
 
     <%--Main Data--%>
     <%-- Include all measures because all subjects get them assigned even if they are NA --%>
+    <asp:SqlDataSource ID="sql__sms" runat="server" SelectCommandType="Text"  
+        SelectCommand="Select * from trk.vwMasterStatus_M  where studyID = @studyID  "
+        ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
+        <SelectParameters>
+            <asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
+        </SelectParameters>
+    </asp:SqlDataSource>
+
+
+
     <asp:SqlDataSource ID="sqlMeas" runat="server" SelectCommandType="Text"  
         SelectCommand="select * from vwMeasure where measureID in (Select measureID from tblStudyMeas where studyID = @studyID ) order by meascat, measname"
         ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
