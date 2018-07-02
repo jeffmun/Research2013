@@ -24,6 +24,9 @@
       <siteMapNode url="~/Track/Measures.aspx" title="Measures" description="*New page as of Sept 2017" />
       <siteMapNode url="~/Track/Subject.aspx" title="View Single Subject" description="*New page as of Sept 2017" />
       <siteMapNode url="" title="Specific Studies">
+        <siteMapNode url="" title="Bernier Lab" menuitem="true">
+          <siteMapNode url="~/Tracking/code6.aspx" title="Code 6 ID's" menuitem="true" />
+        </siteMapNode>
         <siteMapNode url="" title="Tadpole" menuitem="true">
           <siteMapNode url="~/Study/Tadpole/AdverseEvents.aspx" title="Adverse Events report" menuitem="true" />
           <siteMapNode url="~/DataEntryForms/Common/TadpoleTXlog/TadpoleTXlog.aspx" title="Enter Tadpole TX logs" menuitem="true" roles="TadpoleTXlogs" />
