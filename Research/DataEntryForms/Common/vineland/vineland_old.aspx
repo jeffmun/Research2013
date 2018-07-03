@@ -1,12 +1,14 @@
 
-<%@ Register TagPrefix="def" Namespace="DataEntryFramework3" %>
-<%@ Page language="c#"   MasterPageFile="~/UWAC.master" Title="Vineland Data Entry" %>
+<%@ Register TagPrefix="def" Namespace="DataEntryFramework" %>
+<%@ Page language="c#" Inherits="all_vine.all_vine" CodeFile="vineland_old.aspx.cs"  MasterPageFile="~/UWAC.master" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
-
-
-<def:dataentrycontroller id="DataEntryController1" runat="server" DatabaseTable="all_vine" PrimaryKeyField="vine_pk">
-</def:dataentrycontroller>
-
+						<def:dataentrycontroller id="DataEntryController1" runat="server" ShowScoreButton="True" LookupField1DataType="TEXT"
+							DatabaseTable="all_vine" LookupTextBox1LabelText="Subject ID:" LookupTextBox2Visible="True" MeasureName="Vineland"
+							PrimaryKeyField="vine_pk" VerifiedField="verified" LookupField1="id" 
+							LookupField2="indexnum" LookupTextBox2LabelText="Vineland Number" LookupTextBox2Text="1" LastScoredDateField="scored"
+							LastUpdatedDateField="updated" ondoscore="DataEntryController1_DoScore"
+							AllowedStudyMeasures="104,147,151,216,327,355,431,512,546,547,583,609,614,624,701,702,732,752,783,1576,2117,2393,2433,2434,2883"
+							></def:dataentrycontroller>
 						<table class="layout">
 							<tr>
 								<td style="vertical-align:top">
