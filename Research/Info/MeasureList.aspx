@@ -68,7 +68,7 @@
 
              <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Measure">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='~/info/MeasureInfo.aspx?measureID=<%# Eval("measureID") %>' Font-Bold="true">
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/info/MeasureInfo.aspx?measureID=" + Eval("measureID") %>' Font-Bold="true">
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
@@ -77,7 +77,7 @@
 
             <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="DE Link">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text="DataEntry" NavigateUrl='<%# Eval("DE_Link") %>'>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("DE_LinkLabel") %>' NavigateUrl='<%# Eval("DE_Link") %>'>
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
