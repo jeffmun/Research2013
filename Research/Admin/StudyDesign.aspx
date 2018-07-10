@@ -6,132 +6,108 @@
 <%@ Register TagPrefix="obout" Namespace="Obout.ListBox" Assembly="obout_ListBox" %>
 <%@ Register TagPrefix="obout" Namespace="Obout.Ajax.UI.TreeView" Assembly="Obout.Ajax.UI" %>--%>
 
+
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+
+
 <%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
 	<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true" EnablePartialRendering="true" EnableViewState="true"></asp:ScriptManager>
 
 
-	<style type="text/css">
-		tr.ob_gR
-		{
-		background-image:url('image url')!important;
+	<script type="text/javascript">
+		var lastMeas = null;
+		function OnEndCallBack(s, e) {
+			if (lastMeas) {
+				grid.GetEditor("StudyMeasName").PerformCallback(lastMeas);
+				lastMeas = null;
+			}
+			else {
+				if (s.cpIsUpdated != '') {
+					if (s.cpIsUpdated == 'grid_tblgroup' ) {
+						grid_tblstudyaction.PerformCallback();
+						grid_tblstudymeas.PerformCallback();
+					}
+					else if (s.cpIsUpdated.startsWith("DELETED.")) {
+						grid_tblstudyaction.PerformCallback();
+						grid_tblstudymeas.PerformCallback();
+						txtPopup.SetText(s.cpIsUpdated);
+						popupDeleteInfo.Show();
+					}
+				}
+				else {
+				}
+			}
 		}
 
-		tr.ob_gRA
-		{
-		background-image:url('image url')!important;
-		}
-
-
-.ob_gRETpl
-{
-	font-family: Verdana;
-	font-size: 11px;
-	color: #196585;
-	padding: 0px;
-	border-top: 1px solid #7BB8D9;
-	background-color:#ff00ea;
-
-	border-bottom:1px solid #dbdbe1;
-	border-top:1px solid #dbdbe1;
-	position: relative;
-	z-index: 11;
-}
-	</style>
-
-
-	<script type="text/javascript" src="../../js/obout_custom.js"></script>  
-
-	<script type="text/javascript">
-		$(document).ready(function () {
-			$(".example_select2").select2();
-		});
-	</script>
-
-	<script type="text/javascript">
-		function ddlMeasure_Change(sender, index) {
-			//used to prepopulate the studymeasname withe the measname
-			var x = sender.options[index].text;
-			var ddl = document.getElementById('<%= GetControlIdFromTemplate("tblstudymeas","ddlMeasure", 0, "unique") %>');
-		var txt = document.getElementById('<%= GetControlIdFromTemplate("tblstudymeas","txt_studymeasname", 0, "unique") %>');
-
-
-		txt.value = x;
-	}
-
-
-	function onBeforeClientEdit_tblstudyaction(sender, index) {
-		selectByValues(lst_group_studyaction, index.groupIDs);
-	}
-
-	function Select2_to_Hid(sender, record, f, f2)
-	{
-		var x = 1;
-	}
-
-
-	function onBeforeClientEdit_tblstudymeas(sender, record) {
-		//set the selected items on the select2 control based on the groupIDs field
-		var groupIDs = record["groupIDs"];
-		$("#<%= GetControlIdFromTemplate("tblstudymeas","selStudyMeasGroup", 0, "client") %>").val(groupIDs.split(",")).trigger("change");
-	}
 		
 
-		//function onBeforeClientEdit_tblstudymeas(sender, record, ctlname, fld_with_vals) {
-		//	//set the selected items on the select2 control based on the groupIDs field
-		//	var IDs = record[fld_with_vals];
-		//	$(ctlname).val(IDs.split(",")).trigger("change");
+		//function OnBeginCallBack(s, e) {
+		//	if (e.command == "DELETEROW") { }
 		//}
 
+		function OnMeasChanged(s, e) {
+			var comboValue = s.GetText();
+			var x = grid_tblstudymeas.GetEditor('StudyMeasName');
+			x.Focus();
+			//x.SetValue(''); // PROBLEM HERE
+			x.SetValue(comboValue);
 
-<%--	    function Select2_to_Hid(sender, record, tbl, select2control, template_idx, idmode)
-		{
-			var x = $('#<%= GetControlIdFromTemplate(tbl ,select2control, 0, "client") %>');
-			var opts = x[0].selectedOptions;
-
-			var selopts = []
-			for (i = 0; i < opts.length; i++) {
-				selopts.push(opts[i].value);
-			}
-
-			var hid = document.getElementById('<%= hidfoo.ClientID %>');
-			hid.value = selopts.join(",");
-		}--%>
-
-		
-
-
-	function onBeforeClientUpdate_tblstudymeas(sender, record) {
-
-		//Extract the selected objects from the selct2 control
-		var x = $('#<%= GetControlIdFromTemplate("tblstudymeas","selStudyMeasGroup", 0, "client") %>');
-		var opts = x[0].selectedOptions;
-
-		var selopts = []
-		for (i = 0; i < opts.length; i++ ){
-			selopts.push(opts[i].value);
+			//if(grid.GetEditor("StudyMeasName").InCallback())
+			//	lastMeas = cmbMeas.GetValue().toString();
+			//else 
+			//	grid.GetEditor("StudyMeasName").PerformCallback(cmbMeas.GetValue().toString());
 		}
 
-		var hid = document.getElementById('<%= hidStudyMeasGroup.ClientID %>');
-		hid.value = selopts.join(",");
+		function ShowBulkAssign(s, e) {
+			panelBulkAssign.SetClientVisible(true);
+		}
+
+			function ShowBulkAssign2(s, e) {
+			panelBulkAssign2.SetClientVisible(true);
+		}
 
 
-		//record["groupIDs"] = selopts.join(",");
 
-		//PageMethods.Update("tblStudyMeas","update", record);
+		function OnInit_Hide1(s, e) {
+			if (s.GetVisibleRowsOnPage() > 0) {
+				s.SetVisible(true);
+				lblFix1.SetVisible(true);
+			}
+		}
+		function OnInit_Hide2(s, e) {
+			if (s.GetVisibleRowsOnPage() > 0) {
+				s.SetVisible(true);
+				lblFix2.SetVisible(true);
+			}
+		}
 
-		return true;
-	}
+				function OnInit_Hide1CF(s, e) {
+			if (s.GetVisibleRowsOnPage() > 0) {
+				s.SetVisible(true);
+				lblFix1.SetVisible(true);
+			}
+		}
+		function OnInit_Hide2CF(s, e) {
+			if (s.GetVisibleRowsOnPage() > 0) {
+				s.SetVisible(true);
+				lblFix2.SetVisible(true);
+			}
+		}
 
 
-	function onClientCancelEdit_tblstudymeas(sender, index) {
-					
-	}
+		function ShowHelpWindow() {
+			popupHelp.Show();
+		}
 
-		
 	</script>
 
+<style type="text/css">
+	.invisible {
+		display: none;
+	}
+</style>
 
 	<asp:HiddenField ID="hidStudyMeasGroup" runat="server" />
 
@@ -149,22 +125,13 @@
 		<tr>
 			<td  style="vertical-align:top"> 
 				<asp:Label ID="lbl_tblgroup" runat="server" Text="Groups" Font-size="Medium"  Font-Bold="true"></asp:Label><br />
-				<oajax:CallbackPanel runat="server" ID="callbackPanel_tblgroup">
-					<content style="color: darkred;">
-						<asp:Literal id="tblgroup_msg" runat="server" />
-					</content>
-				</oajax:CallbackPanel>
+				<asp:Literal id="tblgroup_msg" runat="server" />
 
 			</td>
 			<td></td>
 			<td style="vertical-align:top">
 				<asp:Label ID="lbl_tbltimepoint" runat="server" Text="Timepoints" Font-size="Medium"  Font-Bold="true"></asp:Label><br />
-				<oajax:CallbackPanel runat="server" ID="callbackPanel_tbltimepoint">
-					<content style="color: darkred;">
-						<asp:Literal id="tbltimepoint_msg" runat="server" />
-					</content>
-				</oajax:CallbackPanel>
-				
+				<asp:Literal id="tbltimepoint_msg" runat="server" />
 
 			</td>
 			<td></td>
@@ -174,35 +141,34 @@
 					&nbsp;&nbsp;&nbsp;&nbsp;
 				<asp:HyperLink ID="hypSubjStatus" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
 						Text="Create New Subj Status" Target="_blank"></asp:HyperLink>
-
-				<oajax:CallbackPanel runat="server" ID="callbackPanel_tblstudy_subjstatus">
-					<content style="color: darkred;">
-						<asp:Literal id="tblstudy_subjstatus_msg" runat="server" />
-					</content>
-				</oajax:CallbackPanel>
-				
+				<asp:Literal id="tblstudy_subjstatus_msg" runat="server" />
 
 			</td>
 		</tr>
 		<tr>
-			<td style="vertical-align:top" style="width: 400px">
+			<td style="vertical-align:top; width: 400px">
 				<asp:Panel ID="panel_tblgroup" runat="server">
-					<obout:Grid ID="grid_tblgroup" runat="server" AutoGenerateColumns="false" AllowAddingRecords="true"  AllowSorting="false"
-						ShowFooter="false" FolderStyle="~/App_Obout/Grid/styles/gray_glass"
-						OnInsertCommand="grid_tblgroup_InsertCommand" 
-						OnUpdateCommand="grid_tblgroup_UpdateCommand" 
-						OnDeleteCommand="grid_tblgroup_DeleteCommand">
-						<AddEditDeleteSettings AddLinksPosition="Top"  NewRecordPosition="Top"/>
-						<ClientSideEvents OnClientDelete="UpdateMsg" OnClientInsert="UpdateMsg" OnClientUpdate="UpdateMsg" ExposeSender="true" />
+					<dx:ASPXGridView ID="grid_tblgroup" runat="server"  ClientInstanceName="grid_tblgroup"  DataSourceID="sql_Group"
+						AutoGenerateColumns="false"  AllowAddingRecords="true"  AllowSorting="false" 
+						ShowFooter="false" KeyFieldName="groupID" 
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"
+						>
+						<ClientSideEvents EndCallback="OnEndCallBack" />
+						<SettingsEditing Mode="Inline"></SettingsEditing>
 						<Columns>
-							<obout:Column DataField="studyID" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="groupID" HeaderText="gID" Width="60" ReadOnly="true"></obout:Column>
-							<obout:Column DataField="groupname" HeaderText="Group" Width="150"></obout:Column>
-							<obout:Column DataField="groupabbr" HeaderText="Abbr" Width="100"></obout:Column>
-							<obout:Column DataField="sortorder" HeaderText="SortOrd" Width="70"></obout:Column>
-							<obout:Column AllowDelete="true" AllowEdit="true" Width="100"></obout:Column>
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataTextColumn FieldName="groupID" Caption="grpID" Width="60" ReadOnly="true"  CellStyle-ForeColor="Silver">
+								<PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="groupname" Caption="Group" Width="150"></dx:GridViewDataColumn>
+							<dx:GridViewDataTextColumn FieldName="groupabbr" Caption="Abbr" Width="100"   >
+								<PropertiesTextEdit ValidationSettings-RegularExpression-ValidationExpression=".{1,5}" Width="80"
+									 ValidationSettings-RegularExpression-ErrorText="Abbreviation must be 5 chars or less"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd" Width="70"></dx:GridViewDataColumn>
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" ></dx:GridViewCommandColumn>
 						</Columns>
-					</obout:Grid>
+					</dx:ASPXGridView>
 
 
 
@@ -212,62 +178,64 @@
 			<td style="width: 50px"></td>
 			<td style="vertical-align:top" style="width: 400px">
 				<asp:Panel ID="panel_tbltimepoint" runat="server">
-					<obout:Grid ID="grid_tbltimepoint" runat="server"  AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" 
-						OnInsertCommand="grid_tbltimepoint_InsertCommand"  
-						OnDeleteCommand="grid_tbltimepoint_DeleteCommand" 
-						OnUpdateCommand="grid_tbltimepoint_UpdateCommand" >
-						<AddEditDeleteSettings AddLinksPosition="Top"  NewRecordPosition="Top"/>
-						<ClientSideEvents OnClientDelete="UpdateMsg" OnClientInsert="UpdateMsg" OnClientUpdate="UpdateMsg" ExposeSender="true" />
+
+
+
+
+					<dx:ASPxGridView ID="grid_tbltimepoint" runat="server"  ClientInstanceName="grid_tbltimepoint"   DataSourceID="sql_Timepoint"
+						AutoGenerateColumns="false" 
+						AllowAddingRecords="true" AllowSorting="false" ShowFooter="false"  KeyFieldName="timepointID"
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+						<ClientSideEvents EndCallback="OnEndCallBack" />
+						<SettingsEditing Mode="Inline"></SettingsEditing>
 						
 						<Columns>
-							<obout:Column DataField="objtype" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="studyID" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="timepointID" HeaderText="tpID" Width="60"  ReadOnly="true"></obout:Column>
-							<obout:Column DataField="timepoint" Width="80"></obout:Column>
-							<obout:Column DataField="timepoint_text" Width="120"></obout:Column>
-							<obout:Column AllowDelete="true" AllowEdit="true" Width="100"></obout:Column>
+							<dx:GridViewDataColumn FieldName="objtype" Width="80" ReadOnly="true" Visible="false" />
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false" />
+							<dx:GridViewDataTextColumn FieldName="timepointID" Caption="tpID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver">
+								<PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="timepoint" Caption="Timept #" Width="60" />
+							<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" Width="120" />
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
 						</Columns>
-					</obout:Grid>
+					</dx:ASPxGridView>
+
+
 				</asp:Panel>
 
 			</td>
 			<td style="width: 50px"></td>
-			<td style="vertical-align:top" style="width: 400px">
+			<td style="vertical-align:top; width: 400px">
 				<asp:Panel ID="panel1" runat="server">
-					<obout:Grid ID="grid_tblsubjstatus" runat="server"  AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" CallbackMode="true" 
-						OnInsertCommand="grid_tblsubjstatus_InsertCommand"  
-						OnDeleteCommand="grid_tblsubjstatus_DeleteCommand" 
-						OnUpdateCommand="grid_tblsubjstatus_UpdateCommand" >
-						<AddEditDeleteSettings AddLinksPosition="Top" NewRecordPosition="Top" />
-						<ClientSideEvents OnClientDelete="UpdateMsg" OnClientInsert="UpdateMsg" OnClientUpdate="UpdateMsg" ExposeSender="true"  />
-						 
-						<Columns>
-							<obout:Column DataField="objtype" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="studyID" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="ssID" HeaderText="ssID" Width="60" ReadOnly="true"  >
-							</obout:Column>
-							<obout:Column DataField="subjstatus" HeaderText="Subject Status" Width="150" >
-								<TemplateSettings TemplateID="grid_tblsubjstatus_tmp0" EditTemplateId="grid_tblsubjstatus_tmp1" />
-							</obout:Column>
-							<obout:Column AllowDelete="true"  Width="80"></obout:Column>
-						</Columns>
-						<Templates>
-							<obout:GridTemplate runat="server" ID="grid_tblsubjstatus_tmp0" > <%--ControlID="ddlSubjstatus" ControlPropertyName="value">--%>
-								<Template>
-									  <asp:Label ID="lbl2" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[subjstatus]") %>' ></asp:Label>
-								</Template>
-							</obout:GridTemplate>
-							<obout:GridTemplate runat="server" ID="grid_tblsubjstatus_tmp1" ControlID="ddlSubjstatus" ControlPropertyName="value">
-								<Template>
-									<obout:OboutDropDownList runat="server" ID="ddlSubjstatus" ForeColor="Blue"
-										DataSourceID="sql_SubjStatus" DataValueField="ssID" DataTextField="subjstatus" />
+					<dx:ASPXGridView ID="grid_tblsubjstatus" runat="server" ClientInstanceName="grid_tblsubjstatus"    DataSourceID="sql_SubjStatus"
+						AutoGenerateColumns="false"  
+						AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" KeyFieldName="ssID" 
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+						<ClientSideEvents EndCallback="OnEndCallBack" />
+						<SettingsEditing Mode="Inline"></SettingsEditing>
 
-								</Template>
-							</obout:GridTemplate>
-						</Templates>
-					</obout:Grid>
+						<Columns>
+							<dx:GridViewDataColumn FieldName="objtype" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataTextColumn FieldName="ssID" Caption="ssID" Width="50" ReadOnly="true" CellStyle-ForeColor="Silver" >
+								 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit></dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="subjstatus" Caption="Subject Status" Width="150" >
+								<%--<TemplateSettings TemplateID="grid_tblsubjstatus_tmp0" EditTemplateId="grid_tblsubjstatus_tmp1" />--%>
+							</dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd" Width="50" ></dx:GridViewDataColumn>
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
+						</Columns>
+
+					</dx:ASPXGridView>
 				</asp:Panel>
 
+			</td>
+			<td style="vertical-align:top">
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				 <dx:ASPxButton ID="btShowModal" runat="server" Text="Help / Instructions" AutoPostBack="False" UseSubmitBehavior="false" >
+					<ClientSideEvents Click="function(s, e) { ShowHelpWindow(); }" />
+				</dx:ASPxButton>
 			</td>
 		</tr>
 	</table>
@@ -285,209 +253,500 @@
 					&nbsp;&nbsp;&nbsp;&nbsp;
 				<asp:HyperLink ID="hypNEW_ActionType" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
 						Text="Create New Action Type" Target="_blank"></asp:HyperLink>
-				<oajax:CallbackPanel runat="server" ID="callbackPanel_tblstudyaction">
-					<content style="color: darkred;">
-						<asp:Literal id="tblstudyaction_msg" runat="server" />&nbsp;&nbsp;&nbsp;
-						<asp:Button ID="btnOVERRIDE_tblstudyaction" runat="server" Text="Allow This Deletion" OnClick="btnOVERRIDE_tblstudyaction_Click" Font-Size="X-Small" ForeColor="red"  Visible="false" />
-					</content>
-				</oajax:CallbackPanel>
+				<asp:Literal id="tblstudyaction_msg" runat="server" />&nbsp;&nbsp;&nbsp;
+				<asp:Button ID="btnOVERRIDE_tblstudyaction" runat="server" Text="Allow This Deletion" OnClick="btnOVERRIDE_tblstudyaction_Click" Font-Size="X-Small" ForeColor="red"  Visible="false" />
 
 			</td>
 			<td style="width: 50px"></td>
-			<td style="vertical-align:top">
+		
+		</tr>
+			<tr>
+				<td style="vertical-align:top; width: 600px">
+
+
+					 <%--OnHtmlCommandCellPrepared="gridSA_HtmlCommandCellPrepared"--%>
+						<dx:ASPXGridView ID="grid_tblstudyaction" runat="server" ClientInstanceName="grid_tblstudyaction"  DataSourceID="sql_StudyAction" 
+							AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" 
+							 AllowGrouping="true" GroupBy="timepoint_text"  HideColumnsWhenGrouping="true" KeyFieldName="studyactionID"
+							 Settings-ShowHeaderFilterButton="true" 
+						  OnCustomCallback="gridSA_CustomCallback" 
+						  OnDataBound="dxgridSAM_DataBound" OnCustomButtonCallback="gridSA_CustomButtonCallback" 
+							OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting" >
+						<ClientSideEvents EndCallback="OnEndCallBack" />
+						<SettingsPager Position="Top" PageSize="10">
+							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+						</SettingsPager>
+
+						<Columns>
+							<dx:GridViewDataTextColumn FieldName="studyactionID" Caption="saID" Width="30"  ReadOnly="true" Settings-AllowHeaderFilter="false"  CellStyle-ForeColor="Silver" EditFormSettings-Visible="false">
+								 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="groupIDs"   Visible="false"></dx:GridViewDataColumn>
+
+							<dx:GridViewDataColumn FieldName="studyID"  ReadOnly="true" Visible="false"  ></dx:GridViewDataColumn>
+							<dx:GridViewDataComboBoxColumn FieldName="timepointID" Caption="Timept" Width="60" Visible="true"  >
+								<PropertiesComboBox TextField="timepoint_text" ValueField="timepointID" DataSourceID='sql_Timepoint'  />
+							</dx:GridViewDataComboBoxColumn>
+
+
+							<dx:GridViewDataComboBoxColumn FieldName="actiontypeID" Caption="Action Type"  Width="140">
+								<PropertiesComboBox TextField="actiontype" ValueField="actiontypeID" DataSourceID='sql_ActionType'  />
+							</dx:GridViewDataComboBoxColumn>
+
+
+							<dx:GridViewDataColumn FieldName="actiontext" Caption="Action"  CellStyle-Font-Bold="true" Width="140"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd"  Width="30" Settings-AllowHeaderFilter="false"  ></dx:GridViewDataColumn>
+
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
+						</Columns>
+			
+					</dx:ASPXGridView>
+				</td>
+				<td style="width: 50px"></td>
+				</tr>
+			</table>
+
+	<br /><br />
+	<table>
+		<tr>
+	<td style="vertical-align:top">
 				<asp:Label ID="lbl_tblstudymeas" runat="server" Text="Measures" Font-size="Medium"  Font-Bold="true"></asp:Label>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 				<asp:HyperLink ID="hypMeasure" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
 						Text="Create New Measure" Target="_blank"></asp:HyperLink>
-
-				<oajax:CallbackPanel runat="server" ID="callbackPanel_tblstudymeas">
-					<content style="color: darkred;">
 						<asp:Literal id="tblstudymeas_msg" runat="server"  />&nbsp;&nbsp;&nbsp;
 						<asp:Button ID="btnOVERRIDE_tblstudymeas" runat="server" Text="Allow This Deletion" OnClick="btnOVERRIDE_tblstudymeas_Click" Font-Size="X-Small" ForeColor="red"  Visible="false" />
-					</content>
-				</oajax:CallbackPanel>
+
 				<asp:HiddenField ID="hidstudymeasID_toDelete" runat="server" />
 
 			</td>
+			<td style="width: 50px"></td>
+		<td><asp:Label ID="Label1" runat="server" Text="Measures Assigned to Actions" Font-size="Medium" ForeColor="LightGray"  Font-Bold="true"></asp:Label><br /></td>
 		</tr>
-			<tr>
-				<td style="vertical-align:top" style="width: 400px">
+		<tr>
+					<td style="vertical-align:top; width:700px">
 
-<br />
+					<dx:ASPxPanel ID="panelBulkAssign" runat="server" ClientInstanceName="panelBulkAssign" ClientVisible="false" >
+						<PanelCollection>
+							<dx:PanelContent>
+								<table>
+									<tr>
+										<td>
+											<dx:ASPxComboBox ID="cboStudyActionContainer" runat="server" ClientInstanceName="cboStudyActionContainer" DataSourceID="sql_StudyAction_ALL"
+												 ValueField="studyactionID">
+												<Columns>
+													<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+													<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+												</Columns>
+											</dx:ASPxComboBox>
+										</td>
+										<td style="width:50px"></td>
+										<td>
+											<dx:ASPxButton ID="btnBulkAssign" runat="server" ClientInstanceName="btnBulkAssign" Text ="Assign Selected Measures to Action" OnClick="btnBulkAssign_OnClick"></dx:ASPxButton>
 
-						<obout:Grid ID="grid_tblstudyaction" runat="server"  AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" 
-							 AllowGrouping="true" GroupBy="timepoint_text"  HideColumnsWhenGrouping="true"
-							 AllowPaging="false" PageSize="-1" FolderStyle="~/App_Obout/Grid/styles/gray_glass"
-						OnInsertCommand="grid_tblstudyaction_InsertCommand"  
-						OnDeleteCommand="grid_tblstudyaction_DeleteCommand" 
-						OnUpdateCommand="grid_tblstudyaction_UpdateCommand" >
-						<AddEditDeleteSettings AddLinksPosition="Top" NewRecordPosition="Top" />
-							<GroupingSettings AllowChanges="true" />
-						<ClientSideEvents OnClientDelete="UpdateMsg" OnClientInsert="UpdateMsg" OnClientUpdate="UpdateMsg" ExposeSender="true" 
-							OnBeforeClientEdit="onBeforeClientEdit_tblstudyaction" />
-						<TemplateSettings RowEditTemplateId="grid_tblstudyaction_rowedit" />
+										</td>
+										<td>
+											<dx:ASPxButton ID="btnREL" runat="server" ClientInstanceName="btnREL" Text ="Create RELIABILITY for Selected Measures" OnClick="btnREL_OnClick"></dx:ASPxButton>
+
+										</td>
+									</tr>
+								</table>
+
+							</dx:PanelContent>
+						</PanelCollection>
+					</dx:ASPxPanel>
+
+
+
+
+					<dx:ASPXGridView ID="grid_tblstudymeas" runat="server" ClientInstanceName="grid_tblstudymeas"   DataSourceID="sql_StudyMeas"
+						AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false" 
+							 AllowGrouping="true" GroupBy="timepoint_text" HideColumnsWhenGrouping="true" KeyFieldName="studymeasID"
+						 Settings-ShowHeaderFilterButton="true"  OnHtmlRowPrepared="grid_tblstudymeas_OnHtmlRowPrepared"
+						 OnCustomCallback="gridSM_CustomCallback" Styles-SelectedRow-BackColor="#D4EBD3"
+							OnDataBound="dxgridSAM_DataBound" OnCustomButtonCallback="gridSM_CustomButtonCallback" 
+							 OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  >
+						<ClientSideEvents EndCallback="OnEndCallBack" SelectionChanged="ShowBulkAssign" />
+						<SettingsBehavior AllowSelectByRowClick="true" />
+						<SettingsPager Position="Top" PageSize="10">
+							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+						</SettingsPager>
+
 						<Columns>
-							<obout:Column DataField="objtype" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="groupIDs" Width="120"  Visible="false">
-								 <TemplateSettings RowEditTemplateControlId="lst_group_studyaction"  RowEditTemplateControlPropertyName="value" /> 
-							</obout:Column>
-							<obout:Column DataField="groupabbrs" Width="120" ParseHTML="true" Visible="true"></obout:Column>
-							<obout:Column DataField="studyID" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="timepointID" HeaderText="tpID" Width="60" Visible="false" >
-								<TemplateSettings RowEditTemplateControlId="ddlTimepoint" RowEditTemplateControlPropertyName="value" />
-								<%--<TemplateSettings   EditTemplateId="grid_studyaction_tmpTP1" />--%>
-							</obout:Column>
-							<obout:Column DataField="timepoint_text" HeaderText="Timepoint" Width="60" ></obout:Column>
-							<obout:Column DataField="studyactionID" HeaderText="saID" Width="60"  ReadOnly="true"></obout:Column>
-							<obout:Column DataField="actiontypeID" HeaderText="Action Type" Width="150" >
-								<TemplateSettings TemplateID="grid_studyaction_tmp0" RowEditTemplateControlId="ddlActiontype" RowEditTemplateControlPropertyName="value" />
-								<%--<TemplateSettings TemplateID="grid_studyaction_tmp0" EditTemplateId="grid_studyaction_tmp1" />--%>
-							</obout:Column>
-							<obout:Column DataField="actiontext" HeaderText="Action" Width="120">
-								<TemplateSettings RowEditTemplateControlId="txt_actiontext" RowEditTemplateControlPropertyName="value" />
-							</obout:Column>
-							
-							<obout:Column AllowDelete="true" AllowEdit="true" Width="100"></obout:Column>
+							<dx:GridViewDataTextColumn FieldName="studymeasID" Caption="smID" Width="30"  ReadOnly="true" Settings-AllowHeaderFilter="false" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false">
+								 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>
+
+							<dx:GridViewDataComboBoxColumn FieldName="timepointID" Caption="Timept" Width="60" Visible="true"  >
+								<PropertiesComboBox TextField="timepoint_text" ValueField="timepointID" DataSourceID='sql_Timepoint'  />
+							</dx:GridViewDataComboBoxColumn>
+							<dx:GridViewDataHyperLinkColumn FieldName="measureID" Caption="Measure" EditFormSettings-Visible="false"
+								PropertiesHyperLinkEdit-TextField="measname" 
+								PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Info/MeasureInfo.aspx?measureID={0}" ></dx:GridViewDataHyperLinkColumn>
+							<dx:GridViewDataComboBoxColumn FieldName="measureID" Caption="Measure" Width="60" Visible="false" EditFormSettings-Visible="true" PropertiesComboBox-ClientSideEvents-SelectedIndexChanged="MeasChanged"  >
+								<PropertiesComboBox TextField="measname" ValueField="measureID" DataSourceID='sql_Measure'  >
+									<ClientSideEvents SelectedIndexChanged="OnMeasChanged" />
+									</PropertiesComboBox>
+								 
+							</dx:GridViewDataComboBoxColumn>
+
+							<dx:GridViewDataColumn FieldName="StudyMeasName" Caption="StudyMeas" CellStyle-Font-Bold="true" Width="140"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd"  Width="30" Settings-AllowHeaderFilter="false"  ></dx:GridViewDataColumn>
+
+														<dx:GridViewDataColumn FieldName="groupIDs" Width="120"  Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
 						</Columns>
-						<Templates>
-							<obout:GridTemplate runat="server" ID="grid_tblstudyaction_rowedit">
-								<Template>
-									<table>
-										<tr>
-											<td style="vertical-align:top">
-												<obout:OboutDropDownList runat="server" ID="ddlTimepoint" ForeColor="Blue"
-													DataSourceID="sql_Timepoint" DataValueField="timepointID" DataTextField="timepoint_text" />
-											<br />
-												Groups:<br />
-												<select id="selStudyActionGroup" runat="server" multiple="true" style="width:200px" class="example_select2"     ></select>
 
-											</td>
-											<td style="vertical-align:top">
-												<obout:OboutDropDownList runat="server" ID="ddlActiontype" ForeColor="Blue"
-													DataSourceID="sql_Actiontype" DataValueField="actiontypeID" DataTextField="actiontype" />
-												<br />
-												Action:<br />
-												<obout:OboutTextBox runat="server" ID="txt_actiontext" ></obout:OboutTextBox>
-											</td>
-										</tr>
-									</table>
-								</Template>
-							</obout:GridTemplate>
-
-
-							<obout:GridTemplate runat="server" ID="grid_tblstudyaction_tmp0" >
-								<Template>
-									  <asp:Label ID="lbl2" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[actiontype]") %>' ></asp:Label>
-								</Template>
-							</obout:GridTemplate>
-						</Templates>
-					</obout:Grid>
+					</dx:ASPXGridView>
 				</td>
-				<td style="width: 50px"></td>
+			<td style="width: 50px"></td>
 				<td style="vertical-align:top">
 
+		<dx:ASPxGridView ID="grid_MeasInAction" runat="server"  ClientInstanceName="grid_MeasInAction"   DataSourceID="sql_StudyMeas_in_Action"
+		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_MeasNotInAction_CellEditorInitialize"  
+		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="studymeasgroupID"
+			OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+		<ClientSideEvents EndCallback="OnEndCallBack" />
+		<SettingsBehavior AllowGroup="true" />
+		<SettingsPager Position="Top" PageSize="10">
+			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+		</SettingsPager>
+		<GroupSummary>
+			<dx:ASPxSummaryItem FieldName="label" SummaryType="Count" />
+		</GroupSummary>
+		<Columns>
+			<dx:GridViewDataColumn FieldName="label" Caption="Action"  EditFormSettings-Visible="false" GroupIndex="0"  />
+			<dx:GridViewDataColumn FieldName="studymeasID" Caption="smID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="studymeasname" Caption="StudyMeas" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupname" Caption="Group" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepointID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
 
-<%--                    FolderStyle="~/App_Obout/Grid/styles/gray_glass"--%>
-					<%--OnUpdateCommand="grid_studymeas_UpdateCommand" --%>
+			<dx:GridViewDataComboBoxColumn FieldName="studyactiongroupID" Caption="StudyAction" Width="60" Visible="false" EditFormSettings-Visible="true"   >
+				<PropertiesComboBox TextField="label" ValueField="studyactiongroupID" DataSourceID='sql_StudyActionGroups' >
+					<Columns>
+						<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="groupname"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+					</Columns>
+					</PropertiesComboBox>
+			</dx:GridViewDataComboBoxColumn>
 
-<%--                    							OnBeforeClientUpdate="function(sender, record) {Select2_to_Hid(sender, record, 'selStudyMeasGroup', 'hidStudyMeasGroup');}" --%>
+			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
+		</Columns>
+	</dx:ASPxGridView>
+
+<br /><br />
+	<dx:ASPxLabel ID="lblFix1" ClientInstanceName="lblFix1"  runat="server" Text="Measures Not Assigned to Actions"  ClientVisible="false" Font-size="Medium" ForeColor="DarkRed"  Font-Bold="true"></dx:ASPxLabel><br />
+
+	<dx:ASPxGridView ID="grid_MeasNotInAction" runat="server"  ClientInstanceName="grid_MeasNotInAction"   DataSourceID="sql_StudyMeas_not_in_Action"  ForeColor="DarkRed"  
+		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_MeasNotInAction_CellEditorInitialize" EnableCallBacks="true" ClientVisible="true"
+		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="studymeasgroupID"
+			OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+		<ClientSideEvents  Init="function(s, e) { s.SetVisible(s.GetVisibleRowsOnPage() != 0); lblFix1.SetVisible(s.GetVisibleRowsOnPage() != 0); }"   />
+		<SettingsPager Position="Top" PageSize="10">
+			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+		</SettingsPager>						
+		<Columns>
+			<dx:GridViewDataColumn FieldName="studymeasID" Caption="smID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="studymeasname" Caption="StudyMeas" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupname" Caption="Group" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepointID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+
+			<dx:GridViewDataComboBoxColumn FieldName="studyactiongroupID" Caption="StudyAction" Width="60" Visible="true"  >
+				<PropertiesComboBox TextField="label" ValueField="studyactiongroupID" DataSourceID='sql_StudyActionGroups' >
+					<Columns>
+						<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="groupname"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+					</Columns>
+					</PropertiesComboBox>
+			</dx:GridViewDataComboBoxColumn>
+
+			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
+		</Columns>
+	</dx:ASPxGridView>
+
+				<br /><br />
+				<dx:ASPxLabel ID="lblFix2" ClientInstanceName="lblFix2" runat="server"  Text="Measures in Actions in Different Timepoints" ForeColor="DarkRed" ClientVisible="false" Font-size="Medium"  Font-Bold="true"></dx:ASPxLabel ><br />
+
+					<dx:ASPxGridView ID="grid_Timepoint_Mismatch" runat="server"  ClientInstanceName="grid_MeasNotInAction"   DataSourceID="sql_Timepoint_Mismatch"
+		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_MeasNotInAction_CellEditorInitialize" ClientVisible="false" ForeColor="DarkRed"
+		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="studymeasgroupID"
+			OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+		<ClientSideEvents   Init="function(s, e) { s.SetVisible(s.GetVisibleRowsOnPage() != 0); lblFix2.SetVisible(s.GetVisibleRowsOnPage() != 0); }"   />
+		<SettingsPager Position="Top" PageSize="10">
+			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+		</SettingsPager>						
+		<Columns>
+			<dx:GridViewDataColumn FieldName="studymeasID" Caption="smID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="studymeasname" Caption="StudyMeas" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupname" Caption="Group" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepointID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+
+			<dx:GridViewDataComboBoxColumn FieldName="studyactiongroupID" Caption="StudyAction" Width="60" Visible="true"  >
+				<PropertiesComboBox TextField="label" ValueField="studyactiongroupID" DataSourceID='sql_StudyActionGroups' >
+					<Columns>
+						<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="groupname"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+					</Columns>
+					</PropertiesComboBox>
+			</dx:GridViewDataComboBoxColumn>
+
+			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
+		</Columns>
+	</dx:ASPxGridView>
 
 
-					<obout:Grid ID="grid_tblstudymeas" runat="server"   AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false" 
-							 AllowGrouping="true" GroupBy="timepoint_text" HideColumnsWhenGrouping="true"
-							 AllowPaging="false" PageSize="-1"  OnRowDataBound="grid_tblstudymeas_RowDataBound"  CallbackMode="true"
-						OnInsertCommand="grid_tblstudymeas_InsertCommand"  
-						OnUpdateCommand="grid_tblstudymeas_UpdateCommand"  
-						OnDeleteCommand="grid_tblstudymeas_DeleteCommand" 
-						>
-						<AddEditDeleteSettings AddLinksPosition="Top"  NewRecordPosition="Top"/>
-						<CssSettings CSSRowEditTemplate="rowedittemplate_css" />
-						<GroupingSettings AllowChanges="true" />
-						<ClientSideEvents OnClientDelete="UpdateMsg" OnClientInsert="UpdateMsg" OnClientUpdate="UpdateMsg" ExposeSender="true"  
-							OnBeforeClientEdit="onBeforeClientEdit_tblstudymeas"
-							OnBeforeClientUpdate="onBeforeClientUpdate_tblstudymeas"
-							OnClientCancelEdit="onClientCancelEdit_tblstudymeas"     />
-						<TemplateSettings RowEditTemplateId="grid_tblstudymeas_rowedit"   />
-						<Columns>
-							<obout:Column DataField="objtype" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="groupIDs" Width="120"  Visible="false">
-								<TemplateSettings RowEditTemplateControlId="hidStudyMeasGroup_tpl" RowEditTemplateControlPropertyName="value" />
-							</obout:Column>
-							<obout:Column DataField="groupabbrs" Width="120"  Visible="true" ParseHTML="true"></obout:Column>
-							<obout:Column DataField="studyID" Width="80" ReadOnly="true" Visible="false"></obout:Column>
-							<obout:Column DataField="timepointID" HeaderText="tpID" Width="60" Visible="false">
-								<TemplateSettings RowEditTemplateControlId="ddlTimepoint2" RowEditTemplateControlPropertyName="value"  />
-							</obout:Column>
-							<obout:Column DataField="timepoint_text" HeaderText="Timepoint" Width="120"  ReadOnly="true"></obout:Column>
-							<obout:Column DataField="measureID" HeaderText="mID" Width="60">
-								<TemplateSettings RowEditTemplateControlId="ddlMeasure" RowEditTemplateControlPropertyName="value" />
-							</obout:Column>
-							<obout:Column DataField="studymeasID" HeaderText="smID" Width="60"  ReadOnly="true"></obout:Column>
-							<obout:Column DataField="studymeasname" HeaderText="StudyMeas" Width="140">
-								<TemplateSettings  RowEditTemplateControlId="txt_studymeasname" RowEditTemplateControlPropertyName="value" />
-							</obout:Column>
-							<obout:Column AllowDelete="true" AllowEdit="true" Width="100"></obout:Column>
-						</Columns>
-						<Templates>
-							<obout:GridTemplate runat="server" ID="grid_tblstudymeas_rowedit" >
-								<Template   >
-												
-									<table style="background-color: mintcream;" width="100%">
-										<tr>
-											<td style="vertical-align:top">
-												Time point:<br />
-												<obout:OboutDropDownList runat="server" ID="ddlTimepoint2" ForeColor="Blue"
-													DataSourceID="sql_Timepoint" DataValueField="timepointID" DataTextField="timepoint_text" />
-												<br />
-												Groups:<br />
-												<select id="selStudyMeasGroup" runat="server" multiple="true" style="width:200px" class="example_select2"     ></select>
-												<asp:HiddenField ID="hidStudyMeasGroup_tpl" runat="server" />
-											</td>
-											<td style="vertical-align:top">
-												Measure:<br />
-												<obout:OboutDropDownList runat="server" ID="ddlMeasure" ForeColor="Blue" Height="300"
-													DataSourceID="sql_Measure" DataValueField="measureID" DataTextField="measname"  >
-													<ClientSideEvents OnSelectedIndexChanged="ddlMeasure_Change" />
-												</obout:OboutDropDownList>
-												<br />
-												Studymeas name:<br />
-												<obout:OboutTextBox runat="server" ID="txt_studymeasname" ></obout:OboutTextBox>
-												<br />
-												Inside Action:<br />
-												<obout:OboutDropDownList runat="server" ID="ddlstudymeas_ParentAction" ForeColor="Blue" Height="300"
-													 DataSourceID="sql_ParentStudyaction" DataValueField="studyactionID" DataTextField="actiontext"  >
-													<%--<ClientSideEvents OnSelectedIndexChanged="ddlstudymeas_ParentAction_Change" />--%>
-												</obout:OboutDropDownList>											</td>
-										</tr>
-									</table>
 
+				
 
-								</Template>
-							</obout:GridTemplate>
-
-
-							<obout:GridTemplate runat="server" ID="GridTemplate2" >
-								<Template>
-									  <asp:Label ID="lbl2" runat="server" Text='<%#  DataBinder.Eval(Container.DataItem, "[actiontype]") %>' ></asp:Label>
-								</Template>
-							</obout:GridTemplate>
-						</Templates>
-					</obout:Grid>
-				</td>
+</td>
 			</tr>
 			</table>
 
+		<br /><br />
+
+
+			
+	<br />
+
+
+	<dx:ASPxPanel ID="panelConsent" runat="server" ClientInstanceName="panelConsent">
+		<PanelCollection>
+			<dx:PanelContent>
+
+				<table>
+					<tr>
+					<td style="vertical-align:top; width:700px">
+						<asp:Label ID="Label2" runat="server" Text="Consent Forms" Font-size="Medium"  Font-Bold="true"></asp:Label>
+							
+
+												<dx:ASPxPanel ID="panelBulkAssign2" runat="server" ClientInstanceName="panelBulkAssign2" ClientVisible="false" >
+						<PanelCollection>
+							<dx:PanelContent>
+								<table>
+									<tr>
+										<td>
+											<dx:ASPxComboBox ID="cboStudyActionContainer2" runat="server" ClientInstanceName="cboStudyActionContainer2" DataSourceID="sql_StudyAction_ALL"
+												 ValueField="studyactionID">
+												<Columns>
+													<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+													<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+												</Columns>
+											</dx:ASPxComboBox>
+										</td>
+										<td style="width:50px"></td>
+										<td>
+											<dx:ASPxButton ID="btnBulkAssign2" runat="server" ClientInstanceName="btnBulkAssign2" Text ="Assign Selected Consents to Action" OnClick="btnBulkAssign2_OnClick"></dx:ASPxButton>
+
+										</td>
+										<td>
+
+										</td>
+									</tr>
+								</table>
+
+							</dx:PanelContent>
+						</PanelCollection>
+					</dx:ASPxPanel>
+
+
+						</td>
+						<td style="width:50px">
+
+						</td>
+						<td>
+							<asp:Label ID="Label3" runat="server" Text="Consents Assigned To Actions"  ForeColor="LightGray" Font-size="Medium"  Font-Bold="true"></asp:Label>
+						</td>
+					</tr>
+					<tr>
+						<td style="vertical-align:top">
+								<dx:ASPXGridView ID="grid_tblconsentform" runat="server" ClientInstanceName="grid_tblconsentform"   DataSourceID="sql_ConsentForm"
+						AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false" 
+							 AllowGrouping="true" GroupBy="timepoint_text" HideColumnsWhenGrouping="true" KeyFieldName="consentformID"
+							OnDataBound="dxgridSAM_DataBound" OnCustomButtonCallback="gridCF_CustomButtonCallback" 
+							 OnCustomButtonInitialize="gridSAM_CustomButtonInitialize"  Styles-SelectedRow-BackColor="#D4EBD3"
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  >
+						<ClientSideEvents EndCallback="OnEndCallBack" SelectionChanged="ShowBulkAssign2" />
+						<SettingsBehavior AllowSelectByRowClick="true" />
+						<SettingsPager Position="Top" PageSize="10">
+							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+						</SettingsPager>
+
+						<Columns>
+							<dx:GridViewDataColumn FieldName="consentformID" Caption="smID" Width="60"  ReadOnly="true"  CellStyle-ForeColor="Silver" EditFormSettings-Visible="false"></dx:GridViewDataColumn>
+
+
+							<dx:GridViewDataColumn FieldName="groupIDs" Width="120"  Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+
+							<dx:GridViewDataComboBoxColumn FieldName="timepointID" Caption="Timept" Width="60" Visible="true"  >
+								<PropertiesComboBox TextField="timepoint_text" ValueField="timepointID" DataSourceID='sql_Timepoint'  />
+							</dx:GridViewDataComboBoxColumn>
+							<dx:GridViewDataColumn FieldName="consentformname" Caption="ConsentForm" CellStyle-Font-Bold="true" Width="140"></dx:GridViewDataColumn>
+
+<%--							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd"  Width="50"  ></dx:GridViewDataColumn>--%>
+
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
+						</Columns>
+
+					</dx:ASPXGridView>
+						</td>
+						<td style="width:50px">
+
+						</td>
+						<td style="vertical-align:top">
+			
+		<dx:ASPxGridView ID="grid_ConsentInAction" runat="server"  ClientInstanceName="grid_ConsentInAction"   DataSourceID="sql_Consent_in_Action"
+		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_MeasNotInAction_CellEditorInitialize"  
+		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="consentformID"
+			OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+		<ClientSideEvents EndCallback="OnEndCallBack" />
+		<SettingsBehavior AllowGroup="true" />
+		<SettingsPager Position="Top" PageSize="10">
+			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+		</SettingsPager>
+		<GroupSummary>
+			<dx:ASPxSummaryItem FieldName="label" SummaryType="Count" />
+		</GroupSummary>
+		<Columns>
+			<dx:GridViewDataColumn FieldName="label" Caption="Action"  EditFormSettings-Visible="false" GroupIndex="0"  />
+			<dx:GridViewDataColumn FieldName="consentformID" Caption="cfID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="consentformname" Caption="Consent" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupname" Caption="Group" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepointID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+
+			<dx:GridViewDataComboBoxColumn FieldName="studyactiongroupID" Caption="StudyAction" Width="60" Visible="false" EditFormSettings-Visible="true"   >
+				<PropertiesComboBox TextField="label" ValueField="studyactiongroupID" DataSourceID='sql_StudyActionGroups' >
+					<Columns>
+						<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="groupname"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+					</Columns>
+					</PropertiesComboBox>
+			</dx:GridViewDataComboBoxColumn>
+
+			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
+		</Columns>
+	</dx:ASPxGridView>
+	
+<br /><br />
+	<dx:ASPxLabel ID="lblFixCF1" ClientInstanceName="lblFixCF1"  runat="server" Text="Consents Not Assigned to Actions"  ClientVisible="false" Font-size="Medium" ForeColor="DarkRed"  Font-Bold="true"></dx:ASPxLabel><br />
+
+	<dx:ASPxGridView ID="grid_ConsentNotInAction" runat="server"  ClientInstanceName="grid_ConsentNotInAction"   DataSourceID="sql_Consent_not_in_Action"  ForeColor="DarkRed"  
+		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_ConsentNotInAction_CellEditorInitialize" EnableCallBacks="true" ClientVisible="true"
+		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="consentformgroupID"
+			OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+		<ClientSideEvents  Init="function(s, e) { s.SetVisible(s.GetVisibleRowsOnPage() != 0); lblFixCF1.SetVisible(s.GetVisibleRowsOnPage() != 0); }"   />
+		<SettingsPager Position="Top" PageSize="10">
+			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+		</SettingsPager>						
+		<Columns>
+			<dx:GridViewDataColumn FieldName="consentformID" Caption="smID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="consentformname" Caption="Consent" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupname" Caption="Group" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepointID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+
+			<dx:GridViewDataComboBoxColumn FieldName="studyactiongroupID" Caption="StudyAction" Width="60" Visible="true"  >
+				<PropertiesComboBox TextField="label" ValueField="studyactiongroupID" DataSourceID='sql_StudyActionGroups' >
+					<Columns>
+						<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="groupname"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+					</Columns>
+					</PropertiesComboBox>
+			</dx:GridViewDataComboBoxColumn>
+
+			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
+		</Columns>
+	</dx:ASPxGridView>
+
+				<br /><br />
+				<dx:ASPxLabel ID="lblFixCF2" ClientInstanceName="lblFix2" runat="server"  Text="Consents in Actions in Different Timepoints" ForeColor="DarkRed" ClientVisible="false" Font-size="Medium"  Font-Bold="true"></dx:ASPxLabel ><br />
+
+					<dx:ASPxGridView ID="grid_Consent_Timepoint_Mismatch" runat="server"  ClientInstanceName="grid_Consent_Timepoint_Mismatch"   DataSourceID="sql_Consent_Timepoint_Mismatch"
+		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_MeasNotInAction_CellEditorInitialize" ClientVisible="false" ForeColor="DarkRed"
+		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="consentformgroupID"
+			OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+		<ClientSideEvents   Init="function(s, e) { s.SetVisible(s.GetVisibleRowsOnPage() != 0); lblFix2.SetVisible(s.GetVisibleRowsOnPage() != 0); }"   />
+		<SettingsPager Position="Top" PageSize="10">
+			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+		</SettingsPager>						
+		<Columns>
+			<dx:GridViewDataColumn FieldName="consentformID" Caption="smID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="ConsentFormName" Caption="Consent" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupname" Caption="Group" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="groupID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+			<dx:GridViewDataColumn FieldName="timepointID" ReadOnly="true" Visible="false" EditFormSettings-Visible="false" />
+
+			<dx:GridViewDataComboBoxColumn FieldName="studyactiongroupID" Caption="StudyAction" Width="60" Visible="true"  >
+				<PropertiesComboBox TextField="label" ValueField="studyactiongroupID" DataSourceID='sql_StudyActionGroups' >
+					<Columns>
+						<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="groupname"></dx:ListBoxColumn>
+						<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
+					</Columns>
+					</PropertiesComboBox>
+			</dx:GridViewDataComboBoxColumn>
+
+			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
+		</Columns>
+	</dx:ASPxGridView>
+
+
+						</td>
+					</tr>
+				</table>
+
+				
+			</dx:PanelContent>
+		</PanelCollection>
+	</dx:ASPxPanel>
+
+			
+					
+
 	<br /><br />
 
-	<asp:PlaceHolder ID="TreePlaceholder" runat="server"></asp:PlaceHolder>
 
-<%--	<obout:Tree ID="ObClassicTree" CssClass="vista"  runat="server"
-			OnTreeNodeDataBound="ObClassicTree_TreeNodeDataBound">
-			<DataBindings>
-				<obout:NodeBinding DataSourceColumnID="studymeasID" DataSourceColumnParentID="timepointID"
-					Expanded="true" />
-			</DataBindings>
-		</obout:Tree>--%>
+	<table>
+		<tr>
+			<td>
+				
+			</td>
+			<td style="width:50px"></td>
+			<td>
+			</td>
+		</tr>
+
+		<tr>
+			<td style="vertical-align:top">
+			
+		</td>
+						<td style="width:50px"></td>
+
+		
+		</tr>
+	</table>
+
+			
+
 
 
 	<asp:Panel ID="panel_action" runat="server"></asp:Panel>
@@ -497,12 +756,65 @@
 	<asp:Panel ID="panel_measure" runat="server"></asp:Panel>
 
 
+
+	 <dx:ASPxPopupControl ID="popupDeleteInfo" runat="server" ClientInstanceName="popupDeleteInfo" Height="83px" ShowOnPageLoad="false"
+		 Modal="True" CloseAction="CloseButton" Width="207px" AllowDragging="True"
+		 PopupHorizontalAlign="WindowCenter" PopupVerticalAlign="WindowCenter" HeaderText="">
+		 
+			<ContentCollection>
+				<dx:PopupControlContentControl runat="server">
+					<dx:ASPxLabel ID="txtPopup" runat="server" Width="170px" ClientInstanceName="txtPopup">
+								</dx:ASPxLabel>
+								<br/><br/>
+					<table style="border:none">
+						<tr>
+							<td>
+								<%--OnClick="btnOK_Click"--%>
+								<dx:ASPxButton ID="btnOK" runat="server"  ClientInstanceName="btnOK" AutoPostBack="False" Text="OK" Width="200px" >
+									<ClientSideEvents Click="function(s, e) { popupDeleteInfo.Hide(); popupDeleteInfo.ShowOnPageLoad = false; }" />
+								</dx:ASPxButton>
+							</td>
+							<td>
+								<dx:ASPxButton ID="btnCancel" runat="server" AutoPostBack="False" ClientInstanceName="btnCancel"
+									Text="Cancel" Width="80px" Visible="false">
+									<ClientSideEvents Click="function(s, e) { popupDeleteInfo.Hide(); }" />
+								</dx:ASPxButton>
+							</td>
+						</tr>
+					</table>
+				</dx:PopupControlContentControl>
+			</ContentCollection>
+		</dx:ASPxPopupControl>
+
+	<dx:ASPxPopupControl ID="popupHelp" runat="server" Width="900" CloseAction="CloseButton" CloseOnEscape="true" Modal="True"
+		PopupHorizontalAlign="WindowCenter" PopupVerticalAlign="WindowCenter" ClientInstanceName="popupHelp"
+		HeaderText="Study Design Instructions" AllowDragging="True" PopupAnimationType="None" EnableViewState="False" AutoUpdatePosition="true">
+		<%--<ClientSideEvents PopUp="function(s, e) { ASPxClientEdit.ClearGroup('entryGroup'); tbLogin.Focus(); }" />--%>
+		<ContentCollection>
+			<dx:PopupControlContentControl runat="server">
+			
+				<div style="font-size:medium; line-height:22px">
+				<b>Measures</b><br />
+				Click a row to select it.  Once clicked, new controls appear to enable you to:<br />
+				  1. Assign the Measure to an Action<br />
+				  2. Create a RELIABILITY measure for the Measure.<br />
+					</div>
+				</dx:PopupControlContentControl>
+			</ContentCollection>
+		</dx:ASPxPopupControl>
+
 	<asp:SqlDataSource ID="sql_Group" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
-				SelectCommand="select groupID, groupname from uwautism_research_backend..tblgroup  where studyID= (select dbo.fnDefaultStudyIDByCurrentUser())">
+				SelectCommand="select groupID, groupname, groupabbr, sortorder from uwautism_research_backend..tblgroup  where studyID=@studyID">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
 	</asp:SqlDataSource>
 
 	<asp:SqlDataSource ID="sql_SubjStatus" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
-				SelectCommand="select ssID, subjstatus from uwautism_research_backend..tblSS where studyID =  dbo.fnDefaultStudyIDByCurrentUser()">
+				SelectCommand="select ssID, subjstatus, sortorder from uwautism_research_backend..tblSS where studyID = @studyID">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
 	</asp:SqlDataSource>
 
 
@@ -511,20 +823,171 @@
 	</asp:SqlDataSource>
 
 	<asp:SqlDataSource ID="sql_Timepoint" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
-				SelectCommand="select timepointID, timepoint_text from uwautism_research_backend..tblTimepoint where studyID= (select dbo.fnDefaultStudyIDByCurrentUser())">
+				SelectCommand="select * from uwautism_research_backend..tblTimepoint where studyID= @studyID">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
 	</asp:SqlDataSource>
 
 	<asp:SqlDataSource ID="sql_Measure" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
 				SelectCommand="select 0 measureID, '--select measure--' measname, '' measfullname  union select measureID, measname, measfullname from uwautism_research_backend..tblMeasure where measname not like '2del%' order by measname">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
 	</asp:SqlDataSource>
 
-	<asp:SqlDataSource ID="sql_ParentStudyaction" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
-				SelectCommand="select 0 studyactionID, '--select action--' actiontext union select studyactionID, actiontext from uwautism_research_backend..tblStudyaction where actiontypeID in (1,2,4) and studyID= (select dbo.fnDefaultStudyIDByCurrentUser()) order by actiontext">
+	<%--<asp:SqlDataSource ID="sql_ParentStudyaction" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select 0 studyactionID, '--select action--' actiontext union select studyactionID, actiontext from uwautism_research_backend..tblStudyaction where actiontypeID in (1,2,4) and studyID= @studyID order by actiontext">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>--%>
+
+	<asp:SqlDataSource ID="sql_StudyMeas" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select 'studymeas' objtype, studymeasID objpk, *
+			, dbo.fnCSV_GetLinkedIDs('studymeas','group',studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas','group',studymeasID, ',') groupabbrs 
+		from vwstudymeas where studyID = @studyID order by timepoint, sortorder">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+		<asp:SqlDataSource ID="sql_ConsentForm" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select 'studymeas' objtype, consentformID objpk, consentformID, consentformname, timepointID
+			, dbo.fnCSV_GetLinkedIDs('consentform','group',consentformID, ',') groupIDs  
+		from tblConsentForm where studyID = @studyID ">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+	<asp:SqlDataSource ID="sql_StudyAction" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select 'studyaction' objtype, studyactionID objpk, *, dbo.fnCSV_GetLinkedIDs('studyaction','group',studyactionID,',') groupIDs  , dbo.fnCSV_GetLinkedIDs_text('studyaction','group',studyactionID, ',') groupabbrs from vwstudyaction where studyID = @studyID order by timepoint, sortorder">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+	<asp:SqlDataSource ID="sql_StudyMeas_not_in_Action" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select sm.studymeasID, sm.timepointID, timepoint_text, studymeasname, smg.groupID, groupname, studymeasgroupID, studyactiongroupID 
+	from tblStudyMeas sm
+	join tblTimepoint tp ON sm.timepointID = tp.timepointID
+	join tblStudymeasGroup smg ON sm.studymeasID = smg.studymeasID
+	join tblGroup g ON smg.groupID = g.groupID
+	where smg.studyactiongroupID is null and sm.studyID=@studyID">
+		<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+		<asp:SqlDataSource ID="sql_Consent_not_in_Action" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select sm.consentformID, sm.timepointID, timepoint_text, consentformname, smg.groupID, groupname, consentformgroupID, studyactiongroupID 
+	from tblConsentForm sm
+	join tblTimepoint tp ON sm.timepointID = tp.timepointID
+	join tblConsentFormGroup smg ON sm.consentformID = smg.consentformID
+	join tblGroup g ON smg.groupID = g.groupID
+	where smg.studyactiongroupID is null and sm.studyID=@studyID">
+		<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
+
+		<asp:SqlDataSource ID="sql_Timepoint_Mismatch" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select sm.studymeasID, sm.timepointID, timepoint_text, studymeasname, smg.groupID, groupname, studymeasgroupID, smg.studyactiongroupID 
+	from tblStudyMeas sm
+	join tblTimepoint tp ON sm.timepointID = tp.timepointID
+	join tblStudymeasGroup smg ON sm.studymeasID = smg.studymeasID
+	join tblGroup g ON smg.groupID = g.groupID
+	join tblStudyActionGroup sag ON smg.studyactiongroupID = sag.studyactiongroupID
+	join tblStudyAction sa ON sag.studyactionID = sa.studyactionID
+	where sm.timepointID != sa.timepointID and sm.studyID=@studyID">
+		<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+			<asp:SqlDataSource ID="sql_Consent_Timepoint_Mismatch" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select sm.consentformID, sm.timepointID, timepoint_text, ConsentFormName, smg.groupID, groupname, consentformgroupID, smg.studyactiongroupID 
+	from tblConsentForm sm
+	join tblTimepoint tp ON sm.timepointID = tp.timepointID
+	join tblConsentFormGroup smg ON sm.consentformID = smg.consentformID
+	join tblGroup g ON smg.groupID = g.groupID
+	join tblStudyActionGroup sag ON smg.studyactiongroupID = sag.studyactiongroupID
+	join tblStudyAction sa ON sag.studyactionID = sa.studyactionID
+	where sm.timepointID != sa.timepointID and sm.studyID=@studyID">
+		<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
 	</asp:SqlDataSource>
 
 
 
+		<asp:SqlDataSource ID="sql_StudyMeas_in_Action" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select sm.studymeasID, sm.timepointID, timepoint_text, studymeasname, smg.groupID, groupname, studymeasgroupID, smg.studyactiongroupID, actiontext
+			, '[' + timepoint_text + '] ' + replicate('.', 25-len(actiontext)) + actiontext as label
+	from tblStudyMeas sm
+	join tblTimepoint tp ON sm.timepointID = tp.timepointID
+	join tblStudymeasGroup smg ON sm.studymeasID = smg.studymeasID
+	join tblGroup g ON smg.groupID = g.groupID
+	join tblStudyActionGroup sag ON smg.studyactiongroupID = sag.studyactiongroupID
+	join tblStudyAction sa ON sag.studyactionID = sa.studyactionID
+	where smg.studyactiongroupID is not null and sm.studyID=@studyID">
+		<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
 
+
+			<asp:SqlDataSource ID="sql_Consent_in_Action" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select sm.consentformID, sm.timepointID, timepoint_text, consentformname, smg.groupID, groupname, consentformgroupID, smg.studyactiongroupID, actiontext
+			, '[' + timepoint_text + '] ' + replicate('.', 25-len(actiontext )) + actiontext as label
+	from tblConsentForm sm
+	join tblTimepoint tp ON sm.timepointID = tp.timepointID
+	join tblConsentFormGroup smg ON sm.consentformID = smg.consentformID
+	join tblGroup g ON smg.groupID = g.groupID
+	join tblStudyActionGroup sag ON smg.studyactiongroupID = sag.studyactiongroupID
+	join tblStudyAction sa ON sag.studyactionID = sa.studyactionID
+	where smg.studyactiongroupID is not null and sm.studyID=@studyID">
+		<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+		<asp:SqlDataSource ID="sql_StudyActionGroups" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select studyactiongroupID, sa.timepointID, sa.studyactionID, actiontext,  sma.groupID, groupname
+			,  timepoint_text, timepoint_text + ' ' + groupname + ' ' + actiontext as label 
+	from tblStudyAction sa
+	join tblTimepoint tp ON sa.timepointID = tp.timepointID
+	join tblStudyActionGroup sma ON sa.studyactionID = sma.studyactionID
+	join tblGroup g ON sma.groupID = g.groupID
+	where actiontypeID in (1,2,4) and sa.studyID=@studyID and sa.timepointID=@timepointID and sma.groupID=@groupID order by timepoint_text, groupname, sa.sortorder">
+		<SelectParameters>
+			<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			<asp:Parameter Name="timepointID" Type="Int32" />
+			<asp:Parameter Name="groupID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+			<asp:SqlDataSource ID="sql_StudyAction_ALL" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select studyactionID, sa.timepointID, actiontext
+			,  timepoint_text, timepoint_text + ' ' + actiontext as label 
+	from tblStudyAction sa
+	join tblTimepoint tp ON sa.timepointID = tp.timepointID
+	where actiontypeID in (1,2,4) and sa.studyID=@studyID order by timepoint_text, sa.sortorder">
+		<SelectParameters>
+			<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+		</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+	
 
 </asp:Content>
 

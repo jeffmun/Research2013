@@ -449,6 +449,9 @@
 		<SettingsEditing Mode="Inline"></SettingsEditing>
 		<SettingsBehavior ConfirmDelete="true" />
 		<SettingsBehavior ConfirmDelete="true" />
+		<SettingsPager Position="TopAndBottom" PageSize="10">
+							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+						</SettingsPager>
 		<ClientSideEvents EndCallback="OnEndCallBack" />
 		<Columns>
 			<dx:GridViewDataColumn FieldName="logcontactID" Caption="" Visible="false"></dx:GridViewDataColumn>
@@ -502,7 +505,9 @@
 					SettingsDataSecurity-AllowEdit="true" SettingsDataSecurity-AllowInsert="true" SettingsDataSecurity-AllowDelete="true">
 	<SettingsBehavior ConfirmDelete="true" />	
 	<ClientSideEvents EndCallback="OnEndCallBack" />
-
+	<SettingsPager Position="TopAndBottom" PageSize="10">
+							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
+						</SettingsPager>
 	<Columns>
 		<dx:GridViewDataColumn FieldName="loginfoID" Caption="loginfoID" Visible="false" CellStyle-Font-Bold="false"> </dx:GridViewDataColumn> 
 

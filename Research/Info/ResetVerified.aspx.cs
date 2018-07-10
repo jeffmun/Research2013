@@ -3,6 +3,7 @@ using System.Data;
 using System.Configuration;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
@@ -272,10 +273,6 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 
 		if (dtSM.Rows.Count > 1)
 		{
-			lbl_DeleteSubject.Visible = true;
-		   
-			ddl_delSubj1.Visible = true;
-			ddl_delSubj2.Visible = true;
 
 			ddl_delSubj1.DataSource = dtSM;
 			ddl_delSubj1.DataTextField = "idgrp";
@@ -287,16 +284,28 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 			ddl_delSubj2.DataValueField = "subjID";
 			ddl_delSubj2.DataBind();
 
+			ddl_newID.DataSource = dtSM;
+			ddl_newID.DataTextField = "idgrp";
+			ddl_newID.DataValueField = "subjID";
+			ddl_newID.DataBind();
+
+			ddl_ChangeGroupID.DataSource = dtSM;
+			ddl_ChangeGroupID.DataTextField = "idgrp";
+			ddl_ChangeGroupID.DataValueField = "subjID";
+			ddl_ChangeGroupID.DataBind();
+
+
+
+			lbl_DeleteSubjectDENIED.Visible = false;
+			editSubjectPanel.Visible = true;
+
 		}
 		else
 		{
-			lbl_DeleteSubject.Visible = false;
-			btn_DeleteSubject.Visible = false;
-			ddl_delSubj1.Visible = false;
-			ddl_delSubj2.Visible = false;
 
 			lbl_DeleteSubjectDENIED.Visible = true;
-			
+			editSubjectPanel.Visible = false;
+
 		}
 
 		UpdatePanel01.Update();
@@ -464,6 +473,52 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 	}
 
 
+	protected void ddl_newID_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		int subjID = Convert.ToInt32(ddl_newID.SelectedValue.ToString());
+
+		btnValidateNewID.Visible = (subjID > 0) ? true : false;
+
+	}
+
+		
+
+
+	protected void ddl_ChangeGroup_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		int subjID = Convert.ToInt32(ddl_ChangeGroupID.SelectedValue.ToString());
+
+		if (subjID > 0)
+		{
+			int newgroup1 = Convert.ToInt32(ddl_newGroup1.SelectedValue.ToString());
+			int newgroup2 = Convert.ToInt32(ddl_newGroup2.SelectedValue.ToString());
+			SQL_utils sql = new SQL_utils("backend");
+
+			int oldgroup = sql.IntScalar_from_SQLstring(String.Format("select groupID from tblsubject where subjID={0}", subjID));
+
+			if (newgroup1  == newgroup2 && newgroup1 > 0 && newgroup1 != oldgroup)
+			{
+
+				string sqlcode = String.Format("select groupID from tblsubject where subjID = {0}", subjID);
+				int oldgroupID = sql.IntScalar_from_SQLstring(sqlcode);
+
+				if (newgroup1 != oldgroupID)
+				{
+					btn_ChangeGroup.Visible = true;
+				}
+			}
+			else
+			{
+				btn_ChangeGroup.Visible = false;
+			}
+
+			sql.Close();
+
+		}
+	}
+
+
+
 	#endregion
 
 
@@ -535,17 +590,32 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 
 		if (Convert.ToInt32(ddl_delSubj1.SelectedValue) == Convert.ToInt32(ddl_delSubj2.SelectedValue))
 		{
-
+			int subjID = Convert.ToInt32(ddl_delSubj1.SelectedValue);
 
 			SQL_utils sql = new SQL_utils("backend");
-			List<SqlParameter> ps = new List<SqlParameter>();
-			ps.Add(sql.CreateParam("subjID", ddl_delSubj1.SelectedValue, "int"));
-			ps.Add(sql.CreateParam("code", "Confirm deletion of " + Convert.ToString(ddl_delSubj1.SelectedValue), "text"));
 			
-			
-			try
-			{
-				sql.NonQuery_from_ProcName("spDeleteSubject_from_web", ps);
+			try{
+				var del1 = DxGridView.BuildDeleteSqlCode("tblstudymeassubj", "backend", "subjID", subjID);
+
+
+				sql.NonQuery_from_SQLstring("update uwautism_research_backend.dbo.tblstudymeassubj set actionid = null where subjid = " + subjID.ToString());
+
+//tblSubject
+//tblaction
+//tblReliabilityTracking
+//tblSubjConsent
+//tblstudymeassubj
+
+				var del2 = DxGridView.BuildDeleteSqlCode("tblapptstaff","backend", "actionID in (select actionID from tblaction where subjID = " + subjID.ToString() + ")");
+				var del3 = DxGridView.BuildDeleteSqlCode("tblSubjConsentitem","backend",  "subjconsentid in (select subjconsentid from uwautism_research_backend.dbo.tblSubjConsent where subjid = " + subjID.ToString() + ")");
+				var del4 = DxGridView.BuildDeleteSqlCode("tblSubjConsent", "backend", "subjID", subjID);
+				var del5 = DxGridView.BuildDeleteSqlCode("tblReliabilityTracking", "backend", "subjID", subjID);
+				var del6 = DxGridView.BuildDeleteSqlCode("tblaction", "backend", "subjID", subjID);
+				var del7 = DxGridView.BuildDeleteSqlCode("tblSubject", "backend", "subjID", subjID);
+
+				error_label.Text = "Subject deleted.";
+
+				btnDelete.Visible = false;
 
 			}
 			catch (SqlException exc)
@@ -553,12 +623,28 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 				error_label.Text = exc.Message;
 			}
 
+
+			//SQL_utils sql = new SQL_utils("backend");
+			//List<SqlParameter> ps = new List<SqlParameter>();
+			//ps.Add(sql.CreateParam("subjID", ddl_delSubj1.SelectedValue, "int"));
+			//ps.Add(sql.CreateParam("code", "Confirm deletion of " + Convert.ToString(ddl_delSubj1.SelectedValue), "text"));
+			
+			
+			//try
+			//{
+			//	sql.NonQuery_from_ProcName("spDeleteSubject_from_web", ps);
+
+			//}
+			//catch (SqlException exc)
+			//{
+			//	error_label.Text = exc.Message;
+			//}
+
 			sql.Close();
 
 			Populate_delSubj_ID_DDL();
 
 			btnReset.Visible = false;
-			panelDelete.Visible = false;
 			btnDelete.Visible = false;
 			txtDelete.Text = "";
 
@@ -602,5 +688,269 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 		Populate_IDmove_DDL(Convert.ToInt16(ddl_studymeasID.SelectedValue));
 		Populate_IDdelete_DDL(Convert.ToInt16(ddl_studymeasID.SelectedValue));
 	}
+
+
+	protected void ValidateNewID(object sender, EventArgs e)
+	{
+
+		string id1 = newID1.Text;
+		string id2 = newID2.Text;
+		string oldsubjid = ddl_newID.SelectedValue;
+		SQL_utils sql = new SQL_utils("data");
+
+		string oldid = sql.StringScalar_from_SQLstring(String.Format("select id from uwautism_research_backend..tblsubject where subjID={0}", oldsubjid));
+
+		if (oldsubjid != "-1")
+		{
+
+			if (id1 == id2 && !String.IsNullOrEmpty(id1))
+			{
+
+				int n_newid = sql.IntScalar_from_SQLstring(String.Format("select coalesce(count(*),0) n from uwautism_research_backend..vwMasterStatus_S where studyID={0} and ID='{1}'"
+						, Master.Master_studyID, id1));
+
+				if (n_newid > 0)
+				{
+					error_label.Text = String.Format("The ID '{0}' is already taken.", id1);
+				}
+				else
+				{
+					//new ID is unique
+					string sql_ndata = String.Format("select count(*) n from uwautism_research_data..datData where ID='{0}' and studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID={1})"
+						, oldid, Master.Master_studyID);
+
+					int ndata = sql.IntScalar_from_SQLstring(sql_ndata);
+					List<string> dataupdateresult = new List<string>();
+
+					if (ndata > 0)
+					{
+
+						error_label.Text = String.Format("'{0}' is available.  However, there are {1} entered data records in which ID='{2}'.<br/>Check the box if you want to update the entered data to this new ID '{0}'.<br/>Do not check the box if you want the {1} entered data records to remain as ID '{2}'.", id1, ndata, oldid);
+						chkDataToo.Visible = true;
+					}
+
+					else
+					{
+						error_label.Text = String.Format("'{0}' is available. There is no entered data with the original ID '{1}'.", id1, oldid);
+						//txtOVERRIDE.Text = "Enter 'fix' here to update entered data with the new ID.";
+					}
+
+					btnNewID.Visible = true;
+					btnCancelNewID.Visible = true;
+					btnValidateNewID.Visible = false;
+					
+				}
+
+			}
+
+			else
+			{
+				error_label.Text = "New ID values must match.";
+			}
+
+			sql.Close();
+		}
+
+	}
+
+	protected void CancelNewID(object sender, EventArgs e)
+	{
+		Response.Redirect("~/Info/ResetVerified.aspx");
+
+	}
+
+		protected void ChangeIDSubject(object sender, EventArgs e)
+	{
+
+		string id1 = newID1.Text;
+		string id2 = newID2.Text;
+		string oldsubjid = ddl_newID.SelectedValue;
+		SQL_utils sql = new SQL_utils("data");
+
+		string oldid = sql.StringScalar_from_SQLstring(String.Format("select id from uwautism_research_backend..tblsubject where subjID={0}", oldsubjid));
+
+		if (oldsubjid != "-1")
+		{
+
+			if (id1 == id2 && !String.IsNullOrEmpty(id1))
+			{
+
+				int n_newid = sql.IntScalar_from_SQLstring(String.Format("select coalesce(count(*),0) n from uwautism_research_backend..vwMasterStatus_S where studyID={0} and ID='{1}'"
+						, Master.Master_studyID, id1));
+
+				if (n_newid > 0)
+				{
+					error_label.Text = String.Format("The ID '{0}' is already taken.", id1);
+				}
+				else
+				{
+					//new ID is unique
+					string sql_ndata = String.Format("select count(*) n from uwautism_research_data..datData where ID='{0}' and studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID={1})"
+						, oldid, Master.Master_studyID);
+
+					int ndata = sql.IntScalar_from_SQLstring(sql_ndata);
+					List<string> dataupdateresult = new List<string>();
+
+
+					string sqllogchange = String.Format("insert into uwautism_research_backend..AuditChanges(pk, pkfldname, tblname, fldname, oldvalue, newvalue, updated, updatedBy) values({0},'subjID','tblSubject', 'ID','{1}','{2}',getdate(),sec.systemuser())"
+						, oldsubjid, oldid, id1);
+
+					string sqlnewid = String.Format("update uwautism_research_backend..tblsubject set id='{0}' where  subjID={1} and ID='{2}'"
+						, id1, oldsubjid, oldid);
+
+					dataupdateresult.Add(sqllogchange);
+					dataupdateresult.Add(sqlnewid);
+
+
+					if (ndata > 0)
+					{
+						if (chkDataToo.Checked )
+						{
+							List<string> datachanges = UpdateDataID(Master.Master_studyID, oldid, id1);
+							dataupdateresult.AddRange(datachanges);
+						}
+					}
+
+					try
+					{
+						string dataupdateresults = String.Join(";", dataupdateresult);
+						string dataupdateresults_for_diplay = String.Join("<br/>", dataupdateresult);
+
+						string executeresults = sql.NonQuery_from_SQLstring_withRollback(dataupdateresults);
+
+						string datamsg = (ndata == 0) ? String.Format("No entered data with ID='{0}' were found.<br/>", oldid) : "";
+
+
+
+						error_label.Text = String.Format("ID updated to '{0}'.<br/><br/>/* SQL code executed: */<br/>{1}", id1, dataupdateresults_for_diplay);
+					}
+					catch (Exception ex)
+					{
+
+					}
+					
+				}
+					
+			}
+		
+			else
+			{
+				error_label.Text = "New ID values must match.";
+			}
+
+			sql.Close();
+		}
+
+	}
+
+
+	protected List<string> UpdateDataID(int studyID, string oldid, string newid)
+	{
+		List<string> result = new List<string>();
+		SQL_utils sql = new SQL_utils("data");
+		string sql_changestomake = String.Format("select * from DatData where ID='{0}' and studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID={1})", oldid, studyID);
+		DataTable dt = sql.DataTable_from_SQLstring(sql_changestomake);
+		string tblname = "";
+		string error = "";
+
+		if (dt != null)
+		{
+
+			foreach (DataRow row in dt.Rows)
+			{
+				int tblpk = Convert.ToInt32(row["tblpk"].ToString());
+				int pkval = Convert.ToInt32(row["tablePK"].ToString());
+
+				string pkfld = "";
+				pkfld = sql.StringScalar_from_SQLstring(String.Format("select fldname from def.fld where tblpk={0} and fieldcodeID=10", tblpk));
+
+				tblname = sql.StringScalar_from_SQLstring("select tblname from def.tbl where tblpk=" + tblpk.ToString());
+
+				if (tblname != "" && pkfld != "" && pkval > 0)
+				{
+					string update_datatable = String.Format(" Update {0} set ID='{1}' where ID='{2}' and {3}={4}", tblname, newid, oldid, pkfld, pkval);
+					string update_datdata = String.Format(" Update datData set ID='{0}' where tblpk={1} and ID = '{2}' and tablePK={3}", newid, tblpk, oldid, pkval);
+
+					result.Add(update_datatable);
+					result.Add(update_datdata);
+					Debug.WriteLine(update_datatable);
+					Debug.WriteLine(update_datdata);
+					try{
+						//sql.NonQuery_from_SQLstring(update_datatable);
+						//sql.NonQuery_from_SQLstring(update_datdata);
+
+					}
+					catch (Exception ex)
+					{
+						error = String.Format("Error when updating {0}.", tblname);
+					}
+				}
+
+			}
+		}
+
+		if (error != "") return new List<string> { error };
+		else return result;
+
+	}
+
+
+
+	//protected void ValidateChangeGroup(object sender, EventArgs e)
+	//{
+
+	//	int subjID = Convert.ToInt32(ddl_ChangeGroupID.SelectedValue.ToString());
+	//	int newgroupID1 = Convert.ToInt32(ddl_newGroup1.SelectedValue.ToString());
+	//	int newgroupID2 = Convert.ToInt32(ddl_newGroup2.SelectedValue.ToString());
+
+	//	if(newgroupID1 == newgroupID2 && newgroupID1 > 0 && subjID > 0)
+	//	{
+	//		btn_ChangeGroup.Visible = true;
+	//	}
+	//}
+
+	protected void ChangeGroup(object sender, EventArgs e)
+	{
+
+		int subjID = Convert.ToInt32(ddl_ChangeGroupID.SelectedValue.ToString());
+		int newgroupID1 = Convert.ToInt32(ddl_newGroup1.SelectedValue.ToString());
+		int newgroupID2 = Convert.ToInt32(ddl_newGroup2.SelectedValue.ToString());
+		SQL_utils sql = new SQL_utils("backend");
+		int oldgroup = sql.IntScalar_from_SQLstring(String.Format("select groupID from tblsubject where subjID={0}", subjID));
+
+
+		if (newgroupID1 == newgroupID2 && newgroupID1 > 0 && subjID > 0 && newgroupID1 != oldgroup)
+		{
+			try
+			{
+
+				
+
+				string sqlcode = String.Format(" update tblsubject set groupID = {0} where subjID = {1};", newgroupID1, subjID);
+
+				string sqlAddActions = String.Format("exec spUpdate_SA_SM_for_Subj_with_new_group {0}", subjID);
+
+				string sqllogchange = String.Format("insert into uwautism_research_backend..AuditChanges(pk, pkfldname, tblname, fldname, oldvalue, newvalue, updated, updatedBy) values({0},'subjID','tblSubject', 'groupID','{1}','{2}',getdate(),sec.systemuser());"
+					, subjID, oldgroup, newgroupID1);
+
+				string sql_all = String.Format("{0} {1} {2}", sqlcode, sqlAddActions, sqllogchange);
+
+
+				sql.NonQuery_from_SQLstring_withRollback(sql_all);
+
+				error_label.Text = String.Format("Group changed and actions and measures updated.");
+
+				btn_ChangeGroup.Visible = false;
+
+			}
+			catch(Exception ex)
+			{ }
+
+		}
+		sql.Close();
+
+	}
+
+
 
 }

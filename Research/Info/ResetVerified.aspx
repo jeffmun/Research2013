@@ -13,7 +13,7 @@
 
 <asp:UpdatePanel ID="UpdatePanel01" runat="server" UpdateMode="Conditional"  EnableViewState="true" >
 <ContentTemplate>
-    <asp:Label ID="Label2" runat="server" Text="Reset Data Entry Records" Font-Bold="true"></asp:Label>
+	<asp:Label ID="Label2" runat="server" Text="Reset Data Entry Records" Font-Bold="true"></asp:Label>
 <br />
 <br />
 
@@ -28,8 +28,8 @@
 <table>
 <tr>
 
-    <%--left--%>
-<td style="vertical-align:top" width = "400px">
+	<%--left--%>
+<td style="vertical-align:top; width:400px">
 
 
 
@@ -49,8 +49,8 @@
 </td>
 
 
-    <%--middle--%>
-<td style="vertical-align:top"  width = "400px">
+	<%--middle--%>
+<td style="vertical-align:top; width:400px">
 
 <br />
 <br />
@@ -72,7 +72,7 @@
 </td>
 
 
-    <%--right--%>
+	<%--right--%>
 <td style="vertical-align:top">
 
 <asp:Label id="lbl_Clindelete" runat="server" visible="false" Text="Select Clinician:" Width="150px"/>
@@ -88,9 +88,9 @@
 <br />
 
 <asp:Panel ID="panelDelete" runat="server" Visible="false">
-    <asp:Label ID="Label3" runat="server" ForeColor="DarkRed" Text="Enter 'del' to confirm you wish to delete this record."></asp:Label>
-    <asp:TextBox ID="txtDelete"  runat="server" ForeColor="DarkRed"  Width="80px" AutoPostBack="true" OnTextChanged="ConfirmTextChanged"></asp:TextBox>
-    <br />
+	<asp:Label ID="Label3" runat="server" ForeColor="DarkRed" Text="Enter 'del' to confirm you wish to delete this record."></asp:Label>
+	<asp:TextBox ID="txtDelete"  runat="server" ForeColor="DarkRed"  Width="80px" AutoPostBack="true" OnTextChanged="ConfirmTextChanged"></asp:TextBox>
+	<br />
 <asp:Button id="btnDelete" runat="server" Visible="false" ForeColor="DarkRed" Text="Delete this record." AutoPostBack="true" OnClick="DeleteRecord"></asp:Button>
 </asp:Panel>
 
@@ -102,16 +102,100 @@
 <br />
 <br />
 
-    
-    <asp:Label ID="lbl_DeleteSubjectDENIED" runat="server" Visible="false" Text="Staff in the 'Admin' role can delete subjects here." Font-Bold="true"></asp:Label>
-    <asp:Label ID="lbl_DeleteSubject" runat="server" Visible="false" Text="Delete subject:" Font-Bold="true"></asp:Label>
+	
+	<asp:Label ID="lbl_DeleteSubjectDENIED" runat="server" Visible="false" Text="Staff in the 'Admin' role can delete subjects here." Font-Bold="true"></asp:Label>
+	
+	<asp:Panel ID="editSubjectPanel" runat="server" Visible="false">
+	
+	<asp:Label ID="lbl_DeleteSubject" runat="server" Visible="true" Text="Delete subject:" Font-Bold="true"></asp:Label>
 
-    <asp:DropDownList id="ddl_delSubj1" runat="server"  Visible="false" AutoPostBack="true" OnSelectedIndexChanged ="ddl_delSubj_SelectedIndexChanged"></asp:DropDownList>
-    <asp:DropDownList id="ddl_delSubj2" runat="server"  Visible="false" AutoPostBack="true" OnSelectedIndexChanged ="ddl_delSubj_SelectedIndexChanged"></asp:DropDownList>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <asp:Button id="btn_DeleteSubject" runat="server" Visible="false" ForeColor="DarkRed" Text="Delete this subject." AutoPostBack="true" OnClick="DeleteSubject"></asp:Button>
+	<asp:DropDownList id="ddl_delSubj1" runat="server"  Visible="true" AutoPostBack="true" OnSelectedIndexChanged ="ddl_delSubj_SelectedIndexChanged"></asp:DropDownList>
+	<asp:DropDownList id="ddl_delSubj2" runat="server"  Visible="true" AutoPostBack="true" OnSelectedIndexChanged ="ddl_delSubj_SelectedIndexChanged"></asp:DropDownList>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<asp:Button id="btn_DeleteSubject" runat="server" Visible="false" ForeColor="DarkRed" Text="Delete this subject" AutoPostBack="true" OnClick="DeleteSubject"></asp:Button>
 
-    <br/><br/>
-    <asp:Label ID="error_label" runat="server" ForeColor="DarkRed" ></asp:Label>
+	<br/><br/>
+	<br/>
+
+		<table>
+			<tr>
+				<td>
+					<asp:Label ID="Label8" runat="server" Visible="true" Text="Change group for subject:" Font-Bold="true" Width="200"></asp:Label>
+	
+				</td>
+				<td>
+					<asp:Label ID="Label9" runat="server" Visible="true" Text="New Group:" Font-Bold="true"></asp:Label>
+				</td>
+				<td>
+					<asp:Label ID="Label10" runat="server" Visible="true" Text="New Group (enter again):" Font-Bold="true"></asp:Label>
+				</td>
+
+			</tr>
+			<tr>
+				<td>
+	<asp:DropDownList id="ddl_ChangeGroupID" runat="server"  Visible="true" AutoPostBack="true" ></asp:DropDownList>
+
+				</td>
+				<td>
+					<asp:DropDownList id="ddl_newGroup1" runat="server"  Visible="true" AutoPostBack="true" OnSelectedIndexChanged ="ddl_ChangeGroup_SelectedIndexChanged"
+						 DataSourceID="sql_group" DataTextField="groupname" DataValueField="groupID" Width="120"></asp:DropDownList>
+
+				</td>
+				<td>
+					<asp:DropDownList id="ddl_newGroup2" runat="server"  Visible="true" AutoPostBack="true" OnSelectedIndexChanged ="ddl_ChangeGroup_SelectedIndexChanged"
+							DataSourceID="sql_group" DataTextField="groupname" DataValueField="groupID"  Width="120"></asp:DropDownList>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</td>
+			</tr>
+		</table>
+
+	<asp:Button id="btn_ChangeGroup" runat="server" Visible="false" ForeColor="Navy" Text="Change groups for this subject" AutoPostBack="true" OnClick="ChangeGroup"></asp:Button>
+
+	<br/><br/>
+	<br/>
+
+	
+   <table>
+	   <tr>
+		   <td>
+	<asp:Label ID="lblNewID" runat="server" Visible="true" Text="Change subject ID:" Font-Bold="true" Width="200"></asp:Label>
+
+		   </td>
+		   <td>
+			<asp:Label ID="Label5" runat="server" Visible="true" Text="New ID:" Font-Bold="true"></asp:Label>
+
+		   </td>
+		   <td>
+			<asp:Label ID="Label7" runat="server" Visible="true" Text="New ID (enter again):" Font-Bold="true"></asp:Label>
+
+		   </td>
+	   </tr>
+	   <tr>
+		   <td>
+	<asp:DropDownList id="ddl_newID" runat="server"  Visible="true" AutoPostBack="true"  OnSelectedIndexChanged="ddl_newID_SelectedIndexChanged"></asp:DropDownList>
+
+		   </td>
+		   <td>
+				<asp:TextBox ID="newID1" runat="server"></asp:TextBox>
+		   </td>
+		   <td>
+				<asp:TextBox ID="newID2" runat="server"></asp:TextBox>
+		   </td>
+	   </tr>
+   </table>
+	<asp:Button id="btnValidateNewID" runat="server" Visible="false" ForeColor="Navy" Text="Validate New ID" AutoPostBack="true" OnClick="ValidateNewID"></asp:Button>
+	<asp:Button id="btnNewID" runat="server" Visible="false" ForeColor="Navy" Text="Change ID" AutoPostBack="true" OnClick="ChangeIDSubject"></asp:Button>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<asp:CheckBox id="chkDataToo" runat="server" Visible="false" ForeColor="Navy" Text="Update entered data to new ID?" ></asp:CheckBox>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<asp:Button id="btnCancelNewID" runat="server" Visible="false" ForeColor="DarkRed" Text="Cancel" AutoPostBack="true" OnClick="CancelNewID"></asp:Button>
+	
+<%--        <asp:TextBox ID="txtOVERRIDE" runat="server" Visible="false" Text="Enter 'fix' here to update entered data with the new ID." Width="380px" ForeColor="Blue" ></asp:TextBox>--%>
+
+
+	</asp:Panel>
+
+	
+<%--    <asp:Label ID="Label8" runat="server" ForeColor="DarkRed" ></asp:Label>--%>
+	<asp:Literal ID="error_label" runat="server" ></asp:Literal>
 
 <br />
 
@@ -128,7 +212,7 @@
 <asp:AsyncPostBackTrigger ControlID="btnReset" EventName="Click" />
 <asp:AsyncPostBackTrigger ControlID="btnDelete" EventName="Click" />
 
-    <asp:AsyncPostBackTrigger ControlID="btn_DeleteSubject" EventName="Click" />
+	<asp:AsyncPostBackTrigger ControlID="btn_DeleteSubject" EventName="Click" />
 </Triggers>
 
 </asp:UpdatePanel>
@@ -138,7 +222,12 @@
 <br /><br />
 <br />
 
-
+		<asp:SqlDataSource runat="server" ID="sql_group"  ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+	 SelectCommand="select -1 groupID, '--select--' groupname union select groupID, groupname  from tblGroup where studyID=@studyID order by groupID" SelectCommandType="text">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID"  Name="studyID" Type="Int32" />
+			</SelectParameters>  
+	</asp:SqlDataSource>
 
 
 </asp:Content>

@@ -53,7 +53,9 @@
     <siteMapNode url="" title="Study Info">
       <siteMapNode url="~/Info/MeasureList.aspx" title="Measure List" />
       <siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info/Data Dictionary" />
-      <siteMapNode url="~/Info/StudyDesign.aspx" title="Study Design" menuitem="true" />
+      <siteMapNode url="~/Admin/NewStudy.aspx" title="Create New Study" menuitem="true" />
+      <siteMapNode url="~/Admin/StudyDesign.aspx" title="Edit Study Design" menuitem="true" />
+      <siteMapNode url="~/Admin/StudyDesignViewer.aspx" title="View Study Design" menuitem="true" />
     </siteMapNode>
     <siteMapNode url="" title="Data Entry">
       <siteMapNode url="~/DataEntry/Default.aspx" title="Select a study" menuitem="true" />

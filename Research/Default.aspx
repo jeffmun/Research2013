@@ -14,6 +14,15 @@
 <h2>Updates to the UWAC Research DB</h2>
 	<asp:Label ID="lblNew" runat="server" ForeColor="ForestGreen" Text="New changes will be noted here.  Check back periodically!"></asp:Label>
 <br /><br />
+<h4 style="color: gray">July 2018</h4>
+<h3>Change Subject's ID and Group</h3>
+<div style="width: 900px">
+You can now change a subject's group and ID (<b>Data Entry > Reset/Delete items</b>).  This DB will ensure that a new ID is not already in use and gives you the option to also update all entered data from the old ID to the new ID.  If you need to swap the ID's between 2 people, you can do this in 3 steps. For example, to swap the ID's "abc" and "xyz" between 2 subjects:  1) change "abc" -> "tmp", 2) "xyz" -> "abc", and 3) "tmp" -> "abc".
+	<br /><br />
+	When changing a subject's group, the subject will be assigned any actions for that group that they may not already have.  Measures that are marked "NA for Group" and "To Be Done" are also updated accordingly.  No other changes to actions and measures are made, leaving intact any tracking info that has already been entered.
+</div>
+	<br />
+	<hr />
 <h4 style="color: gray">Apr 2018</h4>
 <h3>Export subject lists & Choose Columns</h3>
 <div style="width: 900px">

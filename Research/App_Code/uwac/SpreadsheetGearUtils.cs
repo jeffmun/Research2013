@@ -32,18 +32,26 @@ using uwac;
 
 		public static DataSet GetDataSet(string excelfile)
 		{
-			DataSet dset = GetDataSet(excelfile, false);
+			DataSet dset = GetDataSet(excelfile, false, true);
 			return dset;
 		}
 
-		public static DataSet GetDataSet(string excelfile, bool fixcols)
+		public static DataSet GetDataSet(string excelfile, bool usepathDataDownloads)
+		{
+			DataSet dset = GetDataSet(excelfile, false, false);
+			return dset;
+		}
+
+
+	public static DataSet GetDataSet(string excelfile, bool fixcols, bool usepathDataDownloads)
 		{
 			DataSet dset = new DataSet();
 
-			string serverfilename = HttpContext.Current.Server.MapPath(@"~/App_Data/DataDownloads/" + excelfile );
+			string serverfilename = (usepathDataDownloads) ? HttpContext.Current.Server.MapPath(@"~/App_Data/DataDownloads/" + excelfile) :
+					excelfile;
 
 
-			try
+		try
 			{
 				//dset =
 				//SpreadsheetGear.Factory.GetWorkbook(serverfilename).GetDataSet(SpreadsheetGear.Data.GetDataFlags.NoColumnTypes);

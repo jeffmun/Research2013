@@ -229,8 +229,10 @@
                 <br />
 
                 <dx:ASPxGridView ID="gvENT" runat="server"  Visible="false" AutoGenerateColumns="false"   KeyFieldName="SubjID" ClientInstanceName="gva"
-                     OnRowUpdating="gvENT_OnRowUpdating" OnDataBinding="gvENT_DataBinding"  OnHtmlDataCellPrepared="gvENT_HtmlDataCellPrepared"   >  
+                    Settings-ShowHeaderFilterButton="true"  
+                    OnRowUpdating="gvENT_OnRowUpdating" OnDataBinding="gvENT_DataBinding"  OnHtmlDataCellPrepared="gvENT_HtmlDataCellPrepared"   >  
                     <ClientSideEvents EndCallback="function(s, e) {ASPxClientHint.Update();}" />
+
                     <SettingsExport EnableClientSideExportAPI="true" FileName="Subjects"></SettingsExport>
                       <Toolbars>
                         <dx:GridViewToolbar EnableAdaptivity="true">

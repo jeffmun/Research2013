@@ -4,6 +4,9 @@
 <%@ Register TagPrefix="ogrid" Namespace="Obout.Grid" Assembly="obout_Grid_NET" %>
 <%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %> 
 
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+
+
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
 
 
@@ -70,23 +73,34 @@
 			</Templates>
 		</obout:Grid>
 
+
+				<dx:ASPxGridView ID="Grid1" runat="server"    CallbackMode="false" Serialize="true" AutoGenerateColumns="true" AllowAddingRecords="true" 
+				
+			   AllowSorting="true" PageSize="-1"  AllowColumnResizing="false"   ShowFooter="false" ViewStateMode="Enabled">
+			
+			
+		</dx:ASPxGridView>
+
+
 <%--        			<Columns>
 				<obout:Column AllowEdit="true" Width="100px"></obout:Column>
 			</Columns>--%>
 
 
 	</td>
+    <td style="width:30px"></td>
 			<td style="vertical-align:top">
 				<br /><br /><br />
 			<asp:Button ID="btnLoadDetails" runat="server" Text=" >> Load Details >>" OnClick="btnLoadDetails_Click" />
 		</td>
+    <td style="width:30px"></td>
 
 
 <%--    OnRowDataBound="ogrid_detail_RowDataBound"--%>
 	<td style="vertical-align:top">
 			<obout:Grid ID="ogrid_detail" runat="server"  CallbackMode="false" Serialize="true" AutoGenerateColumns="true" AllowAddingRecords="true"
 				OnInsertCommand="ogrid_detail_InsertCommand" OnUpdateCommand="ogrid_detail_UpdateCommand" OnRebind="ogrid_detail_Rebind" 
-                
+				
 		   AllowSorting="true" PageSize="-1"  AllowColumnResizing="false"   OnColumnsCreated="ogrid_detail_ColumnsCreated" ShowFooter="false" Visible="false"
 				 FolderStyle="~/App_Obout/Grid/styles/gray_glass">
 		<AddEditDeleteSettings NewRecordPosition="Top" AddLinksPosition="Top" />

@@ -16,7 +16,7 @@ using System.Drawing;
 using System.Text;
 using uwac;
 
-public partial class Info_LabStaffinfo : System.Web.UI.Page
+public partial class Info_LabStaffinfo : BasePage 
 {
 
 	private SqlConnection oConn = new SqlConnection();

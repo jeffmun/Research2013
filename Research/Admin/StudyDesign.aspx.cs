@@ -2,33 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Drawing;
 using System.Linq;
-using System.IO;
-using System.Web;
 using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using Obout.Grid;
-using Obout.Interface;
-using Obout.ListBox; 
-using Obout.Ajax.UI.TreeView;
-
+using DevExpress.Web;
+using DevExpress.Web.Data;
+using DevExpress.Web.Rendering;
 using uwac;
 
 
-
-public partial class Admin_StudyDesign : OboutInc.oboutAJAXPage //System.Web.UI.Page
+public partial class Admin_StudyDesign : BasePage  
 {
-	private oboutGrid_utils o;
 	private List<string> entities;
-	public Tree ObTree;
+
 
 	protected void Page_Init(object sender, EventArgs e)
 	{
 		entities = new List<string> { "tblgroup", "tbltimepoint", "tblsubjstatus", "tblstudyaction", "tblstudymeas" };
-		o = new oboutGrid_utils();
+		//o = new oboutGrid_utils();
 
 		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
 		LoadHypterlinks_for_new_entities();
@@ -55,23 +49,32 @@ public partial class Admin_StudyDesign : OboutInc.oboutAJAXPage //System.Web.UI.
 	protected void Page_Load(object sender, EventArgs e)
 	{
 		//CHeck who this is:
-		// if Y
+
+
+		grid_tblstudyaction.JSProperties["cpIsUpdated"] = "";
+		grid_tblstudymeas.JSProperties["cpIsUpdated"] = "";
+		grid_tblconsentform.JSProperties["cpIsUpdated"] = "";
+		grid_tblsubjstatus.JSProperties["cpIsUpdated"] = "";
+		grid_tbltimepoint.JSProperties["cpIsUpdated"] = "";
+		grid_tblgroup.JSProperties["cpIsUpdated"] = "";
+
+		grid_MeasNotInAction.JSProperties["cpIsUpdated"] = "";
+		grid_MeasInAction.JSProperties["cpIsUpdated"] = "";
+
+
 
 		if (!IsPostBack)
 		{
 			lblStudyname.Text = Master.Master_studyname;
 
-			LoadEntities();
-			LoadSelect2controls();
-
-
-			
+			//LoadEntities();
+			//LoadSelect2controls();
 
 			//grid_studymeas.CssSettings["CSSRowEditTemplate"] = "rowedittemplate_css";
 		}
 
 
-		grid_tblstudymeas.CssSettings.CSSRowEditTemplate = "rowedittemplate_css";
+		//grid_tblstudymeas.CssSettings.CSSRowEditTemplate = "rowedittemplate_css";
 	}
 
 	protected void LoadHypterlinks_for_new_entities()
@@ -84,93 +87,12 @@ public partial class Admin_StudyDesign : OboutInc.oboutAJAXPage //System.Web.UI.
 
 	}
 
-
-	protected void LoadEntities()
-	{
-		LoadEntities(entities);
-	}
-
-	protected void LoadEntities(List<string> entities)
-	{
-		foreach(string e in entities)
-		{
-			LoadEntity(e);
-		}
-	}
-
-
-	protected void LoadEntity(string entity)
-	{
-		SQL_utils sql = new SQL_utils("backend");
-		string sqlcmd = "";
-
-		switch(entity)
-		{
-			case "tblgroup":
-				sqlcmd = "select 'group' objtype, groupID objpk, * from tblGroup where studyID = " + Master.Master_studyID.ToString();
-				break;
-			case "tbltimepoint":
-				sqlcmd = "select 'timepoint' objtype, timepointID objpk, * from tbltimepoint where studyID = " + Master.Master_studyID.ToString();
-				break;
-			case "tblsubjstatus":
-				sqlcmd = "select 'subjstatus' objtype, ssID objpk,  * from tblSS where studyID = " + Master.Master_studyID.ToString() ;
-				break;
-			case "tblstudyaction":
-				sqlcmd = "select 'studyaction' objtype, studyactionID objpk, *, dbo.fnCSV_GetLinkedIDs('studyaction','group',studyactionID,',') groupIDs  , dbo.fnCSV_GetLinkedIDs_text('studyaction','group',studyactionID, ',') groupabbrs from vwstudyaction where studyID = " + Master.Master_studyID.ToString() + " order by timepoint, sortorder";
-				break;
-			case "tblstudymeas":
-				sqlcmd = "select 'studymeas' objtype, studymeasID objpk, *, dbo.fnCSV_GetLinkedIDs('studymeas','group',studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas','group',studymeasID, ',') groupabbrs from vwstudymeas where studyID = " + Master.Master_studyID.ToString() + " order by timepoint, sortorder";
-				break;
-		}
-
-		DataTable dt = sql.DataTable_from_SQLstring(sqlcmd);
-
-		Grid grid = (Grid)Page.FindControlRecursive("grid_" + entity);
-
-		// extract the current grouping - it can be "Timepoint" or whatever column the end users grouped by
-		string currentGroupBy = grid.GroupBy;
-
-
-		grid.DataSource = dt;
-		// resetting the GroupBy
-		grid.GroupBy = currentGroupBy;
-		grid.DataBind();
-
-		sql.Close();
-
-	}
-
-	protected void LoadSelect2controls()
-	{
-		SQL_utils sql = new SQL_utils("backend");
-
-		DataTable grps = sql.DataTable_from_SQLstring("select 'tblgroup' objtype, groupID objpk, * from tblGroup where studyID = " + Master.Master_studyID.ToString());
-
-		//StudyAction groups
-		HtmlSelect selStudyActionGroup = grid_tblstudymeas.Templates[0].Container.FindControl("selStudyActionGroup") as HtmlSelect;
-		if (selStudyActionGroup != null)
-		{
-			utilSelect2.loaditems(selStudyActionGroup, grps, "groupID", "groupname");
-		}
-
-		//StudyMeas groups
-		HtmlSelect selStudyMeasGroup = grid_tblstudymeas.Templates[0].Container.FindControl("selStudyMeasGroup") as HtmlSelect;
-		if (selStudyMeasGroup != null)
-		{
-			utilSelect2.loaditems(selStudyMeasGroup, grps, "groupID", "groupname");
-		}
-
-
-
-
-		sql.Close();
-	}
+	
 
 
 	#region Stuff for automatically displaying info messages after insert, update, deletes 
 	public void UpdateMsg( string entity)
 	{
-
 		entity = entity.Replace("grid_", "");
 
 		string entity_msg = entity + "_msg";
@@ -194,317 +116,24 @@ public partial class Admin_StudyDesign : OboutInc.oboutAJAXPage //System.Web.UI.
 			catch(Exception ){}
 		}
 
-		UpdatePanel("callbackPanel_" + entity);
+		//UpdatePanel("callbackPanel_" + entity);
 
-		// create a timer that will clear the msg in 5 seconds
-		CreateTimer("MyTimer", "ClearMsg('" + "callbackPanel_" + entity + "_Content')", 12000);
+		//// create a timer that will clear the msg in 5 seconds
+		//CreateTimer("MyTimer", "ClearMsg('" + "callbackPanel_" + entity + "_Content')", 12000);
 
 	}
 
 
 	public void ServerCancelTimer()
 	{
-		CancelTimer("MyTimer");
+		//CancelTimer("MyTimer");
 	}
 
-
-	protected string GetControlIdFromTemplate(string gridname, string controlId, int templateIndex, string idtype)
-	{
-		Grid grid = (Grid)Page.FindControlRecursive("grid_" + gridname);
-
-		Control ctrl = grid.Templates[templateIndex].Container.FindControl(controlId);
-
-		
-		switch (idtype) {
-			case "client":
-				return ctrl.ClientID;
-			case "unique":
-				return ctrl.UniqueID;
-			default:
-				return ctrl.UniqueID;
-		}
-
-	}
-
-	protected string GetControlUniqueIdFromTemplate(string gridname, string controlId, int templateIndex)
-	{
-		Grid grid = (Grid)Page.FindControlRecursive("grid_" + gridname);
-
-		Control ctrl = grid.Templates[templateIndex].Container.FindControl(controlId);
-
-		return ctrl.UniqueID;
-	}
-
-	protected string GetControlClientIdFromTemplate2(string gridname, string controlId, int templateIndex)
-	{
-		Grid grid = (Grid)Page.FindControlRecursive("grid_" + gridname);
-
-		Control ctrl = grid.Templates[templateIndex].Container.FindControl(controlId);
-
-		return ctrl.ClientID;
-	}
-
-
+	
 	#endregion
 
 
-
-
-
-	protected void grid_tblgroup_InsertCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "insert", "tblgroup", "backend", "dbo", "groupid"); }
-	protected void grid_tblgroup_UpdateCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "update", "tblgroup", "backend", "dbo", "groupid"); }
-	protected void grid_tblgroup_DeleteCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "delete", "tblgroup", "backend", "dbo","groupid"); }
-	protected void grid_tbltimepoint_InsertCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "insert", "tbltimepoint", "backend", "dbo", "timepointid"); }
-	protected void grid_tbltimepoint_UpdateCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "update", "tbltimepoint", "backend", "dbo", "timepointid"); }
-	protected void grid_tbltimepoint_DeleteCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "delete", "tbltimepoint", "backend", "dbo", "timepointid"); }
-	protected void grid_tblstudyaction_InsertCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "insert", "tblstudyaction", "backend", "dbo", "studyactionid"); }
-	protected void grid_tblstudyaction_UpdateCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "update", "tblstudyaction", "backend", "dbo", "studyactionid"); }
-	protected void grid_tblstudyaction_DeleteCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "delete", "tblstudyaction", "backend", "dbo","studyactionid"); }
-	protected void grid_tblstudymeas_InsertCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "insert", "tblstudymeas", "backend", "dbo", "studymeasid", "groupIDs", "hidStudyMeasGroup"); }
-	protected void grid_tblstudymeas_UpdateCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "update", "tblstudymeas", "backend", "dbo", "studymeasid", "groupIDs", "hidStudyMeasGroup"); }
-	protected void grid_tblstudymeas_DeleteCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "delete", "tblstudymeas", "backend", "dbo","studymeasid"); }
-	protected void grid_tblsubjstatus_InsertCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "insert", "tblsubjstatus", "backend", "dbo", "subjstatusID"); }
-	protected void grid_tblsubjstatus_UpdateCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "update", "tblsubjstatus", "backend", "dbo", "subjstatusID"); }
-	protected void grid_tblsubjstatus_DeleteCommand(object sender, GridRecordEventArgs e) { PrepDBAction(e, "delete", "tblsubjstatus", "backend", "dbo","subjstatusID"); }
-
-
-	[WebMethod]
-	public static void Update(string tbl, string mode, Object e)
-	{
-		//Dictionary<string, object> d = (Dictionary<string, object>)e;
-		//Hashtable hash = new Hashtable(d);
-
-		//oboutGrid_utils o = new oboutGrid_utils();
-		////string result = o.oGrid_UpdateData(hash, tbl, "backend", "dbo", "studymeasID");
-
-		//string entity = tbl.ToLower();
-		//o.ProcessGridAction(hash, mode, entity, "1081");
-		//string x = "";
-		////LoadEntity(entity);
-	}
-
-
-	protected Hashtable AddStudyIDToHash(Hashtable hash)
-	{
-		bool has_studyid = false;
-		foreach(string s in hash.Keys)
-		{
-			if(s.ToLower() == "studyid") has_studyid = true;
-		}
-
-		if(!has_studyid)
-		{
-			hash.Add("studyID", Master.Master_studyID.ToString());
-		}
-		else
-		{
-			if (hash["studyid"].ToString() == "") hash["studyid"] = Master.Master_studyID.ToString();
-			if (hash["studyID"].ToString() == "") hash["studyID"] = Master.Master_studyID.ToString();
-		}
-
-		return hash;
-	}
-
-
-	protected void PrepDBAction(GridRecordEventArgs e, string mode, string tbl, string db, string schema, string pkfld)
-	{
-		Hashtable hash = e.Record;
-		hash = AddStudyIDToHash(hash);
-		oboutGrid_utils o = new oboutGrid_utils();
-		o.ExecuteDBAction(hash, mode, tbl, db, schema, pkfld);
-
-		LoadEntity(tbl);
-	}
-
-
-	protected void PrepDBAction(GridRecordEventArgs e, string mode, string tbl, string db, string schema, string pkfld, string fld_to_override, string ctl_with_override_value)
-	{
-		Hashtable hash = e.Record;
-		hash = AddStudyIDToHash(hash);
-		oboutGrid_utils o = new oboutGrid_utils();
-
-		HiddenField hid = (HiddenField)Page.FindControlRecursive(ctl_with_override_value);
-
-		string newval = hid.Value;
-		hash[fld_to_override] = newval;
-
-		o.ExecuteDBAction(hash, mode, tbl, db, schema, pkfld);
-
-		LoadEntity(tbl);
-	}
-
-
-
-	#region old
-	//public void ProcessGridAction(Hashtable hash , string mode, string entity)
-	//{
-	//    string msg = "";
-	//    string str_studyid = Master.Master_studyID.ToString();
-	//    oboutGrid_utils o = new oboutGrid_utils();
-
-	//    if(entity == "timepoint")
-	//    {
-	//        if(mode == "insert")
-	//        {
-	//            if (hash["studyID"] == "") hash["studyID"] = str_studyid;
-	//            msg = o.oGrid_InsertData(hash, "tblTimepoint", "backend", "dbo", "TimepointID", 0);
-	//        }
-	//        else if (mode == "update")
-	//        {
-	//            msg = o.oGrid_UpdateData(hash, "tblTimepoint", "backend", "dbo", "TimepointID");
-	//        }
-	//        else if (mode == "delete")
-	//        {
-	//            msg = o.oGrid_DeleteData("tbltimepoint", "backend", "dbo", "timepointID", Convert.ToInt32(hash["timepointID"].ToString()), true);
-	//        }
-	//    }
-	//    else if (entity == "group")
-	//    {
-	//        if (mode == "insert")
-	//        {
-	//            if (hash["studyID"] == "") hash["studyID"] = str_studyid;
-	//            msg = o.oGrid_InsertData(hash, "tblGroup", "backend", "dbo", "groupID", 0);
-	//        }
-	//        else if (mode == "update")
-	//        {
-	//            msg = o.oGrid_UpdateData(hash, "tblGroup", "backend", "dbo", "groupID");
-	//        }
-	//        else if (mode == "delete")
-	//        {
-	//            msg = o.oGrid_DeleteData("tblGroup", "backend", "dbo", "groupID", Convert.ToInt32(hash["groupID"].ToString()), true);
-	//        }
-	//    }
-	//    else if (entity == "subjstatus")
-	//    {
-	//        if (mode == "insert")
-	//        {
-	//            if (hash["studyID"] == "") hash["studyID"] = str_studyid;
-	//            msg = o.oGrid_InsertData(hash, "tblSS", "backend", "dbo", "ssID", 0);
-	//        }
-	//        else if (mode == "update")
-	//        {
-	//            msg = o.oGrid_UpdateData(hash, "tblSS", "backend", "dbo", "ssID");
-	//        }
-	//        else if (mode == "delete")
-	//        {
-	//            msg = o.oGrid_DeleteData("tblSS", "backend", "dbo", "ssID", Convert.ToInt32(hash["ssID"].ToString()), true);
-	//        }
-	//    }
-	//    else if (entity == "studyaction")
-	//    {
-	//        if (mode == "insert")
-	//        {
-	//            if (hash["studyID"] == "") hash["studyID"] = str_studyid;
-	//            msg = o.oGrid_InsertData(hash, "tblStudyaction", "backend", "dbo", "studyactionID", 0);
-	//        }
-	//        else if (mode == "update")
-	//        {
-	//            msg = o.oGrid_UpdateData(hash, "tblStudyaction", "backend", "dbo", "studyactionID");
-	//        }
-	//        else if (mode == "delete")
-	//        {
-	//            msg = o.oGrid_DeleteData("tblStudyaction", "backend", "dbo", "studyactionID", Convert.ToInt32(hash["studyactionID"].ToString()), true);
-	//        }
-	//    }
-	//    else if (entity == "studymeas")
-	//    {
-	//        if (mode == "insert")
-	//        {
-	//            if (hash["groupIDs"] == "")
-	//            {
-	//                msg = "NOT SAVED. Select the groups that will get this measure (Ctl-click for multi-select).";
-	//            }
-	//            else
-	//            {
-	//                if (hash["studyID"] == "") hash["studyID"] = str_studyid;
-	//                msg = o.oGrid_InsertData(hash, "tblStudymeas", "backend", "dbo", "studymeasID", 0);
-
-	//                string[] groupIDs = hash["groupIDs"].ToString().Split(',');
-
-
-	//                string newpk = msg.Replace("INSERTED! New pk = ", "");
-
-	//                foreach(string s in groupIDs)
-	//                {
-	//                    Hashtable hash2 = new Hashtable();
-	//                    hash2.Add("groupID", s);
-	//                    hash2.Add("studymeasID", newpk);
-	//                    string child_msg = o.oGrid_InsertData(hash2, "tblstudymeasgroup", "backend", "dbo", "studymeasgroupID", 0);
-
-	//                    msg += child_msg;
-
-	//                }
-	//            }
-	//        }
-	//        else if (mode == "update")
-	//        {
-	//            Grid grid_studymeas = (Grid)this.FindControlRecursive("grid_studymeas");
-
-	//            HtmlSelect ctrl = (HtmlSelect)grid_studymeas.Templates[0].Container.FindControl("selStudyMeasGroup");
-	//            HiddenField hid = (HiddenField)grid_studymeas.Templates[0].Container.FindControl("hidStudyMeasGroup");
-
-	//            string hidval = hid.Value;
-	//            string selected = utilSelect2.getselected_CSVval(ctrl);
-	//            string selected2 = utilSelect2.getselected_CSVtxt(ctrl);
-	//            List<string> v2 = utilSelect2.getselected_ListVal(ctrl);
-
-
-	//            msg = o.oGrid_UpdateData(hash, "tblStudymeas", "backend", "dbo", "studymeasID");
-	//        }
-	//        else if (mode == "delete")
-	//        {
-				
-	//            msg = o.oGrid_DeleteData("tblStudymeas", "backend", "dbo", "studymeasID", Convert.ToInt32(hash["studymeasID"].ToString()), true);
-	//        }
-	//    }
-	//    else  
-	//    {
-	//        msg = "ProcessGridAction not completed for " + entity;
-	//    }
-
-
-	//    string additional_msg = PostProcessGridAction(mode, entity);
-
-	//    Session[entity + "_msg"] = msg + additional_msg; // +"<br/>" + e.Record["objpk"].ToString();
-
-	//    if(msg.StartsWith("NOT DELETED"))
-	//    {
-	//        if (entity == "studymeas")
-	//        {
-	//            Session["studymeasID_toDelete"] = hash["studymeasID"].ToString();
-	//            btnOVERRIDE_studymeas.Visible = true;
-	//        }
-	//        else if (entity == "studyaction")
-	//        {
-	//            Session["studyactionID_toDelete"] = hash["studyactionID"].ToString();
-	//            btnOVERRIDE_studyaction.Visible = true;
-	//        }
-	//    }
-
-	//    LoadEntity(entity);
-	//}
-	#endregion
-
-
-
-	public string OverrideDelete(string tbl, string schema, string pk, int pkval)
-	{
-		string msg = "";
-		SQL_utils sql = new SQL_utils("backend");
-
-		if(tbl=="tblstudymeas")
-		{
-
-			msg += sql.sql_delete(schema, "tblstudymeassubj", pk, pkval, true);  //studymeassubj
-
-		}
-
-		sql.Close();
-
-		return msg;
-	}
-
- 
+	
 
 	//StudyDesign Utilities
 	// Copy a group - give new group all the same actions and measures
@@ -518,26 +147,6 @@ public partial class Admin_StudyDesign : OboutInc.oboutAJAXPage //System.Web.UI.
 
 
 
-
-
-	protected void grid_tblstudymeas_RowDataBound(object sender, GridRowEventArgs e)
-	{
-
-
-		if (e.Row.RowType == GridRowType.DataRow)
-		{
-			e.Row.Style["background-image"] = "none";
-			e.Row.Style["background-color"] = (e.Row.RowIndex % 2 == 0) ? "white" : "aliceblue";
-		}
-
-
-	}
-
-
-	//protected void grid_studymeas_Rebind(object sender, EventArgs e)
-	//{
-	//    LoadEntity("studymeas");
-	//}
 	protected void btnOVERRIDE_tblstudymeas_Click(object sender, EventArgs e)
 	{
 
@@ -566,4 +175,629 @@ public partial class Admin_StudyDesign : OboutInc.oboutAJAXPage //System.Web.UI.
 	}
 
 
-}
+
+	#region Basic Grid CRUD
+	protected void dxgrid_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		e.NewValues.Add("HouseholdID", Request.QueryString["hhID"]);
+		e.NewValues.Add("studyID", Master.Master_studyID.ToString());
+
+		if (gv.ClientInstanceName == "grid_tblgroup")
+		{
+			SQL_utils sql = new SQL_utils("backend");
+			int newgroupID = sql.IntScalar_from_SQLstring("select max(groupID) + 1 from tblGroup");
+			e.NewValues["groupID"] = newgroupID;
+		}
+
+		DxGridView.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+
+		((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+		gv.CancelEdit();
+		e.Cancel = true;
+
+		RefreshGrids();
+	}
+
+	protected void dxgrid_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+
+		//For changes to ActionText
+		if (gv.ID == "grid_tblstudyaction")
+		{
+			string pkfld = "";
+			int pkvalue = -1;
+
+			foreach (DictionaryEntry key in e.Keys)
+			{
+				pkfld = key.Key.ToString();
+				pkvalue = Convert.ToInt32(key.Value);
+			}
+
+			if (pkvalue > 0 && pkfld == "studyactionID")
+			{
+				foreach (DictionaryEntry newentry in e.NewValues)
+				{
+					foreach (DictionaryEntry oldentry in e.OldValues)
+					{
+						var newfld = newentry.Key.ToString().ToLower();
+						var oldfld = oldentry.Key.ToString().ToLower();
+
+						if (newentry.Key == oldentry.Key && newentry.Key.ToString() == "actiontext")
+						{
+
+							var newval = (newentry.Value == null) ? null : newentry.Value.ToString();
+							var oldval = (oldentry.Value == null) ? null : oldentry.Value.ToString();
+
+							if (newval != oldval)
+							{
+								SQL_utils sql = new SQL_utils("backend");
+								string sqlcode = String.Format("update tblAction set actiontext=replace(actiontext,'{0}','{1}') where studyactionID={2}"
+									, oldval, newval, pkvalue);
+
+								sql.NonQuery_from_SQLstring(sqlcode);
+							}
+
+						}
+					}
+				}
+			}
+		}
+		DxGridView.BuildUpdateSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+
+		((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+		gv.CancelEdit();
+		e.Cancel = true;
+	}
+
+	protected void dxgrid_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
+	{
+		bool proceed_as_normal = true;
+		ASPxGridView gv = (ASPxGridView)sender;
+		string result = "Error (uninitialized.)";
+
+		#region Conditions for specific grids
+		//For people, first check if there are any subjects
+		if (gv.ClientInstanceName == "grid_tblgroup")
+		{
+			var pk = e.Keys[0];
+			SQL_utils sql = new SQL_utils("backend");
+			int n = sql.IntScalar_from_SQLstring("select count(*) from tblSubject where groupID=" + pk.ToString());
+			
+			if (n > 0)
+			{
+				string study = (n == 1) ? " study" : " studies";
+				string subject = (n == 1) ? " this subject" : " these subjects";
+				string msg = "This group is assigned to " + n.ToString() + " subjects.  Please delete these first.";
+				result = msg;
+				proceed_as_normal = false;
+			}
+			else{
+
+				try
+				{
+					sql.NonQuery_from_SQLstring("delete from tblStudyActionGroup where groupID=" + pk.ToString());
+					sql.NonQuery_from_SQLstring("delete from tblStudyMeasGroup where groupID=" + pk.ToString());
+					sql.NonQuery_from_SQLstring("delete from tblLabGroup_Staff where labgroupID in (select labgroupID from tblLabGroup where groupID=" + pk.ToString() + ")");
+					sql.NonQuery_from_SQLstring("delete from tblLabGroup where groupID =" + pk.ToString());
+				}
+				catch (Exception ex)
+				{ }
+			}
+			sql.Close();
+		}
+
+
+		#endregion
+
+
+		if (proceed_as_normal)
+		{
+			result = DxGridView.BuildDeleteSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+		}
+
+
+		//
+		((ASPxGridView)sender).JSProperties["cpIsUpdated"] = String.Format("DELETED.{0}", result);
+		gv.CancelEdit();
+		e.Cancel = true;
+
+		RefreshGrids();
+	}
+	#endregion
+
+	protected void RefreshGrids()
+	{
+		grid_tblstudyaction.DataBind();
+		grid_tblstudymeas.DataBind();
+		grid_tblconsentform.DataBind();
+
+		grid_MeasNotInAction.DataBind();
+		grid_MeasInAction.DataBind();
+		grid_Timepoint_Mismatch.DataBind();
+
+		grid_ConsentNotInAction.DataBind();
+		grid_ConsentInAction.DataBind();
+		grid_Consent_Timepoint_Mismatch.DataBind();
+	}
+
+
+
+	protected void dxgridSAM_DataBound(object sender, EventArgs e)
+	{
+		SQL_utils sql = new SQL_utils("backend");
+		DataTable dt_grps = sql.DataTable_from_SQLstring("select * from tblgroup where studyID=" + Master.Master_studyID.ToString());
+		sql.Close();
+
+		ASPxGridView grid = sender as ASPxGridView;
+		string prefix = GetPrefix(grid);
+
+
+		//Check to see if these have been added
+		bool hasCol = (grid.Columns.IndexOf(grid.Columns["CommandColumnGroups"]) != -1) ? true : false;
+
+		if (hasCol)
+		{
+			grid.Columns.Remove(grid.Columns["CommandColumnGroups"]);
+		}
+
+		GridViewCommandColumn col = new GridViewCommandColumn();
+		col.Name = "CommandColumnGroups";
+
+
+		foreach (DataRow row in dt_grps.Rows)
+		{
+			string groupID = row["groupID"].ToString();
+			string groupabbr = row["groupabbr"].ToString();
+
+			GridViewCommandColumnCustomButton but = new GridViewCommandColumnCustomButton();
+			but.ID = String.Format("{0}grp{1}", prefix, groupID);
+			but.Text = groupabbr;
+			but.Styles.Native = true;
+			
+			col.CustomButtons.Add(but);
+		}
+
+		grid.Columns.Add(col);
+	}
+
+	protected string GetPrefix(ASPxGridView grid)
+	{
+		string prefix = "";
+		if (grid.ID == "grid_tblstudyaction") prefix = "sa";
+		else if (grid.ID == "grid_tblstudymeas") prefix = "sm";
+		else if (grid.ID == "grid_tblconsentform") prefix = "cf";
+
+		return prefix;
+
+	}
+
+
+	protected void gridSAM_CustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
+	{
+		var x = 0;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+		string prefix = GetPrefix(grid);
+
+		string v = grid.GetRowValues(e.VisibleIndex, "groupIDs").ToString();
+
+		List<string> groupIDs = v.Split(',').ToList();
+
+		string thisgrpID = e.ButtonID.Replace(String.Format("{0}grp", prefix), "");
+
+		if (groupIDs.Contains(thisgrpID))
+		{
+			e.Styles.Style.Font.Bold = true;
+			e.Styles.Style.ForeColor = Color.Green;
+		}
+		else
+		{
+			e.Styles.Style.ForeColor = Color.LightGray;
+		}
+
+	}
+
+
+	//Rebind the grids so that the custom buttons are properly formatted for managing groups.
+	// The call of this method originates in the CRUD methods that set the JSProperties, then the ClientCallback, calls these.
+	protected void gridSA_CustomCallback(object sender, ASPxGridViewCustomCallbackEventArgs e)
+	{
+		grid_tblstudyaction.DataBind();
+	}
+	protected void gridSM_CustomCallback(object sender, ASPxGridViewCustomCallbackEventArgs e)
+	{
+		grid_tblstudymeas.DataBind();
+	}
+
+
+
+
+	protected void gridSA_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+
+		var ID = e.ButtonID;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+
+		int studyactionID = Convert.ToInt32(grid.GetRowValues(e.VisibleIndex, "studyactionID").ToString());
+		int groupID = Convert.ToInt32(e.ButtonID.Replace("sagrp", ""));
+
+		if(groupID > 0 && studyactionID > 0)
+		{
+			ToggleGroup(groupID, "studyaction", studyactionID);
+		}
+	}
+
+
+	protected void gridSM_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+
+		var ID = e.ButtonID;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+
+		int studymeasID = Convert.ToInt32(grid.GetRowValues(e.VisibleIndex, "studymeasID").ToString());
+		int groupID = Convert.ToInt32(e.ButtonID.Replace("smgrp", ""));
+
+		if (groupID > 0 && studymeasID > 0)
+		{
+			ToggleGroup(groupID, "studymeas", studymeasID);
+		}
+	}
+
+	protected void gridCF_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+
+		var ID = e.ButtonID;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+
+		int consentformID = Convert.ToInt32(grid.GetRowValues(e.VisibleIndex, "consentformID").ToString());
+		int groupID = Convert.ToInt32(e.ButtonID.Replace("cfgrp", ""));
+
+		if (groupID > 0 && consentformID > 0)
+		{
+			ToggleGroup(groupID, "consentform", consentformID);
+		}
+	}
+
+
+
+	protected void grid_tblstudymeas_OnHtmlRowPrepared(object sender, ASPxGridViewTableRowEventArgs e)
+	{
+		if (e.RowType != GridViewRowType.Data)
+			return;
+		string studymeasname = e.GetValue("StudyMeasName").ToString();
+		string color = "Lime";
+		if (studymeasname.EndsWith("(REL)"))
+		{
+			color = "PowderBlue";
+		}
+		else {
+			color = "White";
+		}
+		Color c = Color.FromName(color);
+		//this works
+		//e.Row.BackColor = c;
+
+		//this does not work
+		e.Row.BackColor = c;
+
+	}
+
+
+
+	protected void ToggleGroup(int groupID, string type, int pk)
+	{
+		SQL_utils sql = new SQL_utils("backend");
+		//New or Existing?
+		string sql_exists = String.Format("select count(*) from tbl{0}Group where groupID={1} and {0}ID={2}", type, groupID, pk);
+		int n_exists = sql.IntScalar_from_SQLstring(sql_exists);
+
+		bool isNew = (n_exists > 0) ? false : true;
+
+		if (isNew)
+		{
+			string insert = String.Format("insert into tbl{0}Group(groupID, {0}ID) values({1},{2})", type, groupID, pk);
+			try
+			{
+				sql.NonQuery_from_SQLstring(insert);
+
+				sql.NonQuery_from_SQLstring(String.Format("exec spAddNew{0}_to_Subj_who_need_it {1}, 'insert'", type, pk));    
+
+				if (type == "studyaction")
+				{
+					grid_tblstudyaction.DataBind();
+				}
+				else if (type == "studymeas")
+				{
+					grid_tblstudymeas.DataBind();
+				}
+				else if (type == "consentform")
+				{
+					grid_tblconsentform.DataBind();
+				}
+			}
+			catch (Exception ex) { }
+		}
+		else
+		{
+			//Remove assignments to this studyaction
+			if (type == "studyaction")
+			{
+				try
+				{
+					string removeSM = String.Format("update tblstudymeasgroup set studyactiongroupID = null where studyactiongroupID in (select studyactiongroupID from tblstudyactiongroup where studyactionID={0})", pk);
+					string removeCF = String.Format("update tblconsentformgroup set studyactiongroupID = null where studyactiongroupID in (select studyactiongroupID from tblstudyactiongroup where studyactionID={0})", pk);
+					sql.NonQuery_from_SQLstring(removeSM);
+					sql.NonQuery_from_SQLstring(removeCF);
+					
+
+				}
+				catch (Exception ex) { }
+
+			}
+
+			try
+			{
+				string remove1 = String.Format("delete from tbl{0}Group where groupID={1} and {0}ID={2}", type, groupID, pk);
+				sql.NonQuery_from_SQLstring(remove1);
+			}
+			catch(Exception ex) { }
+
+		}
+
+		//Update the status based on the changes
+		string updatestatus = String.Format("exec spUpdateStatus_after_ToggleGroup {0}, '{1}', {2}", groupID, type, pk);
+		try
+		{
+			sql.NonQuery_from_SQLstring(updatestatus);
+
+		}
+		catch (Exception ex) { }
+
+
+		if (type == "studyaction")
+		{
+			grid_tblstudyaction.DataBind();
+		}
+		else if (type == "studymeas")
+		{
+			grid_tblstudymeas.DataBind();
+		}
+		else if (type == "consentform")
+		{
+			grid_tblconsentform.DataBind();
+		}
+
+		sql.Close();
+	}
+
+
+
+
+	protected void grid_MeasNotInAction_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
+	{
+		if (e.Column.FieldName == "studyactiongroupID")
+		{
+			var combo = (ASPxComboBox)e.Editor;
+			combo.Callback += new CallbackEventHandlerBase(combo_Callback);
+
+			var grid = e.Column.Grid;
+			if (!combo.IsCallback)
+			{
+				var timepointID = -1;
+				var groupID = -1;
+				if (!grid.IsNewRowEditing)
+				{
+					timepointID = (int)grid.GetRowValues(e.VisibleIndex, "timepointID");
+					groupID = (int)grid.GetRowValues(e.VisibleIndex, "groupID");
+					FillStudyActionGroupComboBox(combo, timepointID, groupID);
+				}
+			}
+		}
+	}
+
+	protected void grid_ConsentNotInAction_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
+	{
+		if (e.Column.FieldName == "studyactiongroupID")
+		{
+			var combo = (ASPxComboBox)e.Editor;
+			combo.Callback += new CallbackEventHandlerBase(combo_Callback);
+
+			var grid = e.Column.Grid;
+			if (!combo.IsCallback)
+			{
+				var timepointID = -1;
+				var groupID = -1;
+				if (!grid.IsNewRowEditing)
+				{
+					timepointID = (int)grid.GetRowValues(e.VisibleIndex, "timepointID");
+					groupID = (int)grid.GetRowValues(e.VisibleIndex, "groupID");
+					FillStudyActionGroupComboBox(combo, timepointID, groupID);
+				}
+			}
+		}
+	}
+
+
+	private void combo_Callback(object sender, CallbackEventArgsBase e)
+	{
+		var timepointID = -1;
+		var groupID = -1;
+		Int32.TryParse(e.Parameter, out timepointID);
+
+		FillStudyActionGroupComboBox(sender as ASPxComboBox, timepointID, groupID);
+
+	}
+
+	protected void FillStudyActionGroupComboBox(ASPxComboBox combo, int timepointID, int groupID)
+	{
+		combo.DataSourceID = "sql_StudyActionGroups";
+		sql_StudyActionGroups.SelectParameters["timepointID"].DefaultValue = timepointID.ToString();
+		sql_StudyActionGroups.SelectParameters["groupID"].DefaultValue = groupID.ToString();
+		combo.DataBindItems();
+
+		combo.Items.Insert(0, new ListEditItem("", null)); // Null Item
+	}
+
+
+
+
+
+	protected string GridnameToTable(string grid)
+	{
+		     if (grid == "grid_tblstudyaction") return "tblstudyaction";
+		else if (grid == "grid_tblstudymeas") return "tblstudymeas";
+		else if (grid == "grid_tblconsentform") return "tblconsentform";
+		else if (grid == "grid_tbltimepoint") return "tbltimepoint";
+		else if (grid == "grid_tblgroup") return "tblgroup";
+		else if (grid == "grid_MeasInAction") return "tblStudyMeasGroup";
+		else if (grid == "grid_MeasNotInAction") return "tblStudyMeasGroup";
+		else if (grid == "grid_tblsubjstatus") return "tblss";
+
+		else return "";
+	}
+
+	protected void btnBulkAssign_OnClick (object sender, EventArgs e)
+	{
+		var x = grid_tblstudymeas.GetSelectedFieldValues("studymeasID");
+		int studyactionID = Convert.ToInt32(cboStudyActionContainer.Value);
+
+		List<string> studymeasIDs = new List<string>();
+
+		for(int i=0; i < x.Count; i++)
+		{
+			int studymeasID = Convert.ToInt32(x[i].ToString());
+			if (studymeasID > 0)
+			{
+				studymeasIDs.Add(studymeasID.ToString());
+			}
+		}
+
+		SQL_utils sql = new SQL_utils("backend");
+
+		string sqlcode = " update tblstudymeasgroup  set studyactiongroupID = b.studyactiongroupID " +
+			" from tblStudyActionGroup b " +
+			" where tblstudymeasgroup.studymeasID in (" + String.Join(",", studymeasIDs) + ") " +
+			" and b.studyactionID = " + studyactionID.ToString() +
+			" and tblstudymeasgroup.groupID = b.groupID " +
+			" and tblstudymeasgroup.studymeasID in (select studymeasID from tblstudymeas where timepointID = " +
+			"         (select timepointID from tblStudyAction where studyactionID=" + studyactionID.ToString() + "))";
+
+		try
+		{
+			sql.NonQuery_from_SQLstring(sqlcode);
+		}
+		catch (Exception ex) { }
+
+		sql.Close();
+
+
+		Response.Redirect("StudyDesign.aspx");
+	}
+
+
+
+
+	protected void btnBulkAssign2_OnClick(object sender, EventArgs e)
+	{
+		var x = grid_tblconsentform.GetSelectedFieldValues("consentformID");
+		int studyactionID = Convert.ToInt32(cboStudyActionContainer2.Value);
+
+		List<string> consentformIDs = new List<string>();
+
+		for (int i = 0; i < x.Count; i++)
+		{
+			int consentformID = Convert.ToInt32(x[i].ToString());
+			if (consentformID > 0)
+			{
+				consentformIDs.Add(consentformID.ToString());
+			}
+		}
+
+		SQL_utils sql = new SQL_utils("backend");
+
+		string sqlcode = " update tblconsentformgroup  set studyactiongroupID = b.studyactiongroupID " +
+			" from tblStudyActionGroup b " +
+			" where tblconsentformgroup.consentformID in (" + String.Join(",", consentformIDs) + ") " +
+			" and b.studyactionID = " + studyactionID.ToString() +
+			" and tblconsentformgroup.groupID = b.groupID " +
+			" and tblconsentformgroup.consentformID in (select consentformID  from tblconsentform where studyID = " + Master.Master_studyID.ToString() + ")";
+
+		try
+		{
+			sql.NonQuery_from_SQLstring(sqlcode);
+		}
+		catch (Exception ex) { }
+
+		sql.Close();
+
+
+		Response.Redirect("StudyDesign.aspx");
+	}
+
+
+
+	protected void btnREL_OnClick(object sender, EventArgs e)
+	{
+		var x = grid_tblstudymeas.GetSelectedFieldValues("studymeasID");
+
+		SQL_utils sql = new SQL_utils("backend");
+
+		for (int i = 0; i < x.Count; i++)
+		{
+			int studymeasID = Convert.ToInt32(x[i].ToString());
+			if (studymeasID > 0)
+			{
+
+				string sqlcode = "exec spStudyDesign_add_reliability_StudyMeas " + studymeasID.ToString();
+
+				try
+				{
+					sql.NonQuery_from_SQLstring(sqlcode);
+				}
+				catch (Exception ex) { }
+
+			}
+		}
+
+		sql.Close();
+
+		Response.Redirect("StudyDesign.aspx");
+
+	}
+
+		//protected DataTable GetStudyActions()
+		//{
+		//	SQL_utils sql = new SQL_utils("backend");
+
+		//	DataTable dt_grps = sql.DataTable_from_SQLstring("select * from tblgroup where studyID=" + Master.Master_studyID.ToString());
+		//	List<string> sql_join = new List<string>();
+		//	List<string> sql_fld = new List<string>();
+
+
+
+		//	foreach(DataRow row in dt_grps.Rows)
+		//	{
+		//		string groupID = row["groupID"].ToString();
+		//		string tmp_fld = String.Format(",coalesce(grp{0},0) grp{0}", groupID);
+		//		sql_fld.Add(tmp_fld);
+		//		string tmp_join = String.Format(" left join (select *, groupID as grp{0} from tblStudyActionGroup where groupID={0}) g{0} ON sa.studyactionID = g{0}.studyactionID", groupID);
+		//		sql_join.Add(tmp_join);
+		//	}
+
+		//	string sql1 = String.Format("Select sa.* {0} from tblstudyaction sa {1} where sa.studyID={2}"
+		//		, String.Join("", sql_fld), String.Join("", sql_join), Master.Master_studyID);
+
+		//	DataTable dt_sa = sql.DataTable_from_SQLstring(sql1);
+
+		//	return dt_sa;
+		//}
+
+
+
+	}
+

@@ -16,7 +16,7 @@ using System.Drawing;
 using System.Text;
 using uwac;
 
-public partial class Info_MeasureInfo : System.Web.UI.Page
+public partial class Info_MeasureInfo : BasePage
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();
@@ -764,20 +764,23 @@ public partial class Info_MeasureInfo : System.Web.UI.Page
 			sqlCmd2_text = "exec spStudyMeas_by_DefaultStudyID__for_DataDict";
 		}
 
+		SQL_utils sql = new SQL_utils("backend");
+		DataTable dt2 = sql.DataTable_from_SQLstring(sqlCmd2_text);
 
-		SqlCommand sqlCmd2 = new System.Data.SqlClient.SqlCommand(sqlCmd2_text, oConn);
-		sqlCmd2.CommandTimeout = 90;
-		SqlDataReader sqlReader2 = sqlCmd2.ExecuteReader();
-		DataTable dt2 = new DataTable();
-		dt2.Load(sqlReader2);
+
+		//SqlCommand sqlCmd2 = new System.Data.SqlClient.SqlCommand(sqlCmd2_text, oConn);
+		//sqlCmd2.CommandTimeout = 90;
+		//SqlDataReader sqlReader2 = sqlCmd2.ExecuteReader();
+		//DataTable dt2 = new DataTable();
+		//dt2.Load(sqlReader2);
 
 		DDL_SelectMeasureID.DataSource = dt2;
 		DDL_SelectMeasureID.DataBind();
 
-		sqlReader2.Close();
+		//sqlReader2.Close();
 		//update the studyname labels
 
-
+		sql.Close();
 
 	}
 
@@ -943,11 +946,15 @@ public partial class Info_MeasureInfo : System.Web.UI.Page
 
 			try
 			{
-				SqlCommand cmdti = new SqlCommand("exec spDEF_TableInfo_by_measureID " + measID.ToString(),  oConn);
-				cmdti.CommandTimeout = 90;
-				SqlDataReader rti = cmdti.ExecuteReader();
-				DataTable dtti = new DataTable();
-				dtti.Load(rti);
+				SQL_utils sql = new SQL_utils("backend");
+				string cmdtext = String.Format("exec spDEF_TableInfo_by_measureID {0}", measID);
+				DataTable dtti = sql.DataTable_from_SQLstring(cmdtext);
+
+				//SqlCommand cmdti = new SqlCommand("exec spDEF_TableInfo_by_measureID " + measID.ToString(),  oConn);
+				//cmdti.CommandTimeout = 90;
+				//SqlDataReader rti = cmdti.ExecuteReader();
+				//DataTable dtti = new DataTable();
+				//dtti.Load(rti);
 
 				DataRow row = dtti.Rows[0];
 
@@ -1003,6 +1010,8 @@ public partial class Info_MeasureInfo : System.Web.UI.Page
 
 
 				if (debugprint) tblmyinfo.Rows[0].Cells[0].InnerHtml += "=Pop GridView=" + mycmd + ".<br/>";
+
+
 
 				SqlCommand sqlCmd3 = new System.Data.SqlClient.SqlCommand(mycmd, oConn);
 				sqlCmd3.CommandTimeout = 120; 

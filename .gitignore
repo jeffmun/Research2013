@@ -196,3 +196,9 @@ ModelManifest.xml
 # Visual Studio 2015 cache/options directory
 *.vs/
 /.vs/
+/Research/App_Data/DataUploads/SSPS_new_guid_20180628_1218.csv
+/Research/App_Data/DataUploads/code6_IDs__20180628_1213.csv
+/Research/App_Data/DataUploads/code6_IDs_wide__20180628_1208.xlsx
+/Research/App_Data/DataUploads/code6_IDs_wide__20180628_1159.xlsx
+/Research/App_Data/DataUploads/BK IDs_New ASD Samples_2018.06.18.xlsx
+/Research/App_Data/DataUploads/BK IDs_fail.xlsx

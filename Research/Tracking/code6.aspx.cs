@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.IO;
 using System.Web.UI.WebControls;
 using NReco.PivotData;
 using NReco.PivotData.Output;
 
-
+using DevExpress.Web;
+using DevExpress.Web.Internal;
 
 using uwac;
 
 public partial class Tracking_code6 : BasePage //System.Web.UI.Page
 {
 
+	const string UploadDirectory = "~/App_Data/DataUploads/";
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
@@ -30,6 +33,11 @@ public partial class Tracking_code6 : BasePage //System.Web.UI.Page
 			ddlLab.DataBind();
 
 
+			int numfail = sql.IntScalar_from_SQLstring("select coalesce(count(*),0) from tblOtherID_failed");
+
+			lblNumFailed.Text = String.Format("# of failed otherID records: {0}", numfail);
+
+
 			sql.Close();
 		}
 		else{
@@ -41,6 +49,34 @@ public partial class Tracking_code6 : BasePage //System.Web.UI.Page
 		}
 	}
 
+
+	//protected void UploadToDB() {
+	//	if (Path.GetExtension(Upload.FileName).Equals(".xlsx"))
+	//	{
+	//		var excel = new ExcelPackage(Upload.FileContent);
+	//		var dt = excel.ToDataTable();
+	//		var table = "Contacts";
+	//		using (var conn = new SqlConnection("Server=.;Database=Test;Integrated Security=SSPI"))
+	//		{
+	//			var bulkCopy = new SqlBulkCopy(conn);
+	//			bulkCopy.DestinationTableName = table;
+	//			conn.Open();
+	//			var schema = conn.GetSchema("Columns", new[] { null, null, table, null });
+	//			foreach (DataColumn sourceColumn in dt.Columns)
+	//			{
+	//				foreach (DataRow row in schema.Rows)
+	//				{
+	//					if (string.Equals(sourceColumn.ColumnName, (string)row["COLUMN_NAME"], StringComparison.OrdinalIgnoreCase))
+	//					{
+	//						bulkCopy.ColumnMappings.Add(sourceColumn.ColumnName, (string)row["COLUMN_NAME"]);
+	//						break;
+	//					}
+	//				}
+	//			}
+	//			bulkCopy.WriteToServer(dt);
+	//		}
+	//	}
+	//}
 
 	protected void LoadListBox_Study()
 	{
@@ -259,4 +295,161 @@ public partial class Tracking_code6 : BasePage //System.Web.UI.Page
 	{
 		ShowCode6_Single();
 	}
+
+
+	#region Upload files
+
+	//protected void UploadControl_FileUploadComplete(object sender, FileUploadCompleteEventArgs e)
+	//{
+	//	string resultExtension = Path.GetExtension(e.UploadedFile.FileName);
+	//	string resultFileName = Path.ChangeExtension(Path.GetRandomFileName(), resultExtension);
+	//	string resultFileUrl = UploadDirectory + resultFileName;
+	//	string resultFilePath = MapPath(resultFileUrl);
+	//	e.UploadedFile.SaveAs(resultFilePath);
+
+	//	//UploadingUtils.RemoveFileWithDelay(resultFileName, resultFilePath, 5);
+
+	//	string name = e.UploadedFile.FileName;
+	//	string url = ResolveClientUrl(resultFileUrl);
+	//	long sizeInKilobytes = e.UploadedFile.ContentLength / 1024;
+	//	string sizeText = sizeInKilobytes.ToString() + " KB";
+	//	e.CallbackData = name + "|" + url + "|" + sizeText;
+	//}
+
+	protected void UploadControl_FilesUploadComplete(object sender, FilesUploadCompleteEventArgs e)
+	{
+		foreach (UploadedFile file in UploadControl.UploadedFiles)
+		{
+			if (!string.IsNullOrEmpty(file.FileName) && file.IsValid)
+			{
+				try
+				{
+					var savedfileinfo = SavePostedFiles(file);
+					var uploadinfo = e.CallbackData;
+
+					string outcome = ProcessOtherIDfile(file.FileName);
+
+					e.CallbackData += "Success." + outcome;
+
+				}
+				catch (Exception ex)
+				{
+					//e.IsValid = false;
+					e.ErrorText = ex.Message;
+				}
+			}
+		}
+	}
+
+	protected string SavePostedFiles(UploadedFile uploadedFile)
+	{
+		string ret = "";
+		if (uploadedFile.IsValid)
+		{
+			FileInfo fileInfo = new FileInfo(uploadedFile.FileName);
+			string resFileName = MapPath(UploadDirectory) + fileInfo.Name;
+			uploadedFile.SaveAs(resFileName);
+
+			string fileLabel = fileInfo.Name;
+			string fileType = uploadedFile.ContentType.ToString();
+			string fileLength = uploadedFile.ContentLength / 1024 + "K";
+			ret = string.Format("{0} <i>({1})</i> {2}|{3}",
+				fileLabel, fileType, fileLength, fileInfo.Name);
+		}
+		return ret;
+	}
+
+	protected string ProcessOtherIDfile(string filename)
+	{
+		string result = "";
+		string fullname = MapPath(UploadDirectory) + filename;
+		DataSet ds = SpreadsheetGearUtils.GetDataSet(fullname, false);
+
+		DataTable dt = ds.Tables[0];
+
+		bool hasID = false;
+		bool hasotherID = false;
+		bool hassiteID = false;
+		bool hasstudyID = false;
+		foreach(DataColumn col in dt.Columns)
+		{
+			string colname = col.ColumnName.ToLower();
+			col.ColumnName = colname;
+			if (colname == "id") hasID = true;
+			if (colname == "otherid") hasotherID = true;
+			if (colname == "siteid") hassiteID = true;
+			if (colname == "studyid") hasstudyID = true;
+		}
+
+		if (hasID && hasotherID && hassiteID && hasstudyID)
+		{
+
+			SQL_utils sql = new SQL_utils("data");
+
+			int success_counter = 0;
+			int insertfail_counter = 0;
+			int cantfindID_counter = 0;
+			for (int i = 0; i < dt.Rows.Count; i++)
+			{
+				DataRow row = dt.Rows[i];
+
+				string otherID = row["otherid"].ToString();
+				string siteID = row["siteid"].ToString();
+				string studyID = row["studyid"].ToString();
+				string ID = row["id"].ToString();
+
+				int personID = 0;
+				try
+				{
+					personID = sql.IntScalar_from_SQLstring(String.Format("select * from uwautism_research_backend..vwMasterStatus_S where ID='{0}' and studyID={1}", ID, studyID));
+				}
+				catch(Exception ex)
+				{
+					string sqlcode2 = String.Format("insert into uwautism_research_backend..tblOtherID_failed(studyID, ID, otherID, otherIDsiteID, failreason, created, createdBy) values({0},'{1}','{2}', {3}, 'No personID',getdate(), sec.systemuser())"
+							, studyID, ID, otherID, siteID);
+					sql.NonQuery_from_SQLstring(sqlcode2);
+
+					cantfindID_counter++;
+				}
+
+
+				if (personID > 0)
+				{
+					string sqlcode = String.Format("insert into uwautism_research_backend..tblOtherID(personID, otherID, otherIDsiteID, created, createdBy) values({0},'{1}',{2}, getdate(), sec.systemuser())"
+							, personID, otherID, siteID);
+					try
+					{
+						sql.NonQuery_from_SQLstring(sqlcode);
+						success_counter++;
+					}
+					catch (Exception ex)
+					{
+						string sqlcode2 = String.Format("insert into uwautism_research_backend..tblOtherID_failed(studyID, ID, otherID, otherIDsiteID, failreason, created, createdBy) values({0},'{1}','{2}', {3}, 'failed insert',getdate(), sec.systemuser())"
+									, studyID, ID, otherID, siteID);
+						sql.NonQuery_from_SQLstring(sqlcode2);
+
+
+						insertfail_counter++;
+					}
+				}
+			}
+
+			result = String.Format(" OtherID inserted for {0} records.", success_counter);
+			if (cantfindID_counter > 0)
+			{
+				result += String.Format(" Cannot find ID for {0} records", cantfindID_counter);
+			}
+			if (insertfail_counter > 0)
+			{
+				result += String.Format(" Insert failed for {0} records", insertfail_counter);
+			}
+		}
+		else{
+			result = "File does not contain all the required fields: studyID, ID, otherID, siteID.  Check the file for the correct column names.";
+		}
+
+
+		return result;
+	}
+	#endregion
 }

@@ -286,8 +286,6 @@ namespace uwac
 		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)
 		{
 
-			SQL_utils sql = new SQL_utils(db);
-
 			var pkval = "";
 			var pkfld = "";
 
@@ -297,58 +295,150 @@ namespace uwac
 				pkval = (key.Value == null) ? null : key.Value.ToString();
 
 			}
+			string result = "";
 
-			if (pkfld != "" && pkval != "")
+			if (pkfld != "" && Convert.ToInt32(pkval) > 0)
 			{
-				try
-				{
-					string log_code1 = String.Format("select * from {0} where {1} = {2} for xml raw, elements", tbl, pkfld, pkval);
-					string contents = sql.StringScalar_from_SQLstring(log_code1);
 
-					string log_code2 = String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) values('{0}','{1}',{2},'{3}',getdate(),cast(SESSION_CONTEXT(N'netid') as varchar))"
-						, tbl, pkfld, pkval, contents);
+				result = BuildDeleteSqlCode(tbl, db, pkfld, Convert.ToInt32(pkval), "");
 
-					string del_code = String.Format("Delete from {0} where {1}={2}", tbl, pkfld, pkval);
-
-					sql.NonQuery_from_SQLstring(log_code2);
-					sql.NonQuery_from_SQLstring(del_code);
-				}
-				catch (Exception ex)
-				{
-
-				}
 			}
-			sql.Close();
-
-
-			string result = RecoverDeletedRecord(tbl, db, 1);
-
+			else 
+			{
+				result = "Not Implemented.";
+			}
 
 
 
 			return result;
 		}
 
-		public static string RecoverDeletedRecord(string tbl, string db, int pkval)
+
+		public static string BuildDeleteSqlCode(string tbl, string db, string subquery)
+		{
+			return BuildDeleteSqlCode(tbl, db, "", -1, subquery);
+		}
+		public static string BuildDeleteSqlCode(string tbl, string db, string fldname, int fldvalue)
+		{
+			return BuildDeleteSqlCode(tbl, db, fldname, fldvalue, "");
+		}
+
+
+		public static string BuildDeleteSqlCode(string tbl, string db, string fldname, int fldvalue, string subquery)
+		{
+
+			SQL_utils sql = new SQL_utils(db);
+
+
+			string where_clause = "";
+			if(subquery != "" && fldname == "" && fldvalue == -1)
+			{
+				where_clause = String.Format(" {0} ", subquery);
+
+			}
+			else
+			{
+				where_clause = String.Format(" {0} = {1} ", fldname, fldvalue);
+			}
+
+
+			try
+			{
+				string sql_selectcode = String.Format("select * from {0} where {1} for xml raw, elements", tbl, where_clause);
+				//string contents = sql.StringScalar_from_SQLstring(log_code1);
+
+				//string log_code2 = String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) select '{0}','{1}',{2},({3}),getdate(),cast(SESSION_CONTEXT(N'netid') as varchar)"
+				//, tbl, fldname, fldvalue, sql_selectcode);
+				//string del_code = String.Format("Delete from {0} where {1}={2}", tbl, pkfld, pkval);
+				
+
+				string log_code2 = (fldvalue > 0) ?
+					String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) select '{0}','{1}',{2},coalesce(({3}),'no records'),getdate(), sec.systemuser()"
+				, tbl, fldname, fldvalue, sql_selectcode) :
+					String.Format("insert into AuditDeletes(tblname,pkfld,pkval,where_clause,contents,deleted,deletedby) select '{0}',null,-1,'{1}',coalesce(({2}),'no records'),getdate(), sec.systemuser()"
+					, tbl, where_clause, sql_selectcode);
+
+				string del_code = String.Format("Delete from {0} where {1}", tbl, where_clause);
+
+
+				var sql_output = sql.NonQuery_from_SQLstring_withRollback(String.Format("{0}; {1};", log_code2, del_code));
+
+
+			}
+			catch (Exception ex)
+			{
+
+			}
+
+			sql.Close();
+
+			string result = (fldvalue > 0) ? RecoverDeletedRecord(tbl, db, fldname, fldvalue) : RecoverDeletedRecord(tbl, db, where_clause);
+
+			return result;
+		}
+
+
+
+		public static string RecoverDeletedRecord(string tbl, string db, string where_clause)
 		{
 			string result = "The following record has been deleted:<br/><br/>";
 			SQL_utils sql = new SQL_utils(db);
 
-			string myXml = sql.StringScalar_from_SQLstring("select top 1 contents from auditdeletes order by deleteditemPK desc");
+			string sqlcode = String.Format("select top 1 contents from auditdeletes where tblname='{0}' and where_clause='{1}'", tbl, where_clause);
 
-			
-			XmlDocument xdoc = new XmlDocument();
-			xdoc.LoadXml(myXml);
-			var rownodes = xdoc.ChildNodes;
-
-			foreach(XmlNode child in rownodes[0].ChildNodes)
+			try
 			{
-				if(child.InnerText != "") result += String.Format("{0} = {1}{2}", child.Name, child.InnerText, "<br/>");
+				string myXml = sql.StringScalar_from_SQLstring(sqlcode);
+
+				XmlDocument xdoc = new XmlDocument();
+				xdoc.LoadXml(myXml);
+				var rownodes = xdoc.ChildNodes;
+
+
+				foreach (XmlNode child in rownodes[0].ChildNodes)
+				{
+					if (child.InnerText != "") result += String.Format("{0} = {1}{2}", child.Name, child.InnerText, "<br/>");
+				}
+
+				result += "<br/><br/><i>This record can be recovered if needed.  Contact Jeff.</i>";
+
+				return result;
+			}
+			catch(Exception ex)
+			{
+				return String.Format("{0} <br/>ERROR retrieving deleted data for tbl: {1} <br/>where_clause: {2}", result, tbl, where_clause);
+			}
+		}
+
+
+		public static string RecoverDeletedRecord(string tbl, string db, string fldname, int fldvalue)
+		{
+			string result = "The following record has been deleted:<br/><br/>";
+			SQL_utils sql = new SQL_utils(db);
+
+			try
+			{
+				string myXml = sql.StringScalar_from_SQLstring(String.Format("select top 1 contents from auditdeletes where tblname='{0}' and {1}={2}", tbl, fldname, fldvalue));
+
+
+				XmlDocument xdoc = new XmlDocument();
+				xdoc.LoadXml(myXml);
+				var rownodes = xdoc.ChildNodes;
+
+				foreach (XmlNode child in rownodes[0].ChildNodes)
+				{
+					if (child.InnerText != "") result += String.Format("{0} = {1}{2}", child.Name, child.InnerText, "<br/>");
+				}
+
+				result += "<br/><br/><i>This record can be recovered if needed.  Contact Jeff.</i>";
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				return String.Format("{0} <br/>ERROR retrieving deleted data for tbl: {1} <br/>{2}: {3}", result, tbl, fldname, fldvalue);
 			}
 
-			result += "<br/><br/><i>This record can be recovered if needed.  Contact Jeff.</i>";
-
-			return result;
 		}
 
 	}

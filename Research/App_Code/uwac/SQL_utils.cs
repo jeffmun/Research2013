@@ -972,6 +972,43 @@ namespace uwac
 
 		#region ....................NonQuery
 
+		public string NonQuery_from_SQLstring_withRollback(string sSQL)
+		{
+			//using (SqlConnection connection = new SqlConnection(ConnectionString))
+			//{
+			//	using (SqlCommand cmd = new SqlCommand(queryString, connection))
+			//	{
+
+					SqlCommand oCmd = new SqlCommand();
+
+					oCmd.Connection = oSqlConn;
+					oCmd.CommandText = sSQL;
+					oCmd.CommandTimeout = 90;
+					oCmd.CommandType = CommandType.Text;
+
+					SqlTransaction trans;
+					trans = oSqlConn.BeginTransaction("Trans");
+					oCmd.Transaction = trans;
+
+					try
+					{
+						oCmd.ExecuteNonQuery();
+						trans.Commit();
+						return "success";
+					}
+					catch (Exception ex)
+					{
+						if (trans != null) trans.Rollback();
+						return ex.Message;
+					}
+			//	}
+			//}
+
+		}
+
+
+
+
 		public void NonQuery_from_SQLstring(string sSQL)
 		{
 			SqlCommand oCmd = new SqlCommand();
