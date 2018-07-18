@@ -39,6 +39,9 @@ public class NDAR
 		dt.Columns.Add("title", typeof(string));
 		dt.Columns.Add("datatype", typeof(string));
 		dt.Columns.Add("status", typeof(string));
+		dt.Columns.Add("publicStatus", typeof(string));
+		dt.Columns.Add("publishDate", typeof(Int64));
+		dt.Columns.Add("modifiedDate", typeof(Int64));
 		dt.Columns.Add("url", typeof(string));
 
 		return dt;
@@ -98,7 +101,8 @@ public class NDAR
 	}
 
 
-	public class NDAR_DataStructure
+
+public class NDAR_DataStructure
 	{
 		public string shortName { get; set; }
 		public string title { get; set; }
@@ -106,7 +110,9 @@ public class NDAR
 		public List<string> categories { get; set; }
 		public string dataType { get; set; }
 		public string status { get; set; }
+		public string publicStatus { get; set; }
 		public Int64? publishDate { get; set; }
+		public Int64? modifiedDate { get; set; }
 		public List<NDAR_DataElement> dataElements { get; set; }
 	}
 
@@ -132,7 +138,9 @@ public class NDAR
 			//ds.categories = token.SelectToken("categories").ToString();
 			ds.dataType = GetTokenValue_string(token, "dataType");
 			ds.status = GetTokenValue_string(token, "status");
+			ds.publicStatus = GetTokenValue_string(token, "publicStatus");
 			ds.publishDate = GetTokenValue_int(token, "publishDate");
+			ds.modifiedDate = GetTokenValue_int(token, "modifiedDate");
 			ds.dataElements = new List<NDAR_DataElement>();
 
 			JArray deTokens = (JArray)token.SelectToken("dataElements");
@@ -373,8 +381,11 @@ public class NDAR
 		{
 			string databasepk = sql.StringScalar_from_SQLstring("exec spNDAR_SQL_for_databasepk '" + shortName + "'");
 
+			string urlstem = sql.StringScalar_from_SQLstring("select def.fnGetDElink_stem_from_shortname('" + shortName + "')");
+
+
 			//wrap the query as "x" in order to select the parameters needed for the function fnNDAR_ReasonExclude 
-			sql_string = "select row_number() over(order by reason_exclude, src_subject_id) as rownum, * " + System.Environment.NewLine +
+			sql_string = "select cast( row_number() over(order by reason_exclude, src_subject_id) as varchar) + '|" + urlstem + "' + cast(databasepk as varchar) as rownum, * " + System.Environment.NewLine +
 				" from (select  dbo.fnNDAR_ReasonExclude(" + studyID.ToString() + ",subjectkey, src_subject_id, interview_date, gender) as reason_exclude " + System.Environment.NewLine +
 				" , * from (" + System.Environment.NewLine + "select " + databasepk + " as databasepk, " +
 				sql_for_NDAR_fields + System.Environment.NewLine +
@@ -462,8 +473,11 @@ public class NDAR
 				row["title"] = ds.title;
 				row["datatype"] = ds.dataType;
 				row["status"] = ds.status;
-				row["publishDate"] = ds.publishDate;
+				row["publicStatus"] = ds.publicStatus;
+				if (ds.publishDate.ToString() != "") row["publishDate"] = Convert.ToInt64(ds.publishDate);
+				if (ds.modifiedDate.ToString() != "") row["modifiedDate"] = Convert.ToInt64(ds.modifiedDate);
 
+			
 				dt.Rows.Add(row);
 			}
 
@@ -487,18 +501,28 @@ public class NDAR
 		DataTable dt = new System.Data.DataTable();
 		if (source == "localDB")
 		{
-			SQL_utils sql = new SQL_utils();
+			SQL_utils sql = new SQL_utils("data");
 			if (uwonly & studyID>0)
 			{
 				// See below where the view 'vwALL_VinelandIISurvey_withMBI' is swapped in.
 				// NDAR now requires the MBI variables, this view pulls these in from the 'ALL_VinelandIISurvey_MBI' table.
 
-				dt = sql.DataTable_from_SQLstring("select * from vwNDAR_DS where uwtable is not null and " + 
-					" (shortname like '%" + whereclause + "%' or title like '%" + whereclause + "%')" +
-					" and  uwtable in (select (case when name = 'ALL_VinelandIISurvey' then 'vwALL_VinelandIISurvey_withMBI' else name end) name from datTable a " +
-					" join datTable_Measure b ON a.tableID = b.tableID " +
-					"    where measureID in " +
-					"	(select measureID from uwautism_research_backend..tblstudymeas where studyID = " + studyID.ToString() + "))");
+				//dt = sql.DataTable_from_SQLstring("select * from vwNDAR_DS where uwtable is not null and " + 
+				//	" (shortname like '%" + whereclause + "%' or title like '%" + whereclause + "%')" +
+				//	" and  uwtable in (select (case when name = 'ALL_VinelandIISurvey' then 'vwALL_VinelandIISurvey_withMBI' else name end) name from datTable a " +
+				//	" join datTable_Measure b ON a.tableID = b.tableID " +
+				//	"    where measureID in " +
+				//	"	(select measureID from uwautism_research_backend..tblstudymeas where studyID = " + studyID.ToString() + "))");
+
+				string code = String.Format("select * from vwNDAR_DS where uwtable is not null and " +
+				" (shortname like '%{0}%' or title like '%{0}%')" +
+				" and  uwtable in (select tblname from def.Tbl " +
+				"    where measureID in " +
+				"	(select measureID from uwautism_research_backend..tblstudymeas where studyID = {1}))"
+					, whereclause, studyID);
+
+				dt = sql.DataTable_from_SQLstring(code);
+
 			}
 			else if (uwonly & studyID == 0)
 			{
@@ -523,6 +547,8 @@ public class NDAR
 		return dt;
 	}
 
+
+	// https://ndar.nih.gov/api/datadictionary/v2/datastructure/sds01/csv 
 
 
 	//public void LoadDataStructure(string shortName)
@@ -555,6 +581,73 @@ public class NDAR
 
 
 	//}
+
+	
+	//https://ndar.nih.gov/api/datadictionary/v2/datastructure
+
+
+	public static DataTable LoadDataStructure(string shortName)
+	{
+		WebClient wc = new WebClient();
+		string ds_string = wc.DownloadString(@"https://ndar.nih.gov/api/datadictionary/v2/datastructure/" + shortName );
+
+		NDAR.NDAR_DataStructure ds = JsonConvert.DeserializeObject<NDAR.NDAR_DataStructure>(ds_string, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+		//Create the data table for the dataElements
+		DataTable dt = NDAR.NDAR_dataElements();
+
+		foreach (NDAR.NDAR_DataElement de in ds.dataElements)
+		{
+			DataRow row = dt.NewRow();
+
+			row["shortName"] = shortName;
+			row["id"] = de.id;
+			row["dataElementId"] = de.dataElementId;
+			row["name"] = de.name;
+			row["description"] = de.description;
+			row["type"] = de.type;
+
+			row["required"] = de.required;
+			row["position"] = de.position;
+			row["valueRange"] = de.valueRange;
+
+			dt.Rows.Add(row);
+		}
+
+		return dt;
+	}
+
+
+	public static DataTable LoadDataStructureList(string shortName, string version)
+	{
+		WebClient wc = new WebClient();
+		string ds_string = wc.DownloadString(@"https://ndar.nih.gov/api/datadictionary/v2/datastructure/");
+
+		NDAR.NDAR_DataStructure ds = JsonConvert.DeserializeObject<NDAR.NDAR_DataStructure>(ds_string, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+		//Create the data table for the dataElements
+		DataTable dt = NDAR.NDAR_dataElements();
+
+		foreach (NDAR.NDAR_DataElement de in ds.dataElements)
+		{
+			DataRow row = dt.NewRow();
+
+			row["shortName"] = shortName;
+			row["id"] = de.id;
+			row["dataElementId"] = de.dataElementId;
+			row["name"] = de.name;
+			row["description"] = de.description;
+			row["type"] = de.type;
+
+			row["required"] = de.required;
+			row["position"] = de.position;
+			row["valueRange"] = de.valueRange;
+
+			dt.Rows.Add(row);
+		}
+
+		return dt;
+	}
 
 
 
