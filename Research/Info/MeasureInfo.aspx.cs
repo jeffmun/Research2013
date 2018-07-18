@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Configuration;
-using System.Collections;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
@@ -297,13 +297,13 @@ public partial class Info_MeasureInfo : BasePage
 
 				if (SelectedMeas.Contains("data table needed")) // && CanEdit)
 				{
-					if (CanEdit) btnCreateTable_Begin.Visible = true;
+					//if (CanEdit) btnCreateTable_Begin.Visible = true;
 					btnShow_TableInfo.Visible = false;  // do not show table info as there is none
 				}
 				else
 				{
 					btnCreateTable_Begin.Visible = false;
-					btnShow_TableInfo.Visible = true;  // do not show table info as there is none
+					//btnShow_TableInfo.Visible = true;  // do not show table info as there is none
 
 				}
 
@@ -863,56 +863,31 @@ public partial class Info_MeasureInfo : BasePage
 
 	protected void CreateNewMeasure_submit(object sender, EventArgs e)
 	{
-		
-		//try
-		//{
-			////BLANK SqlCommand
-			SqlCommand sqlCmd = new SqlCommand();
-			sqlCmd.Connection = oConn;
-			sqlCmd.CommandType = CommandType.StoredProcedure;
-			sqlCmd.CommandText = "spStudyDesign__CreateNewMeasure";
+		TextBox txtCNM_Name = (TextBox)FindControlRecursive(UpdatePanel_CreateNewMeasure, "txtCNM_Name");
+		TextBox txtCNM_NameFull = (TextBox)FindControlRecursive(UpdatePanel_CreateNewMeasure, "txtCNM_NameFull");
 
-			TextBox txtCNM_Name = (TextBox)FindControlRecursive(UpdatePanel_CreateNewMeasure, "txtCNM_Name");
-			TextBox txtCNM_NameFull = (TextBox)FindControlRecursive(UpdatePanel_CreateNewMeasure, "txtCNM_NameFull");
-		
-			sqlCmd.Parameters.Add("@measname", SqlDbType.VarChar, 50);
-			sqlCmd.Parameters["@measname"].Value = txtCNM_Name.Text;
+		SQL_utils sql = new SQL_utils("data");
 
-			sqlCmd.Parameters.Add("@measfullname", SqlDbType.VarChar, 200);
-			sqlCmd.Parameters["@measfullname"].Value = txtCNM_NameFull.Text;
+		List<SqlParameter> ps = new List<SqlParameter>();
 
-		
-
-			sqlCmd.Parameters.Add("@newmeasureID", SqlDbType.Int, 4);
-			sqlCmd.Parameters["@newmeasureID"].Value = 0;
-			sqlCmd.Parameters["@newmeasureID"].Direction = ParameterDirection.Output;
+		ps.Add(sql.CreateParam("measname", txtCNM_Name.Text, "text"));
+		ps.Add(sql.CreateParam("measfullname", txtCNM_NameFull.Text, "text"));
+		ps.Add(sql.CreateParam("newmeasureID", "0", "int", "output"));
 
 
+		int newmeasID = sql.NonQuery_from_ProcName("spStudyDesign__CreateNewMeasure", ps, "newmeasureID");
 
-			sqlCmd.ExecuteNonQuery();
-
-			int newmeasID = (int)sqlCmd.Parameters["@newmeasureID"].Value;
 
 			
-			if (newmeasID > 0)
-			{
-				DDL_SelectMeasureID.DataBind();
+		if (newmeasID > 0)
+		{
+			DDL_SelectMeasureID.DataBind();
 
-				//LogToPageUrgent("numitems = " + DDL_SelectMeasureID.Items.Count.ToString());
+			Show_MeasInfo(newmeasID);
+		}
 
-				//DDL_SelectMeasureID.Items.FindByValue(newmeasID.ToString()).Selected = true;
-				//DDL_SelectMeasureID.SelectedIndex = DDL_SelectMeasureID.Items.IndexOf(DDL_SelectMeasureID.Items.FindByValue(newmeasID.ToString()));
+		UpdatePanel_CreateNewMeasure.Visible = false;
 
-
-				Show_MeasInfo(newmeasID);
-			}
-
-			UpdatePanel_CreateNewMeasure.Visible = false;
-		//}
-		//catch (Exception) 
-		//{
-		//    LogToPageError(exc.Message);
-		//}
 
 	}
 	#endregion
@@ -1183,6 +1158,7 @@ public partial class Info_MeasureInfo : BasePage
 	protected void InsertTableInfo_Cancel(object sender, EventArgs e)
 	{
 		Panel_NewTable.Visible = false;
+		btnCreateTable_Begin.Visible = true;
 	}
 
 
@@ -1206,29 +1182,38 @@ public partial class Info_MeasureInfo : BasePage
 
 	protected void InsertTableInfo_Submit(string tblname, string tblabbr)
 	{
+
 		try
 		{
+			SQL_utils sql = new SQL_utils("data");
+			string code = "def.spPopulate_NEW_Tbl_and_Flds";
 
-			SqlCommand cmd = new SqlCommand();
-			cmd.CommandText = "spDEF_Insert_new_DataTableInfo";
-			cmd.CommandType = CommandType.StoredProcedure;
+			List<SqlParameter> ps = new List<SqlParameter>();
+			ps.Add(sql.CreateParam("tbl", "ALL_" + txtTblName.Text, "text"));
+			ps.Add(sql.CreateParam("abbr", txtTblAbbr.Text, "text"));
+			ps.Add(sql.CreateParam("measureID", DDL_SelectMeasureID.SelectedValue, "int"));
 
-			if (oConnData.State == ConnectionState.Closed) oConnData.Open();
-			cmd.Connection = oConnData;
-			cmd.Parameters.Add("@tbl", SqlDbType.VarChar);
-			cmd.Parameters.Add("@abbr", SqlDbType.VarChar);
+			sql.NonQuery_from_ProcName(code, ps);
 
-			cmd.Parameters["@tbl"].Value = "ALL_" + txtTblName.Text;
-			cmd.Parameters["@abbr"].Value = txtTblAbbr.Text;
+			sql.Close();
 
-			cmd.Parameters.Add("@measureID", SqlDbType.Int);
-			cmd.Parameters["@measureID"].Value = Math.Abs(Convert.ToInt32(DDL_SelectMeasureID.SelectedValue));
+			//SqlCommand cmd = new SqlCommand();
+			//cmd.CommandText = "spDEF_Insert_new_DataTableInfo";
+			//cmd.CommandType = CommandType.StoredProcedure;
 
-			try
-			{
-				cmd.ExecuteNonQuery();
+			//if (oConnData.State == ConnectionState.Closed) oConnData.Open();
+			//cmd.Connection = oConnData;
+			//cmd.Parameters.Add("@tbl", SqlDbType.VarChar);
+			//cmd.Parameters.Add("@abbr", SqlDbType.VarChar);
 
-				//Load_gv_FieldInfo(txtTblName.Text);
+			//cmd.Parameters["@tbl"].Value = "ALL_" + txtTblName.Text;
+			//cmd.Parameters["@abbr"].Value = txtTblAbbr.Text;
+
+			//cmd.Parameters.Add("@measureID", SqlDbType.Int);
+			//cmd.Parameters["@measureID"].Value = Math.Abs(Convert.ToInt32(DDL_SelectMeasureID.SelectedValue));
+
+			//cmd.ExecuteNonQuery();
+
 			}
 			catch (SqlException sqlexc)
 			{
@@ -1238,14 +1223,7 @@ public partial class Info_MeasureInfo : BasePage
 			hidTblName.Value = txtTblName.Text;
 
 
-		}
-		catch (Exception exc) 
-		{
-			LogToPageError(exc.Message + "<br/>" + exc.StackTrace);
-		}
-
-
-		Populate_DDL_SelectMeasureID(_content_studyID);
+		Populate_DDL_SelectMeasureID(Master.Master_studyID);
 	}
 
 

@@ -187,15 +187,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 			"PivotDataToolkit_Bin_Pack_000426121678",
 			"Galv8kCqIiZYLGq5Qoc+ymn8Jo57iNuWgMqZ9vrpjfdSLkiqGpTC0AtpV7VHn1GyhoEorRfIEi27UOgJf28o+2KlKuOnrPlO/FxCV4+qUTTWL7LyP/HmhYZdeI4kox5pyThzUZb36ijxsfXzAMlFzpv3uDtPtu6ktwtiROwKG/c=");
 
-		string title = ConfigurationManager.AppSettings["MasterTitle"];
-		string subtitle = ConfigurationManager.AppSettings["MasterSubtitle"];
-		//title += " [backend=" + ConfigurationManager.ConnectionStrings["TRACKING_CONN_STRING"] + "]";
-
-
-		Literal litTitle = new Literal {Text = title};
-		Label lblSubtitle = new Label { Text = String.Format("&nbsp;&nbsp;{0}",subtitle), ForeColor = System.Drawing.Color.Gray };
-		placeholderMasterTitle.Controls.Add(litTitle);
-		placeholderMasterTitle.Controls.Add(lblSubtitle);
+	
 	}
 
 	protected void Page_Load(object sender, EventArgs e)
@@ -273,6 +265,30 @@ public partial class UWAC : System.Web.UI.MasterPage
 
 		ASPxSiteMapDataSource1.SiteMapFileName = "~/" + sitemap;
 
+		SetTitles();
+
+
+
+	}
+
+	protected void SetTitles()
+	{
+		string title = ConfigurationManager.AppSettings["MasterTitle"];
+		string subtitle = ConfigurationManager.AppSettings["MasterSubtitle"];
+		//title += " [backend=" + ConfigurationManager.ConnectionStrings["TRACKING_CONN_STRING"] + "]";
+
+
+		if (master_studyname == "AVH")
+		{
+			title = "BRITE Center Study DB";
+		}
+
+
+
+		Literal litTitle = new Literal { Text = title };
+		Label lblSubtitle = new Label { Text = String.Format("&nbsp;&nbsp;{0}", subtitle), ForeColor = System.Drawing.Color.Gray };
+		placeholderMasterTitle.Controls.Add(litTitle);
+		placeholderMasterTitle.Controls.Add(lblSubtitle);
 
 	}
 
@@ -479,7 +495,26 @@ public partial class UWAC : System.Web.UI.MasterPage
 	}
 
 
+	protected void dxMenu_OnItemDataBound(object sender, MenuItemEventArgs e)
+	{
+		var itm = e.Item;
 
+		if(master_studyname == "AVH")
+		{
+			List<string> nodes_to_hide = new List<string> { "Clinic", "Calendar", "Other ID's", "Bernier Lab", "Tadpole","PATH","IBIS","ESS"
+				, "(old) Data Projects", "IntHx Data Summary", "IntHx Tx Types & Categories", "Reliability Tracking"};
+
+
+			itm.Visible = (nodes_to_hide.Contains(itm.Text)) ? false : true ;
+
+		}
+		else 
+		{
+			itm.Visible = true;
+
+		}
+
+	}
 
 
 	#region ...Build Menu...

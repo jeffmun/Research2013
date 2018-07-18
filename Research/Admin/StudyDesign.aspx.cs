@@ -739,7 +739,12 @@ public partial class Admin_StudyDesign : BasePage
 		Response.Redirect("StudyDesign.aspx");
 	}
 
+	//protected void btnCancelBulkAssign_OnClick(object sender, EventArgs e)
+	//{
+		
+	//}
 
+		
 
 	protected void btnREL_OnClick(object sender, EventArgs e)
 	{

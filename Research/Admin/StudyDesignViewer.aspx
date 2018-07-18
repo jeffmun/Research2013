@@ -18,10 +18,26 @@
 
 	<br />
 	<br />
-	<dx:ASPxButton ID="btnLoad" runat="server" Text="Reload Study Design" OnClick="btnLoad_OnClick" AutoPostBack="false" ClientInstanceName="btnLoad" />
+	<table>
+		<tr>
+			<td style="vertical-align:top; padding:10px">
+	<dx:ASPxCheckBoxList ID="cblItems" ClientInstanceName="cblItems" runat="server" Caption="Select Items to display:"  
+		Font-Size="X-Small" RepeatLayout="Flow" RepeatColumns="3" >
+		<Items>
+			<dx:ListEditItem Value="Actions" />
+			<dx:ListEditItem Value="Measures" />
+			<%--<dx:ListEditItem Value="Consents" />--%>
+			   
+		</Items>
+	</dx:ASPxCheckBoxList>
+
+			</td>
+			<td style="vertical-align:top; padding:10px">
+
+	<dx:ASPxButton ID="btnLoad" runat="server" Text="Load Study Design" OnClick="btnLoad_OnClick" AutoPostBack="false" ClientInstanceName="btnLoad" />
 				
 
-					<dx:ASPxRadioButtonList ID="rblObj" runat="server" Font-Size="9" Border-BorderStyle="None" RepeatColumns="3" >
+					<dx:ASPxRadioButtonList ID="rblObj" runat="server" Visible="false" Font-Size="9" Border-BorderStyle="None" RepeatColumns="3" >
 					<Items>
 						<dx:ListEditItem Text="Timept, Actions BY Groups" Value="1" Selected="true" />
 						<dx:ListEditItem Text="Actions BY Timept,Groups" Value="4" Selected="true" />
@@ -31,6 +47,9 @@
 						<dx:ListEditItem Text="Action, Measures BY Timept,Groups" Value="6" Selected="false" />
 					</Items>
 				</dx:ASPxRadioButtonList>
+			</td>
+		</tr>
+	</table>
 
 	<br />
 
@@ -38,7 +57,7 @@
 	OnCustomCellDisplayText="pivotENT_CustomCellDisplayText"  OnCustomCellStyle="pivotENT_CustomCellStyle"
 		OnBeginRefresh="pivotENT_OnBeginRefresh"   --%>
 
-	<dx:ASPxPivotGrid ID="pivotENT" runat="server" DataSourceID="sql_StudyDesign"  Visible="true"  Width="95%" 
+	<dx:ASPxPivotGrid ID="pivotENT" runat="server" DataSourceID="sql_StudyDesign"  Visible="true"  
 		 OnCustomSummary="pivotENT_CustomSummary"
 		EnableCallbackAnimation="true">
 	<Fields>
@@ -57,7 +76,7 @@
 	<OptionsData DataProcessingEngine="Default"    />   <%--LockDataRefreshOnCustomCallback="true"--%>
 	<OptionsFilter NativeCheckBoxes="False" />
 					
-	<OptionsPager  ColumnsPerPage="15"  ShowNumericButtons="false" RowsPerPage="20" >
+	<OptionsPager  ColumnsPerPage="15"  ShowNumericButtons="false" RowsPerPage="50" >
 		<PageSizeItemSettings Visible="true" ShowAllItem="true" Items="20,50,200"></PageSizeItemSettings>
 	</OptionsPager>
 	<OptionsView HorizontalScrollBarMode="Auto" VerticalScrollBarMode="Auto" 

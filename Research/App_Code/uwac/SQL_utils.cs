@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -30,6 +31,17 @@ namespace uwac
 		public string IdentityUser { get { return _identityuser; } }
 		public string SqlSessionUser { get { return _sqlsessionuser; } }
 		public string InstantiateAs {  get { return _instantiateAs; } }
+
+
+		#region ............STRUCTS............
+
+		public static List<string> Numtypes =  new List<string> { "number", "int", "smallint", "bigint", "tinyint", "float", "decimal" };
+		public static List<string> Texttypes = new List<string> { "text", "string", "char", "varchar", "nchar", "nvarchar" };
+		public static List<string> Datetypes = new List<string> { "date", "datetime", "smalldatetime" };
+
+
+		#endregion
+
 
 		#region ............CONSTRUCTORS............
 
@@ -1323,6 +1335,68 @@ namespace uwac
 		}
 
 		#endregion
+
+
+		#region ...................BULK INSERT...................
+
+		public string BulkInsert(DataTable dt_source, string dest_tbl)
+		{
+			int n_start = IntScalar_from_SQLstring("select count(*) from " + dest_tbl);
+			string msg="";
+
+			using (oSqlConn)
+			{
+
+				using (SqlBulkCopy bulkCopy = new SqlBulkCopy(oSqlConn, SqlBulkCopyOptions.FireTriggers, null))
+				{
+					bulkCopy.ColumnMappings.Clear();
+
+					try
+					{ 
+						bulkCopy.BulkCopyTimeout = 150;
+
+						// column mapping defined
+						dt_source.Columns.Cast<DataColumn>().ToList().ForEach(f =>
+						{
+							SqlBulkCopyColumnMapping bccm = new SqlBulkCopyColumnMapping();
+							bccm.DestinationColumn = f.ColumnName;
+							bccm.SourceColumn = f.ColumnName;
+							bulkCopy.ColumnMappings.Add(bccm);
+						});
+						// column mapping defined
+
+						bulkCopy.DestinationTableName = dest_tbl;
+
+
+						// Write from the source to the destination.
+						bulkCopy.WriteToServer(dt_source);
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine(ex.Message);
+						Debug.WriteLine(ex.StackTrace.ToString());
+
+					}
+				}
+
+				int n_end = IntScalar_from_SQLstring("select count(*) from " + dest_tbl);
+				
+
+				if (n_start == n_end)
+				{ msg = String.Format("No records inserted into [{0}]", dest_tbl); }
+				else
+				{
+					msg = String.Format("{0} records inserted into [{0}].", n_end - n_start, dest_tbl);
+				}
+			}
+
+			return msg;
+		}
+
+
+		#endregion
+
+
 
 		#region ............Build SQL statement to create a table from a DataTable object ............
 		/// <summary>

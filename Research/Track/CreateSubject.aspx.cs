@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -39,8 +40,10 @@ public partial class Track_CreateSubject : BasePage //System.Web.UI.Page
 	
 		if (dt != null)
 		{
-			string fullname = dt.AsEnumerable().Select(f => f["FullName"]).ToString();
-
+			DataRow row = dt.Rows[0];
+			string fullname = row["FullName"].ToString();
+			//string fullname = dt.AsEnumerable().Select(f => f.Field<string>("FullName")).ToString();
+			lblName.Text = fullname;
 			tdTitle.InnerHtml = "Create Subject: " + fullname;
 			//txtPersonName.Value = fullname;
 			hidPersonID.Value = nPersonID.ToString();
@@ -91,19 +94,21 @@ public partial class Track_CreateSubject : BasePage //System.Web.UI.Page
 		string sReturnValue = "0";
 		string sSubjectID = "0";
 
-		SqlCommand oCmd = new SqlCommand();
+	
 
-		oCmd.Connection = Master.SqlConn;
-		oCmd.CommandText = "spCreateSubject_WEB";
-		oCmd.CommandTimeout = 90;
-		oCmd.CommandType = CommandType.StoredProcedure;
+		//SqlCommand oCmd = new SqlCommand();
 
-		oCmd.Parameters.Add(new SqlParameter("@PersonID", SqlDbType.Int, 4, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, nPersonID));
-		oCmd.Parameters.Add(new SqlParameter("@StudyID", SqlDbType.Int, 4, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, nStudyID));
-		oCmd.Parameters.Add(new SqlParameter("@GroupID", SqlDbType.Int, 4, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, nGroupID));
-		oCmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.VarChar, 100, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, sID));
-		oCmd.Parameters.Add(new SqlParameter("@SubjectID", SqlDbType.Int, 4, ParameterDirection.Output, true, 0, 0, "", DataRowVersion.Current, DBNull.Value));
-		oCmd.Parameters.Add(new SqlParameter("@ReturnValue", SqlDbType.Int, 4, ParameterDirection.ReturnValue, true, 0, 0, "", DataRowVersion.Current, DBNull.Value));
+		//oCmd.Connection = Master.SqlConn;
+		//oCmd.CommandText = "trk.spCreateSubject_WEB";
+		//oCmd.CommandTimeout = 90;
+		//oCmd.CommandType = CommandType.StoredProcedure;
+
+		//oCmd.Parameters.Add(new SqlParameter("@PersonID", SqlDbType.Int, 4, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, nPersonID));
+		//oCmd.Parameters.Add(new SqlParameter("@StudyID", SqlDbType.Int, 4, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, nStudyID));
+		//oCmd.Parameters.Add(new SqlParameter("@GroupID", SqlDbType.Int, 4, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, nGroupID));
+		//oCmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.VarChar, 100, ParameterDirection.Input, true, 0, 0, "", DataRowVersion.Current, sID));
+		//oCmd.Parameters.Add(new SqlParameter("@SubjectID", SqlDbType.Int, 4, ParameterDirection.Output, true, 0, 0, "", DataRowVersion.Current, DBNull.Value));
+		//oCmd.Parameters.Add(new SqlParameter("@ReturnValue", SqlDbType.Int, 4, ParameterDirection.ReturnValue, true, 0, 0, "", DataRowVersion.Current, DBNull.Value));
 
 		if (nGroupID > 0 & nStudyID > 0 & nPersonID > 0 & sID.Length > 0)
 		{
@@ -111,7 +116,22 @@ public partial class Track_CreateSubject : BasePage //System.Web.UI.Page
 
 			try
 			{
-				oCmd.ExecuteNonQuery();
+				//oCmd.ExecuteNonQuery();
+
+
+				//NEW VERSION IF NEEDED
+				SQL_utils sql = new SQL_utils("backend");
+
+				List<SqlParameter> ps = new List<SqlParameter>();
+				ps.Add(sql.CreateParam("PersonID", nPersonID.ToString(), "int"));
+				ps.Add(sql.CreateParam("StudyID", nStudyID.ToString(), "int"));
+				ps.Add(sql.CreateParam("GroupID", nGroupID.ToString(), "int"));
+				ps.Add(sql.CreateParam("ID", sID, "text"));
+				ps.Add(sql.CreateParam("SubjectID", "0", "int", "output"));
+
+				int newsubjID = sql.NonQuery_from_ProcName("trk.spCreateSubject_WEB", ps, "SubjectID");
+
+				sSubjectID = newsubjID.ToString();
 			}
 			catch (Exception) 
 			{
@@ -123,10 +143,11 @@ public partial class Track_CreateSubject : BasePage //System.Web.UI.Page
 			lblInfo.Text = nGroupID.ToString() + "  " + nStudyID.ToString() + "  " + nPersonID.ToString() + "  " + sID;
 		}
 
-		sReturnValue = oCmd.Parameters["@ReturnValue"].Value.ToString();
-		sSubjectID = oCmd.Parameters["@SubjectID"].Value.ToString();
+		//sReturnValue = oCmd.Parameters["@ReturnValue"].Value.ToString();
+		//sSubjectID = oCmd.Parameters["@SubjectID"].Value.ToString();
 
-		if (sReturnValue == "0")
+		//if (sReturnValue == "0")
+		if(sSubjectID != "0")
 			Response.Redirect(@"~/Track/Subject.aspx?subjID=" + sSubjectID);
 		else
 		{

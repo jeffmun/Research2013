@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Web.Services;
@@ -57,7 +58,12 @@ public partial class Admin_StudyDesignViewer : BasePage // OboutInc.oboutAJAXPag
 			Bind();
 		}
 
-		
+		//if (Session["proj_meas"] != null)
+		//{
+		//	PivotSelMeas.DataSource = Session["proj_meas"];
+		//	PivotSelMeas.DataBind();
+		//	PivotSelMeas.Visible = true;
+		//}
 
 	}
 
@@ -104,88 +110,44 @@ public partial class Admin_StudyDesignViewer : BasePage // OboutInc.oboutAJAXPag
 		pivotENT.Fields["fstudymeasname"].Visible = false;
 
 
+		
 
-		switch (rblObj.Value.ToString())
+		var cbl = cblItems.SelectedValues;
+		int numrowfields = 0;
+
+		if (cbl.Contains("Actions")) Debug.WriteLine("Actions");
+		if (cbl.Contains("Measures")) Debug.WriteLine("Measures");
+		if (cbl.Contains("Consents")) Debug.WriteLine("Consents");
+
+
+		pivotENT.Fields["fsmID"].SetAreaPosition(PivotArea.DataArea, 0);
+		pivotENT.Fields["fsmID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
+		pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 0);
+		pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.RowArea, numrowfields);
+		numrowfields++;
+
+		if (cbl.Contains("Actions"))
 		{
-			case "1":
-
-				pivotENT.DataSourceID = "sql_StudyDesign_A";
-
-
-				pivotENT.Fields["fsaID"].SetAreaPosition(PivotArea.DataArea, 0);
-				pivotENT.Fields["fsaID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
-				pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 0);
-				pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.RowArea, 0);
-				pivotENT.Fields["factiontype"].SetAreaPosition(PivotArea.RowArea, 1);
-				pivotENT.Fields["factiontext"].SetAreaPosition(PivotArea.RowArea, 2);
-
-
-				break;
-			case "2":
-
-				pivotENT.DataSourceID = "sql_StudyDesign_M";
-
-				pivotENT.Fields["fsmID"].SetAreaPosition(PivotArea.DataArea, 0);
-				pivotENT.Fields["fsmID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
-				pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 0);
-				pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.RowArea, 0);
-				pivotENT.Fields["fstudymeasname"].SetAreaPosition(PivotArea.RowArea, 1);
-
-				break;
-
-			case "3":
-
-				pivotENT.DataSourceID = "sql_StudyDesign_M";
-
-				pivotENT.Fields["fsmID"].SetAreaPosition(PivotArea.DataArea, 0);
-				pivotENT.Fields["fsmID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
-				pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 0);
-				pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.RowArea, 0);
-				pivotENT.Fields["factiontext"].SetAreaPosition(PivotArea.RowArea, 1);
-				pivotENT.Fields["fstudymeasname"].SetAreaPosition(PivotArea.RowArea, 2);
-
-				break;
-			case "4":
-
-				pivotENT.DataSourceID = "sql_StudyDesign_A";
-
-
-				pivotENT.Fields["fsaID"].SetAreaPosition(PivotArea.DataArea, 0);
-				pivotENT.Fields["fsaID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
-				pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.ColumnArea, 0);
-				pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 1);
-				pivotENT.Fields["factiontype"].SetAreaPosition(PivotArea.RowArea, 0);
-				pivotENT.Fields["factiontext"].SetAreaPosition(PivotArea.RowArea, 1);
-
-
-				break;
-			case "5":
-
-				pivotENT.DataSourceID = "sql_StudyDesign_M";
-
-				pivotENT.Fields["fsmID"].SetAreaPosition(PivotArea.DataArea, 0);
-				pivotENT.Fields["fsmID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
-				pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.ColumnArea, 0);
-				pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 1);
-				pivotENT.Fields["fmeasname"].SetAreaPosition(PivotArea.RowArea, 0);
-
-				break;
-
-			case "6":
-
-				pivotENT.DataSourceID = "sql_StudyDesign_M";
-
-				pivotENT.Fields["fsmID"].SetAreaPosition(PivotArea.DataArea, 0);
-				pivotENT.Fields["fsmID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Custom;
-				pivotENT.Fields["ftimepoint_text"].SetAreaPosition(PivotArea.ColumnArea, 0);
-				pivotENT.Fields["fgroupname"].SetAreaPosition(PivotArea.ColumnArea, 1);
-				pivotENT.Fields["factiontext"].SetAreaPosition(PivotArea.RowArea, 0);
-				pivotENT.Fields["fstudymeasname"].SetAreaPosition(PivotArea.RowArea, 1);
-
-				break;
-
-
+			pivotENT.DataSourceID = "sql_StudyDesign_A";
+			pivotENT.Fields["factiontext"].SetAreaPosition(PivotArea.RowArea, numrowfields);
+			numrowfields++;
 		}
+
+		if (cbl.Contains("Measures"))
+		{
+			pivotENT.DataSourceID = "sql_StudyDesign_M";
+			pivotENT.Fields["fstudymeasname"].SetAreaPosition(PivotArea.RowArea, numrowfields);
+			numrowfields++;
+		}
+
+		//if (cbl.Contains("Consents"))
+		//{
+		//	pivotENT.Fields["fconsentformname"].SetAreaPosition(PivotArea.RowArea, numrowfields);
+		//	numrowfields++;
+		//}
+
+
+
 
 		pivotENT.DataBind();
 	}

@@ -24,6 +24,9 @@
       <siteMapNode url="~/Track/Measures.aspx" title="Measures" description="*New page as of Sept 2017" />
       <siteMapNode url="~/Track/Subject.aspx" title="View Single Subject" description="*New page as of Sept 2017" />
       <siteMapNode url="" title="Specific Studies">
+        <siteMapNode url="" title="AVH" menuitem="true">
+          <siteMapNode url="~/Study/AVH/ProcessData.aspx" title="Process Data" menuitem="true" />
+        </siteMapNode>
         <siteMapNode url="" title="Bernier Lab" menuitem="true">
           <siteMapNode url="~/Tracking/code6.aspx" title="Code 6 ID's" menuitem="true" />
         </siteMapNode>
@@ -51,8 +54,11 @@
       <siteMapNode url="~/Track/otherID.aspx" title="Other ID's" description="Search and export list of alternate/other ID's" />
     </siteMapNode>
     <siteMapNode url="" title="Study Info">
-      <siteMapNode url="~/Info/MeasureList.aspx" title="Measure List" />
-      <siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info/Data Dictionary" />
+      <siteMapNode url="~/Info/MeasureList.aspx" title="Measure List for this Study" />
+      <siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info" />
+      <siteMapNode url="~/Track/MeasureLibrary.aspx" title="Measure Library" />
+      <siteMapNode url="~/Track/Dictionary.aspx" title="Data Dictionary" />
+      <siteMapNode url="~/Admin/NewMeasure.aspx" title="Create New Measure" menuitem="true" />
       <siteMapNode url="~/Admin/NewStudy.aspx" title="Create New Study" menuitem="true" />
       <siteMapNode url="~/Admin/StudyDesign.aspx" title="Edit Study Design" menuitem="true" />
       <siteMapNode url="~/Admin/StudyDesignViewer.aspx" title="View Study Design" menuitem="true" />

@@ -60,6 +60,14 @@
 			//	grid.GetEditor("StudyMeasName").PerformCallback(cmbMeas.GetValue().toString());
 		}
 
+		function HideBulkAssign(s, e) {
+			//grid_tblstudymeas.UnselectRows();
+			panelBulkAssign.SetClientVisible(false);
+		}
+		function HideBulkAssign2(s, e) {
+			panelBulkAssign2.SetClientVisible(false);
+		}
+
 		function ShowBulkAssign(s, e) {
 			panelBulkAssign.SetClientVisible(true);
 		}
@@ -332,24 +340,29 @@
 							<dx:PanelContent>
 								<table>
 									<tr>
-										<td>
+										<td style="padding:10px">
 											<dx:ASPxComboBox ID="cboStudyActionContainer" runat="server" ClientInstanceName="cboStudyActionContainer" DataSourceID="sql_StudyAction_ALL"
-												 ValueField="studyactionID">
+												 ValueField="studyactionID" NullText="--Select Action--" >
 												<Columns>
 													<dx:ListBoxColumn FieldName="timepoint_text"></dx:ListBoxColumn>
 													<dx:ListBoxColumn FieldName="actiontext"></dx:ListBoxColumn>
 												</Columns>
 											</dx:ASPxComboBox>
 										</td>
-										<td style="width:50px"></td>
-										<td>
-											<dx:ASPxButton ID="btnBulkAssign" runat="server" ClientInstanceName="btnBulkAssign" Text ="Assign Selected Measures to Action" OnClick="btnBulkAssign_OnClick"></dx:ASPxButton>
+										<td style="padding:10px">
+											<dx:ASPxButton ID="btnBulkAssign" runat="server" ClientInstanceName="btnBulkAssign" Paddings-Padding="2px" Text ="Assign Measures to Action" OnClick="btnBulkAssign_OnClick"></dx:ASPxButton>
 
 										</td>
-										<td>
-											<dx:ASPxButton ID="btnREL" runat="server" ClientInstanceName="btnREL" Text ="Create RELIABILITY for Selected Measures" OnClick="btnREL_OnClick"></dx:ASPxButton>
-
+										<td style="padding:10px">
+											<dx:ASPxButton ID="btnREL" runat="server" ClientInstanceName="btnREL"  Paddings-Padding="2px" Text ="Create RELIABILITY for Measures" OnClick="btnREL_OnClick"></dx:ASPxButton>
 										</td>
+										<td style="padding:10px">
+											<dx:ASPxButton ID="btnCancelBulkAssign" runat="server" ClientInstanceName="btnCancelBulkAssign"  Paddings-Padding="2px"
+												Text ="Cancel" ForeColor="DarkRed" AutoPostBack="false" >
+												<ClientSideEvents Click="HideBulkAssign" />
+											</dx:ASPxButton>
+										</td>
+
 									</tr>
 								</table>
 
@@ -369,7 +382,7 @@
 							 OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
 						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  >
 						<ClientSideEvents EndCallback="OnEndCallBack" SelectionChanged="ShowBulkAssign" />
-						<SettingsBehavior AllowSelectByRowClick="true" />
+						<SettingsBehavior AllowSelectByRowClick="true"  />
 						<SettingsPager Position="Top" PageSize="10">
 							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
 						</SettingsPager>
@@ -537,7 +550,7 @@
 							<dx:PanelContent>
 								<table>
 									<tr>
-										<td>
+										<td style="padding:10px">
 											<dx:ASPxComboBox ID="cboStudyActionContainer2" runat="server" ClientInstanceName="cboStudyActionContainer2" DataSourceID="sql_StudyAction_ALL"
 												 ValueField="studyactionID">
 												<Columns>
@@ -546,13 +559,15 @@
 												</Columns>
 											</dx:ASPxComboBox>
 										</td>
-										<td style="width:50px"></td>
-										<td>
+										<td style="padding:10px">
 											<dx:ASPxButton ID="btnBulkAssign2" runat="server" ClientInstanceName="btnBulkAssign2" Text ="Assign Selected Consents to Action" OnClick="btnBulkAssign2_OnClick"></dx:ASPxButton>
 
 										</td>
-										<td>
-
+										<td style="padding:10px">
+											<dx:ASPxButton ID="btnCancelBulkAssign2" runat="server" ClientInstanceName="btnCancelBulkAssign2"  Paddings-Padding="2px"
+												Text ="Cancel" ForeColor="DarkRed" AutoPostBack="false" >
+												<ClientSideEvents Click="HideBulkAssign2" />
+											</dx:ASPxButton>
 										</td>
 									</tr>
 								</table>

@@ -196,7 +196,7 @@
 </asp:Menu>
 
 <dx:ASPxMenu ID="dxMenu" runat="server"  DataSourceID="ASPxSiteMapDataSource1"  EncodeHtml="False" AllowSelectItem="True" 
-	Orientation="Horizontal" BackColor="#a1b5cf" Width="100%" />
+	Orientation="Horizontal" BackColor="#a1b5cf" Width="100%" OnItemDataBound="dxMenu_OnItemDataBound" />
 	<dx:ASPxSiteMapDataSource ID="ASPxSiteMapDataSource1" runat="server"  />
 
 

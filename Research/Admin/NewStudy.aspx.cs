@@ -77,7 +77,7 @@ public partial class Admin_NewStudy: BasePage
 			if (newstudyID > 0)
 			{
 				string code0 = String.Format("insert into dbo.tblstudy(studyID, studyname, studyfullname, active) values({0}, '{1}', '{2}', 1);", newstudyID, studyname, studyfullname);
-				string code1 = String.Format("insert into dbo.tblgroup(groupID, studyID, groupname, goaln, siteID, sortorder) values({0}, {1}, 'Group 1', 0, 3, 1);", newgroupID, newstudyID);
+				string code1 = String.Format("insert into dbo.tblgroup(groupID, studyID, groupname, groupabbr, goaln, siteID, sortorder) values({0}, {1}, 'Group 1', 'Grp1', 0, 3, 1);", newgroupID, newstudyID);
 				string code2 = String.Format("insert into dbo.tblLabGroup(groupid, labid, labgroup_enabled)  values({0}, {1}, 1 )", newgroupID, labID);
 
 				string code3 = String.Format("insert into dbo.tblLabGroup_staff(staffid, dbroleid, labgroupid) select sec.systemuser_staffID(), 1, max(labgroupID)  from tbllabgroup where groupID={0};", newgroupID);

@@ -545,7 +545,8 @@ public partial class DataEntryForms_editlayout : OboutInc.oboutAJAXPage  //Syste
 				string datatype = row["fielddatatype_with_length"].ToString();
 
 
-				sql.NonQuery_from_SQLstring("exec def.spAddColumn '" + tblname + "','" + fldname + "','" + datatype  + "'");
+				//TURNED OFF JULY 2018  TOFIX
+				//sql.NonQuery_from_SQLstring("exec def.spAddColumn '" + tblname + "','" + fldname + "','" + datatype  + "'");
 
 			}
 
@@ -572,7 +573,8 @@ public partial class DataEntryForms_editlayout : OboutInc.oboutAJAXPage  //Syste
 		ps.Add(sql.CreateParam("fielddatatype", newFieldDatatype.SelectedValue, "text"));
 		ps.Add(sql.CreateParam("fielddatatypelength", newFieldDatatypelength.Text, "int"));
 
-		sql.NonQuery_from_ProcName("def.Fld_INSERT_from_web", ps);
+		//TURNED OFF JULY 2018  TOFIX
+		//sql.NonQuery_from_ProcName("def.Fld_INSERT_from_web", ps);
 
 
 	}

@@ -215,15 +215,15 @@
 						<dx:GridViewDataColumn FieldName="LastNameOnBC" Caption="Last Name on Birth Cert" Visible="false" ></dx:GridViewDataColumn>
 
 
-						<dx:GridViewDataComboBoxColumn FieldName="Role" Caption="Role"  >
+						<dx:GridViewDataComboBoxColumn FieldName="Role" Caption="Role" PropertiesComboBox-NullText="Undefined"  >
 							<PropertiesComboBox TextField="PersonRole" ValueField="Role" DataSourceID='sql_Personrole'  />
 						</dx:GridViewDataComboBoxColumn>
 
-						<dx:GridViewDataComboBoxColumn FieldName="EthnicityID" Caption="Race"  >
+						<dx:GridViewDataComboBoxColumn FieldName="EthnicityID" Caption="Race"  PropertiesComboBox-NullText="Unknown">
 							<PropertiesComboBox TextField="EthnicityDesc" ValueField="EthnicityID" DataSourceID='sql_Ethnicity'  />
 						</dx:GridViewDataComboBoxColumn>
 
-						<dx:GridViewDataComboBoxColumn FieldName="HispanicID" Caption="Ethnicity"  >
+						<dx:GridViewDataComboBoxColumn FieldName="HispanicID" Caption="Ethnicity" PropertiesComboBox-NullText="Unknown" >
 							<PropertiesComboBox TextField="HispanicDesc" ValueField="HispanicID" DataSourceID='sql_Hispanic'  />
 						</dx:GridViewDataComboBoxColumn>
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -28,6 +29,17 @@ namespace uwac
 
 		public static bool BuildInsertSqlCode(ASPxDataInsertingEventArgs e, string tbl, string db)
 		{
+			return BuildInsertSqlCode(e.NewValues, tbl, db);
+		}
+
+
+		public static bool BuildInsertSqlCode(ASPxDataInsertValues e, string tbl, string db)
+		{
+			return BuildInsertSqlCode(e.NewValues, tbl, db);
+		}
+
+		public static bool BuildInsertSqlCode(OrderedDictionary NewValues , string tbl, string db)
+		{
 			bool result = false;
 
 			SQL_utils sql1 = new SQL_utils(db);
@@ -41,7 +53,7 @@ namespace uwac
 
 
 
-			foreach (DictionaryEntry newentry in e.NewValues)
+			foreach (DictionaryEntry newentry in NewValues)
 			{
 				var newval = (newentry.Value == null) ? null : newentry.Value.ToString();
 
@@ -83,7 +95,7 @@ namespace uwac
 					if (hasCreatedBy.ToLower() == "createdby")
 					{
 						insert_flds.Add("createdby");
-						insert_vals.Add("cast(SESSION_CONTEXT(N'netid') as varchar)");
+						insert_vals.Add("sec.systemuser()");
 					}
 				}
 
@@ -105,34 +117,48 @@ namespace uwac
 			return result;
 		}
 
+
+
+		#region UPDATE
 		public static bool BuildUpdateSqlCode(ASPxDataUpdatingEventArgs e, string tbl, string db)
 		{
+			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db);
+		}
+
+		public static bool BuildUpdateSqlCode(ASPxDataUpdateValues e, string tbl, string db)
+		{
+			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db);
+		}
+
+
+		public static bool BuildUpdateSqlCode(OrderedDictionary Keys, OrderedDictionary NewValues, OrderedDictionary OldValues, string tbl, string db)
+		{
 			bool result = false;
-			int n_newvals = e.NewValues.Count;
-			int n_oldvals = e.OldValues.Count;
+			int n_newvals = NewValues.Count;
+			int n_oldvals = OldValues.Count;
 
 			List<string> fldupdates = new List<string>();
 			List<string> auditchanges = new List<string>();
 			string pkfld = "";
-			int pkvalue = -1;
+			string pkvalue = "-1";
 
-			foreach (DictionaryEntry key in e.Keys)
+			foreach (DictionaryEntry key in Keys)
 			{
 				pkfld = key.Key.ToString();
-				pkvalue = Convert.ToInt32(key.Value);
+				pkvalue = key.Value.ToString();
 			}
 
 
-			if (n_newvals == n_oldvals && pkvalue >= 0 && pkfld != "")
+			if (n_newvals == n_oldvals && pkvalue != "-1" && pkfld != "")
 			{
 				SQL_utils sql1 = new SQL_utils(db);
 				DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "'");
 				sql1.Close();
 
 
-				foreach (DictionaryEntry newentry in e.NewValues)
+				foreach (DictionaryEntry newentry in NewValues)
 				{
-					foreach (DictionaryEntry oldentry in e.OldValues)
+					foreach (DictionaryEntry oldentry in OldValues)
 					{
 						var newfld = newentry.Key.ToString().ToLower();
 						var oldfld = oldentry.Key.ToString().ToLower();
@@ -165,7 +191,7 @@ namespace uwac
 
 
 							//if oldval is null - go get the real one
-							if(oldval == null)
+							if (oldval == null)
 							{
 								SQL_utils sql2 = new SQL_utils(db);
 								string oldval_from_DB = sql2.StringScalar_from_SQLstring(String.Format("select {0} from {1} where cast({2} as varchar) = '{3}'"
@@ -179,7 +205,7 @@ namespace uwac
 
 							//new value is not null AND old value is null or empty = update to newval (even if empty string)
 							bool update_to_empty = ((newval == "" || newval != null) && !String.IsNullOrEmpty(oldval)) ? true : false;
-							bool update_to_value = (!String.IsNullOrEmpty(newval) ) ? true : false;
+							bool update_to_value = (!String.IsNullOrEmpty(newval)) ? true : false;
 
 							if (newval == null) newval = "";
 							if (oldval == null) oldval = "";
@@ -219,7 +245,7 @@ namespace uwac
 			}
 
 
-			
+
 			SQL_utils sql = new SQL_utils(db);
 
 			//Write the changes
@@ -281,6 +307,9 @@ namespace uwac
 			return result;
 
 		}
+
+
+		#endregion
 
 
 		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)

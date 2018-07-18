@@ -13,7 +13,7 @@ using DevExpress.XtraPivotGrid;
 using DevExpress.Web.Data;
 using uwac;
 
-public partial class DataProject_Index : System.Web.UI.Page
+public partial class DataProject_Index : BasePage  
 {
 
 	private List<string> selected_measlist;
@@ -130,7 +130,7 @@ public partial class DataProject_Index : System.Web.UI.Page
 	protected DataTable GetProjects()
 	{
 		SQL_utils sql = new SQL_utils("data");
-		DataTable dt = sql.DataTable_from_SQLstring("select * from dp.vwDataProject2 where studyID = " + Master.Master_studyID.ToString());
+		DataTable dt = sql.DataTable_from_SQLstring("select * from dp.vwDataProject3 where studyID = " + Master.Master_studyID.ToString());
 
 		Session["dataprojects"] = dt;
 		sql.Close();

@@ -75,6 +75,14 @@
 
             <dx:GridViewDataColumn FieldName="MeasFullName" Caption="Measure Full Name" />
 
+            <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Data Dict">
+                <DataItemTemplate>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DD" runat="server" Text="Dict" NavigateUrl='<%# "~/Track/Dictionary.aspx?measureID=" + Eval("measureID") %>' Font-Bold="false">
+                    </dx:ASPxHyperLink>
+                </DataItemTemplate>
+            </dx:GridViewDataHyperLinkColumn>
+
+
             <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="DE Link">
                 <DataItemTemplate>
                     <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("DE_LinkLabel") %>' NavigateUrl='<%# Eval("DE_Link") %>'>
@@ -89,10 +97,12 @@
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
 
+             
             <dx:GridViewDataColumn FieldName="Respondent" />
             <dx:GridViewDataColumn FieldName="Method" />
             <dx:GridViewDataColumn FieldName="Focus" />
             <dx:GridViewDataColumn FieldName="# studies using" />
+            <dx:GridViewDataColumn FieldName="tblpk" />
             <dx:GridViewDataColumn FieldName="DataTable" />
             <dx:GridViewDataColumn FieldName="# recs" />
 

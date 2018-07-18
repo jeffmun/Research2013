@@ -249,6 +249,7 @@
 			</td>
 		</tr>
 		<tr>
+			<%--Step 1--%>
 			<td style="vertical-align: top; width: 400px">
 			
 				<dx:ASPxCallbackPanel ID="callbackSelectors" runat="server"  ClientInstanceName="callbackSelectors" OnCallback="callbackSelectors_OnCallback">
@@ -345,10 +346,11 @@
 				</PanelCollection>
 			</dx:ASPxCallbackPanel>
 			</td>
+			<%--Step 2--%>
 			<td style="vertical-align: top; width: 400px">
 
 
-			<dx:ASPxCallbackPanel ID="callbackVars" runat="server"  OnCallback="callbackVars_OnCallback" ClientInstanceName="callbackVars">
+				<dx:ASPxCallbackPanel ID="callbackVars" runat="server"  OnCallback="callbackVars_OnCallback" ClientInstanceName="callbackVars">
 				<PanelCollection>
 					<dx:PanelContent ID="panelcontent1" runat="server">
 
@@ -494,10 +496,13 @@
 				</PanelCollection>
 			</dx:ASPxCallbackPanel>
 
-					</td>
+			</td>
+
+
+			<%--Step 3--%>
 			<td style="vertical-align: top;" rowspan="2">
 
-				<dx:ASPxCallbackPanel ID="callbackPlotTypes" runat="server"  OnCallback="callbackPlotTypes_OnCallback" ClientInstanceName="callbackPlotTypes">
+				<dx:ASPxCallbackPanel ID="callbackSpecifics" runat="server"  OnCallback="callbackSpecifics_OnCallback" ClientInstanceName="callbackSpecifics">
 				<PanelCollection>
 					<dx:PanelContent ID="panelcontent3" runat="server">
 				
@@ -520,10 +525,10 @@
 										<td style="width: 200px"></td>
 										</tr>
 									<tr>
-										<td colspan="3">
-											<br />
-											<dx:ASPxCheckBoxList ID="chkPlots" runat="server" Caption="Plots"  
-												 RepeatColumns="3" RepeatLayout="Flow" Font-Size="10"  >
+										<td colspan="2">
+											
+											<dx:ASPxCheckBoxList ID="chkPlots" runat="server" Caption="Plots" CaptionSettings-Position="Top"  
+												 RepeatColumns="3" RepeatLayout="Flow" Font-Size="9" Paddings-Padding="2px"  >
 												<Items>
 													<dx:ListEditItem Value="Histogram" Selected="false" />
 													<dx:ListEditItem Value="Scatterplot" Selected="false" />
@@ -532,6 +537,13 @@
 													<dx:ListEditItem Value="PCA" Selected="false" />
 												</Items>
 											</dx:ASPxCheckBoxList>
+										</td>
+										<td style="padding:10px">
+											<dx:ASPxButton ID="btnViewSettings" ClientInstanceName="btnViewSettings" runat="server" Text="Show Settings"
+												ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
+												<Image IconID="chart_chartyaxissettings_16x16office2013"></Image>
+												<ClientSideEvents Click="btnViewSettings_ClientClick" />
+											</dx:ASPxButton>
 										</td>
 									</tr>
 								</table>
@@ -546,17 +558,13 @@
 								<Image IconID="chart_chart_16x16office2013"></Image>
 								<ClientSideEvents Click="btnCreateCharts_ClientClick" />
 							</dx:ASPxButton>
-							<dx:ASPxButton ID="btnViewSettings" ClientInstanceName="btnViewSettings" runat="server" Text="Show Settings"
-								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
-								<Image IconID="chart_chartyaxissettings_16x16office2013"></Image>
-								<ClientSideEvents Click="btnViewSettings_ClientClick" />
-							</dx:ASPxButton>
+
 							<dx:ASPxButton ID="btnViewData" ClientInstanceName="btnViewData" runat="server" Text="View Selected Data"
 								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
 								<Image IconID="richedit_inserttable_16x16"></Image>
 								<ClientSideEvents Click="btnViewData_ClientClick" />
 							</dx:ASPxButton>
-							<dx:ASPxButton ID="btnViewMissing" ClientInstanceName="btnViewMissing" runat="server" Text="View Missing Data Report"
+							<dx:ASPxButton ID="btnViewMissing" ClientInstanceName="btnViewMissing" runat="server" Text="Missing Data Report"
 								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
 								<Image IconID="support_question_16x16office2013"></Image>
 								<ClientSideEvents Click="btnViewMissing_ClientClick" />
@@ -568,7 +576,7 @@
 <%--								<ClientSideEvents Click="btnViewMissing_ClientClick" />--%>
 							</dx:ASPxButton>
 							<br />
-							<dx:ASPxTextBox ID="txtOutputFilename" runat="server" Caption="Output filename:" Text="output"></dx:ASPxTextBox>
+							<br /><dx:ASPxTextBox ID="txtOutputFilename" runat="server" Caption="Output filename:" Text="output" Visible="false"></dx:ASPxTextBox>
 
 						</dx:PanelContent>
 					</PanelCollection>

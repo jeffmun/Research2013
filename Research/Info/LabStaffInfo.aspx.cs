@@ -86,6 +86,8 @@ public partial class Info_LabStaffinfo : BasePage
 	}
 
 
+
+
 	protected void Load_LabStaff()
 	{
 		

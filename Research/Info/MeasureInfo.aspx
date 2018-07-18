@@ -48,7 +48,7 @@
 		
 			</td>    
 		<td>
-		<asp:Button ID="btnCreateMeas_Begin" runat="server" Text="Create New Measure"  Font-Size="Smaller" OnClick="CreateNewMeasure_Begin" Visible="true" /><br />
+		<asp:Button ID="btnCreateMeas_Begin" runat="server" Text="Create New Measure" Font-Size="Smaller" OnClick="CreateNewMeasure_Begin" Visible="false" /><br />
 		<asp:Button ID="btnCreateTable_Begin" runat="server" Text="Create New Data Table"  Font-Size="Smaller" OnClick="CreateNewTable_Begin" Visible="false" />
 
 	</td>
@@ -115,18 +115,19 @@
 
 		<table><tr>
 		<td>
-		<asp:Label ID="Label25" runat="server" width="80px" Text="Table name:"></asp:Label><asp:TextBox ID="txtTblName" runat="server" Text=""></asp:TextBox>
+		<asp:Label ID="Label25" runat="server" width="120px" Text="Table name:  ALL_"></asp:Label><asp:TextBox ID="txtTblName" runat="server" Text=""></asp:TextBox>
 		<%--<asp:Button ID="btn_LookupInProgress" runat="server" Text="Lookup" OnClick="Lookup_Table_InProgress" AutoPostBack="true" Font-Size="Smaller" />--%>
 		<br />
-		<asp:Label ID="Label32" runat="server" width="80px"  Text="Table abbr:"></asp:Label><asp:TextBox ID="txtTblAbbr" runat="server" Text=""></asp:TextBox><br />
+		<asp:Label ID="Label32" runat="server" width="120px"  Text="Table abbr:"></asp:Label><asp:TextBox ID="txtTblAbbr" runat="server" Text=""></asp:TextBox><br />
 		<br /><br />
 
 		<asp:Button ID="btnInsertTableInfo_Submit" runat="server" AutoPostBack="true" OnClick="InsertTableInfo_Submit" Text="Insert New Table Info" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<asp:Button ID="btnInsertTableInfo_Cancel" runat="server" AutoPostBack="true" OnClick="InsertTableInfo_Cancel" Text="Cancel" ForeColor="Red" />
 		
 		</td>
+			<td style="width:50px"></td>
 		<td>
-	<asp:Label ID="lblX" runat="server" Text="Label"></asp:Label> <br />
+	<asp:Label ID="lblX" runat="server" Text="..."></asp:Label> <br />
 
 	<asp:Button ID="btnDownloadExcelTemplate" runat="server" Text="Download Excel Template" OnClick="DownloadExcelTemplate" />
 

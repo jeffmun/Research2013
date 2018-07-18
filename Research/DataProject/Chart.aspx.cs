@@ -842,7 +842,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		log(String.Format("callbackSelectors_OnCallback {0}", e.Parameter.ToString()));
 	}
 
-	protected void callbackPlotTypes_OnCallback(object sender, CallbackEventArgsBase e)
+	protected void callbackSpecifics_OnCallback(object sender, CallbackEventArgsBase e)
 	{
 		log(String.Format(">>> callbackControls_OnCallback {0}", e.Parameter.ToString()));
 
