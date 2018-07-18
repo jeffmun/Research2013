@@ -248,6 +248,8 @@ public partial class NDAR_GUIDinfo : BasePage //System.Web.UI.Page
 			sql.Close();
 
 			ddlPotentialINVALID.SelectedIndex = 0;
+
+			Response.Redirect("GUIDinfo.aspx");
 		}
 	}
 

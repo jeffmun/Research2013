@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 //using Newtonsoft.Json.Schema;
 using uwac;
 using uwac_controls;
+using DevExpress.Web;
+using DevExpress.WebUtils;
 using Obout.Grid;
 using Obout.Interface;
 using Obout.ComboBox;
@@ -35,6 +37,11 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
+		bool isPostback = IsPostBack;
+		bool isCallback = IsCallback;
+
+		 
+
 		int DatStructureInfo_isOK = LoadDataStructureInfo(shortName);
 		if (DatStructureInfo_isOK == 0)
 		{
@@ -48,20 +55,34 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 		//}
 
 
-
 		if(!IsPostBack)
 		{
-			//Only load when it is not a postback
-
-
-
-			//LoadUWtable_names();
 
 		}
 
+		if(isCallback)
+		{
+			if (Session["NDARview"] != null)
+			{
+				gridNDARview.DataSource = Session["NDARview"];
+				gridNDARview.DataBind();
+			}
+		}
 
 	}
 
+	protected void gridNDARview_OnLoad(object sender, EventArgs e)
+	{
+		//gridNDARview.KeyFieldName = "databasepk";
+		//gridNDARview.DataSource = GetData();
+		//if (!IsPostBack && !IsCallback)
+		//{
+		//	PopulateColumns();
+		//	ASPxGridView1.DataBind();
+		//}
+		//else
+		//	CreateTemplate();
+	}
 
 
 	protected void LoadStudymeas()
@@ -86,12 +107,14 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 	}
 
 
+	private void CreateTemplate()
+	{
+		((GridViewDataColumn)gridNDARview.Columns["colItemTemplate"]).DataItemTemplate = new MyHyperlinkTemplate();
+	}
+
+
 	protected void LoadNDARview(string shortName, string studymeasIDs)
 	{
-		//SQL_utils sql = new SQL_utils("data");
-		
-		//Doesn't work
-		//int studyID = master.Master_studyID ;
 		int studyID = sql.GetUserStudyID();
 		string IDexclude = txtIDexclude.Text;
 
@@ -99,15 +122,43 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 		{
 			gvNDARview.DataSource = null;
 
-			
-
 			DataTable dt = NDAR.GetNDAR_view(shortName, studyID, IDexclude, studymeasIDs);
 			if (dt.Rows.Count > 0)
 			{
-				gvNDARview.DataSource = dt;
-				gvNDARview.DataBind();
+				//gvNDARview.DataSource = dt;
+				//gvNDARview.DataBind();
+				//gvNDARview.Visible = true;
 
-				gvNDARview.Visible = true;
+
+				//#region Add Hyperlink column
+				////GridViewDataTextColumn colID = new GridViewDataTextColumn();
+				////colID.FieldName = "rownum";
+				////gridNDARview.Columns.Add(colID);
+
+				//GridViewDataTextColumn colItemTemplate = new GridViewDataTextColumn();
+
+				//MyHyperlinkTemplate delink = new MyHyperlinkTemplate();
+				//colItemTemplate.FieldName = "delink";
+				//colItemTemplate.DataItemTemplate = delink; // Create a template
+				//colItemTemplate.Name = "colItemTemplate";
+				//colItemTemplate.Caption = "Template Column";
+				//gridNDARview.Columns.Add(colItemTemplate);
+				//#endregion
+
+
+				Session["NDARview"] = dt; 
+
+				gridNDARview.DataSource = dt;
+				gridNDARview.DataBind();
+				gridNDARview.Visible = true;
+
+				gridNDARview.Columns[0].FixedStyle = DevExpress.Web.GridViewColumnFixedStyle.Left;
+				gridNDARview.Columns[1].FixedStyle = DevExpress.Web.GridViewColumnFixedStyle.Left;
+				gridNDARview.Columns[2].FixedStyle = DevExpress.Web.GridViewColumnFixedStyle.Left;
+				gridNDARview.Columns[3].FixedStyle = DevExpress.Web.GridViewColumnFixedStyle.Left;
+				gridNDARview.Columns[4].FixedStyle = DevExpress.Web.GridViewColumnFixedStyle.Left;
+
+
 				v5.Text = dt.Rows.Count.ToString();
 				v5.ForeColor = Color.Navy;
 			}
@@ -132,6 +183,33 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 
 
 
+	}
+
+
+	protected void gridNDARview_OnHtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
+	{
+		var x = e;
+
+		if (e.DataColumn.FieldName == "rownum")
+		{
+			string cellinfo = e.CellValue.ToString();
+			int pos = cellinfo.IndexOf("|");
+
+			if (pos > 0)
+			{
+				string rownum = cellinfo.Substring(0, pos);
+				string url = cellinfo.Substring(pos + 1, cellinfo.Length - (pos + 1));
+
+				var container = e.Cell.NamingContainer;
+
+				ASPxHyperLink link = new ASPxHyperLink();
+				link.NavigateUrl = url;
+				link.Text = rownum;
+
+				e.Cell.Controls.Clear();
+				e.Cell.Controls.Add(link);
+			}
+		}
 	}
 
 
@@ -244,6 +322,8 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 		SpreadsheetGearUtils.SaveDataTableToFile(dt, filename, "csv", true);
 
 	}
+	
+	
 	protected void gvNDARview_RowDataBound(object sender, GridViewRowEventArgs e)
 	{
 
@@ -260,6 +340,24 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 
 		}
 	}
+
+	protected void gridNDARview_RowDataBound(object sender, GridViewRowEventArgs e)
+	{
+
+		if (e.Row.RowType == DataControlRowType.DataRow)
+		{
+			//GetDataEntryURL
+			string url = sql.GetDataEntryURL(shortName);
+
+			HyperLink lnk = new HyperLink();
+			lnk.Target = "_blank";
+			lnk.NavigateUrl = url + "?pk=" + e.Row.Cells[2].Text;
+			lnk.Text = e.Row.Cells[0].Text;
+			e.Row.Cells[0].Controls.Add(lnk);
+
+		}
+	}
+
 
 
 
@@ -308,5 +406,18 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 
 		}
 
+	}
+}
+
+class MyHyperlinkTemplate : ITemplate
+{
+	public void InstantiateIn(Control container)
+	{
+		ASPxHyperLink Link = new ASPxHyperLink();
+		GridViewDataItemTemplateContainer gridContainer = (GridViewDataItemTemplateContainer)container;
+		//Link.NavigateUrl = string.Format("~/{0}{1}", _stem, gridContainer.KeyValue);
+		Link.NavigateUrl = gridContainer.Text;
+		Link.Text = string.Format("{0}", gridContainer.KeyValue);
+		container.Controls.Add(Link);
 	}
 }
