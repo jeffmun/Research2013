@@ -10,10 +10,24 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
 	<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true" EnablePartialRendering="true" EnableViewState="true"></asp:ScriptManager>
 
-		<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Staff Assignments" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
+	
+	<script type="text/javascript">
+		function UpdateColor() {
+			gridEditStaff.PerformCallback();
+		}
+	</script>
+	
+	
+	
+	<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Staff Assignments" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
 
 
 
+
+	<dx:ASPxTrackBar ID="trkColorCorrectionFactor" runat="server" MinValue="0" MaxValue="100" Width="100px" ShowChangeButtons="false"
+		Caption="Color Level" >
+		<ClientSideEvents PositionChanged="UpdateColor" />
+	</dx:ASPxTrackBar>
 
 	<br />
 	<br />
@@ -24,26 +38,9 @@
 					TextField="LabName" ValueField="labID" NullText="--Select Lab--"  OnSelectedIndexChanged="cboLab_OnSelectedIndexChanged"></dx:ASPxComboBox>
 
 			</td>
-			<td style="padding:10px; vertical-align:top">
-				<dx:ASPxGridLookup ID="gridStudies" ClientInstanceName="gridStudies" runat="server" DataSourceID="Sql_Studies" NullText="--Select Studies--" Visible="false"
-					 SelectionMode="Multiple" KeyFieldName="studyID" TextFormatString="{1}">
-					<GridViewProperties>
-						<SettingsPager PageSize="50"></SettingsPager>
-					</GridViewProperties>
-					<Columns>
-						<dx:GridViewCommandColumn ShowSelectCheckbox="True" SelectAllCheckboxMode="AllPages" />
-						<dx:GridViewDataColumn FieldName="studyID" CellStyle-ForeColor="Silver"  ></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="studyname" ></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="isActive" ></dx:GridViewDataColumn>
-
-					</Columns>
-
-				</dx:ASPxGridLookup>
-
-			</td>
-			<td style="padding:10px; vertical-align:top">
-				<dx:ASPxButton ID="btnLoadStaff" ClientInstanceName="btnLoadStaff" runat="server" Text="Load Staff" Visible="false" OnClick="btnLoadStaff_OnClick"></dx:ASPxButton>
-				</td>
+			 <td style="padding:10px; vertical-align:top">
+				 </td>
+			
 		</tr>
 	</table>
 
@@ -58,7 +55,7 @@
 
 						<table>
 							<tr>
-								<td style="vertical-align: top; padding:10px">
+								<td style="vertical-align: top; padding:10px; width:400px">
 									<dx:ASPxComboBox ID="cboStaffInLab" ClientInstanceName="cboStaffInLab" runat="server" DataSourceID="Sql_StaffInLab" AutoPostBack="true" 
 											Caption="Edit Staff Member:" CaptionSettings-Position="Top" OnSelectedIndexChanged="cboStaffInLab_OnSelectedIndexChanged"
 											TextField="staffname" ValueField="staffID" NullText="--Select Lab Staff--"  ></dx:ASPxComboBox>
@@ -81,22 +78,26 @@
 						<br />
 						<dx:ASPxGridView ID="gridEditStaff" ClientInstanceName="gridEditStaff" runat="server" Visible="false" 
 							KeyFieldName="labgroup_staffID" SettingsDataSecurity-AllowEdit="true"  OnBatchUpdate="gridEditStaff_BatchUpdate"
-							 OnCellEditorInitialize="gridEditStaff_OnCellEditorInitialize" OnDataBinding="gridEditStaff_OnDataBinding">
+							 OnCellEditorInitialize="gridEditStaff_OnCellEditorInitialize" OnDataBinding="gridEditStaff_OnDataBinding"
+							 OnHtmlDataCellPrepared="gridEditStaff_OnHtmlDataCellPrepared" OnCustomCallback="gridEditStaff_OnCustomCallback" >
 							<SettingsEditing Mode="Batch" BatchEditSettings-StartEditAction="Click" BatchEditSettings-EditMode="Cell" >
 							</SettingsEditing>
 							<SettingsPager PageSize="50"></SettingsPager>
 							<Columns>
+								<dx:GridViewDataColumn FieldName="labgroup_staffID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="staffID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="labgroupID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="studyname" Caption="Study" ReadOnly="true"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="groupname" Caption="Group" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="dbrole" Caption="dbrole" ReadOnly="true"></dx:GridViewDataColumn>
+								 
 								
-								<dx:GridViewDataComboBoxColumn FieldName="dbroleID" Caption="Role" Width="150px" Settings-ShowEditorInBatchEditMode="true"  >
-										<PropertiesComboBox TextField="dbrole" ValueField="dbroleID" ValueType="System.Int32" DataSourceID='Sql_DBroles'  >
+								<dx:GridViewDataComboBoxColumn FieldName="dbroleID" Caption="Role" Width="150px" Settings-ShowEditorInBatchEditMode="true"
+										   >
+									
+										<PropertiesComboBox TextField="dbrole" ValueField="dbroleID" ValueType="System.Int32" DataSourceID='Sql_DBroles' 
+											   >
 										</PropertiesComboBox>
 								</dx:GridViewDataComboBoxColumn>
-								<dx:GridViewDataColumn FieldName="labgroup_staffID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
 							</Columns>
 						</dx:ASPxGridView>
 
@@ -109,9 +110,37 @@
 			<dx:TabPage Text="Staff by Study Grid">
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl2" runat="server">
+
+						<table>
+							<tr>
+								<td style="padding:10px; vertical-align:top">
+									<dx:ASPxGridLookup ID="gridStudies" ClientInstanceName="gridStudies" runat="server" DataSourceID="Sql_Studies" NullText="--Select Studies--" Visible="false"
+										 SelectionMode="Multiple" KeyFieldName="studyID" TextFormatString="{1}">
+										<GridViewProperties>
+											<SettingsPager PageSize="50"></SettingsPager>
+										</GridViewProperties>
+										<Columns>
+											<dx:GridViewCommandColumn ShowSelectCheckbox="True" SelectAllCheckboxMode="AllPages" />
+											<dx:GridViewDataColumn FieldName="studyID" CellStyle-ForeColor="Silver"  ></dx:GridViewDataColumn>
+											<dx:GridViewDataColumn FieldName="studyname" ></dx:GridViewDataColumn>
+											<dx:GridViewDataColumn FieldName="isActive" ></dx:GridViewDataColumn>
+
+										</Columns>
+
+									</dx:ASPxGridLookup>
+
+								</td>
+								<td style="padding:10px; vertical-align:top">
+									<dx:ASPxButton ID="btnLoadStaff" ClientInstanceName="btnLoadStaff" runat="server" Text="Load Staff" Visible="false" OnClick="btnLoadStaff_OnClick"></dx:ASPxButton>
+								</td>
+							</tr>
+						</table>
+
+						<br/><br/>
 							<dx:ASPxPivotGrid ID="pivotStaff" ClientInstanceName="pivotStaff" runat="server" Visible="true" 
-							 OptionsView-ShowFilterHeaders="false"
+							 OptionsView-ShowFilterHeaders="false" 
 								OptionsView-HorizontalScrollBarMode="Auto" OptionsView-VerticalScrollBarMode="Auto">
+								<OptionsView ShowColumnGrandTotals="false" ShowColumnTotals="false" ShowRowGrandTotals="false" ShowRowTotals="false" />
 								<Fields>
 									<dx:PivotGridField FieldName="StaffName" ID="fStaffName" Caption="Staff"  Area="RowArea" Options-ShowTotals="false" Options-ShowGrandTotal="false"  />
 									<dx:PivotGridField FieldName="StudyName" ID="fStudyName" Caption="Study"  Area="ColumnArea"  Options-ShowTotals="false" Options-ShowGrandTotal="false"  />
@@ -172,7 +201,7 @@
 	</asp:SqlDataSource>  
 
 	<asp:SqlDataSource ID="Sql_DBroles" runat="server" 
-	SelectCommandType="Text"  SelectCommand="select dbroleID, dbrole from tblDBrole_lkup"   
+	SelectCommandType="Text"  SelectCommand="select dbroleID, dbrole, htmlcolor from tblDBrole_lkup"   
 	ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
    </asp:SqlDataSource>    
 
