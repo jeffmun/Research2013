@@ -18,31 +18,26 @@
 	</script>
 	
 	
-	
-	<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Staff Assignments" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
-
-
-
-
-	<dx:ASPxTrackBar ID="trkColorCorrectionFactor" runat="server" MinValue="0" MaxValue="100" Width="100px" ShowChangeButtons="false"
-		Caption="Color Level" >
-		<ClientSideEvents PositionChanged="UpdateColor" />
-	</dx:ASPxTrackBar>
-
-	<br />
 	<br />
 	<table>
 		<tr>
-			<td style="padding:10px; vertical-align:top">
-				<dx:ASPxComboBox ID="cboLab" ClientInstanceName="cboLab" runat="server" DataSourceID="Sql_Labs" AutoPostBack="true" 
-					TextField="LabName" ValueField="labID" NullText="--Select Lab--"  OnSelectedIndexChanged="cboLab_OnSelectedIndexChanged"></dx:ASPxComboBox>
+			<td style="width:300px">
+				<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Staff Assignments" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
 
 			</td>
-			 <td style="padding:10px; vertical-align:top">
-				 </td>
-			
+			<td style="width:400px">
+				<dx:ASPxComboBox ID="cboLab" ClientInstanceName="cboLab" runat="server" DataSourceID="Sql_Labs" AutoPostBack="true" 
+					TextField="LabName" ValueField="labID" NullText="--Select Lab--"  OnSelectedIndexChanged="cboLab_OnSelectedIndexChanged"></dx:ASPxComboBox>
+			</td>
+			<td>
+				<dx:ASPxTrackBar ID="trkColorCorrectionFactor" runat="server" MinValue="0" MaxValue="100" Width="100px" ShowChangeButtons="false"
+					Caption="Color Level" ForeColor="Silver" ValueChangedDelay="600" PositionStart="50">
+					<ClientSideEvents ValueChanged="UpdateColor"   />
+				</dx:ASPxTrackBar>
+			</td>
 		</tr>
 	</table>
+
 
 	<br />
 
@@ -60,12 +55,14 @@
 											Caption="Edit Staff Member:" CaptionSettings-Position="Top" OnSelectedIndexChanged="cboStaffInLab_OnSelectedIndexChanged"
 											TextField="staffname" ValueField="staffID" NullText="--Select Lab Staff--"  ></dx:ASPxComboBox>
 
+
+
 								</td>
 								<td style="vertical-align: top; padding:10px">
 									<dx:ASPxComboBox ID="cboStaffNotInLab" ClientInstanceName="cboStaffNotInLab" runat="server" DataSourceID="Sql_StaffNotInLab" AutoPostBack="true" 
 											Caption="Add Staff Member to the Lab:" CaptionSettings-Position="Top" Width="220px" OnSelectedIndexChanged="cboStaffNotInLab_OnSelectedIndexChanged"
 											TextField="staffname" ValueField="staffID" NullText="--Select Staff Member to Add--" ></dx:ASPxComboBox>
-
+									
 								</td>
 							</tr>
 						</table>
@@ -74,15 +71,16 @@
 
 						<%--ReadOnly="true" Visible="false"--%>
 						<br /><br />
-						<dx:ASPxLabel ID="lblStaffEditing" ClientInstanceName="lblStaffEditing" runat="server" Font-Bold="true"></dx:ASPxLabel>
-						<br />
+						<dx:ASPxLabel ID="lblStaffEditing" ClientInstanceName="lblStaffEditing" runat="server" Font-Bold="true" Font-Size="Small"></dx:ASPxLabel>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<dx:ASPxLabel ID="ASPxLabel2" runat="server" Text="Click to edit the role. Then click 'Save Changes' below the table." Font-Size="Small" Font-Italic="true"></dx:ASPxLabel>						<br />
 						<dx:ASPxGridView ID="gridEditStaff" ClientInstanceName="gridEditStaff" runat="server" Visible="false" 
 							KeyFieldName="labgroup_staffID" SettingsDataSecurity-AllowEdit="true"  OnBatchUpdate="gridEditStaff_BatchUpdate"
 							 OnCellEditorInitialize="gridEditStaff_OnCellEditorInitialize" OnDataBinding="gridEditStaff_OnDataBinding"
 							 OnHtmlDataCellPrepared="gridEditStaff_OnHtmlDataCellPrepared" OnCustomCallback="gridEditStaff_OnCustomCallback" >
 							<SettingsEditing Mode="Batch" BatchEditSettings-StartEditAction="Click" BatchEditSettings-EditMode="Cell" >
 							</SettingsEditing>
-							<SettingsPager PageSize="50"></SettingsPager>
+							<SettingsPager PageSize="20"></SettingsPager>
 							<Columns>
 								<dx:GridViewDataColumn FieldName="labgroup_staffID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="staffID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>

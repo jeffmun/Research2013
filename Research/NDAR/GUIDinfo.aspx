@@ -56,7 +56,8 @@
 		<asp:Label ID="lblguid" runat="server" Text="NDAR GUID Info" ForeColor="Navy" Font-Bold="true"></asp:Label>
 	<br />
 			
-		<dx:ASPxGridView ID="gridGuid"  runat="server" ClientInstanceName="gridGuid" DataSourceID="sql_guid" SettingsBehavior-AllowGroup="true" >
+		<dx:ASPxGridView ID="gridGuid"  runat="server" ClientInstanceName="gridGuid" DataSourceID="sql_guid" SettingsBehavior-AllowGroup="true" 
+			 Settings-ShowHeaderFilterButton="true">
 			<SettingsPager PageSizeItemSettings-Visible="true" PageSize="50"></SettingsPager>
 			<Settings ShowGroupPanel="true" />
 			<Columns>

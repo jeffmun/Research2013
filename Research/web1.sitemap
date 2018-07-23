@@ -89,7 +89,7 @@
     <siteMapNode url="" title="Admin">
       <siteMapNode url="~/NDAR/GUIDinfo.aspx" title="NDAR GUID Info" menuitem="true" />
       <siteMapNode url="~/NDAR/NDARapi.aspx" title="NDAR Data Definitions" menuitem="true" />
-      <siteMapNode url="~/Info/LabStaffInfo.aspx" title="Manage Staff Permissions" menuitem="true" />
+      <siteMapNode url="~/Admin/LabGroups.aspx" title="Manage Staff Permissions" menuitem="true" />
       <siteMapNode url="~/Info/StaffAccess.aspx" title="View Staff Permissions Details" menuitem="true" />
     </siteMapNode>
 

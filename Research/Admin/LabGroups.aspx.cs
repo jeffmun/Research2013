@@ -208,7 +208,6 @@ public partial class Admin_LabGroups : BasePage
 
 				if (colorname == "Black" && x < .3) e.Cell.ForeColor = Color.White;
 			}
-			
 		}
 	}
 
@@ -249,7 +248,7 @@ public partial class Admin_LabGroups : BasePage
 			case "DataEntry_BLIND": color = "Red"; break;
 			case "View data only": color = "Lime"; break;
 			case "Study Designer": color = "Teal"; break;
-			case "Data Admin": color = "Yellow"; break;
+			case "Data Admin": color = "Magenta"; break;
 		}
 		return color;
 	}
@@ -267,7 +266,7 @@ public partial class Admin_LabGroups : BasePage
 			case "5": color = "Red"; break;
 			case "6": color = "Lime"; break;
 			case "7": color = "Teal"; break;
-			case "8": color = "Yellow"; break;
+			case "8": color = "Magenta"; break;
 		}
 		return color;
 	}
