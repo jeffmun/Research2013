@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Web;
 using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -53,25 +54,49 @@ public partial class Admin_LabGroups : BasePage
 
 		if (!IsPostBack)
 		{
-			//lblStudyname.Text = Master.Master_studyname;
 
 		}
 		if (IsCallback)
 		{
-			//if (Session["labgroups_staff"] != null)
-			//{
-			//	DataTable dt = (DataTable)Session["labgroups_staff"];
-			//	if (dt.Rows.Count > 0)
-			//	{
-			//		gridStaffGroup.DataSource = dt;
-			//		gridStaffGroup.DataBind();
-			//	}
 
-			//}
+		}
+		ShowEditTabs();
+	}
 
+
+	protected void ShowEditTabs()
+	{
+		var x = cboLab.Value;
+
+		if (x != null)
+		{
+			SQL_utils sql = new SQL_utils("backend");
+
+			int labID = Convert.ToInt32(cboLab.Value.ToString());
+			string code = String.Format("select count(*) from tblLabGroup_staff where staffID = sec.systemuser_staffID() and dbroleID=1 and labgroupID in (select labgroupID from tbllabgroup where labID={0})", labID);
+			int n = sql.IntScalar_from_SQLstring(code);
+
+			string user = HttpContext.Current.User.Identity.Name;
+
+			string netid = Master.Master_netid;
+
+
+			bool showeditors = (n > 0 || netid=="jeffmun") ? true : false;
+
+
+			try
+			{
+				
+
+				pageControl1.TabPages.FindByName("LabAccess").ClientVisible = showeditors;
+				pageControl1.TabPages.FindByName("StaffAccess").ClientVisible = showeditors;
+			}
+			catch(Exception ex) { }
+			sql.Close();
 		}
 
 	}
+
 
 	protected void cboLab_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
@@ -80,14 +105,14 @@ public partial class Admin_LabGroups : BasePage
 
 		string sqlcode = String.Format("select * from tblLabGroups where ");
 
-		pageControl1.Visible = true;
+		pageControl1.ClientVisible = true;
 		gridStudies.Visible = true;
 		btnLoadStaff.Visible = true;
 
 		cboStaffInLab.SelectedIndex = -1;
 		lblStaffEditing.Text = "";
 		gridEditStaff.Visible = false;
-
+		lblInstructions.Visible = false;
 	}
 
 
@@ -181,6 +206,8 @@ public partial class Admin_LabGroups : BasePage
 		}
 
 		gridEditStaff.Visible = true;
+		lblInstructions.Visible = true;
+
 
 		string staffname = cboStaffInLab.Text;
 		lblStaffEditing.Text = String.Format("Editing: {0}", staffname);
@@ -355,5 +382,173 @@ public partial class Admin_LabGroups : BasePage
 		return Color.FromArgb(color.A, (int)red, (int)green, (int)blue);
 	}
 
+
+	#region Labs as a whole
+
+
+
+	protected void gridLabEditing_DataBound(object sender, EventArgs e)
+	{
+		ASPxGridView grid = sender as ASPxGridView;
+
+		bool hasCol = (grid.Columns.IndexOf(grid.Columns["CommandColumnGroups"]) != -1) ? true : false;
+
+		if (hasCol)
+		{
+			grid.Columns.Remove(grid.Columns["CommandColumnGroups"]);
+		}
+
+		GridViewCommandColumn col = new GridViewCommandColumn();
+		col.Name = "CommandColumnGroups";
+
+		col.CellStyle.HorizontalAlign = HorizontalAlign.Left;
+
+
+		for(int i=0; i<8;i++)
+		{
+			GridViewCommandColumnCustomButton but = new GridViewCommandColumnCustomButton();
+			but.ID = String.Format("grp{0}", i);
+			but.Text = String.Format("grp{0}", i);
+			but.Styles.Native = true;
+
+			col.CustomButtons.Add(but);
+		}
+
+		grid.Columns.Add(col);
+	}
+
+
+	protected void gridLabEditing_OnCustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
+	{
+		var x = 0;
+
+
+		ASPxGridView grid = (ASPxGridView)sender;
+		//string prefix = GetPrefix(grid);
+
+		string matching_btnID = e.ButtonID;
+		int idx = Convert.ToInt32(matching_btnID.Replace("grp", ""));
+
+
+
+		string abbrids_csv = grid.GetRowValues(e.VisibleIndex, "abbrids").ToString();
+		string lab_abbrids_csv = grid.GetRowValues(e.VisibleIndex, "lab_abbrids").ToString();
+
+		List<string> abbrids = new List<string>();
+		List<string> lab_abbrids = new List<string>();
+
+
+		//Create the lists
+		if (abbrids_csv != "")
+		{
+			abbrids = abbrids_csv.Split(',').ToList();
+		}
+		if (lab_abbrids_csv != "")
+		{
+			lab_abbrids = lab_abbrids_csv.Split(',').ToList();
+		}
+
+		if (idx < abbrids.Count)
+		{
+			string this_abbrid = abbrids[idx];
+
+			List<string> abbrid = this_abbrid.Split('|').ToList();
+
+			e.Text = abbrid[0];
+
+			if (lab_abbrids.Contains(this_abbrid))
+			{
+				e.Styles.Style.Font.Bold = true;
+				e.Styles.Style.ForeColor = Color.Green;
+			}
+			else
+			{
+				e.Styles.Style.ForeColor = Color.LightGray;
+			}
+		}
+		else
+		{
+			e.Enabled = false;
+			e.Visible = DevExpress.Utils.DefaultBoolean.False;
+		}
+		
+	}
+
+
+
+	protected void gridLabEditing_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+
+		var ID = e.ButtonID;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+
+		int studyID = Convert.ToInt32(grid.GetRowValues(e.VisibleIndex, "studyID").ToString());
+
+		
+
+		int groupindex = Convert.ToInt32(e.ButtonID.Replace("grp", ""));
+		int labID = Convert.ToInt32(cboLab.Value.ToString());
+
+		string abbrids_csv = grid.GetRowValues(e.VisibleIndex, "abbrids").ToString();
+		List<string> abbrids = abbrids_csv.Split(',').ToList();
+
+		List<string> abbrid = abbrids[groupindex].Split('|').ToList();
+
+		int groupID = Convert.ToInt32(abbrid[1]);
+
+
+		if (groupID > 0 && labID > 0)
+		{
+			ToggleLabGroup(groupID, labID);
+		}
+	}
+
+	protected void ToggleLabGroup(int groupID, int labID )
+	{
+		SQL_utils sql = new SQL_utils("backend");
+		//New or Existing?
+
+
+		string sql_exists = String.Format("select count(*) from tblLabGroup where groupID={0} and labID={1}", groupID, labID);
+		int n_exists = sql.IntScalar_from_SQLstring(sql_exists);
+
+		bool isNew = (n_exists > 0) ? false : true;
+
+		if (isNew)
+		{
+			string insert = String.Format("insert into tblLabGroup(groupID, labID) values({0},{1})", groupID, labID);
+			try
+			{
+				sql.NonQuery_from_SQLstring(insert);
+			}
+			catch (Exception ex) { }
+		}
+		else
+		{
+			//Remove this group
+
+			try
+			{
+				string remove1 = String.Format("delete from tbllabgroup_staff where labgroupID = (select labgroupID from tbllabgroup where groupID={0} and labID={1})", groupID, labID);
+				string remove2 = String.Format("delete from tbllabgroup where  groupID={0} and labID={1}", groupID, labID);
+				sql.NonQuery_from_SQLstring(remove1);
+				sql.NonQuery_from_SQLstring(remove2);
+			}
+			catch (Exception ex) { }
+
+		}
+
+		
+		sql.Close();
+
+		gridLabEditing.DataBind();
+		gridEditStaff.DataBind();
+
+	}
+
+
+
+	#endregion
 
 }
