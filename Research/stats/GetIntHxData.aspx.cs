@@ -13,7 +13,6 @@ using DotNet.Highcharts;
 using DotNet.Highcharts.Options;
 using DotNet.Highcharts.Helpers;
 using DotNet.Highcharts.Enums;
-using SelectPdf;
 using System.IO;
 using uwac;
 

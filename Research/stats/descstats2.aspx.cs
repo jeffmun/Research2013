@@ -13,9 +13,9 @@ using ImageResizer;
 using LinqStatistics;
 using GoogleChartsNGraphsControls;
 using uwac;
-using iTextSharp.text;
-using iTextSharp.text.html.simpleparser;
-using iTextSharp.text.pdf;
+//using iTextSharp.text;
+//using iTextSharp.text.html.simpleparser;
+//using iTextSharp.text.pdf;
 
 
 
@@ -1818,7 +1818,7 @@ public partial class stats_descstats2 : System.Web.UI.Page
 
 	protected void btnExportPDF_Click(object sender, EventArgs e)
 	{
-		iText_PDF();
+		//iText_PDF();
 		//ABCpdf();
 
 	}
@@ -1833,62 +1833,62 @@ public partial class stats_descstats2 : System.Web.UI.Page
 		//theDoc.Clear();
 	}
 
-	protected void iText_PDF()
-	{
-		Response.ContentType = "application/pdf";
-		Response.AddHeader("content-disposition", "attachment;filename=TestPage.pdf");
-		//Response.AddHeader("content-disposition", "inline;filename=TestPage.pdf");
-		Response.Cache.SetCacheability(HttpCacheability.NoCache);
-		StringWriter sw = new StringWriter();
-		HtmlTextWriter hw = new HtmlTextWriter(sw);
+	//protected void iText_PDF()
+	//{
+	//	Response.ContentType = "application/pdf";
+	//	Response.AddHeader("content-disposition", "attachment;filename=TestPage.pdf");
+	//	//Response.AddHeader("content-disposition", "inline;filename=TestPage.pdf");
+	//	Response.Cache.SetCacheability(HttpCacheability.NoCache);
+	//	StringWriter sw = new StringWriter();
+	//	HtmlTextWriter hw = new HtmlTextWriter(sw);
 
 
-		//this.Page.RenderControl(hw);
-		//Panel_Controls.RenderControl(hw);
-		//gvSubjects.RenderControl(hw);
-		//gvMeasures.RenderControl(hw);
-		//Panel_descstats.RenderControl(hw);
+	//	//this.Page.RenderControl(hw);
+	//	//Panel_Controls.RenderControl(hw);
+	//	//gvSubjects.RenderControl(hw);
+	//	//gvMeasures.RenderControl(hw);
+	//	//Panel_descstats.RenderControl(hw);
 
-		hw.Write("foo");
+	//	hw.Write("foo");
 
-		foreach (Control c in Panel_descstats.Controls)
-		{
-			hw.Write(c.ID);
-			c.RenderControl(hw);
+	//	foreach (Control c in Panel_descstats.Controls)
+	//	{
+	//		hw.Write(c.ID);
+	//		c.RenderControl(hw);
 
-			if (c.ID == "gvALL_Mullen_items")
-			{
-				throw new Exception("foo!");
-			}
-		}
+	//		if (c.ID == "gvALL_Mullen_items")
+	//		{
+	//			throw new Exception("foo!");
+	//		}
+	//	}
 
-		foreach (Control c in Panel_Testing.Controls)
-		{
-			hw.Write(c.ID);
-			c.RenderControl(hw);
+	//	foreach (Control c in Panel_Testing.Controls)
+	//	{
+	//		hw.Write(c.ID);
+	//		c.RenderControl(hw);
 
-			if (c.ID == "gvALL_Mullen_items")
-			{
-				throw new Exception("foo! Panel_testing");
-			}
-		}
+	//		if (c.ID == "gvALL_Mullen_items")
+	//		{
+	//			throw new Exception("foo! Panel_testing");
+	//		}
+	//	}
 
 
 		
-		StringReader sr = new StringReader(sw.ToString());
-		//Document pdfDoc = new Document(PageSize.LETTER, 10f, 10f, 20f, 10f);
-		var pgSize = new iTextSharp.text.Rectangle(22f * 72f, 8.5f * 72f);
-		Document pdfDoc = new Document( pgSize, 10f, 10f, 20f, 10f); 
+	//	StringReader sr = new StringReader(sw.ToString());
+	//	//Document pdfDoc = new Document(PageSize.LETTER, 10f, 10f, 20f, 10f);
+	//	var pgSize = new iTextSharp.text.Rectangle(22f * 72f, 8.5f * 72f);
+	//	Document pdfDoc = new Document( pgSize, 10f, 10f, 20f, 10f); 
 
 
-		HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-		PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
-		pdfDoc.Open();
-		htmlparser.Parse(sr);
-		pdfDoc.Close();
-		Response.Write(pdfDoc);
-		Response.End();
-	}
+	//	HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+	//	PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+	//	pdfDoc.Open();
+	//	htmlparser.Parse(sr);
+	//	pdfDoc.Close();
+	//	Response.Write(pdfDoc);
+	//	Response.End();
+	//}
 
 
 

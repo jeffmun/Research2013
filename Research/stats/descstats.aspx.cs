@@ -13,7 +13,7 @@ using ImageResizer;
 using LinqStatistics;
 using GoogleChartsNGraphsControls;
 using uwac;
-using SelectPdf;
+//using SelectPdf;
 using DotNet.Highcharts;
 using DotNet.Highcharts.Options;
 using DotNet.Highcharts.Helpers;

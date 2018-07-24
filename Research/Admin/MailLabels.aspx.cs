@@ -7,11 +7,11 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using iTextSharp;
-using iTextSharp.tool;
-using iTextSharp.text;
-using iTextSharp.text.html;
-using iTextSharp.text.pdf;
+//using iTextSharp;
+//using iTextSharp.tool;
+//using iTextSharp.text;
+//using iTextSharp.text.html;
+//using iTextSharp.text.pdf;
 using uwac;
 
 
@@ -45,82 +45,82 @@ public partial class Admin_MailLabels : System.Web.UI.Page
 
     public void LabelsPdf()
     {
-        // Open a new PDF document
+        //// Open a new PDF document
 
-        const int pageMargin = 5;
-        const int pageRows = 10;
-        const int pageCols = 3;
+        //const int pageMargin = 5;
+        //const int pageRows = 10;
+        //const int pageCols = 3;
 
-        var doc = new Document();
-        doc.SetMargins(pageMargin, pageMargin, pageMargin, pageMargin);
-        var memoryStream = new MemoryStream();
+        //var doc = new Document();
+        //doc.SetMargins(pageMargin, pageMargin, pageMargin, pageMargin);
+        //var memoryStream = new MemoryStream();
 
-        var pdfWriter = PdfWriter.GetInstance(doc, memoryStream);
-        doc.Open();
+        //var pdfWriter = PdfWriter.GetInstance(doc, memoryStream);
+        //doc.Open();
 
-        // Create the Label table
+        //// Create the Label table
 
-        PdfPTable table = new PdfPTable(pageCols);
-        table.WidthPercentage = 100f;
-        table.DefaultCell.Border = 0;
+        //PdfPTable table = new PdfPTable(pageCols);
+        //table.WidthPercentage = 100f;
+        //table.DefaultCell.Border = 0;
 
-        var baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+        //var baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
 
-         DataTable dt = GetAddressData();
+        // DataTable dt = GetAddressData();
 
-        foreach(DataRow row in dt.Rows)
-        //foreach (var Thing in YourCollectionOfThings)
-        {
-            #region Label Construction
+        //foreach(DataRow row in dt.Rows)
+        ////foreach (var Thing in YourCollectionOfThings)
+        //{
+        //    #region Label Construction
 
-            PdfPCell cell = new PdfPCell();
-            cell.Border = 0;
-            cell.FixedHeight = (doc.PageSize.Height - (pageMargin * 2)) / pageRows;
-            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //    PdfPCell cell = new PdfPCell();
+        //    cell.Border = 0;
+        //    cell.FixedHeight = (doc.PageSize.Height - (pageMargin * 2)) / pageRows;
+        //    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
 
-            var contents = new Paragraph();
-            contents.Alignment = Element.ALIGN_CENTER;
-
-
-            contents.Add(new Chunk(string.Format("{0}\n", row["addr_line1"].ToString()), new Font(baseFont, 11f, Font.BOLD)));
-            contents.Add(new Chunk(string.Format("{0}\n", row["addr_line2"].ToString()), new Font(baseFont, 11f)));
-            contents.Add(new Chunk(string.Format("{0}\n", row["addr_line3"].ToString()), new Font(baseFont, 11f)));
-
-            Annotation info_annotation = new Annotation("info:", "my annot");
-            contents.AddSpecial(info_annotation);
-
-            cell.AddElement(contents);
-            table.AddCell(cell);
-
-            //GetPos
-            //PdfAnnotation info_annotation = new PdfAnnotation(pdfWriter, GetPosition(cell));
-
-            //info_annotation
-
-            //Rectangle rect = cell.GetRectangle();
+        //    var contents = new Paragraph();
+        //    contents.Alignment = Element.ALIGN_CENTER;
 
 
-            #endregion
-        }
+        //    contents.Add(new Chunk(string.Format("{0}\n", row["addr_line1"].ToString()), new Font(baseFont, 11f, Font.BOLD)));
+        //    contents.Add(new Chunk(string.Format("{0}\n", row["addr_line2"].ToString()), new Font(baseFont, 11f)));
+        //    contents.Add(new Chunk(string.Format("{0}\n", row["addr_line3"].ToString()), new Font(baseFont, 11f)));
 
-        table.CompleteRow();
-        doc.Add(table);
+        //    Annotation info_annotation = new Annotation("info:", "my annot");
+        //    contents.AddSpecial(info_annotation);
 
-        // Close PDF document and send
+        //    cell.AddElement(contents);
+        //    table.AddCell(cell);
 
-        pdfWriter.CloseStream = false;
-        doc.Close();
-        memoryStream.Position = 0;
+        //    //GetPos
+        //    //PdfAnnotation info_annotation = new PdfAnnotation(pdfWriter, GetPosition(cell));
 
-        string filename = Master.Master_studyname + "_MailingLabels_" + SpreadsheetGearUtils.DateTime_for_filename() + ".pdf";
+        //    //info_annotation
 
-        // Send the data and the appropriate headers to the browser
-        Response.Clear();
-        Response.AddHeader("content-disposition", "attachment;filename=" + filename );
-        Response.ContentType = "application/pdf";
+        //    //Rectangle rect = cell.GetRectangle();
 
-        Response.BinaryWrite(memoryStream.ToArray());
-        Response.End();
+
+        //    #endregion
+        //}
+
+        //table.CompleteRow();
+        //doc.Add(table);
+
+        //// Close PDF document and send
+
+        //pdfWriter.CloseStream = false;
+        //doc.Close();
+        //memoryStream.Position = 0;
+
+        //string filename = Master.Master_studyname + "_MailingLabels_" + SpreadsheetGearUtils.DateTime_for_filename() + ".pdf";
+
+        //// Send the data and the appropriate headers to the browser
+        //Response.Clear();
+        //Response.AddHeader("content-disposition", "attachment;filename=" + filename );
+        //Response.ContentType = "application/pdf";
+
+        //Response.BinaryWrite(memoryStream.ToArray());
+        //Response.End();
 
 //        return File(memoryStream, "application/pdf");
     }

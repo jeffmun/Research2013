@@ -17,11 +17,11 @@ using uwac;
 using Obout.Grid;
 using Obout.ListBox;
 using Obout.Interface;
-using SelectPdf;
-using iTextSharp.text;
-using iTextSharp.text.xml;
-using iTextSharp.text.pdf;
-using iTextSharp.text.factories;
+//using SelectPdf;
+//using iTextSharp.text;
+//using iTextSharp.text.xml;
+//using iTextSharp.text.pdf;
+//using iTextSharp.text.factories;
 
 
 
@@ -779,142 +779,142 @@ public partial class stats_DataProject_Add : System.Web.UI.Page
 		// Stream which will be used to render the data
 		MemoryStream fileStream = new MemoryStream();
 
-		Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 30, 20);
-		try
-		{
-			//Create Document class object and set its size to letter and give space left, right, Top, Bottom Margin
-			PdfWriter wri = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fileStream);
+		//Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 30, 20);
+		//try
+		//{
+		//	//Create Document class object and set its size to letter and give space left, right, Top, Bottom Margin
+		//	PdfWriter wri = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fileStream);
 
-			doc.Open();//Open Document to write
+		//	doc.Open();//Open Document to write
 
-			iTextSharp.text.Font font8 = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
-			iTextSharp.text.Font font8Bold = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
-			font8Bold.SetStyle("bold");
+		//	iTextSharp.text.Font font8 = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
+		//	iTextSharp.text.Font font8Bold = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
+		//	font8Bold.SetStyle("bold");
 
-			iTextSharp.text.Font font7 = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
-			iTextSharp.text.Font font7Bold = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
-			font7Bold.SetStyle("bold");
-
-
-			//Header 
-			Chunk headerc1 = new Chunk("UW Autism Center: Data Project Proposal                                     ", font8);
-			Chunk headerc2 = new Chunk("          Printed: " + DateTime.Now.ToString(), font8);
-			Phrase header = new Phrase();
-			header.Add(headerc1);header.Add(headerc2);
-
-			iTextSharp.text.Font linkfont = iTextSharp.text.FontFactory.GetFont("Arial", 7f, new BaseColor(Color.DarkBlue));
-			Anchor link = new Anchor("Click here to view on the web.\n\n", linkfont);
-			link.Reference = "https://uwac.autism.washington.edu/research/stats/DataProject.aspx?pk=15";
-
-			doc.Add(new Paragraph(header));
-			doc.Add(link);
+		//	iTextSharp.text.Font font7 = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
+		//	iTextSharp.text.Font font7Bold = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
+		//	font7Bold.SetStyle("bold");
 
 
-			#region  Project Info 
-			SQL_utils sql = new SQL_utils();
+		//	//Header 
+		//	Chunk headerc1 = new Chunk("UW Autism Center: Data Project Proposal                                     ", font8);
+		//	Chunk headerc2 = new Chunk("          Printed: " + DateTime.Now.ToString(), font8);
+		//	Phrase header = new Phrase();
+		//	header.Add(headerc1);header.Add(headerc2);
 
-			DataTable dt_proj = sql.DataTable_from_SQLstring("select projTitle, projSummary, created, createdBy from dp.DataProject where dataproj_pk=" +
-				Request.QueryString["pk"].ToString());
+		//	iTextSharp.text.Font linkfont = iTextSharp.text.FontFactory.GetFont("Arial", 7f, new BaseColor(Color.DarkBlue));
+		//	Anchor link = new Anchor("Click here to view on the web.\n\n", linkfont);
+		//	link.Reference = "https://uwac.autism.washington.edu/research/stats/DataProject.aspx?pk=15";
 
-			foreach(DataRow row in dt_proj.Rows)
-			{
-				Paragraph p1 = new Paragraph("Title: " + row["projTitle"].ToString());
-				doc.Add(p1);
-
-				//XMLWorker also reads from a TextReader and not directly from a string
-				using (var srHtml = new StringReader(row["projSummary"].ToString()))
-				{
-					//Parse the HTML
-					iTextSharp.tool.xml.XMLWorkerHelper.GetInstance().ParseXHtml(wri, doc, srHtml);
-				}
-
-			}
-			#endregion //Project Info
-
-			List<GridInfo> grids = new List<GridInfo>();
-			grids.Add(new GridInfo() { grid = gridStaff, gridTitle = "Staff" });
-			//grids.Add(new GridInfo() { grid = gridGroups, gridTitle = "Subjects" });
-			//grids.Add(new GridInfo() { grid = gridMeas, gridTitle = "Measures" });
+		//	doc.Add(new Paragraph(header));
+		//	doc.Add(link);
 
 
-			//Add the Grids
-			foreach(GridInfo Grid1 in Grids)
-			{
-				//Write the title
-				Paragraph gridTitle = new Paragraph(Grid1.gridTitle);
-				doc.Add(gridTitle);
+		//	#region  Project Info 
+		//	SQL_utils sql = new SQL_utils();
 
-				//Write the table
-				PdfPTable pdf_tbl =  utilPDF.AddGridToPDF(Grid1.grid, font8, font8Bold);
-				doc.Add(pdf_tbl);
-			}
+		//	DataTable dt_proj = sql.DataTable_from_SQLstring("select projTitle, projSummary, created, createdBy from dp.DataProject where dataproj_pk=" +
+		//		Request.QueryString["pk"].ToString());
 
+		//	foreach(DataRow row in dt_proj.Rows)
+		//	{
+		//		Paragraph p1 = new Paragraph("Title: " + row["projTitle"].ToString());
+		//		doc.Add(p1);
 
-			#region Add the Hypoths
+		//		//XMLWorker also reads from a TextReader and not directly from a string
+		//		using (var srHtml = new StringReader(row["projSummary"].ToString()))
+		//		{
+		//			//Parse the HTML
+		//			iTextSharp.tool.xml.XMLWorkerHelper.GetInstance().ParseXHtml(wri, doc, srHtml);
+		//		}
 
-			DataTable dt_hypoth = sql.DataTable_from_SQLstring("select hypoth_pk, hypothTitle, coalesce(hypothText, '**none entered**') hypothText, coalesce(analysismethod, '**none entered**') AnalysisMethod from dp.Hypoth where dataproj_pk=" +
-				Request.QueryString["pk"].ToString());
+		//	}
+		//	#endregion //Project Info
 
-			int hypoth_num = 1;
-			foreach (DataRow row in dt_hypoth.Rows)
-			{
-				//Hypoth header
-				Paragraph p1 = new Paragraph("Hypothesis " + hypoth_num.ToString() );
-				doc.Add(p1);
-
-				//Hypoth text
-				doc.Add(utilPDF.Paragraph_fromKeyValue("Title: ", row["hypothTitle"].ToString(), font8Bold, font8));
-				doc.Add(utilPDF.Paragraph_fromKeyValue("Text: ", row["hypothText"].ToString(), font8Bold, font8));
-				doc.Add(utilPDF.Paragraph_fromKeyValue("Analysis Method: ", row["AnalysisMethod"].ToString(), font8Bold, font8));
+		//	List<GridInfo> grids = new List<GridInfo>();
+		//	grids.Add(new GridInfo() { grid = gridStaff, gridTitle = "Staff" });
+		//	//grids.Add(new GridInfo() { grid = gridGroups, gridTitle = "Subjects" });
+		//	//grids.Add(new GridInfo() { grid = gridMeas, gridTitle = "Measures" });
 
 
-				//Write the table of Hypoth Vars
-				int hypoth_pk = int.Parse(row["hypoth_pk"].ToString());
+		//	//Add the Grids
+		//	foreach(GridInfo Grid1 in Grids)
+		//	{
+		//		//Write the title
+		//		Paragraph gridTitle = new Paragraph(Grid1.gridTitle);
+		//		doc.Add(gridTitle);
 
-				DataTable dt_hypothvars = sql.DataTable_from_SQLstring("select measname as Measure, VarName, fieldlabel as VarLabel, TimePoints from dp.vwHypoth_Vars " +
-					" where hypoth_pk = " + hypoth_pk.ToString());
-
-				if(dt_hypothvars.Rows.Count==0)
-				{
-					iTextSharp.text.Font font8Red = iTextSharp.text.FontFactory.GetFont("Arial", 8f, BaseColor.RED);
-					doc.Add(new Paragraph(new Chunk("No variables yet added to this hypothesis.", font8Red)));
-				}
-				else
-				{
-					PdfPTable tbl_vars = utilPDF.AddDataTableToPDF(dt_hypothvars, font7, font7Bold);
-					doc.Add(tbl_vars);
-				}
-
-				hypoth_num++;
-			}
-			#endregion // Hypoth
+		//		//Write the table
+		//		PdfPTable pdf_tbl =  utilPDF.AddGridToPDF(Grid1.grid, font8, font8Bold);
+		//		doc.Add(pdf_tbl);
+		//	}
 
 
+		//	#region Add the Hypoths
+
+		//	DataTable dt_hypoth = sql.DataTable_from_SQLstring("select hypoth_pk, hypothTitle, coalesce(hypothText, '**none entered**') hypothText, coalesce(analysismethod, '**none entered**') AnalysisMethod from dp.Hypoth where dataproj_pk=" +
+		//		Request.QueryString["pk"].ToString());
+
+		//	int hypoth_num = 1;
+		//	foreach (DataRow row in dt_hypoth.Rows)
+		//	{
+		//		//Hypoth header
+		//		Paragraph p1 = new Paragraph("Hypothesis " + hypoth_num.ToString() );
+		//		doc.Add(p1);
+
+		//		//Hypoth text
+		//		doc.Add(utilPDF.Paragraph_fromKeyValue("Title: ", row["hypothTitle"].ToString(), font8Bold, font8));
+		//		doc.Add(utilPDF.Paragraph_fromKeyValue("Text: ", row["hypothText"].ToString(), font8Bold, font8));
+		//		doc.Add(utilPDF.Paragraph_fromKeyValue("Analysis Method: ", row["AnalysisMethod"].ToString(), font8Bold, font8));
 
 
-			sql.Close();
+		//		//Write the table of Hypoth Vars
+		//		int hypoth_pk = int.Parse(row["hypoth_pk"].ToString());
 
-		}
-		catch (DocumentException docEx)
-		{
-			string x = docEx.Message;
-			//handle pdf document exception if any
-		}
-		catch (IOException ioEx)
-		{
-			string x = ioEx.Message;
-			// handle IO exception
-		}
-		catch (Exception ex)
-		{
-			string x = ex.Message;
-			// ahndle other exception if occurs
-		}
-		finally
-		{
-			//Close document and writer
-			doc.Close();
-		}
+		//		DataTable dt_hypothvars = sql.DataTable_from_SQLstring("select measname as Measure, VarName, fieldlabel as VarLabel, TimePoints from dp.vwHypoth_Vars " +
+		//			" where hypoth_pk = " + hypoth_pk.ToString());
+
+		//		if(dt_hypothvars.Rows.Count==0)
+		//		{
+		//			iTextSharp.text.Font font8Red = iTextSharp.text.FontFactory.GetFont("Arial", 8f, BaseColor.RED);
+		//			doc.Add(new Paragraph(new Chunk("No variables yet added to this hypothesis.", font8Red)));
+		//		}
+		//		else
+		//		{
+		//			PdfPTable tbl_vars = utilPDF.AddDataTableToPDF(dt_hypothvars, font7, font7Bold);
+		//			doc.Add(tbl_vars);
+		//		}
+
+		//		hypoth_num++;
+		//	}
+		//	#endregion // Hypoth
+
+
+
+
+		//	sql.Close();
+
+		//}
+		//catch (DocumentException docEx)
+		//{
+		//	string x = docEx.Message;
+		//	//handle pdf document exception if any
+		//}
+		//catch (IOException ioEx)
+		//{
+		//	string x = ioEx.Message;
+		//	// handle IO exception
+		//}
+		//catch (Exception ex)
+		//{
+		//	string x = ex.Message;
+		//	// ahndle other exception if occurs
+		//}
+		//finally
+		//{
+		//	//Close document and writer
+		//	doc.Close();
+		//}
 
 		return (fileStream);
 

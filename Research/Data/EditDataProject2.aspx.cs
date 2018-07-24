@@ -16,8 +16,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Obout.Grid;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+//using iTextSharp.text;
+//using iTextSharp.text.pdf;
 using uwac;
 using uwac.trk;
 
@@ -1728,137 +1728,137 @@ public partial class Data_EditDataProject2 : System.Web.UI.Page
 		// Stream which will be used to render the data
 		MemoryStream fileStream = new MemoryStream();
 
-		Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 30, 20);
-		try
-		{
-			#region Define Fonts
-			iTextSharp.text.Font font8 = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
-			iTextSharp.text.Font font8Bold = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
-			font8Bold.SetStyle("bold");
+		//Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 30, 20);
+		//try
+		//{
+		//	#region Define Fonts
+		//	iTextSharp.text.Font font8 = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
+		//	iTextSharp.text.Font font8Bold = iTextSharp.text.FontFactory.GetFont("Arial", 8f);
+		//	font8Bold.SetStyle("bold");
 
-			iTextSharp.text.Font font7 = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
-			iTextSharp.text.Font font7Bold = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
-			font7Bold.SetStyle("bold");
-			#endregion
+		//	iTextSharp.text.Font font7 = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
+		//	iTextSharp.text.Font font7Bold = iTextSharp.text.FontFactory.GetFont("Arial", 7f);
+		//	font7Bold.SetStyle("bold");
+		//	#endregion
 
-			//Create Document class object and set its size to letter and give space left, right, Top, Bottom Margin
-			PdfWriter wri = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fileStream);
+		//	//Create Document class object and set its size to letter and give space left, right, Top, Bottom Margin
+		//	PdfWriter wri = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fileStream);
 
-			doc.Open();//Open Document to write
+		//	doc.Open();//Open Document to write
 
-			//Header 
-			Chunk headerc1 = new Chunk("UW Autism Center: Data Project Proposal                                            ", font8);
-			Chunk headerc2 = new Chunk("                 Printed: " + DateTime.Now.ToString(), font8);
-			Phrase header = new Phrase();
-			header.Add(headerc1); header.Add(headerc2);
+		//	//Header 
+		//	Chunk headerc1 = new Chunk("UW Autism Center: Data Project Proposal                                            ", font8);
+		//	Chunk headerc2 = new Chunk("                 Printed: " + DateTime.Now.ToString(), font8);
+		//	Phrase header = new Phrase();
+		//	header.Add(headerc1); header.Add(headerc2);
 
-			iTextSharp.text.Font linkfont = iTextSharp.text.FontFactory.GetFont("Arial", 7f, new BaseColor(Color.DarkBlue));
-			Anchor link = new Anchor("Click here to view on the web.\n\n", linkfont);
-			link.Reference = "https://uwac.autism.washington.edu/research/stats/DataProject.aspx?pk=" + Request.QueryString["pk"];
+		//	iTextSharp.text.Font linkfont = iTextSharp.text.FontFactory.GetFont("Arial", 7f, new BaseColor(Color.DarkBlue));
+		//	Anchor link = new Anchor("Click here to view on the web.\n\n", linkfont);
+		//	link.Reference = "https://uwac.autism.washington.edu/research/stats/DataProject.aspx?pk=" + Request.QueryString["pk"];
 
-			doc.Add(new Paragraph(header));
-			doc.Add(link);
-
-
-			#region  Project Info
-			SQL_utils sql = new SQL_utils();
-
-			DataTable dt_proj = sql.DataTable_from_SQLstring("select dataproj_pk, studyname, Author, Supervisor, projTitle, projSummary, created, createdBy from dp.vwDataProject where dataproj_pk=" +
-				Request.QueryString["pk"].ToString());
-
-			foreach (DataRow row in dt_proj.Rows)
-			{
-				Paragraph p0a = new Paragraph("Study: " + row["studyname"].ToString());
-				doc.Add(p0a);
-				Paragraph p0b = new Paragraph("Author: " + row["Author"].ToString());
-				doc.Add(p0b);
-				Paragraph p0c = new Paragraph("Supervisor: " + row["Supervisor"].ToString()  +  "     " + lblApproved.Text);
-				doc.Add(p0c);
-				Paragraph p1 = new Paragraph("Title: " + row["projTitle"].ToString());
-				doc.Add(p1);
-				Paragraph p2 = new Paragraph("Project No.: " + row["dataproj_pk"].ToString());
-				doc.Add(p2);
+		//	doc.Add(new Paragraph(header));
+		//	doc.Add(link);
 
 
+		//	#region  Project Info
+		//	SQL_utils sql = new SQL_utils();
 
+		//	DataTable dt_proj = sql.DataTable_from_SQLstring("select dataproj_pk, studyname, Author, Supervisor, projTitle, projSummary, created, createdBy from dp.vwDataProject where dataproj_pk=" +
+		//		Request.QueryString["pk"].ToString());
 
-
-				List<GridViewInfo> grids = new List<GridViewInfo>();
-
-				//FIX
-				//if (gvViewSubjects.Rows.Count > 0)
-				//{
-				//	grids.Add(new GridViewInfo(gvViewSubjects, "Subjects:", 30f, new float[] { 70f, 30f }));
-				//}
-				//else
-				//{
-				//	Paragraph s1 = new Paragraph("Subjects: **To be defined**" );
-				//	doc.Add(s1);
-				//}
-
-
-				if (gvViewMeas.Rows.Count > 0)
-				{
-					grids.Add(new GridViewInfo(gvViewMeas, "Measures:", 80f, new float[] { 10f, 10f, 10f, 10f, 10f, 10f, 10f }));
-				}
-				else
-				{
-					Paragraph s1 = new Paragraph("Measures: **To be defined**");
-					doc.Add(s1);
-				}
-
-
-				//Add the Grids
-				foreach (GridViewInfo g in grids)
-				{
-					//Write the title
-					Paragraph gridTitle = new Paragraph(g.gridTitle + "\n");
-					doc.Add(gridTitle);
-
-					//Write the table
-					PdfPTable pdf_tbl = utilPDF.AddGridToPDF(g.grid, font8, font8Bold, g.totalwidth, g.widths);
-					doc.Add(pdf_tbl);
-				}
-
-
-
-				doc.Add(new Paragraph("\nProject Summary: \n"));
-				//XMLWorker also reads from a TextReader and not directly from a string
-				using (var srHtml = new StringReader(row["projSummary"].ToString()))
-				{
-					//Parse the HTML
-					iTextSharp.tool.xml.XMLWorkerHelper.GetInstance().ParseXHtml(wri, doc, srHtml);
-				}
-
-			}
-			#endregion //Project Info
+		//	foreach (DataRow row in dt_proj.Rows)
+		//	{
+		//		Paragraph p0a = new Paragraph("Study: " + row["studyname"].ToString());
+		//		doc.Add(p0a);
+		//		Paragraph p0b = new Paragraph("Author: " + row["Author"].ToString());
+		//		doc.Add(p0b);
+		//		Paragraph p0c = new Paragraph("Supervisor: " + row["Supervisor"].ToString()  +  "     " + lblApproved.Text);
+		//		doc.Add(p0c);
+		//		Paragraph p1 = new Paragraph("Title: " + row["projTitle"].ToString());
+		//		doc.Add(p1);
+		//		Paragraph p2 = new Paragraph("Project No.: " + row["dataproj_pk"].ToString());
+		//		doc.Add(p2);
 
 
 
 
-			sql.Close();
 
-		}
-		catch (DocumentException docEx)
-		{
-			string x = docEx.Message;
-			//handle pdf document exception if any
-		}
-		catch (IOException ioEx)
-		{
-			string x = ioEx.Message;
-			// handle IO exception
-		}
-		catch (Exception ex)
-		{
-			string x = ex.Message;
-			// ahndle other exception if occurs
-		}
-		finally
-		{
-			//Close document and writer
-			doc.Close();
-		}
+		//		List<GridViewInfo> grids = new List<GridViewInfo>();
+
+		//		//FIX
+		//		//if (gvViewSubjects.Rows.Count > 0)
+		//		//{
+		//		//	grids.Add(new GridViewInfo(gvViewSubjects, "Subjects:", 30f, new float[] { 70f, 30f }));
+		//		//}
+		//		//else
+		//		//{
+		//		//	Paragraph s1 = new Paragraph("Subjects: **To be defined**" );
+		//		//	doc.Add(s1);
+		//		//}
+
+
+		//		if (gvViewMeas.Rows.Count > 0)
+		//		{
+		//			grids.Add(new GridViewInfo(gvViewMeas, "Measures:", 80f, new float[] { 10f, 10f, 10f, 10f, 10f, 10f, 10f }));
+		//		}
+		//		else
+		//		{
+		//			Paragraph s1 = new Paragraph("Measures: **To be defined**");
+		//			doc.Add(s1);
+		//		}
+
+
+		//		//Add the Grids
+		//		foreach (GridViewInfo g in grids)
+		//		{
+		//			//Write the title
+		//			Paragraph gridTitle = new Paragraph(g.gridTitle + "\n");
+		//			doc.Add(gridTitle);
+
+		//			//Write the table
+		//			PdfPTable pdf_tbl = utilPDF.AddGridToPDF(g.grid, font8, font8Bold, g.totalwidth, g.widths);
+		//			doc.Add(pdf_tbl);
+		//		}
+
+
+
+		//		doc.Add(new Paragraph("\nProject Summary: \n"));
+		//		//XMLWorker also reads from a TextReader and not directly from a string
+		//		using (var srHtml = new StringReader(row["projSummary"].ToString()))
+		//		{
+		//			//Parse the HTML
+		//			iTextSharp.tool.xml.XMLWorkerHelper.GetInstance().ParseXHtml(wri, doc, srHtml);
+		//		}
+
+		//	}
+		//	#endregion //Project Info
+
+
+
+
+		//	sql.Close();
+
+		//}
+		//catch (DocumentException docEx)
+		//{
+		//	string x = docEx.Message;
+		//	//handle pdf document exception if any
+		//}
+		//catch (IOException ioEx)
+		//{
+		//	string x = ioEx.Message;
+		//	// handle IO exception
+		//}
+		//catch (Exception ex)
+		//{
+		//	string x = ex.Message;
+		//	// ahndle other exception if occurs
+		//}
+		//finally
+		//{
+		//	//Close document and writer
+		//	doc.Close();
+		//}
 
 		return (fileStream);
 

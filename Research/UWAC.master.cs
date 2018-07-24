@@ -32,6 +32,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 	private string aspx;
 	private string aspxfull;
 	private int colorlevel;
+	private string master_netid;
 
 	private bool testing_login = false;
 
@@ -100,6 +101,12 @@ public partial class UWAC : System.Web.UI.MasterPage
 	{
 		get { return master_studyname; }
 	}
+
+	public string Master_netid
+	{
+		get { return master_netid; }
+	}
+
 
 	public Label MasterERROR
 	{
@@ -228,7 +235,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 		{
 			lblCurrentUser.Text = HttpContext.Current.User.Identity.Name;
 			netid = currentuser_identityname.Replace(@"NETID\", "");
-
+			master_netid = netid;
 		}
 
 

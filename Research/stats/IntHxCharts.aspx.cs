@@ -14,11 +14,11 @@ using System.Web.UI.WebControls;
 using System.Web.UI.DataVisualization.Charting;
 using System.Web.Configuration;
 using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.html.simpleparser;
-using iTextSharp.text.xml;
-using iTextSharp.text.pdf;
-using iTextSharp.text.factories;
+//using iTextSharp.text;
+//using iTextSharp.text.html.simpleparser;
+//using iTextSharp.text.xml;
+//using iTextSharp.text.pdf;
+//using iTextSharp.text.factories;
 
 //using Research_Webforms;
 using uwac;
@@ -496,172 +496,172 @@ public partial class stats_IntHxCharts : System.Web.UI.Page
 
 
 
-	protected void savepdf(DataTable dt)
-	{
+	//protected void savepdf(DataTable dt)
+	//{
 
-		////using (HighChartsRenderServer server = new HighChartsRenderServer())
-		////{
-		////    var response = server.ProcessHighChartsRequest(highChartsData);
-		////    return File(response, "image.png");
-		////}
-
-
-		MemoryStream ms = new MemoryStream();
+	//	////using (HighChartsRenderServer server = new HighChartsRenderServer())
+	//	////{
+	//	////    var response = server.ProcessHighChartsRequest(highChartsData);
+	//	////    return File(response, "image.png");
+	//	////}
 
 
-		string filename = "IntHx_graphs.pdf";
-
-		// Send the data and the appropriate headers to the browser
-		Response.Clear();
-		Response.AddHeader("content-disposition", "attachment;filename=" + filename);
-		Response.ContentType = "application/pdf";
-
-		Response.Cache.SetCacheability(HttpCacheability.NoCache);
-		StringWriter sw = new StringWriter();
-		HtmlTextWriter hw = new HtmlTextWriter(sw);
-		panelChart.RenderControl(hw);
-		StringReader sr = new StringReader(sw.ToString());
-
-		iTextSharp.text.Rectangle page_rect = new iTextSharp.text.Rectangle(850f, 612f);
-		Document pdfDoc = new Document(page_rect, 10f, 10f, 20f, 20f);
-		//Document pdfDoc = new Document(PageSize.LETTER_LANDSCAPE, 10f, 10f, 20f, 20f);
+	//	MemoryStream ms = new MemoryStream();
 
 
-		HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-		PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
-		pdfDoc.Open();
+	//	string filename = "IntHx_graphs.pdf";
 
-		//List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
-		//for (int i = 0; i < list_svg.Count; i++)
-		//{
-		//    Server.HtmlDecode(list_svg[i], hw);  
-		//}
+	//	// Send the data and the appropriate headers to the browser
+	//	Response.Clear();
+	//	Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+	//	Response.ContentType = "application/pdf";
 
-		//htmlparser.Parse(sr);
-		foreach (DataRow row in dt.Rows)
-		{
+	//	Response.Cache.SetCacheability(HttpCacheability.NoCache);
+	//	StringWriter sw = new StringWriter();
+	//	HtmlTextWriter hw = new HtmlTextWriter(sw);
+	//	panelChart.RenderControl(hw);
+	//	StringReader sr = new StringReader(sw.ToString());
 
-			string id = row["id"].ToString();
-			PdfPTable table = AddIntHxCharts(id);
-
-			pdfDoc.Add(table);
-		}
+	//	iTextSharp.text.Rectangle page_rect = new iTextSharp.text.Rectangle(850f, 612f);
+	//	Document pdfDoc = new Document(page_rect, 10f, 10f, 20f, 20f);
+	//	//Document pdfDoc = new Document(PageSize.LETTER_LANDSCAPE, 10f, 10f, 20f, 20f);
 
 
+	//	HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+	//	PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+	//	pdfDoc.Open();
 
-		pdfDoc.Close();
-		Response.Write(pdfDoc);
-		Response.End();
+	//	//List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
+	//	//for (int i = 0; i < list_svg.Count; i++)
+	//	//{
+	//	//    Server.HtmlDecode(list_svg[i], hw);  
+	//	//}
 
-	}
+	//	//htmlparser.Parse(sr);
+	//	foreach (DataRow row in dt.Rows)
+	//	{
 
+	//		string id = row["id"].ToString();
+	//		PdfPTable table = AddIntHxCharts(id);
 
-	protected void testpdf(DataTable dt)
-	{
-
-		////using (HighChartsRenderServer server = new HighChartsRenderServer())
-		////{
-		////    var response = server.ProcessHighChartsRequest(highChartsData);
-		////    return File(response, "image.png");
-		////}
-
-
-		MemoryStream ms = new MemoryStream();
+	//		pdfDoc.Add(table);
+	//	}
 
 
-		string filename = "IntHx_graphs.pdf";
 
-		// Send the data and the appropriate headers to the browser
-		Response.Clear();
-		Response.AddHeader("content-disposition", "attachment;filename=" + filename);
-		Response.ContentType = "application/pdf";
+	//	pdfDoc.Close();
+	//	Response.Write(pdfDoc);
+	//	Response.End();
 
-		Response.Cache.SetCacheability(HttpCacheability.NoCache);
-		StringWriter sw = new StringWriter();
-		HtmlTextWriter hw = new HtmlTextWriter(sw);
-		panelChart.RenderControl(hw);
-		StringReader sr = new StringReader(sw.ToString());
+	//}
 
-		iTextSharp.text.Rectangle page_rect = new iTextSharp.text.Rectangle(850f, 612f); 
-		Document pdfDoc = new Document(page_rect, 10f, 10f, 20f, 20f);
-		//Document pdfDoc = new Document(PageSize.LETTER_LANDSCAPE, 10f, 10f, 20f, 20f);
+
+	//protected void testpdf(DataTable dt)
+	//{
+
+	//	////using (HighChartsRenderServer server = new HighChartsRenderServer())
+	//	////{
+	//	////    var response = server.ProcessHighChartsRequest(highChartsData);
+	//	////    return File(response, "image.png");
+	//	////}
+
+
+	//	MemoryStream ms = new MemoryStream();
+
+
+	//	string filename = "IntHx_graphs.pdf";
+
+	//	// Send the data and the appropriate headers to the browser
+	//	Response.Clear();
+	//	Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+	//	Response.ContentType = "application/pdf";
+
+	//	Response.Cache.SetCacheability(HttpCacheability.NoCache);
+	//	StringWriter sw = new StringWriter();
+	//	HtmlTextWriter hw = new HtmlTextWriter(sw);
+	//	panelChart.RenderControl(hw);
+	//	StringReader sr = new StringReader(sw.ToString());
+
+	//	iTextSharp.text.Rectangle page_rect = new iTextSharp.text.Rectangle(850f, 612f); 
+	//	Document pdfDoc = new Document(page_rect, 10f, 10f, 20f, 20f);
+	//	//Document pdfDoc = new Document(PageSize.LETTER_LANDSCAPE, 10f, 10f, 20f, 20f);
 
 		
-		HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-		PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
-		pdfDoc.Open();
+	//	HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+	//	PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+	//	pdfDoc.Open();
 
-		//List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
-		//for (int i = 0; i < list_svg.Count; i++)
-		//{
-		//    Server.HtmlDecode(list_svg[i], hw);  
-		//}
+	//	//List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
+	//	//for (int i = 0; i < list_svg.Count; i++)
+	//	//{
+	//	//    Server.HtmlDecode(list_svg[i], hw);  
+	//	//}
 		
-		//htmlparser.Parse(sr);
-		foreach  (DataRow row in dt.Rows)
-		{
+	//	//htmlparser.Parse(sr);
+	//	foreach  (DataRow row in dt.Rows)
+	//	{
 
-			string id = row["id"].ToString();
-			PdfPTable table = AddIntHxCharts(id);
+	//		string id = row["id"].ToString();
+	//		//PdfPTable table = AddIntHxCharts(id);
 
-			pdfDoc.Add(table);
-		}
+	//		//pdfDoc.Add(table);
+	//	}
 
 	
 
-		pdfDoc.Close();
-		Response.Write(pdfDoc);
-		Response.End();
+	//	pdfDoc.Close();
+	//	Response.Write(pdfDoc);
+	//	Response.End();
 
-	}
+	//}
 
-	protected static PdfPTable AddIntHxCharts(string id)
-	{
+	//protected static PdfPTable AddIntHxCharts(string id)
+	//{
 
-		string f0 = id + "c0.png";
-		string f2 = id + "c2.png";
-		string f3 = id + "c3.png";
-		string f4 = id + "c4.png";
+	//	string f0 = id + "c0.png";
+	//	string f2 = id + "c2.png";
+	//	string f3 = id + "c3.png";
+	//	string f4 = id + "c4.png";
 
-		string g0 = @"c:/code/Source/research/stats/Charts/" + f0;
-		string g2 = @"c:/code/Source/research/stats/Charts/" + f2;
-		string g3 = @"c:/code/Source/research/stats/Charts/" + f3;
-		string g4 = @"c:/code/Source/research/stats/Charts/" + f4;
+	//	string g0 = @"c:/code/Source/research/stats/Charts/" + f0;
+	//	string g2 = @"c:/code/Source/research/stats/Charts/" + f2;
+	//	string g3 = @"c:/code/Source/research/stats/Charts/" + f3;
+	//	string g4 = @"c:/code/Source/research/stats/Charts/" + f4;
 
-		float resize = 30f;
+	//	float resize = 30f;
 
-		iTextSharp.text.Image png0 = iTextSharp.text.Image.GetInstance(g0);
-		png0.ScalePercent(resize);
-		iTextSharp.text.Image png2 = iTextSharp.text.Image.GetInstance(g2);
-		png2.ScalePercent(resize);
-		iTextSharp.text.Image png3 = iTextSharp.text.Image.GetInstance(g3);
-		png3.ScalePercent(resize);
-		iTextSharp.text.Image png4 = iTextSharp.text.Image.GetInstance(g4);
-		png4.ScalePercent(resize);
+	//	iTextSharp.text.Image png0 = iTextSharp.text.Image.GetInstance(g0);
+	//	png0.ScalePercent(resize);
+	//	iTextSharp.text.Image png2 = iTextSharp.text.Image.GetInstance(g2);
+	//	png2.ScalePercent(resize);
+	//	iTextSharp.text.Image png3 = iTextSharp.text.Image.GetInstance(g3);
+	//	png3.ScalePercent(resize);
+	//	iTextSharp.text.Image png4 = iTextSharp.text.Image.GetInstance(g4);
+	//	png4.ScalePercent(resize);
 
-		float[] cellwidths = new float[] { 40f, 20f, 20f, 20f };
+	//	float[] cellwidths = new float[] { 40f, 20f, 20f, 20f };
 
-		PdfPTable table = new PdfPTable(cellwidths);
-		table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-		PdfPCell cell0 = new PdfPCell(png0);
-		PdfPCell cell2 = new PdfPCell(png2);
-		PdfPCell cell3 = new PdfPCell(png3);
-		PdfPCell cell4 = new PdfPCell(png4);
+	//	PdfPTable table = new PdfPTable(cellwidths);
+	//	table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+	//	PdfPCell cell0 = new PdfPCell(png0);
+	//	PdfPCell cell2 = new PdfPCell(png2);
+	//	PdfPCell cell3 = new PdfPCell(png3);
+	//	PdfPCell cell4 = new PdfPCell(png4);
 
 
-		cell0.Border = iTextSharp.text.Rectangle.NO_BORDER;
-		cell2.Border = iTextSharp.text.Rectangle.NO_BORDER;
-		cell3.Border = iTextSharp.text.Rectangle.NO_BORDER;
-		cell4.Border = iTextSharp.text.Rectangle.NO_BORDER;
+	//	cell0.Border = iTextSharp.text.Rectangle.NO_BORDER;
+	//	cell2.Border = iTextSharp.text.Rectangle.NO_BORDER;
+	//	cell3.Border = iTextSharp.text.Rectangle.NO_BORDER;
+	//	cell4.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
-		table.AddCell(cell0);
-		table.AddCell(cell2);
-		table.AddCell(cell3);
-		table.AddCell(cell4);
+	//	table.AddCell(cell0);
+	//	table.AddCell(cell2);
+	//	table.AddCell(cell3);
+	//	table.AddCell(cell4);
 
-		return table;
+	//	return table;
 
-	}
+	//}
 
 
 

@@ -29,8 +29,8 @@ namespace common_wechsleriq
 			// use custom validator
 			this.DataEntryController1.Validator = new WechslerValidator();
 
-            //add load event handler
-            ((HtmlControl)this.Master.FindControl("oBody")).Attributes["onload"] = "loading()";
+			//add load event handler
+			((HtmlControl)this.Master.FindControl("oBody")).Attributes["onload"] = "loading()";
 		
 		}
 
