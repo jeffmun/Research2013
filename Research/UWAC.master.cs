@@ -235,9 +235,9 @@ public partial class UWAC : System.Web.UI.MasterPage
 		{
 			lblCurrentUser.Text = HttpContext.Current.User.Identity.Name;
 			netid = currentuser_identityname.Replace(@"NETID\", "");
-			master_netid = netid;
 		}
 
+		master_netid = netid;
 
 		//lblDomainInUse.Text = ConfigurationManager.AppSettings["LDAPdomain"].ToString(); //oLogin.DomainInUse;
 		Session["netid"] = netid;

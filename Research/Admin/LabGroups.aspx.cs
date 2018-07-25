@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Web;
@@ -51,14 +52,22 @@ public partial class Admin_LabGroups : BasePage
 		bool isPostback = IsPostBack;
 		bool isCallback = IsCallback;
 
+		if(Session["staffID_to_edit"] != null)
+		{
+			Debug.WriteLine(Session["staffID_to_edit"]);
+		}
+		else{
+			Debug.WriteLine("NO ONE TO EDIT!!");
+		}
 
+		
 		if (!IsPostBack)
 		{
 
 		}
 		if (IsCallback)
 		{
-
+			string foo = "foo";
 		}
 		ShowEditTabs();
 	}
@@ -78,20 +87,18 @@ public partial class Admin_LabGroups : BasePage
 
 			string user = HttpContext.Current.User.Identity.Name;
 
-			string netid = Master.Master_netid;
+			string session_netid = Session["netid"].ToString();
 
-
-			bool showeditors = (n > 0 || netid=="jeffmun") ? true : false;
-
+			bool showstaffeditors = (n > 0 || session_netid == "jeffmun") ? true : false;
+			bool showlabeditors = ( session_netid == "jeffmun") ? true : false;
 
 			try
 			{
-				
-
-				pageControl1.TabPages.FindByName("LabAccess").ClientVisible = showeditors;
-				pageControl1.TabPages.FindByName("StaffAccess").ClientVisible = showeditors;
+				pageControl1.TabPages.FindByName("LabAccess").ClientVisible = showlabeditors;
+				pageControl1.TabPages.FindByName("StaffAccess").ClientVisible = showstaffeditors;
 			}
 			catch(Exception ex) { }
+
 			sql.Close();
 		}
 
@@ -106,69 +113,129 @@ public partial class Admin_LabGroups : BasePage
 		string sqlcode = String.Format("select * from tblLabGroups where ");
 
 		pageControl1.ClientVisible = true;
-		gridStudies.Visible = true;
-		btnLoadStaff.Visible = true;
+		gridStudies.ClientVisible = true;
+		btnLoadStaff.ClientVisible = true;
 
-		cboStaffInLab.SelectedIndex = -1;
 		lblStaffEditing.Text = "";
-		gridEditStaff.Visible = false;
-		lblInstructions.Visible = false;
+		gridEditStaff.ClientVisible = false;
+		lblInstructions.ClientVisible = false;
+
+
 	}
 
 
 
+	#region STAFF LIST
 
-
-	protected void btnLoadStaff_OnClick(object sender, EventArgs e)
+	protected void gridStaffList_OnSelectionChanged(object sender, EventArgs e)
 	{
-		int labID = Convert.ToInt32(cboLab.Value);
-
-		SQL_utils sql = new SQL_utils("backend");
-
-		string studyIDs_csv = uwac.trk.dataops.GetCSV(gridStudies.GridView.GetSelectedFieldValues("studyID"));
-		
-		
-		string sqlcode = String.Format("select * from vwSEC_AllowedGroups_By_StaffID where studyID in ({0}) and StaffName not in ('{1}','{2}')", studyIDs_csv, "aut user", "autsys TestAcct");
-		
-
-		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
-
-		Session["labstaff"] = dt;
-		
-
-		pivotStaff.DataSource = dt;
-		pivotStaff.DataBind();
-
-		
-		
-		sql.Close();
+		BeginStaffEdit();
 	}
 
-
-
-
-	protected void cboStaffInLab_OnSelectedIndexChanged(object sender, EventArgs e)
+	protected void gridStaffList_OnCustomCallback(object sender, EventArgs e)
 	{
-		DataTable dt = GetStaffToEdit();
-		Session["labgroups_staff"] = dt;
-		gridEditStaff.DataSource = dt;
-
-		gridEditStaff.DataBind();
+		BeginStaffEdit();
 	}
 
+
+	#endregion
+
+
+	#region ADD new staff to Lab
 	protected void cboStaffNotInLab_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
+		btnAddStaff.Visible = true;
 
 
+	}
+	protected void btnAddStaff_OnClick(object sender, EventArgs e)
+	{
+		int newstaffID = Convert.ToInt32(cboStaffNotInLab.Value.ToString());
+
+		if (newstaffID > 0)
+		{
+			SQL_utils sql = new SQL_utils("backend");
+
+			string code = String.Format("insert into tblLabGroup_Staff (labgroupID , staffID, dbroleID) select labgroupID, {0}, 2 from tblLabGroup where groupID in (select groupID from tblGroup where studyID={1})"
+					, newstaffID, Master.Master_studyID);
+
+			try
+			{
+				sql.NonQuery_from_SQLstring(code);
+
+				gridStaffList.DataBind();
+			}
+			catch(Exception ex)
+			{
+
+			}
+			sql.Close();
+		}
+
+	}
+
+	protected void btnCreateNewStaff_OnClick(object sender, EventArgs e)
+	{
+		Response.Redirect("~/Admin/Staff.aspx?mode=new");
 
 	}
 
 
-	protected DataTable  GetStaffToEdit()
+
+	#endregion
+
+
+	#region EDIT STAFF
+
+	protected void BeginStaffEdit()
+	{
+
+		var x = gridStaffList.GetSelectedFieldValues("staffID");
+
+		if (x != null)
+		{
+			int staffID = Convert.ToInt32(gridStaffList.GetSelectedFieldValues("staffID").First());
+			Session["staffID_to_edit"] = staffID;
+			Debug.WriteLine(Session["staffID_to_edit"]);
+
+			string staffname = gridStaffList.GetSelectedFieldValues("staffname").First().ToString();
+			lblStaffEditing.Text = String.Format("Editing: {0}", staffname);
+
+
+			DataTable dt = GetStaffToEdit(staffID);
+			Session["labgroups_staff"] = dt;
+			gridEditStaff.DataSource = dt;
+
+			gridEditStaff.DataBind();
+
+			gridEditStaff.ClientVisible = true;
+			lblInstructions.ClientVisible = true;
+			btnCancelStaffEdit.ClientVisible = true;
+			lblStaffEditing.ClientVisible = true;
+
+			lblClickToEdit.ClientVisible = false;
+			gridStaffList.ClientVisible = false;
+		}
+	}
+
+	protected void CancelStaffEdit()
+	{
+		gridStaffList.DataBind();
+
+		gridEditStaff.ClientVisible = false;
+		lblStaffEditing.ClientVisible = false;
+		lblInstructions.ClientVisible = false;
+		btnCancelStaffEdit.ClientVisible = false;
+
+		lblClickToEdit.ClientVisible = true;
+		gridStaffList.ClientVisible = true;
+	}
+
+		protected DataTable GetStaffToEdit(int staffID)
 	{
 		SQL_utils sql = new SQL_utils("backend");
 
-		int staffID = Convert.ToInt32(cboStaffInLab.Value.ToString());
+		//int staffID = Convert.ToInt32(cboStaffInLab.Value.ToString());
 		int labID = Convert.ToInt32(cboLab.Value.ToString());
 
 		string studyIDs_csv = uwac.trk.dataops.GetCSV(gridStudies.GridView.GetSelectedFieldValues("studyID"));
@@ -192,7 +259,6 @@ public partial class Admin_LabGroups : BasePage
 	}
 
 
-	
 	protected void gridEditStaff_OnDataBinding(object sender, EventArgs e)
 	{
 		//(sender as ASPxGridView).DataSource = GetStaffDetails();
@@ -202,22 +268,18 @@ public partial class Admin_LabGroups : BasePage
 		}
 		else
 		{
-			(sender as ASPxGridView).DataSource = GetStaffToEdit();
+			//(sender as ASPxGridView).DataSource = GetStaffToEdit();
 		}
 
 		gridEditStaff.Visible = true;
 		lblInstructions.Visible = true;
+		btnCancelStaffEdit.Visible = true;
 
 
-		string staffname = cboStaffInLab.Text;
-		lblStaffEditing.Text = String.Format("Editing: {0}", staffname);
 
 	}
 
-	//protected void trkColorCorrectionFactor_OnPositionChanged(object sender, EventArgs e)
-	//{
-	//	gridEditStaff.DataBind();
-	//}
+
 
 	protected void gridEditStaff_OnHtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
 	{
@@ -241,7 +303,12 @@ public partial class Admin_LabGroups : BasePage
 
 	protected void gridEditStaff_OnCustomCallback(object sender, ASPxGridViewCustomCallbackEventArgs e)
 	{
-		gridEditStaff.DataBind();
+		string param = e.Parameters.ToString();
+
+		if (param == "staffselected")
+		{
+			BeginStaffEdit();
+		}
 	}
 
 	protected void gridEditStaff_OnCellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
@@ -255,6 +322,63 @@ public partial class Admin_LabGroups : BasePage
 
 	}
 
+
+	protected void gridEditStaff_BatchUpdate(object sender, ASPxDataBatchUpdateEventArgs e)
+	{
+		int staffID = Convert.ToInt32(gridStaffList.GetSelectedFieldValues("staffID").First());
+
+		List<bool> results = new List<bool>();
+
+		foreach (ASPxDataUpdateValues args in e.UpdateValues)
+		{
+			if (Convert.ToInt32(args.Keys[0].ToString()) < 0)
+			{
+				//Add staffID to the NewValues
+				//int staffID = Convert.ToInt32(cboStaffInLab.Value.ToString());
+
+
+
+
+				args.NewValues["staffID"] = staffID;
+
+				bool result = DxGridView.BuildInsertSqlCode(args.NewValues, "tbllabgroup_staff", "backend");
+				results.Add(result);
+
+				if (result) needrefresh = true;
+			}
+			else
+			{
+				bool result = DxGridView.BuildUpdateSqlCode(args, "tbllabgroup_staff", "backend");
+				results.Add(result);
+				if (result) needrefresh = true;
+			}
+		}
+
+
+		DataTable dt = GetStaffToEdit(staffID);
+		Session["labgroups_staff"] = dt;
+
+		e.Handled = true;
+
+	}
+
+
+	protected void CancelEditing(CancelEventArgs e)
+	{
+		e.Cancel = true;
+		gridEditStaff.CancelEdit();
+	}
+
+
+	protected void btnCancelStaffEdit_OnClick(object sender, EventArgs e)
+	{
+		CancelStaffEdit();
+	}
+
+	#endregion
+
+
+	#region Role-specific colors, etc.
 	private void cboRole_ItemTextCellPrepared(object sender, ListBoxItemTextCellPreparedEventArgs e)
 	{
 		string fieldname = (e.Column == null) ? "" : e.Column.FieldName;
@@ -262,7 +386,23 @@ public partial class Admin_LabGroups : BasePage
 		e.TextCell.ForeColor = Color.FromName(GetDBroleColor(e.Item.Text));
 	}
 
-	protected string GetDBroleColor (string role)
+	protected void cboDBrole_ItemTextCellPrepared(object sender, ListBoxItemTextCellPreparedEventArgs e)
+	{
+		if (e.Column.FieldName == "ContactName")
+		{
+			string contactTitle = e.Item.GetFieldValue("ContactTitle").ToString();
+			if (contactTitle == "Owner")
+			{
+				e.TextCell.CssClass += " owner";
+				e.TextCell.ToolTip = "Owner";
+			}
+		}
+		if (e.Column.FieldName == "Phone")
+			e.TextCell.CssClass += " phone";
+
+	}
+
+	protected string GetDBroleColor(string role)
 	{
 		string color = "Black";
 		switch (role)
@@ -299,66 +439,6 @@ public partial class Admin_LabGroups : BasePage
 	}
 
 
-	protected void gridEditStaff_BatchUpdate(object sender, ASPxDataBatchUpdateEventArgs e)
-	{
-
-		List<bool> results = new List<bool>();
-
-		foreach (ASPxDataUpdateValues args in e.UpdateValues)
-		{
-			if (Convert.ToInt32(args.Keys[0].ToString()) < 0)
-			{
-				//Add staffID to the NewValues
-				int staffID = Convert.ToInt32(cboStaffInLab.Value.ToString());
-				args.NewValues["staffID"] = staffID;
-
-				bool result = DxGridView.BuildInsertSqlCode(args.NewValues, "tbllabgroup_staff", "backend");
-				results.Add(result);
-
-				if (result) needrefresh = true;
-			}
-			else
-			{
-				bool result = DxGridView.BuildUpdateSqlCode(args, "tbllabgroup_staff", "backend");
-				results.Add(result);
-				if (result) needrefresh = true;
-			}
-		}
-
-
-		DataTable dt = GetStaffToEdit();
-		Session["labgroups_staff"] = dt;
-
-		e.Handled = true;
-
-	}
-
-	
-	protected void CancelEditing(CancelEventArgs e)
-	{
-		e.Cancel = true;
-		gridEditStaff.CancelEdit();
-	}
-
-
-
-	protected void cboDBrole_ItemTextCellPrepared(object sender, ListBoxItemTextCellPreparedEventArgs e)
-	{
-		if (e.Column.FieldName == "ContactName")
-		{
-			string contactTitle = e.Item.GetFieldValue("ContactTitle").ToString();
-			if (contactTitle == "Owner")
-			{
-				e.TextCell.CssClass += " owner";
-				e.TextCell.ToolTip = "Owner";
-			}
-		}
-		if (e.Column.FieldName == "Phone")
-			e.TextCell.CssClass += " phone";
-
-	}
-
-
 	public static Color ChangeColorBrightness(Color color, float correctionFactor)
 	{
 		float red = (float)color.R;
@@ -381,9 +461,10 @@ public partial class Admin_LabGroups : BasePage
 
 		return Color.FromArgb(color.A, (int)red, (int)green, (int)blue);
 	}
+	#endregion
 
 
-	#region Labs as a whole
+	#region Edit Lab Groups as a whole
 
 
 
@@ -550,5 +631,39 @@ public partial class Admin_LabGroups : BasePage
 
 
 	#endregion
+
+
+
+	#region STAFF by Study PivotGrid
+
+	protected void btnLoadStaff_OnClick(object sender, EventArgs e)
+	{
+		int labID = Convert.ToInt32(cboLab.Value);
+
+		SQL_utils sql = new SQL_utils("backend");
+
+		string studyIDs_csv = uwac.trk.dataops.GetCSV(gridStudies.GridView.GetSelectedFieldValues("studyID"));
+
+
+		string sqlcode = String.Format("select * from vwSEC_AllowedGroups_By_StaffID where studyID in ({0}) and StaffName not in ('{1}','{2}')", studyIDs_csv, "aut user", "autsys TestAcct");
+
+
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
+
+		Session["labstaff"] = dt;
+
+
+		pivotStaff.DataSource = dt;
+		pivotStaff.DataBind();
+
+
+
+		sql.Close();
+	}
+
+
+	#endregion
+
+
 
 }

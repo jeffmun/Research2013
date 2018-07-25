@@ -13,7 +13,11 @@
 	
 	<script type="text/javascript">
 		function UpdateColor() {
-			gridEditStaff.PerformCallback();
+			gridEditStaff.PerformCallback("updatecolor");
+		}
+
+		function StaffSelected(s, e) {
+			gridEditStaff.PerformCallback("staffselected");
 		}
 	</script>
 	
@@ -61,56 +65,43 @@
 	<dx:ASPxPageControl ID="pageControl1" ClientInstanceName="pageControl1" runat="server" ClientVisible="false" Width="98%">
 
 		<TabPages>
-			<dx:TabPage Name="LabAccess" Text="Edit Lab Access" ClientVisible="false">
-				<ContentCollection>
-					<dx:ContentControl>
-						<dx:ASPxGridView ID="gridLabEditing" ClientInstanceName="gridLabEditing" runat="server" DataSourceID="Sql_Study_with_Groups" KeyFieldName="studyID"
-							  OnDataBound="gridLabEditing_DataBound" OnCustomButtonInitialize="gridLabEditing_OnCustomButtonInitialize"
-							OnCustomButtonCallback="gridLabEditing_CustomButtonCallback" >
-							<Columns>
-								<dx:GridViewDataColumn FieldName="studyID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="isActive" Caption="Active?" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="studyname" Caption="Study" ReadOnly="true" CellStyle-Font-Bold="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="hasparentstudy" Caption="Has Parent Study?" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="parentstudyname" Caption="Parent Study" ReadOnly="true"></dx:GridViewDataColumn>
-								
-
-							</Columns>
-						</dx:ASPxGridView>
-					</dx:ContentControl>
-				</ContentCollection>
-			</dx:TabPage>
 			<dx:TabPage Name="StaffAccess" Text="Edit Staff Access" ClientVisible="false">
 				<ContentCollection>
-					<dx:ContentControl ID="ContentControl1" runat="server">
+					<dx:ContentControl ID="ContentControl1" runat="server" ClientIDMode="Static">
 
 						<table>
 							<tr>
-								<td style="vertical-align: top; padding:10px; width:400px">
-									<dx:ASPxComboBox ID="cboStaffInLab" ClientInstanceName="cboStaffInLab" runat="server" DataSourceID="Sql_StaffInLab" AutoPostBack="true" 
-											Caption="Edit Staff Member:" CaptionSettings-Position="Top" OnSelectedIndexChanged="cboStaffInLab_OnSelectedIndexChanged"
-											TextField="staffname" ValueField="staffID" NullText="--Select Lab Staff--"  ></dx:ASPxComboBox>
-
-
-
-								</td>
-								<td style="vertical-align: top; padding:10px">
-									<dx:ASPxComboBox ID="cboStaffNotInLab" ClientInstanceName="cboStaffNotInLab" runat="server" DataSourceID="Sql_StaffNotInLab" AutoPostBack="true" 
-											Caption="Add Staff Member to the Lab:" CaptionSettings-Position="Top" Width="220px" OnSelectedIndexChanged="cboStaffNotInLab_OnSelectedIndexChanged"
-											TextField="staffname" ValueField="staffID" NullText="--Select Staff Member to Add--" ></dx:ASPxComboBox>
+								<td style="vertical-align: top; padding:10px; width:800px">
 									
-								</td>
-							</tr>
-						</table>
 
- <%--                       OnBatchUpdate="gridStaffGroup_BatchUpdate"--%>
 
-						<%--ReadOnly="true" Visible="false"--%>
-						<br /><br />
-						<dx:ASPxLabel ID="lblStaffEditing" ClientInstanceName="lblStaffEditing" runat="server" Font-Bold="true" Font-Size="Medium"></dx:ASPxLabel>
+						<dx:ASPxLabel ID="lblClickToEdit" ClientInstanceName="lblClickToEdit" runat="server" Text="Click the row to edit the staff member." Font-Size="Medium" ForeColor="Silver" Font-Italic="true" />
+						<dx:ASPxGridView ID="gridStaffList" ClientInstanceName="gridStaffList" runat="server" DataSourceID="Sql_LabStaff_INFO" KeyFieldName="staffID" 
+							SettingsBehavior-AllowSelectByRowClick="true"    OnCustomCallback="gridStaffList_OnCustomCallback"
+							 EnableCallBacks="false" 
+							OnSelectionChanged="gridStaffList_OnSelectionChanged" SettingsBehavior-ProcessSelectionChangedOnServer="true">
+							<%--<ClientSideEvents  SelectionChanged="StaffSelected"  />--%>
+							<Columns>
+								<dx:GridViewDataColumn FieldName="staffID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="staffname" Caption="Staff Name" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="dbrole" Caption="DB Role" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="nunq_otherlabs" Caption="# of Other Labs" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="otherlabs" Caption="Other Labs" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="mismatch_dbrole" Caption="Mismatch in roles across labs" ReadOnly="true"></dx:GridViewDataColumn>
+
+							</Columns>
+						</dx:ASPxGridView>
+						
 						<br />
-						<dx:ASPxLabel ID="lblInstructions" runat="server" Text="Click to edit the role. Then click 'Save Changes' below the table." Font-Size="Small" Font-Italic="true"></dx:ASPxLabel>						<br />
-						<dx:ASPxGridView ID="gridEditStaff" ClientInstanceName="gridEditStaff" runat="server" Visible="false" 
+						<dx:ASPxLabel ID="lblStaffEditing" ClientInstanceName="lblStaffEditing" runat="server" Font-Bold="true" Font-Size="Medium" Width="480px"></dx:ASPxLabel>
+	
+						<dx:ASPxButton ID="btnCancelStaffEdit" ClientInstanceName="btnCancelStaffEdit" runat="server" Text="Cancel Editing" Visible="false"
+							 OnClick="btnCancelStaffEdit_OnClick">
+						</dx:ASPxButton>
+
+						<br />
+						<dx:ASPxLabel ID="lblInstructions" runat="server" Text="Click in the Role to edit. Then click 'Save Changes' below the table." Font-Size="Small" Font-Italic="true"></dx:ASPxLabel>						<br />
+						<dx:ASPxGridView ID="gridEditStaff" ClientInstanceName="gridEditStaff" runat="server" ClientVisible="false" ClientIDMode="Static" 
 							KeyFieldName="labgroup_staffID" SettingsDataSecurity-AllowEdit="true"  OnBatchUpdate="gridEditStaff_BatchUpdate"
 							 OnCellEditorInitialize="gridEditStaff_OnCellEditorInitialize" OnDataBinding="gridEditStaff_OnDataBinding"
 							 OnHtmlDataCellPrepared="gridEditStaff_OnHtmlDataCellPrepared" OnCustomCallback="gridEditStaff_OnCustomCallback" >
@@ -136,10 +127,50 @@
 						</dx:ASPxGridView>
 
 
+								</td>
+								<td style="vertical-align: top; padding:10px">
+									<dx:ASPxComboBox ID="cboStaffNotInLab" ClientInstanceName="cboStaffNotInLab" runat="server" DataSourceID="Sql_StaffNotInLab" AutoPostBack="true" 
+											Caption="Add Staff Member to the Lab:" CaptionSettings-Position="Top" Width="220px" OnSelectedIndexChanged="cboStaffNotInLab_OnSelectedIndexChanged"
+											TextField="staffname" ValueField="staffID" NullText="--Select Staff Member to Add--" ></dx:ASPxComboBox>
+									
+									<br />
+									<dx:ASPxButton ID="btnAddStaff" ClientInstanceName="btnAddStaff" runat="server" Text="Add Staff Member"
+									   OnClick="btnAddStaff_OnClick" Visible="false" ></dx:ASPxButton>
+
+									<br /><br />
+									<dx:ASPxButton ID="btnCreateNewStaff" ClientInstanceName="btnCreateNewStaff" runat="server" Text="Create New Staff Member"
+									   OnClick="btnCreateNewStaff_OnClick" Visible="true" ></dx:ASPxButton>
+
+								</td>
+							</tr>
+						</table>
+
+					
+
 
 						</dx:ContentControl>
 					</ContentCollection>
 				</dx:TabPage>
+
+			<dx:TabPage Name="LabAccess" Text="Edit Lab Access" ClientVisible="false">
+				<ContentCollection>
+					<dx:ContentControl>
+						<dx:ASPxGridView ID="gridLabEditing" ClientInstanceName="gridLabEditing" runat="server" DataSourceID="Sql_Study_with_Groups" KeyFieldName="studyID"
+							  OnDataBound="gridLabEditing_DataBound" OnCustomButtonInitialize="gridLabEditing_OnCustomButtonInitialize"
+							OnCustomButtonCallback="gridLabEditing_CustomButtonCallback" >
+							<Columns>
+								<dx:GridViewDataColumn FieldName="studyID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="isActive" Caption="Active?" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="studyname" Caption="Study" ReadOnly="true" CellStyle-Font-Bold="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="hasparentstudy" Caption="Has Parent Study?" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="parentstudyname" Caption="Parent Study" ReadOnly="true"></dx:GridViewDataColumn>
+								
+
+							</Columns>
+						</dx:ASPxGridView>
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
 
 			<dx:TabPage Text="Staff by Study Grid">
 				<ContentCollection>
@@ -233,23 +264,30 @@
 
 	
 
+	<asp:SqlDataSource ID="Sql_LabStaff_INFO" runat="server" SelectCommandType="Text"  
+	SelectCommand="exec  trk.spINFO_LabStaff @labID"  
+   ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
+		 <SelectParameters>
+			 <asp:ControlParameter ControlID="cboLab" Name="labID" PropertyName="Value" />
+		 </SelectParameters>  
+	</asp:SqlDataSource>  
+	
 
 
 
-
-<%--    UpdateCommand="update tblLabGroup_staff set dbroleID=@dbroleID where labgroup_staffID=@labgroup_staffID"--%>
 	<asp:SqlDataSource ID="Sql_StaffInLab" runat="server" SelectCommandType="Text"  
-	SelectCommand="select staffID, firstname + ' ' + lastname as staffname from tblstaff where active >= 0 and staffID in (select staffID from tblLabGroup_staff where labgroupID in (select labgroupID from tblLabGroup where labID=@labID)) order by 2"  
+	SelectCommand="select staffID, firstname + ' ' + lastname as staffname, active 
+		, (case when active=1 then 'Yes' else 'No' end) isactive
+		from tblstaff where active >= 0 and staffID in (select staffID from tblLabGroup_staff where labgroupID in (select labgroupID from tblLabGroup where labID=@labID)) order by 2"  
 	
    ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
 		 <SelectParameters>
 			 <asp:ControlParameter ControlID="cboLab" Name="labID" PropertyName="Value" />
 		 </SelectParameters>  
-<%--		<UpdateParameters>
-			<asp:Parameter Name="labgroup_staffID" DbType="Int32" />
-			<asp:Parameter Name="dbroleID" DbType="Int32" />
-		</UpdateParameters>--%>
 	</asp:SqlDataSource>  
+
+
+
 	
 	<asp:SqlDataSource ID="Sql_StaffNotInLab" runat="server" SelectCommandType="Text"  
 	SelectCommand="select staffID, firstname + ' ' + lastname as staffname from tblstaff where active >= 0 and staffID not in (select staffID from tblLabGroup_staff where labgroupID in (select labgroupID from tblLabGroup where labID=@labID)) order by 2"  
