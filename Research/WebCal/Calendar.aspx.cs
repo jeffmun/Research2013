@@ -22,14 +22,14 @@ using DevExpress.Web.ASPxScheduler.Controls;
 using DevExpress.Web.ASPxScheduler.Drawing;
 using System.Drawing;
 
-public partial class WebCal_default : BasePage
+public partial class WebCal_Calendar : BasePage 
 {
 	private DateTime dtStartDate;
 	private DateTime dtEndDate;
 
 	private void Page_Init(object sender, EventArgs e)
 	{
-		dtStartDate = DateTime.Today;
+		dtStartDate = Convert.ToDateTime("10/1/2015");
 		dtEndDate = dtStartDate.AddDays(30);
 
 		deStart.Value = dtStartDate;
@@ -46,9 +46,9 @@ public partial class WebCal_default : BasePage
 
 
 		dtStartDate = Convert.ToDateTime(deStart.Value);
-		dtEndDate = Convert.ToDateTime(deEnd.Value);
+		dtEndDate = Convert.ToDateTime(deEnd.Value) ;
 
-		TimeSpan ndays = dtEndDate - dtStartDate;
+		TimeSpan ndays =  dtEndDate - dtStartDate;
 		tbInfo.Text = String.Format("{0} days", ndays.TotalDays);
 
 		var appts = dxSched.Storage.Appointments;
@@ -63,7 +63,7 @@ public partial class WebCal_default : BasePage
 
 		dxSched.LimitInterval = new DevExpress.XtraScheduler.TimeInterval(dtStartDate, dtEndDate);
 
-
+		
 
 	}
 
@@ -76,9 +76,9 @@ public partial class WebCal_default : BasePage
 	}
 
 
-
-
-}
+		
+		
+	}
 
 
 

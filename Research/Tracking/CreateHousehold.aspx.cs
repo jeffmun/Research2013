@@ -41,7 +41,7 @@ public partial class Tracking_CreateHousehold : System.Web.UI.Page
 		if (hhID > 0)
 		{
 
-			Response.Redirect("Household.aspx?hhID=" + hhID.ToString());
+			Response.Redirect("Household2.aspx?hhID=" + hhID.ToString());
 
 		}
 

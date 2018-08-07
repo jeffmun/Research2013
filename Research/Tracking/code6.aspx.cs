@@ -401,7 +401,7 @@ public partial class Tracking_code6 : BasePage //System.Web.UI.Page
 				int personID = 0;
 				try
 				{
-					personID = sql.IntScalar_from_SQLstring(String.Format("select * from uwautism_research_backend..vwMasterStatus_S where ID='{0}' and studyID={1}", ID, studyID));
+					personID = sql.IntScalar_from_SQLstring(String.Format("select personID from uwautism_research_backend..vwMasterStatus_S where ID='{0}' and studyID={1}", ID, studyID));
 				}
 				catch(Exception ex)
 				{

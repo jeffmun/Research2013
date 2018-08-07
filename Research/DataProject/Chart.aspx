@@ -564,10 +564,15 @@
 								<Image IconID="richedit_inserttable_16x16"></Image>
 								<ClientSideEvents Click="btnViewData_ClientClick" />
 							</dx:ASPxButton>
-							<dx:ASPxButton ID="btnViewMissing" ClientInstanceName="btnViewMissing" runat="server" Text="Missing Data Report"
+							<dx:ASPxButton ID="btnViewMissing" ClientInstanceName="btnViewMissing" runat="server" Text="Missing Data by Var"
 								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
 								<Image IconID="support_question_16x16office2013"></Image>
 								<ClientSideEvents Click="btnViewMissing_ClientClick" />
+							</dx:ASPxButton>
+							<dx:ASPxButton ID="btnViewMissingID" ClientInstanceName="btnViewMissingID" runat="server" Text="Missing Data by ID"
+								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
+								<Image IconID="support_question_16x16office2013"></Image>
+								<ClientSideEvents Click="btnViewMissingID_ClientClick" />
 							</dx:ASPxButton>
 							<dx:ASPxButton ID="btnPDF" ClientInstanceName="btnPDF" runat="server" Text="Save to PDF" Visible="false"
 								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px"

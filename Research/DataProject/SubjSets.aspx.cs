@@ -14,7 +14,7 @@ using DevExpress.Web.Data;
 using uwac;
 using System.Collections;
 
-public partial class DataProject_SubjSets : System.Web.UI.Page
+public partial class DataProject_SubjSets : BasePage  
 {
 
 	private List<string> selected_measlist;

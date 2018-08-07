@@ -86,18 +86,23 @@ public partial class Admin_LabGroups : BasePage
 			int n = sql.IntScalar_from_SQLstring(code);
 
 			string user = HttpContext.Current.User.Identity.Name;
+			string session_netid = ""; 
 
-			string session_netid = Session["netid"].ToString();
+			if (Session["netid"] != null) session_netid = Session["netid"].ToString();
 
 			bool showstaffeditors = (n > 0 || session_netid == "jeffmun") ? true : false;
 			bool showlabeditors = ( session_netid == "jeffmun") ? true : false;
 
 			try
 			{
-				pageControl1.TabPages.FindByName("LabAccess").ClientVisible = showlabeditors;
 				pageControl1.TabPages.FindByName("StaffAccess").ClientVisible = showstaffeditors;
+				pageControl1.TabPages.FindByName("CreateAddStaff").ClientVisible = showstaffeditors;
+
+				pageControl1.TabPages.FindByName("LabAccess").ClientVisible = showlabeditors;
+				pageControl1.TabPages.FindByName("LabGrid").ClientVisible = showlabeditors;
+
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 
 			sql.Close();
 		}
@@ -110,11 +115,12 @@ public partial class Admin_LabGroups : BasePage
 
 		var x = cboLab.Value;
 
-		string sqlcode = String.Format("select * from tblLabGroups where ");
 
 		pageControl1.ClientVisible = true;
 		gridStudies.ClientVisible = true;
 		btnLoadStaff.ClientVisible = true;
+
+		
 
 		lblStaffEditing.Text = "";
 		gridEditStaff.ClientVisible = false;
@@ -129,6 +135,8 @@ public partial class Admin_LabGroups : BasePage
 
 	protected void gridStaffList_OnSelectionChanged(object sender, EventArgs e)
 	{
+		var x = gridStaffList.GetSelectedFieldValues("staffID");
+
 		BeginStaffEdit();
 	}
 
@@ -144,32 +152,67 @@ public partial class Admin_LabGroups : BasePage
 	#region ADD new staff to Lab
 	protected void cboStaffNotInLab_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
-		btnAddStaff.Visible = true;
+		
+		int newstaffID = (cboStaffNotInLab.Value == null) ? 0 : Convert.ToInt32(cboStaffNotInLab.Value.ToString());
+		int newdbroleID = (cboNewdbroleID.Value == null) ? 0: Convert.ToInt32(cboNewdbroleID.Value.ToString());
+		string studyIDs_csv = uwac.trk.dataops.GetCSV(gridStudies.GridView.GetSelectedFieldValues("studyID"));
+
+		if (newstaffID > 0  && newdbroleID > 0 && !String.IsNullOrEmpty( studyIDs_csv))
+		{
+			btnAddStaff.Visible = true;
+		}
+		else{
+			btnAddStaff.Visible = false;
+		}
 
 
 	}
 	protected void btnAddStaff_OnClick(object sender, EventArgs e)
 	{
 		int newstaffID = Convert.ToInt32(cboStaffNotInLab.Value.ToString());
+		int newdbroleID = Convert.ToInt32(cboNewdbroleID.Value.ToString());
 
-		if (newstaffID > 0)
+		string studyIDs_csv = uwac.trk.dataops.GetCSV(gridStudies.GridView.GetSelectedFieldValues("studyID"));
+
+
+		if (studyIDs_csv != null)
 		{
-			SQL_utils sql = new SQL_utils("backend");
 
-			string code = String.Format("insert into tblLabGroup_Staff (labgroupID , staffID, dbroleID) select labgroupID, {0}, 2 from tblLabGroup where groupID in (select groupID from tblGroup where studyID={1})"
-					, newstaffID, Master.Master_studyID);
-
-			try
+			if (newstaffID > 0)
 			{
-				sql.NonQuery_from_SQLstring(code);
+				SQL_utils sql = new SQL_utils("backend");
 
-				gridStaffList.DataBind();
-			}
-			catch(Exception ex)
-			{
+				string code = String.Format("insert into tblLabGroup_Staff (labgroupID , staffID, dbroleID) select labgroupID, {0}, {1} from tblLabGroup " + 
+					" where groupID in (select groupID from tblGroup where studyID in ({2})) " + 
+					" and labgroupID not in (select labgroupID from tblLabGroup_staff where staffID = {0})"
+						, newstaffID, newdbroleID, studyIDs_csv);
 
+				try
+				{
+					btnAddStaff.Visible = false;
+					lblSelectStudies_warning.Visible = false;
+
+					sql.NonQuery_from_SQLstring(code);
+
+
+					cboStaffNotInLab.Value = null;
+					cboNewdbroleID.Value = null;
+					gridStudies.GridView.Selection.UnselectAll(); 
+
+
+					gridStaffList.DataBind();
+				}
+
+
+				catch (Exception ex)
+				{
+
+				}
+				sql.Close();
 			}
-			sql.Close();
+		}
+		else{
+			lblSelectStudies_warning.Visible = true;
 		}
 
 	}
@@ -243,9 +286,9 @@ public partial class Admin_LabGroups : BasePage
 		string studyID_whereclause = (studyIDs_csv == null) ? " > 0 " : String.Format(" in ({0}) ", studyIDs_csv);
 
 		string code1 = String.Format("select coalesce(labgroup_staffID, -1 * a.labgroupID) labgroup_staffID, studyname, groupname, a.labgroupID, a.groupID, staffID, coalesce(b.dbroleID, 0) dbroleID, coalesce(dbrole, '*NONE*') dbrole " +
-			" from tbllabgroup a  " +
+			" from (select * from tbllabgroup where labID = {2}) a  " +
 			" join tblgroup a1 ON a.groupID=a1.groupID " +
-			" join (select * from tblstudy  where studyID {0}) a2 ON a1.studyID=a2.studyID " +
+			" join tblstudy a2 ON a1.studyID = a2.studyID " +
 			" left join (select * from tblLabgroup_staff where staffID = {1}) b ON a.labgroupID = b.labgroupID " +
 			" left join tblDBrole_lkup c ON b.dbroleID = c.dbroleID " +
 			" where a.labID = {2}  order by studyname, groupname ", studyID_whereclause, staffID, labID);

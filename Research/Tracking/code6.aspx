@@ -162,7 +162,7 @@
             <td style="vertical-align: top">
 
    <dx:ASPxUploadControl ID="UploadControl" runat="server" ClientInstanceName="UploadControl" Width="380" Height="50"
-        NullText="Upload otherID's..." UploadMode="Advanced" AutoStartUpload="True"
+        NullText="Select file to upload otherID's..." UploadMode="Advanced" AutoStartUpload="True"
         OnFilesUploadComplete="UploadControl_FilesUploadComplete"  AllowedFileExtensions=".xlsx">
         <AdvancedModeSettings EnableMultiSelect="True" EnableDragAndDrop="True" />
         <ValidationSettings MaxFileSize="10000000" ShowErrors="false"></ValidationSettings>
