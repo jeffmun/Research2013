@@ -20,7 +20,7 @@ using System.Text;
 using uwac;
 
 
-public partial class Reliability_Rel_Pairs : System.Web.UI.Page
+public partial class Reliability_Rel_Pairs : BasePage
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();
@@ -34,7 +34,7 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 	//If the master page default study is changed, update the Measure DDL
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
-		GetCurrentDefaultStudyID();
+		//GetCurrentDefaultStudyID();
 		//UpdatePanel_Overview.ContentTemplateContainer.Controls.Clear();
 		UpdatePanel_coderpairs_list.ContentTemplateContainer.Controls.Clear();
 		LoadOverview_by_study();
@@ -43,22 +43,29 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 	}
 
 
-	protected void GetCurrentDefaultStudyID()
-	{
+	//protected void GetCurrentDefaultStudyID()
+	//{
 
-		SqlCommand sqlCmd = new System.Data.SqlClient.SqlCommand("exec spSEC_Get_Default_StudyID_for_User", oConn);
-		DataTable dt = new DataTable();
-		SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
-		sqlAdapter.Fill(dt);
+	//	SQL_utils sql = new SQL_utils("data");
+	//	string sqlcode = "exec spSEC_Get_Default_StudyID_for_User ";
+	//	DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
-		foreach (DataRow row in dt.Rows)
-		{
-			_content_studyID = Convert.ToInt16(row["defaultstudyID"]);
-			_content_studyname = Convert.ToString(row["studyname"]);
-		}
+	//	sql.Close();
 
 
-	}
+	//	SqlCommand sqlCmd = new System.Data.SqlClient.SqlCommand("exec spSEC_Get_Default_StudyID_for_User", oConn);
+	//	DataTable dt = new DataTable();
+	//	SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
+	//	sqlAdapter.Fill(dt);
+
+	//	foreach (DataRow row in dt.Rows)
+	//	{
+	//		_content_studyID = Convert.ToInt16(row["defaultstudyID"]);
+	//		_content_studyname = Convert.ToString(row["studyname"]);
+	//	}
+
+
+	//}
 
 
 	//raise events on content page for the buttons on master page
@@ -105,7 +112,7 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 		//head.Controls.Add(meta);
 
 
-		GetCurrentDefaultStudyID();
+		//GetCurrentDefaultStudyID();
 		if (print_jminfo) jminfo.Text += "**Load**..IsPostBack=" + IsPostBack.ToString() + "<br/>";
 
 		if (!IsPostBack)
@@ -138,16 +145,27 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 	{
 		if (print_jminfo) jminfo.Text += "LoadOverview_by_study..<br/>";
 		
-		lbl_StudyName.Text = _content_studyname;
+		//lbl_StudyName.Text = _content_studyname;
 
-		SqlCommand cmd2 = new SqlCommand();
-		cmd2.Connection = oConnData;
-		cmd2.CommandType = CommandType.Text;
-		cmd2.CommandText = "exec spRELv2_GET_RelTracking_Overview_by_study " + _content_studyID.ToString();
+		//SqlCommand cmd2 = new SqlCommand();
+		//cmd2.Connection = oConnData;
+		//cmd2.CommandType = CommandType.Text;
+		//cmd2.CommandText = "exec spRELv2_GET_RelTracking_Overview_by_study " + _content_studyID.ToString();
 
-		DataTable dt2 = new DataTable();
-		SqlDataAdapter sqlAdapter2 = new SqlDataAdapter(cmd2);
-		sqlAdapter2.Fill(dt2);
+		//DataTable dt2 = new DataTable();
+		//SqlDataAdapter sqlAdapter2 = new SqlDataAdapter(cmd2);
+		//sqlAdapter2.Fill(dt2);
+
+
+		lbl_StudyName.Text = Master.Master_studyname;
+
+
+		SQL_utils sql = new SQL_utils("data");
+		string sqlcode = "exec spRELv2_GET_RelTracking_Overview_by_study " + Master.Master_studyID.ToString();
+		DataTable dt2 = sql.DataTable_from_SQLstring(sqlcode);
+
+		sql.Close();
+
 
 		GridView gv_measures = (GridView)UpdatePanel_Overview.FindControl("gv_measures");
 		gv_measures.DataSource = dt2;
@@ -190,12 +208,17 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 		{
 			int measureID = Convert.ToInt16(e.CommandArgument.ToString());
 
-			SqlCommand cmd = new SqlCommand();
-			cmd.Connection = oConnData;
-			cmd.CommandTimeout = 180;
-			cmd.CommandType = CommandType.Text;
-			cmd.CommandText = "exec spRELv2_step_0__loop_thru_meas_byStudy " + _content_studyID.ToString() + ", " + measureID.ToString();
-			cmd.ExecuteNonQuery();
+			//SqlCommand cmd = new SqlCommand();
+			//cmd.Connection = oConnData;
+			//cmd.CommandTimeout = 180;
+			//cmd.CommandType = CommandType.Text;
+			//cmd.CommandText = "exec spRELv2_step_0__loop_thru_meas_byStudy " + _content_studyID.ToString() + ", " + measureID.ToString();
+			//cmd.ExecuteNonQuery();
+
+			string sqlcode = "exec spRELv2_step_0__loop_thru_meas_byStudy " + _content_studyID.ToString() + ", " + measureID.ToString();
+			SQL_utils sql = new SQL_utils("data");
+			sql.NonQuery_from_SQLstring(sqlcode);
+
 
 			gv_measures.DataBind();
 
@@ -242,13 +265,13 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 		
 		
 		//Show the Measure Name
-		SQL_utils sql = new SQL_utils();
+		SQL_utils sql1 = new SQL_utils("backend");
 
 
 		string sqlcode_measname = "select measname from uwautism_research_backend..tblMeasure where measureID =  " + measureID.ToString();
 
-		string measname = sql.StringScalar_from_SQLstring(sqlcode_measname);
-
+		string measname = sql1.StringScalar_from_SQLstring(sqlcode_measname);
+		sql1.Close();
 		//lblPctCoded.Text = ddl.SelectedItem + "<br/>" + x;
 		lblMeasName.Text = measname;
 
@@ -265,23 +288,26 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 
 		if (Request.QueryString["coderpair"] != null)
 		{
-			sqlcode = "exec spRELv2_GET_RelTracking_CoderPairs_by_measure  " + _content_studyID.ToString() + ", " + measureID.ToString() + ", " + mode.ToString() + "," + Request.QueryString["coderpair"] + ",'" + grps_csv + "'";
+			sqlcode = "exec spRELv2_GET_RelTracking_CoderPairs_by_measure  " + Master.Master_studyID.ToString() + ", " + measureID.ToString() + ", " + mode.ToString() + "," + Request.QueryString["coderpair"] + ",'" + grps_csv + "'";
 		}
 		else
 		{
-			sqlcode = "exec spRELv2_GET_RelTracking_CoderPairs_by_measure  " + _content_studyID.ToString() + ", " + measureID.ToString() + ", " + mode.ToString() + ",0,0,0,'" + grps_csv + "'";
+			sqlcode = "exec spRELv2_GET_RelTracking_CoderPairs_by_measure  " + Master.Master_studyID.ToString() + ", " + measureID.ToString() + ", " + mode.ToString() + ",0,0,0,'" + grps_csv + "'";
 		}
 
 
 		//Coder pairs 
-		SqlCommand cmd = new SqlCommand();
-		cmd.Connection = oConnData;
-		cmd.CommandType = CommandType.Text;
-		cmd.CommandText = sqlcode;
+		//SqlCommand cmd = new SqlCommand();
+		//cmd.Connection = oConnData;
+		//cmd.CommandType = CommandType.Text;
+		//cmd.CommandText = sqlcode;
 
-		SqlDataAdapter da = new SqlDataAdapter(cmd);
-		DataTable dt = new DataTable();
-		da.Fill(dt);
+		//SqlDataAdapter da = new SqlDataAdapter(cmd);
+		//DataTable dt = new DataTable();
+		//da.Fill(dt);
+		SQL_utils sql = new SQL_utils("data");
+
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
 		//Persist the table in the Session object.
 		Session["dt_coder_pairs_list"] = dt;
@@ -296,6 +322,7 @@ public partial class Reliability_Rel_Pairs : System.Web.UI.Page
 		UpdatePanel_coderpairs_list.Visible = true;
 		UpdatePanel_coderpairs_list.Update();
 
+		sql.Close();
 	}
 
 

@@ -22,7 +22,7 @@ using System.Text;
 using uwac;
 
 
-public partial class Reliability_Rel_Tracking : System.Web.UI.Page
+public partial class Reliability_Rel_Tracking : BasePage 
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();
@@ -123,16 +123,16 @@ public partial class Reliability_Rel_Tracking : System.Web.UI.Page
 	{
 		if (print_jminfo) jminfo.Text += "LoadOverview_by_study..<br/>";
 		
-		lbl_StudyName.Text = _content_studyname;
+		//lbl_StudyName.Text = _content_studyname;
+		lbl_StudyName.Text = Master.Master_studyname;
 
-		SqlCommand cmd2 = new SqlCommand();
-		cmd2.Connection = oConnData;
-		cmd2.CommandType = CommandType.Text;
-		cmd2.CommandText = "exec spRELv2_GET_RelTracking_Overview_by_study " + _content_studyID.ToString();
 
-		DataTable dt2 = new DataTable();
-		SqlDataAdapter sqlAdapter2 = new SqlDataAdapter(cmd2);
-		sqlAdapter2.Fill(dt2);
+		SQL_utils sql = new SQL_utils("data");
+		string sqlcode = "exec spRELv2_GET_RelTracking_Overview_by_study " + Master.Master_studyID.ToString();
+		DataTable dt2 = sql.DataTable_from_SQLstring(sqlcode);
+
+		sql.Close();
+
 
 		GridView gv_measures = (GridView)UpdatePanel_Overview.FindControl("gv_measures");
 		gv_measures.DataSource = dt2;
@@ -194,7 +194,7 @@ public partial class Reliability_Rel_Tracking : System.Web.UI.Page
 		{
 			int measureID = Convert.ToInt16(e.CommandArgument.ToString());
 
-			SQL_utils sql = new SQL_utils();
+			SQL_utils sql = new SQL_utils("backend");
 
 			string code = "SELECT ReliabilityStudyMeasID from  uwautism_research_backend.dbo.tblstudymeas where measureid=" + measureID.ToString() +
 				" and studyid = " + _content_studyID.ToString() + " and reliabilitystudymeasid is not null";
@@ -232,14 +232,7 @@ public partial class Reliability_Rel_Tracking : System.Web.UI.Page
 			//sql.NonQuery_from_SQLstring("exec spRELv2_step_0b__loop_thru_meas_byStudy " + _content_studyID.ToString() + ", " + measureID.ToString());
 			sql.Close();
 
-			//SqlCommand cmd = new SqlCommand();
-			//cmd.Connection = oConnData;
-			//cmd.CommandTimeout = 180;
-			//cmd.CommandType = CommandType.Text;
-			//cmd.CommandText = "exec spRELv2_step_0__loop_thru_meas_byStudy " + _content_studyID.ToString() + ", " + measureID.ToString();
-			//cmd.ExecuteNonQuery();
-
-			
+		
 
 		}
 
@@ -384,7 +377,7 @@ public partial class Reliability_Rel_Tracking : System.Web.UI.Page
 	#region Kappa 
 	protected void Load_Kappa(int measureID)
 	{
-		SQL_utils sql = new SQL_utils();
+		SQL_utils sql = new SQL_utils("data");
 
 		DataTable dt_score_vars = sql.DataTable_from_SQLstring(" select fldname, minval, maxval from def.vwFld where measureID=" + measureID.ToString() + " and relitem in (1,3) ");
 
@@ -712,59 +705,6 @@ public partial class Reliability_Rel_Tracking : System.Web.UI.Page
 	#endregion
 
 
-	//protected void btnImage_click(object sender,  CommandEventArgs e)
-	//{
-	//    if (e.CommandName == "toggle_size")
-	//    {
-	//        string i = e.CommandArgument.ToString();
-	//        System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)UpdatePanel_plots.ContentTemplateContainer.FindControl("Image" + i );
-	//        System.Web.UI.WebControls.Image bigimg = (System.Web.UI.WebControls.Image)UpdatePanel_plots.ContentTemplateContainer.FindControl("Image" + i  + "big");
-	//        Button btn = (Button)UpdatePanel_plots.ContentTemplateContainer.FindControl("btnImg" + i);
-
-	//        int num = Convert.ToInt16(i) + 1; 
-
-	//        if (bigimg.Visible == true)
-	//        {
-	//            bigimg.Visible = false;
-	//            img.Visible = true;
-	//            btn.Text = "grow #" + num.ToString();
-	//        }
-	//        else
-	//        {
-	//            bigimg.Visible = true;
-	//            img.Visible = false;
-	//            btn.Text = "shrink #" + num.ToString();
-	//        }
-	//    }
-
-	//    UpdatePanel_plots.Update();
-	//}
-
-
-
-	//protected void Reset_Plots()
-	//{
-	//    //initialize - set all plots to blank and not visible
-	//    for (int i = 0; i < 10; i++)
-	//    {
-	//        System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)UpdatePanel_plots.ContentTemplateContainer.FindControl("Image" + i.ToString());
-	//        System.Web.UI.WebControls.Image bigimg = (System.Web.UI.WebControls.Image)UpdatePanel_plots.ContentTemplateContainer.FindControl("Image" + i.ToString() + "big");
-	//        img.ImageUrl = "";
-	//        img.Visible = false;
-
-	//        bigimg.ImageUrl = "";
-	//        bigimg.Visible = false;
-
-	//        Button btn = (Button)UpdatePanel_plots.ContentTemplateContainer.FindControl("btnImg" + i.ToString());
-	//        btn.Visible = false;
-	//    }
-
-
-	//    UpdatePanel_coderpairs_list.Visible = false;
-	//    UpdatePanel_ICC.Visible = false;
-	//    UpdatePanel_Kappa.Visible = false;
-	//    UpdatePanel_plots.Visible = false;
-	//}
 
 	protected void gv_coderpairs_list_RowDataBound(object sender, GridViewRowEventArgs e)
 	{
@@ -836,10 +776,6 @@ public partial class Reliability_Rel_Tracking : System.Web.UI.Page
 			//(@id varchar(15), @orig_studymeasID int, @rel_studymeasID int, @rel_pkval int, @type int)
 	protected void gv_coderpairs_list_RowCommand(object sender, GridViewCommandEventArgs e)
 	{
-		//  tblmyinfo.Rows[0].Cells[0].InnerHtml += e.CommandSource.ToString();
-		//  tblmyinfo.Rows[0].Cells[0].InnerHtml += e.CommandName.ToString() + "<br/>";
-
-		//UpdatePanel UpdatePanel_coderpair_single = (UpdatePanel)FindControl("UpdatePanel_coderpair_single");
 
 
 		if (e.CommandName == "coderpair_details")
