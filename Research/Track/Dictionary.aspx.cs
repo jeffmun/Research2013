@@ -32,7 +32,7 @@ public partial class Track_Dictionary : System.Web.UI.Page
 
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
-		Response.Redirect("Subjects.aspx");
+		Response.Redirect("Dictionary.aspx");
 	}
 
 	protected void Page_Load(object sender, EventArgs e)

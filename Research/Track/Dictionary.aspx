@@ -64,6 +64,7 @@
                 <br />
 
                 <dx:ASPxGridView ID="gridDict" ClientInstanceName="gridDict" runat="server" KeyFieldName="fldpk" 
+                    Settings-ShowFilterRow="true"  Settings-ShowFilterRowMenu="true"
                     OnCustomCallback="gridDict_CustomCallback"  
                     OnDataBinding="gridDict_DataBinding" OnHtmlRowPrepared="gridDict_HtmlRowPrepared">
                     <Styles>
@@ -74,9 +75,9 @@
                     </SettingsPager>
                 <Columns>
                     <dx:GridViewDataColumn FieldName="fldpk" CellStyle-ForeColor="Silver" Visible="false" ReadOnly="true"></dx:GridViewDataColumn>
-                    <dx:GridViewDataColumn FieldName="ord_pos" Caption="Position"  CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
+                    <dx:GridViewDataColumn FieldName="ord_pos" Caption="Position"  CellStyle-ForeColor="Silver" Width="70px"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fldname" Caption="Field Name" CellStyle-Font-Bold="true"></dx:GridViewDataColumn>
-                    <dx:GridViewDataColumn FieldName="datatype" Caption="Data Type"></dx:GridViewDataColumn>
+                    <dx:GridViewDataColumn FieldName="datatype" Caption="Data Type" Width="100px"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fielddatatype" Visible="false"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fielddatatypelength" Visible="false"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label"></dx:GridViewDataColumn>
