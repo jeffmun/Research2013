@@ -1266,7 +1266,10 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		{
 			CreateLineplots(xaxisvar, colorsvar, panelvar);
 		}
-
+		if (plots.Contains("Crosstabs")) //&& plots.Count == 1)
+		{
+			CreateCrosstabs(xaxisvar, colorsvar, panelvar);
+		}
 		//var numvars = dxchart.data.numericvars;
 		//var groupingvars = dxchart.data.groupingvars;
 
@@ -1275,6 +1278,16 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 
 		}
+
+
+	protected void CreateCrosstabs(string xaxisvar, string colorsvar, string panelvar, DevExpress.XtraPrintingLinks.CompositeLink complink)
+	{
+	 //Coming soon!
+
+	}
+
+
+
 
 	protected void CreatePCA(string xaxisvar, string colorsvar, string panelvar, DevExpress.XtraPrintingLinks.CompositeLink complink)
 	{

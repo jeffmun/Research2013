@@ -535,6 +535,7 @@
 													<dx:ListEditItem Value="Barcharts" Selected="false" />
 													<dx:ListEditItem Value="Lineplots" Selected="false" />
 													<dx:ListEditItem Value="PCA" Selected="false" />
+													<dx:ListEditItem Value="(Coming!) Crosstabs" Selected="false" />
 												</Items>
 											</dx:ASPxCheckBoxList>
 										</td>

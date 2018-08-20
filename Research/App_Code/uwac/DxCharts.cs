@@ -19,8 +19,6 @@ using MathNet.Numerics.Statistics;
 using uwac;
 using uwac.trk;
 using System.Text;
-using DevExpress.Utils;
-using DevExpress.Web;
 
 namespace uwac
 {
