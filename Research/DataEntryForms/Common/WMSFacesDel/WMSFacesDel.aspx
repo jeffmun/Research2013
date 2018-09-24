@@ -1,19 +1,25 @@
-<%@ Register TagPrefix="def" Namespace="DataEntryFramework" %>
+<%@ Register TagPrefix="def" Namespace="DataEntryFramework3" %>
 <%@ Page Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="WMSFacesDel.aspx.cs" Inherits="DataEntryForms_Common_WMSFacesDel_WMSFacesDel" Title="Untitled Page" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
-<def:dataentrycontroller id="DataEntryController1" runat="server" LookupField1DataType="TEXT" ShowScoreButton="True"
-	VerifiedField="verified" PrimaryKeyField="wfd_pk" MeasureName="WMS Faces Delayed" LookupTextBox1LabelText="Subject ID:"
-	LookupTextBox2Visible="False" LookupField1="id" DatabaseTable="all_wmsfacesdel" OnDoScore="DataEntryController1_DoScore"
-	AllowedStudyMeasures="113,116,290,381,911,1976,2071,2248,2884,3878" ></def:dataentrycontroller>
+<def:dataentrycontroller id="DataEntryController1" runat="server"  DatabaseTable="all_wmsfacesdel" PrimaryKeyField="wfd_pk"
+	 ></def:dataentrycontroller>
+<%--     LookupField1DataType="TEXT" ShowScoreButton="false"
+	VerifiedField="verified"  MeasureName="WMS Faces Delayed" LookupTextBox1LabelText="Subject ID:"
+	LookupTextBox2Visible="False" LookupField1="id" 
+OnDoScore="DataEntryController1_DoScore"   Allowed StudyMeasures="113,116,290,381,911,1976,2071,2248,2884,3878"--%>
 			<table class="layout">
 				<tr>
 					<td style="vertical-align:top">
 						<table id="table_insert" class="layout">
 										<tr>
-											<td><def:datafieldcontrol id="id" runat="server" FieldDataType="TEXT" IsInsertField="True" IsInsertValueRequired="True"
-													IsEntryField="False" IsEntryValueRequired="False" IsReadOnly="False" IsDoubleEntryField="False" FieldLabelText="ID"
-													FieldTextBoxTabIndex="2" DatabaseField="id" 
-													FieldLabelWidth="80px" FieldTextBoxWidth="80px"></def:datafieldcontrol>
+											<td>
+	<def:datafieldcontrol runat="server" id="id" DatabaseField="id" IsInsertField="true" FieldLabelWidth="300px" FieldTextBoxWidth="125px" FieldTextBoxMaxLength="15"></def:datafieldcontrol>
+
+											</td>
+										</tr>
+										<tr>
+											<td>
+<def:datafieldcontrol runat="server" id="indexnum" DatabaseField="indexnum" IsInsertField="true" FieldTextBoxTextDefault="1" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
 											</td>
 										</tr>
 							<tr>

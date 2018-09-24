@@ -2,8 +2,8 @@
 	 EnableEventValidation="false" Title="Data Projects"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"  />
@@ -23,7 +23,7 @@
 
 			pivotCallback.PerformCallback();
 			//varCallback.PerformCallback();
-		}
+		}E
 
 
 		function OnVarCloseUp(s, e) {
@@ -80,8 +80,9 @@
 								<Columns>
 <%--									<dx:GridViewDataColumn FieldName="measname" Caption="Measure" GroupIndex="0"></dx:GridViewDataColumn>--%>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Edit" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Edit" PropertiesHyperLinkEdit-NavigateUrlFormatString="Edit.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
-									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Explore" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Explore" PropertiesHyperLinkEdit-NavigateUrlFormatString="Explore2.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
+									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Explore" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Explore" PropertiesHyperLinkEdit-NavigateUrlFormatString="Chart.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Files" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Files" PropertiesHyperLinkEdit-NavigateUrlFormatString="Files.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
+									<dx:GridViewDataColumn FieldName="dataproj_pk" Caption="Proj #" VisibleIndex="0" ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="projTitle" Caption="Title" VisibleIndex="1"  ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn Caption="Details" VisibleIndex="2" >
 										<DataItemTemplate>

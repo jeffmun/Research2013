@@ -2,8 +2,8 @@
 	 EnableEventValidation="false" Title="Other IDs"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
@@ -56,6 +56,7 @@
 
 	<h3>Other ID's by Person</h3>
 	<h4>one row per 'otherID' per person</h4>
+    <dx:ASPxCheckBox ID="chkIncludeAll" runat="server" Text="Include All? (includes those without an OtherID)"></dx:ASPxCheckBox>
  <dx:ASPxGridView ID="otherID_by_person" ClientInstanceName="grid" runat="server" Width="100%" AutoGenerateColumns="False">
 		<Toolbars>
 			<dx:GridViewToolbar EnableAdaptivity="true">
@@ -75,6 +76,8 @@
 			<dx:GridViewDataColumn Caption="Sex" FieldName="sex"  />
 			<dx:GridViewDataColumn Caption="Race" FieldName="race"  />
 			<dx:GridViewDataColumn Caption="Ethnicity" FieldName="ethnicity"  />
+            <dx:GridViewDataColumn Caption="Role" FieldName="personRole"  />
+
 		</Columns>
 		<Settings ShowGroupPanel="True" ShowFooter="True" ShowFilterRow="True" ShowFilterRowMenu="true"  />
 	 <SettingsExport EnableClientSideExportAPI="true" ExcelExportMode="WYSIWYG" />
@@ -107,6 +110,7 @@
 			<dx:GridViewDataColumn Caption="Sex" FieldName="sex"  />
 			<dx:GridViewDataColumn Caption="Race" FieldName="race"  />
 			<dx:GridViewDataColumn Caption="Ethnicity" FieldName="ethnicity"  />
+			<dx:GridViewDataColumn Caption="Role" FieldName="personRole"  />
 		</Columns>
 		<Settings ShowGroupPanel="True" ShowFooter="True" ShowFilterRow="True" ShowFilterRowMenu="true"  />
 	 <SettingsExport EnableClientSideExportAPI="true" ExcelExportMode="WYSIWYG" />

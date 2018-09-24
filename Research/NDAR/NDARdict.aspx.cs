@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using uwac;
 
 
-public partial class NDAR_NDARdict : System.Web.UI.Page
+public partial class NDAR_NDARdict : BasePage 
 {
     string shortName;
 

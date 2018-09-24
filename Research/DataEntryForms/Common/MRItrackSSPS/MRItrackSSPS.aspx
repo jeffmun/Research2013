@@ -305,7 +305,7 @@
 <table>
     <tr>
         <td>
-<def:datafieldcontrol runat="server" id="smellroom" databasefield="smellroom" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="mritrk_smellroom" databasefield="mritrk_smellroom" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol>
 
         </td>
         <td>
@@ -315,7 +315,7 @@
     </tr>
     <tr>
         <td>
-<def:datafieldcontrol runat="server" id="smellodor1" databasefield="smellodor1" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="mritrk_smellodor1" databasefield="mritrk_smellodor1" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol>
 
         </td>
         <td>
@@ -325,7 +325,7 @@
     </tr>
     <tr>
         <td>
-<def:datafieldcontrol runat="server" id="smellodor2" databasefield="smellodor2" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="mritrk_smellodor2" databasefield="mritrk_smellodor2" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol>
 
         </td>
         <td>

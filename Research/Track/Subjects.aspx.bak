@@ -3,8 +3,8 @@
 
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
 
@@ -199,11 +199,14 @@
                     <ClientSideEvents Click="ClearSelected"    />
                 </dx:ASPxButton>
                 <br />
-                <dx:ASPxRadioButtonList ID="rblObj" runat="server" Font-Size="9" Border-BorderStyle="None" >
+                <dx:ASPxRadioButtonList ID="rblObj" runat="server" Font-Size="9" Border-BorderStyle="None" RepeatColumns="2" >
                     <Items>
                         <dx:ListEditItem Text="Edit in Table" Value="Table" Selected="true" />
 <%--                        <dx:ListEditItem Text="Display Details in Grid" Value="Grid Details" Selected="true" />--%>
-                        <dx:ListEditItem Text="Display Counts in Grid" Value="Grid Counts" Selected="false" />
+                        <dx:ListEditItem Text="Counts (Subj status & Group)" Value="Grid Counts" Selected="false" />
+                        <dx:ListEditItem Text="Counts (Race)" Value="Grid Enroll Race" Selected="false" />
+                        <dx:ListEditItem Text="Counts (Ethnicity)" Value="Grid Enroll Ethn" Selected="false" />
+                        <dx:ListEditItem Text="Counts (Race & Ethnicity)" Value="Grid Enroll RaceEthn" Selected="false" />
                     </Items>
                 </dx:ASPxRadioButtonList>
 
@@ -226,16 +229,36 @@
                 <br />
 
                 <dx:ASPxGridView ID="gvENT" runat="server"  Visible="false" AutoGenerateColumns="false"   KeyFieldName="SubjID" ClientInstanceName="gva"
-                     OnRowUpdating="gvENT_OnRowUpdating" OnDataBinding="gvENT_DataBinding"  OnHtmlDataCellPrepared="gvENT_HtmlDataCellPrepared"   >  
+                    Settings-ShowHeaderFilterButton="true"  
+                    OnRowUpdating="gvENT_OnRowUpdating" OnDataBinding="gvENT_DataBinding"  OnHtmlDataCellPrepared="gvENT_HtmlDataCellPrepared"   >  
                     <ClientSideEvents EndCallback="function(s, e) {ASPxClientHint.Update();}" />
+
+                    <SettingsExport EnableClientSideExportAPI="true" FileName="Subjects"></SettingsExport>
+                      <Toolbars>
+                        <dx:GridViewToolbar EnableAdaptivity="true">
+                            <Items>
+                                <dx:GridViewToolbarItem Text="Export" Image-IconID="export_export_16x16">
+                                    <Items>
+                                        <dx:GridViewToolbarItem Command="ExportToPdf" />
+                                        <dx:GridViewToolbarItem Command="ExportToXls" />
+                                        <dx:GridViewToolbarItem Command="ExportToXlsx" />
+                                        <dx:GridViewToolbarItem Command="ExportToDocx" />
+                                        <dx:GridViewToolbarItem Command="ExportToRtf" />
+                                        <dx:GridViewToolbarItem Command="ExportToCsv" />
+                                    </Items>
+                                </dx:GridViewToolbarItem>
+                                <dx:GridViewToolbarItem Command="ShowCustomizationWindow" />
+                             </Items>
+                        </dx:GridViewToolbar>
+                    </Toolbars>
                     <Columns>
-                        <dx:GridViewCommandColumn ShowEditButton="true" Caption="Edit" VisibleIndex="0" Width="60px" ></dx:GridViewCommandColumn>
+<%--                        <dx:GridViewCommandColumn ShowEditButton="true" Caption="Edit" VisibleIndex="0" Width="60px" ></dx:GridViewCommandColumn>--%>
                         <dx:GridViewDataColumn FieldName="ID" Caption="ID" ReadOnly="true" VisibleIndex="2" Width="100px"></dx:GridViewDataColumn>
                         <dx:GridViewDataHyperLinkColumn FieldName="ID" Caption="Links" VisibleIndex="1">
                              <DataItemTemplate>
                                    <dx:ASPxHyperLink ID="ASPxHyperLink2" runat="server" Text="Details" NavigateUrl='<%#string.Format("subject.aspx?ID={0}",Eval("ID")) %>'>
                                    </dx:ASPxHyperLink>&nbsp;&nbsp;
-                                   <dx:ASPxHyperLink ID="ASPxHyperLink1" runat="server" Text="Household" NavigateUrl='<%#string.Format("~/Tracking/household2.aspx?hhID={0}",Eval("householdID")) %>'>
+                                   <dx:ASPxHyperLink ID="ASPxHyperLink1" runat="server" Text="Household" NavigateUrl='<%#string.Format("~/Tracking/Household2.aspx?hhID={0}",Eval("householdID")) %>'>
                                    </dx:ASPxHyperLink>
                              </DataItemTemplate>
                         </dx:GridViewDataHyperLinkColumn>
@@ -260,8 +283,14 @@
                         <dx:GridViewDataColumn FieldName="HispanicDesc" Caption="Ethnicity" ReadOnly="true"  Width="100px" VisibleIndex="9"></dx:GridViewDataColumn>
                         <dx:GridViewDataDateColumn FieldName="Notes"  VisibleIndex="10"></dx:GridViewDataDateColumn>
                         <dx:GridViewDataColumn FieldName="SubjID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>   
-<%--                        <dx:GridViewDataColumn FieldName="SubjStatusID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>   
-                        <dx:GridViewDataColumn FieldName="SubjStatusDetailID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>   --%>
+                        <dx:GridViewDataColumn FieldName="address1" Caption="Address" ReadOnly="true" Width="80px" VisibleIndex="11" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="address2" Caption="Address2" ReadOnly="true" Width="80px" VisibleIndex="12" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="city" Caption="City" ReadOnly="true" Width="80px" VisibleIndex="13" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="state" Caption="State" ReadOnly="true" Width="80px" VisibleIndex="14" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="zip" Caption="Zip" ReadOnly="true" Width="80px" VisibleIndex="15" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="country" Caption="Country" ReadOnly="true" Width="80px" VisibleIndex="16" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="address_notes" Caption="Address Notes" ReadOnly="true" Width="80px" VisibleIndex="17" Visible="false"></dx:GridViewDataColumn>
+                        
                     </Columns>
 <%--                    <ClientSideEvents SelectionChanged="gvA_SelectionChanged"  />--%>
                     <Settings ShowGroupPanel="true" ShowGroupedColumns="True" />   
@@ -335,13 +364,14 @@
                      OnBeginRefresh="pivotENT_OnBeginRefresh"   
                      EnableCallbackAnimation="true">
                     <Fields>
-                        <dx:PivotGridField Area="ColumnArea" AreaIndex="0" FieldName="GroupName" ID="fldGroupName" Caption="Group"  />
-                        <dx:PivotGridField Area="RowArea" AreaIndex="2" FieldName="SubjStatus" ID="fldSubjStatus" Caption="Subj Status" />
+                        <dx:PivotGridField  FieldName="GroupName" ID="fldGroupName" Caption="Group"  />
+                        <dx:PivotGridField  FieldName="SubjStatus" ID="fldSubjStatus" Caption="Subj Status" />
                         <dx:PivotGridField Area="DataArea" AreaIndex="0" FieldName="ID" ID="fldID" Caption="ID" SummaryType="Min"  />
 
                         <dx:PivotGridField  FieldName="Sex" ID="fldSex" Caption="Sex" />                        
                         <dx:PivotGridField  FieldName="EthnicityDesc" ID="fldEthnicityDesc" Caption="Race" />                        
                         <dx:PivotGridField  FieldName="HispanicDesc" ID="fldHispanicDesc" Caption="Ethnicity" />
+                        <%--<dx:PivotGridField  FieldName="txgrp" ID="ftxgrp" Caption="TxGrp" />  --%>                      
                         
                     </Fields>
                     

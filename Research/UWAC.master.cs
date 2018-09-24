@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.Xml;
 using DevExpress.Web;
+using DevExpress.Web.ASPxThemes;
+
 using AutismCenterBase.Security;
 using uwac;
 using uwac.trk;
@@ -194,7 +196,11 @@ public partial class UWAC : System.Web.UI.MasterPage
 			"PivotDataToolkit_Bin_Pack_000426121678",
 			"Galv8kCqIiZYLGq5Qoc+ymn8Jo57iNuWgMqZ9vrpjfdSLkiqGpTC0AtpV7VHn1GyhoEorRfIEi27UOgJf28o+2KlKuOnrPlO/FxCV4+qUTTWL7LyP/HmhYZdeI4kox5pyThzUZb36ijxsfXzAMlFzpv3uDtPtu6ktwtiROwKG/c=");
 
-	
+
+		string theme = oSQL.StringScalar_from_SQLstring("exec spSEC_Get_Default_theme_for_User");
+
+		cboTheme.Text = theme;
+
 	}
 
 	protected void Page_Load(object sender, EventArgs e)
@@ -348,6 +354,37 @@ public partial class UWAC : System.Web.UI.MasterPage
 	}
 
 
+	protected void cboTheme_SelectedIndexChanged(object sender, EventArgs e)
+	{
+
+
+		////update the user's default studyID
+		//if (Convert.ToInt16(ddl_Master_SelectStudyID.SelectedValue) > 0)
+		//{
+
+			//string procoutput = oDB.RunProc("spSEC_Update_Default_StudyID_for_User", 
+			//    "@studyID", ddl_Master_SelectStudyID.SelectedValue,"int");
+			//string procoutput = oSQL.StringScalar_from_ProcName("spSEC_Update_Default_StudyID_for_User",
+			//    oSQL.CreateParam("@studyID", ddl_Master_SelectStudyID.SelectedValue, "int"));
+
+			
+
+			//master_studyID = Convert.ToInt32(ddl_Master_SelectStudyID.SelectedValue);
+			//ViewState["studyID"] = master_studyID;
+
+		//}
+
+		oSQL.NonQuery_from_SQLstring("exec spSEC_Update_Default_theme_for_User " + cboTheme.Value.ToString());
+
+		GetCurrentDefaultStudyID();
+
+		//ddl_Master_SelectStudyID.SelectedIndex = 0;
+
+		//masterINFO.Text += "{" + master_studyID.ToString() + "}";
+
+	}
+
+
 
 	/// <summary>
 	/// New from Jeff - incorporating the Default StudyID
@@ -378,6 +415,12 @@ public partial class UWAC : System.Web.UI.MasterPage
 		}
 		//ViewState["studyID"] = master_studyID;
 		Session["master_studyID"] = master_studyID.ToString();
+
+
+		string theme = oSQL.StringScalar_from_SQLstring("exec spSEC_Get_Default_theme_for_User");
+		Session["master_theme"] = theme.ToString();
+
+
 	}
 
 

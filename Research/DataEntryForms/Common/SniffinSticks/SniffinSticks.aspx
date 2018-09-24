@@ -35,43 +35,21 @@
     <tr>
         <td>
     <table>
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="rdate" databasefield="rdate" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" formatstring="{0:d}" ></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="rosesorder" databasefield="rosesorder" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="rosesstart" databasefield="rosesstart" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r01" databasefield="r01" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r02" databasefield="r02" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r03" databasefield="r03" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r04" databasefield="r04" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r05" databasefield="r05" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r06" databasefield="r06" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="r07" databasefield="r07" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_rdate" databasefield="ss_rdate" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" formatstring="{0:d}" ></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_rosesorder" databasefield="ss_rosesorder" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_rosesstart" databasefield="ss_rosesstart" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r01" databasefield="ss_r01" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r02" databasefield="ss_r02" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r03" databasefield="ss_r03" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r04" databasefield="ss_r04" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r05" databasefield="ss_r05" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r06" databasefield="ss_r06" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_r07" databasefield="ss_r07" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
 
-        <tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="rosesfinalscore" databasefield="rosesfinalscore"  isreadonly="true" renderreadonlyasdiv="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="rosesvalidityconcern" databasefield="rosesvalidityconcern" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_rosesfinalscore" databasefield="ss_rosesfinalscore"  isreadonly="true" renderreadonlyasdiv="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_rosesvalidityconcern" databasefield="ss_rosesvalidityconcern" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="rosescmnt" databasefield="rosescmnt" isentryfield="true" isdoubleentryfield="false"  fieldlabelwidth="300px" fieldtextboxwidth="400px" fieldtextboxheight="40px" fieldtextboxtextmode="multiline" fieldtextboxmaxlength="250"></def:datafieldcontrol></td>
-<td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_rosescmnt" databasefield="ss_rosescmnt" isentryfield="true" isdoubleentryfield="false"  fieldlabelwidth="300px" fieldtextboxwidth="400px" fieldtextboxheight="40px" fieldtextboxtextmode="multiline" fieldtextboxmaxlength="250"></def:datafieldcontrol></td><td></td></tr>
 
 
 </table>
@@ -81,44 +59,24 @@
         <td>
             
 <table>
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="vdate" databasefield="vdate" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" formatstring="{0:d}" ></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="vanillaorder" databasefield="vanillaorder" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="vanillastart" databasefield="vanillastart" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v01" databasefield="v01" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v02" databasefield="v02" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v03" databasefield="v03" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v04" databasefield="v04" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v05" databasefield="v05" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v06" databasefield="v06" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="v07" databasefield="v07" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
-<td></td></tr>
- 
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="vanillafinalscore" databasefield="vanillafinalscore"  isreadonly="true" renderreadonlyasdiv="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_vdate" databasefield="ss_vdate" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" formatstring="{0:d}" ></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_vanillaorder" databasefield="ss_vanillaorder" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_vanillastart" databasefield="ss_vanillastart" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v01" databasefield="ss_v01" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v02" databasefield="ss_v02" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr> 
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v03" databasefield="ss_v03" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v04" databasefield="ss_v04" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v05" databasefield="ss_v05" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v06" databasefield="ss_v06" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_v07" databasefield="ss_v07" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td><td></td></tr>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_vanillafinalscore" databasefield="ss_vanillafinalscore"  isreadonly="true" renderreadonlyasdiv="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
 <td></td></tr>
  
  
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="vanillavalidityconcern" databasefield="vanillavalidityconcern" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_vanillavalidityconcern" databasefield="ss_vanillavalidityconcern" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="300px" fieldtextboxwidth="40px"></def:datafieldcontrol></td>
 <td></td></tr>
  
- <tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="vanillacmnt" databasefield="vanillacmnt" isentryfield="true" isdoubleentryfield="false"  fieldlabelwidth="300px" fieldtextboxwidth="400px" fieldtextboxheight="40px" fieldtextboxtextmode="multiline" fieldtextboxmaxlength="250"></def:datafieldcontrol></td>
+ <tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="ss_vanillacmnt" databasefield="ss_vanillacmnt" isentryfield="true" isdoubleentryfield="false"  fieldlabelwidth="300px" fieldtextboxwidth="400px" fieldtextboxheight="40px" fieldtextboxtextmode="multiline" fieldtextboxmaxlength="250"></def:datafieldcontrol></td>
 <td></td></tr>
  
  </table>
@@ -128,9 +86,9 @@
  </table>
 
       <br/><br/>
-      <def:datafieldcontrol runat="server" id="smellroom" databasefield="smellroom" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="smellroses" databasefield="smellroses" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="smellvanilla" databasefield="smellvanilla" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+      <def:datafieldcontrol runat="server" id="ss_smellroom" databasefield="ss_smellroom" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ss_smellroses" databasefield="ss_smellroses" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ss_smellvanilla" databasefield="ss_smellvanilla" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
  
 
 <br/><br/>

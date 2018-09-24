@@ -11,7 +11,7 @@
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor" TagPrefix="obout" %>
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor.ToolbarButton" TagPrefix="obout" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <!DOCTYPE html>
@@ -126,14 +126,41 @@
 			<asp:Label ID="lblDefaultStudy" runat="server" Text="-1" Visible="true" ForeColor="Orange" Font-Bold="true" Font-Size="12pt"  ></asp:Label>
 			<asp:Label ID="lblMasterStudyID" runat="server" Text=" " Visible="true" ForeColor="#336699" ></asp:Label>
 			<asp:Label ID="lblMasterStudyIDfull" runat="server" Text=" " Visible="true" ForeColor="#336699" ></asp:Label>
+			<br /><br />
+			<asp:HyperLink ID="hypDefault" runat="server" NavigateUrl="~/Default.aspx" Target="blank" ForeColor="LightGreen" Text="What's new"></asp:HyperLink> 
+			
 		</td>
-		<td style="background-color:#336699; text-align: center;">
-			<asp:HyperLink ID="hypDefault" runat="server" NavigateUrl="~/Default.aspx" Target="blank" ForeColor="Lime" Text="What's new"></asp:HyperLink> 
+		<td style="background-color:#336699; text-align: left;">
+
+			<asp:Label ID="lbltheme" runat="server" Text="Select Theme..." ForeColor="Silver" ></asp:Label>
+
+
+			<dx:ASPxComboBox ID="cboTheme" AutoPostBack="true" runat="server" BackColor="#336699" ForeColor="Silver"  Native="true" OnSelectedIndexChanged="cboTheme_SelectedIndexChanged"  >
+				<ClientSideEvents ValueChanged="function(s, e) { ASPxClientUtils.SetCookie('theme', s.GetText()); }" />
+				<Items>
+					<dx:ListEditItem Value="Aqua" />
+					<dx:ListEditItem Value="BlackGlass" />
+					<dx:ListEditItem Value="DevEx" />
+					<dx:ListEditItem Value="Glass" />
+					<dx:ListEditItem Value="iOS" />
+					<dx:ListEditItem Value="Material" />
+					<dx:ListEditItem Value="MaterialCompact" />
+					<dx:ListEditItem Value="Metropolis" />
+					<dx:ListEditItem Value="MetropolisBlue" />
+					<dx:ListEditItem Value="Moderno" Selected="true" />
+					<dx:ListEditItem Value="Office2003Olive" />
+					<dx:ListEditItem Value="Office2010Silver" />
+					<dx:ListEditItem Value="PlasticBlue" />
+					<dx:ListEditItem Value="RedWine" />
+					<dx:ListEditItem Value="SoftOrange" />
+					<dx:ListEditItem Value="Youthful" />
+				</Items>
+			</dx:ASPxComboBox>
 		</td>
 		<td  style="background-color:#336699; vertical-align: top;">
 <%--			<asp:Button ID="btnManager_Show" runat="server" Visible="false" Text="Show Page Manager" BorderColor="SlateGray" TabIndex="0" BackColor="SteelBlue" Font-Size="8pt" OnClick="btnManager_Show_Click" />
 			<asp:Button ID="btnManager_Hide" runat="server" Visible="false" Text="Hide Page Manager" Font-Size="8pt" OnClick="btnManager_Hide_Click"/>--%>
-			<dx:ASPxRadioButtonList ID="rblMenuSelect" runat="server" RepeatDirection="Horizontal" RepeatColumns="2" RepeatLayout="Flow" Font-Size="8pt" ForeColor="Orange"  
+			<dx:ASPxRadioButtonList ID="rblMenuSelect" runat="server" RepeatDirection="Horizontal" RepeatColumns="2" RepeatLayout="Flow" Font-Size="8pt" ForeColor="Orange"  Visible="false" 
 				Border-BorderStyle="None" Border-BorderWidth="0pt" Paddings-Padding="0" Paddings-PaddingTop="0" OnSelectedIndexChanged="rblMenuSelect_OnSelectedIndexChanged" AutoPostBack="true">
 				<Items>
 					<dx:ListEditItem Value="New menu" Selected="true" />
@@ -141,17 +168,13 @@
 				</Items>
 				<Border BorderStyle="None" BorderWidth="0pt" />
 			</dx:ASPxRadioButtonList>
-
+			
 		</td>
 		<td id="tdSessionInfo">
 			<asp:Label ID="lblCurrentUser_title" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Size="8pt"  ></asp:Label>
 			<asp:Label ID="lblCurrentUser" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Bold="true" Font-Size="8pt"  ></asp:Label>
 			<br />
-			<asp:Label ID="lblAuth_User_title" runat="server" Text="Auth_User: " Visible="true" ForeColor="White" Font-Size="8pt"  ></asp:Label>
-			<asp:Label ID="lblAuth_User" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Bold="true" Font-Size="8pt"  ></asp:Label>
-			<br />
-			<asp:Label ID="lblAuthType_title" runat="server" Text="Auth Type: " Visible="true" ForeColor="White" Font-Size="8pt"  ></asp:Label>
-			<asp:Label ID="lblAuthType" runat="server" Text="" Visible="true" ForeColor="White" Font-Bold="true" Font-Size="8pt"  ></asp:Label>
+			<asp:Label ID="sqluser" runat="server" Text="" Visible="true" ForeColor="Yellow" Font-Size="9pt"  ></asp:Label>
 			
 <%--            You are currently logged in as: <span id="spnSessionInfo" runat="server" style="font-weight: bold;"></span>
 			&nbsp;&nbsp;<a id="oHelpLink" runat="server" class="whitetext" />--%>
@@ -200,7 +223,7 @@
 </asp:Menu>
 
 <dx:ASPxMenu ID="dxMenu" runat="server"  DataSourceID="ASPxSiteMapDataSource1"  EncodeHtml="False" AllowSelectItem="True" 
-	Orientation="Horizontal" BackColor="#a1b5cf" Width="100%" />
+	Orientation="Horizontal" BackColor="#a1b5cf" Width="100%" OnItemDataBound="dxMenu_OnItemDataBound" />
 	<dx:ASPxSiteMapDataSource ID="ASPxSiteMapDataSource1" runat="server"  />
 
 
@@ -208,8 +231,12 @@
 	<asp:Label ID="masterERROR" runat="server" Text="" ForeColor="Red" BackColor="WhiteSmoke"></asp:Label>
 
 
+
+
 <div id="divBody">
-	<asp:ContentPlaceHolder id="oBodyPlaceHolder" runat="server"></asp:ContentPlaceHolder>
+	<asp:ContentPlaceHolder id="oBodyPlaceHolder" runat="server">
+
+	</asp:ContentPlaceHolder>
 </div>
 
 <%--COMMENTED OUT AUG2017 <br clear="all" />--%>

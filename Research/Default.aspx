@@ -14,6 +14,14 @@
 <h2>Updates to the UWAC Research DB</h2>
 	<asp:Label ID="lblNew" runat="server" ForeColor="ForestGreen" Text="New changes will be noted here.  Check back periodically!"></asp:Label>
 <br /><br />
+<h4 style="color: gray">Sept 2018</h4>
+<h3>Themes</h3>
+<div style="width: 900px">
+You can now change the theme of the website from the Dropdown in the header.  The theme only impacts the appearance of the controls on the page.
+</div>
+	<br />
+	<hr />
+<br /><br />
 <h4 style="color: gray">July 2018</h4>
 <h3>Change Subject's ID and Group</h3>
 <div style="width: 900px">

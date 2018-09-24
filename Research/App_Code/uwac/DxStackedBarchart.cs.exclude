@@ -1,0 +1,208 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Linq;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Dynamic;
+using System.Reflection;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Drawing;
+using DevExpress.Web;
+using DevExpress.Utils;
+using DevExpress.XtraCharts;
+using DevExpress.XtraCharts.Web;
+using LinqStatistics;
+using MathNet.Numerics.Statistics;
+using uwac;
+using uwac.trk;
+using System.Text;
+
+/// <summary>
+/// Summary description for DxStackedBarchart
+/// </summary>
+public class DxStackedBarchart
+{
+	public DxStackedBarchart()
+	{
+		//
+		// TODO: Add constructor logic here
+		//
+	}
+}
+
+
+#region Stacked Barchart
+
+public class StackedBarchart : DxCharts.Mychart
+{
+	StatsTable _statstable;
+	AxesRange _axesrange;
+
+	public AxesRange axesrange
+	{
+		get { return _axesrange; }
+		set { _axesrange = value; }
+	}
+	public StatsTable statstable
+	{
+		get { return _statstable; }
+		set { _statstable = value; }
+	}
+
+	public StackedBarchart(DxCharts dxcharts, StatsTable statstable_input, string xaxisvar, string colorsvar, string maintitle = "", string subtitle = "")
+	{
+		_dxcharts = dxcharts;
+		_statstable = statstable_input;
+		_chart = CreateBarchart(_statstable, -999, -999, xaxisvar, colorsvar, maintitle, subtitle);
+		//if (_axesrange == null) ExtractAxesRange(_chart);
+	}
+
+	public StackedBarchart(DxCharts dxcharts, StatsTable statstable_input, double miny, double maxy, string xaxisvar, string colorsvar, string maintitle = "", string subtitle = "")
+	{
+		_dxcharts = dxcharts;
+		_statstable = statstable_input;
+		_chart = CreateBarchart(_statstable, miny, maxy, xaxisvar, colorsvar, maintitle, subtitle);
+	}
+
+
+
+	private void LogAxesRangeWhole(object sender, DevExpress.XtraCharts.AxisRangeChangedEventArgs e)  //EventArgs e)
+	{
+		this.axesrange = new AxesRange();
+
+		#region X axis
+		//double dminx; double dmaxx;
+		//var minx = ((XYDiagram)this._chart.Diagram).AxisX.VisualRange.MinValue.ToString();
+		//var maxx = ((XYDiagram)this._chart.Diagram).AxisX.VisualRange.MaxValue.ToString();
+		//bool bminx = Double.TryParse(minx, out dminx);
+		//bool bmaxx = Double.TryParse(maxx, out dmaxx);
+		//if (bminx || bmaxx)
+		//{
+		//if (bminx) axes.minx = dminx;
+		//if (bmaxx) axes.maxx = dmaxx;
+		//}
+		#endregion
+
+		if (e.Axis.Name == "Primary AxisY")
+		{
+			double dminy; double dmaxy;
+
+			var miny = ((XYDiagram)this._chart.Diagram).AxisY.WholeRange.MinValue.ToString();
+			var maxy = ((XYDiagram)this._chart.Diagram).AxisY.WholeRange.MaxValue.ToString();
+
+			bool bminy = Double.TryParse(miny, out dminy);
+			bool bmaxy = Double.TryParse(maxy, out dmaxy);
+
+			if (bminy || bmaxy)
+			{
+				if (bminy) this.axesrange.miny = dminy;
+				if (bmaxy) this.axesrange.maxy = dmaxy;
+			}
+
+		}
+	}
+
+
+
+	public WebChartControl CreateBarchart(StatsTable statstable, string xaxisvar, string colorsvar, string maintitle, string subtitle)
+	{
+		AxesRange axes = null;
+		double x1 = -999;
+		double x2 = -999;
+
+		return CreateBarchart(statstable, x1, x2, xaxisvar, colorsvar, maintitle, subtitle);
+	}
+
+	public WebChartControl CreateBarchart(StatsTable statstable, double miny, double maxy, string xaxisvar, string colorsvar, string maintitle, string subtitle)
+	{
+		DevExpress.XtraCharts.Web.WebChartControl chart = new DevExpress.XtraCharts.Web.WebChartControl();
+		XYDiagram diag = new XYDiagram();
+
+		diag.AxisX.GridLines.Visible = true;
+		diag.AxisY.GridLines.Visible = true;
+		diag.AxisX.GridLines.MinorVisible = true;
+		diag.AxisY.GridLines.MinorVisible = true;
+		//diag.Rotated = _dxcharts.histIsRotated;
+		chart.Diagram = diag;
+
+		chart.BoundDataChanged += _dxcharts.ColorSeries;
+		//chart.BoundDataChanged += GetAxesRange;
+		chart.AxisWholeRangeChanged += LogAxesRangeWhole;
+		//chart.AxisVisualRangeChanged += LogAxesRangeVisual;
+
+
+		chart.DataSource = statstable.dt;
+		chart.SeriesDataMember = colorsvar; //Colors - dimension in the Legend
+		chart.SeriesTemplate.ArgumentDataMember = xaxisvar; //X axis dimention
+		chart.SeriesTemplate.ValueDataMembers.AddRange("M"); // _numvars.ToArray());
+
+
+		SideBySideBarSeriesView vw = new SideBySideBarSeriesView();
+		//PointSeriesView barview = new PointSeriesView();
+
+		vw.Indicators.Add(new DataSourceBasedErrorBars
+		{
+			Direction = ErrorBarDirection.Both,
+			Name = "SD",
+			Color = Color.Black,
+			PositiveErrorDataMember = "SD",
+			NegativeErrorDataMember = "SD"
+		});
+
+		chart.SeriesTemplate.View = vw;
+
+		//AddPanes(diag, 1);
+		//vw.Pane = diag.Panes[0];
+		//if (i >= 1) vw.Pane = diag.Panes[(i - 1)];  //Panes collection starts at index 0, but first series goes into default pane
+
+		//var miny1 = diag.AxisY.WholeRange.MinValue.ToString() ?? "";
+
+		chart.DataBind();
+
+
+		if (miny != -999 && maxy != -999)
+		{
+			double y1 = miny;
+			double y2 = maxy;
+			//diag.AxisY.VisualRange.SetMinMaxValues(y1, y2);
+			diag.AxisY.WholeRange.SetMinMaxValues(y1, y2);
+			diag.AxisY.VisualRange.SetMinMaxValues(y1, y2);
+		}
+
+		int barW = _dxcharts._chartWbar;
+		int barH = _dxcharts._chartHbar;
+
+		chart.Width = barW;
+		chart.Height = barH;
+
+		_dxcharts.AddTitles(chart, maintitle, subtitle, "", "Mean (SD)");
+
+
+
+		////Create panes
+		//if (_usepanes)
+		//{
+		//	for (int i = 0; i < (list_o_data.Count - 1); i++)
+		//	{
+
+		//		diag.Panes.Add(new XYDiagramPane(String.Format("pane{0}", i)));
+		//	}
+		//	diag.PaneLayoutDirection = _panesLayoutDirection;
+		//}
+
+
+
+		chart.BorderOptions.Color = Color.White;
+		chart.Legend.Visibility = DevExpress.Utils.DefaultBoolean.True;
+
+		return chart;
+	}
+
+}
+
+
+#endregion
+

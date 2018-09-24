@@ -917,7 +917,7 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 	#region PivotTable of Selected Measures	
 
 
-	protected void PivotSelMeas_Concat(object sender, PivotGridCustomSummaryEventArgs e)
+	protected void PivotSelMeas_Concat(object sender, DevExpress.Web.ASPxPivotGrid.PivotGridCustomSummaryEventArgs e)
 	{
 //		Debug.Print("ENTER PivotSelMeas_Concat");
 		var x = e.DataField;

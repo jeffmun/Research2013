@@ -126,6 +126,9 @@ public class NDAR_DataStructure
 
 			wc.Headers.Add("Accept", "application/json");
 
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+
 			string ds_string = wc.DownloadString(@"https://ndar.nih.gov/api/datadictionary/v2/datastructure/" + shortName );
 
 			//read the top level of the JSON data
@@ -201,37 +204,43 @@ public class NDAR_DataStructure
 
 	public static DataTable NDARDataStructureElements_to_DataTable(NDAR_DataStructure ds)
 	{
-		//Create the data table for the dataElements
-		DataTable dt = NDAR_dataElements();
-
-		foreach (NDAR_DataElement de in ds.dataElements)
+		if (ds != null)
 		{
-			DataRow row = dt.NewRow();
+			//Create the data table for the dataElements
+			DataTable dt = NDAR_dataElements();
 
-			row["shortName"] = !string.IsNullOrWhiteSpace(ds.shortName) ? (object) ds.shortName  : (object)DBNull.Value;
-			row["id"] = !(de.id == null) ? (object) de.id: (object)DBNull.Value;
-			row["dataElementId"] =  !(de.dataElementId == null) ? (object) de.dataElementId: (object)DBNull.Value;
-			row["name"] = !string.IsNullOrWhiteSpace(de.name) ? (object) de.name : (object)DBNull.Value;
-			row["description"] = !string.IsNullOrWhiteSpace(de.description.Replace("\"", "")) ? (object)de.description.Replace("\"", "") : (object)DBNull.Value;
-			row["type"] = !string.IsNullOrWhiteSpace(de.type) ? (object)de.type : (object)DBNull.Value;
+			foreach (NDAR_DataElement de in ds.dataElements)
+			{
+				DataRow row = dt.NewRow();
+
+				row["shortName"] = !string.IsNullOrWhiteSpace(ds.shortName) ? (object)ds.shortName : (object)DBNull.Value;
+				row["id"] = !(de.id == null) ? (object)de.id : (object)DBNull.Value;
+				row["dataElementId"] = !(de.dataElementId == null) ? (object)de.dataElementId : (object)DBNull.Value;
+				row["name"] = !string.IsNullOrWhiteSpace(de.name) ? (object)de.name : (object)DBNull.Value;
+				row["description"] = !string.IsNullOrWhiteSpace(de.description.Replace("\"", "")) ? (object)de.description.Replace("\"", "") : (object)DBNull.Value;
+				row["type"] = !string.IsNullOrWhiteSpace(de.type) ? (object)de.type : (object)DBNull.Value;
 
 
-			row["required"] = !string.IsNullOrWhiteSpace(de.required) ? (object)de.required: (object)DBNull.Value;
-			row["position"] = !(de.position == null) ? (object)de.position : (object)DBNull.Value;
-			row["valueRange"] = !string.IsNullOrWhiteSpace(de.valueRange) ? (object)de.valueRange : (object)DBNull.Value;
+				row["required"] = !string.IsNullOrWhiteSpace(de.required) ? (object)de.required : (object)DBNull.Value;
+				row["position"] = !(de.position == null) ? (object)de.position : (object)DBNull.Value;
+				row["valueRange"] = !string.IsNullOrWhiteSpace(de.valueRange) ? (object)de.valueRange : (object)DBNull.Value;
 
-			int maxleng = (de.description.Length > 50) ? 50 : de.description.Length;
+				int maxleng = (de.description.Length > 50) ? 50 : de.description.Length;
 
-			row["uwfld"] = DBNull.Value;
-			//row["uwfld"] = " ,   as " + de.name + " /* (" + de.valueRange + ") " + de.description.Substring(0, maxleng - 1) + " */";
-			row["fx"] = DBNull.Value;
-			row["param1"] = DBNull.Value;
-			row["param2"] = DBNull.Value;
+				row["uwfld"] = DBNull.Value;
+				//row["uwfld"] = " ,   as " + de.name + " /* (" + de.valueRange + ") " + de.description.Substring(0, maxleng - 1) + " */";
+				row["fx"] = DBNull.Value;
+				row["param1"] = DBNull.Value;
+				row["param2"] = DBNull.Value;
 
-			dt.Rows.Add(row);
+				dt.Rows.Add(row);
+			}
+
+			return dt;
 		}
-
-		return dt;
+		else{
+			return null;
+		}
 
 	}
 

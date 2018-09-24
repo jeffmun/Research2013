@@ -43,7 +43,22 @@ namespace uwac
 			CaclulateStats(dataSubsets.subsets);
 		}
 
+		public StatsTable(DataTable dt, List<string> numericvars, List<string> groupingvars)
+		{
+			DataSubsets dataSubsets = new DataSubsets(dt, numericvars, groupingvars);
+			_numericvars = numericvars;
+			_groupingvars = groupingvars;
+			BuildBaseTable();
+			AddStatsColumns();
+			CaclulateStats(dataSubsets.subsets);
+		}
 
+		public void CreateStatsTable(DataSubsets dataSubsets)
+		{
+			BuildBaseTable();
+			AddStatsColumns();
+			CaclulateStats(dataSubsets.subsets);
+		}
 
 		public void BuildBaseTable()
 		{
@@ -56,8 +71,16 @@ namespace uwac
 		}
 
 
+		public void CaclulateStats(DataTable dt) //, List<string> requested_stats)
+		{
+			//LOGIC:
+			//Loop through the vars in the dt_input adding one row for each variable
+			//Assumes that missing values have been removed 
 
-		public void CaclulateStats(List<DataSubset> subsets) //, List<string> requested_stats)
+
+		}
+
+			public void CaclulateStats(List<DataSubset> subsets) //, List<string> requested_stats)
 		{
 			//LOGIC:
 			//Loop through the vars in the dt_input adding one row for each variable

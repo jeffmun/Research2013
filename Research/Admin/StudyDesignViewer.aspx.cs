@@ -55,7 +55,7 @@ public partial class Admin_StudyDesignViewer : BasePage // OboutInc.oboutAJAXPag
 		if (!IsPostBack)
 		{
 			lblStudyname.Text = Master.Master_studyname;
-			Bind();
+			//Bind();
 		}
 
 		//if (Session["proj_meas"] != null)
@@ -150,6 +150,8 @@ public partial class Admin_StudyDesignViewer : BasePage // OboutInc.oboutAJAXPag
 
 
 		pivotENT.DataBind();
+		pivotENT.Visible = true;
+
 	}
 
 }

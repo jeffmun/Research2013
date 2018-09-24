@@ -22,6 +22,7 @@ using MathNet.Numerics.Statistics;
 using uwac;
 using uwac.trk;
 using Accord.Statistics.Models.Regression.Linear;
+using Accord.Statistics.Testing;
 
 namespace uwac
 {
@@ -113,7 +114,7 @@ namespace uwac
 
 		public DPData(DataTable initial_dt, DataTable initial_dtdict)
 		{
-			_dtdict = initial_dtdict;
+			_dtdict = AddIsCatToDataDict(initial_dtdict);
 			DataTable dt_fixedcols = FixColumnTypes(initial_dt, initial_dtdict);
 			_dt = dt_fixedcols;
 			_idvars = new List<string> { "ref_id", "group", "txgrp", "timept" };
@@ -123,7 +124,7 @@ namespace uwac
 		public DPData(DataTable initial_dt, DataTable initial_dtdict, string filter)
 		{
 			_filter = filter;
-			_dtdict = initial_dtdict;
+			_dtdict = AddIsCatToDataDict(initial_dtdict);
 			DataTable dt_fixedcols = FixColumnTypes(initial_dt, initial_dtdict);
 			_dt = dt_fixedcols;
 
@@ -134,6 +135,13 @@ namespace uwac
 				FilterData();
 			}
 
+		}
+
+		private DataTable AddIsCatToDataDict (DataTable initial_dtdict)
+		{
+
+			initial_dtdict.Columns.Add("isCat", typeof(string), "IIF(inanalysis = 3 OR DataType IN ('varchar','char','nvarchar','text'), 'Y', '')");
+			return initial_dtdict;
 		}
 
 
@@ -172,86 +180,95 @@ namespace uwac
 
 		public DataTable FixColumnTypes(DataTable initial_dt, DataTable initial_dtdict)
 		{
-
-			List<string> stringcols = new List<string>();
-
-			//Get string columns in init_data
-			foreach (DataColumn c in initial_dt.Columns)
+			if (initial_dt == null)
 			{
-				c.ColumnName = c.ColumnName.ToLower();
-				if (c.DataType == typeof(string)) stringcols.Add(c.ColumnName);
+				return null;
 			}
-
-			//Get numeric vars from data dictionary
-			List<string> date_vars = initial_dtdict.AsEnumerable()
-				.Where(f => sqltypes.date.Contains(f.Field<string>("datatype")))
-				.Select(f => f.Field<string>("varname")).ToList();
-
-			date_vars = date_vars.ConvertAll(d => d.ToLower());
-
-
-
-			//Get numeric vars from data dictionary
-			List<string> numeric_vars = initial_dtdict.AsEnumerable()
-				.Where(f => sqltypes.numeric.Contains(f.Field<string>("datatype")))
-				.Select(f => f.Field<string>("varname")).ToList();
-
-			numeric_vars = numeric_vars.ConvertAll(d => d.ToLower());
-
-			List<string> stringcols_to_make_numeric = stringcols.AsEnumerable()
-				.Where(c => numeric_vars.Contains(c)).ToList();
-
-			DataTable dtCloned = initial_dt.Clone();
-			foreach (DataColumn col in dtCloned.Columns)
+			else
 			{
-				//Make "id" string 
-				if (col.ColumnName.ToLower() == "id" || col.ColumnName.ToLower() == "ref_id") col.DataType = typeof(string);
-				if (stringcols_to_make_numeric.Contains(col.ColumnName.ToLower())) col.DataType = typeof(Double);
-				if (date_vars.Contains(col.ColumnName.ToLower()))
+				List<string> stringcols = new List<string>();
+
+				//Get string columns in init_data
+				foreach (DataColumn c in initial_dt.Columns)
 				{
-					col.DataType = typeof(DateTime);
+					c.ColumnName = c.ColumnName.ToLower();
+					if (c.DataType == typeof(string)) stringcols.Add(c.ColumnName);
 				}
 
-			}
-			foreach (DataRow row in initial_dt.Rows)
-			{
-				//Was simply just this
-				//dtCloned.ImportRow(row);
+				//Get numeric vars from data dictionary
+				List<string> date_vars = initial_dtdict.AsEnumerable()
+					.Where(f => sqltypes.date.Contains(f.Field<string>("datatype")))
+					.Select(f => f.Field<string>("varname")).ToList();
 
-				//Now handling dates
-				DataRow newrow = dtCloned.NewRow();
+				date_vars = date_vars.ConvertAll(d => d.ToLower());
 
-				for(int i=0; i < row.ItemArray.Length; i++)
-				//foreach(object col in row.ItemArray)
+
+
+				//Get numeric vars from data dictionary
+				List<string> numeric_vars = initial_dtdict.AsEnumerable()
+					.Where(f => sqltypes.numeric.Contains(f.Field<string>("datatype")))
+					.Select(f => f.Field<string>("varname")).ToList();
+
+				numeric_vars = numeric_vars.ConvertAll(d => d.ToLower());
+
+				List<string> stringcols_to_make_numeric = stringcols.AsEnumerable()
+					.Where(c => numeric_vars.Contains(c)).ToList();
+
+				DataTable dtCloned = initial_dt.Clone();
+				foreach (DataColumn col in dtCloned.Columns)
 				{
-					string thiscol = initial_dt.Columns[i].ColumnName;
-					if (thiscol=="id" || thiscol=="ref_id")
+					//Make "id" string 
+					if (col.ColumnName.ToLower() == "id" || col.ColumnName.ToLower() == "ref_id") col.DataType = typeof(string);
+					if (stringcols_to_make_numeric.Contains(col.ColumnName.ToLower())) col.DataType = typeof(Double);
+					if (date_vars.Contains(col.ColumnName.ToLower()))
 					{
-						newrow[i] = row.ItemArray[i].ToString();
+						col.DataType = typeof(DateTime);
 					}
 
-					if(date_vars.Contains(thiscol))
+				}
+				foreach (DataRow row in initial_dt.Rows)
+				{
+					//Was simply just this
+					//dtCloned.ImportRow(row);
+
+					//Now handling dates
+					DataRow newrow = dtCloned.NewRow();
+
+					for (int i = 0; i < row.ItemArray.Length; i++)
+					//foreach(object col in row.ItemArray)
 					{
-						DateTime? newdate = null;
-						var oldvalue = row.ItemArray[i];
-						if (oldvalue != DBNull.Value) {
-							double olddbl = Convert.ToDouble(oldvalue);
-							newdate = DateTime.FromOADate(olddbl);
-							newrow[i] = newdate;
-						} else {
-							newrow[i] = DBNull.Value;
+						string thiscol = initial_dt.Columns[i].ColumnName;
+						if (thiscol == "id" || thiscol == "ref_id")
+						{
+							newrow[i] = row.ItemArray[i].ToString();
 						}
-						
-					}
-					else 
-					{
-						newrow[i] = row[i];
-					}
-				}
-				dtCloned.Rows.Add(newrow);
 
+						if (date_vars.Contains(thiscol))
+						{
+							DateTime? newdate = null;
+							var oldvalue = row.ItemArray[i];
+							if (oldvalue != DBNull.Value)
+							{
+								double olddbl = Convert.ToDouble(oldvalue);
+								newdate = DateTime.FromOADate(olddbl);
+								newrow[i] = newdate;
+							}
+							else
+							{
+								newrow[i] = DBNull.Value;
+							}
+
+						}
+						else
+						{
+							newrow[i] = row[i];
+						}
+					}
+					dtCloned.Rows.Add(newrow);
+
+				}
+				return dtCloned;
 			}
-			return dtCloned;
 		}
 
 
@@ -528,8 +545,18 @@ namespace uwac
 			var coltypeX = mydt.Columns[xvar].DataType;
 			var coltypeY = mydt.Columns[yvar].DataType;
 
-			if (colorsby == "none") colorsby = seriesby;
+			if (colorsby == "none")
+			{ colorsby = seriesby; }
+			else
+			{
+				var coltypeColors = mydt.Columns[colorsby].DataType;
+				if (coltypeColors.Name.ToLower() != "string")
+				{
+					mydt.ConvertColumnType(colorsby, typeof(string));
+				}
+			}
 
+			
 			if (coltypeX.Name.ToLower() == "datetime")
 			{
 				var qry = mydt.AsEnumerable()
@@ -537,7 +564,7 @@ namespace uwac
 				.Select(r => new
 				{
 					seriesby = r.Field<string>(seriesby),
-					colorsby = r.Field<string>(colorsby),
+					colorsby = r.Field<string>(colorsby.ToString()),
 					id = r.Field<string>("id"),
 					x = r.Field<DateTime>(xvar),
 					y = r.Field<double>(yvar)
@@ -555,7 +582,7 @@ namespace uwac
 				.Select(r => new
 				{
 					seriesby = r.Field<string>(seriesby),
-					colorsby = r.Field<string>(colorsby),
+					colorsby = r.Field<string>(colorsby).ToString(),
 					id = r.Field<string>("id"),
 					x = r.Field<string>(xvar),
 					y = r.Field<double>(yvar)
@@ -651,8 +678,17 @@ namespace uwac
 		}
 
 
-
-
+		
+		private void ChangeColumnToString(System.Data.DataTable dt, string colname)
+		{
+			dt.Columns.Add(colname + "_new", typeof(string));
+			foreach (System.Data.DataRow dr in dt.Rows)
+			{   // Will need switch Case for others if Date is not the only one.
+				dr[colname + "_new"] = double.Parse(dr[colname].ToString()); // dr[p].ToString();
+			}
+			dt.Columns.Remove(colname);
+			dt.Columns[colname + "_new"].ColumnName = colname;
+		}
 
 		//STATS
 		//public PCAoutput PCA(List<string> numvars, string method)
@@ -736,7 +772,7 @@ namespace uwac
 		public PrincipalComponentAnalysis pca { get { return _pca; } }
 		public int final_N { get { return _final_N; } }
 		public string method { get { return _method; } }
-		public string subtitle { get { return _method; } }
+		public string subtitle { get { return _subtitle; } }
 
 
 		public PCA(DPData dpdata, List<string> numvars, string method, string subtitle)
@@ -952,13 +988,15 @@ namespace uwac
 					Text = "Conducted with Accord.NET Framework v3.8.0 (with whiten=true)"
 				};
 				ASPxLabel l21 = new ASPxLabel();
-				l21.Text = string.Format(" and results match those obtained using the ", _final_N);
+				l21.Text = string.Format(" and results with test data match those obtained using the ");
 
 				ASPxHyperLink hyp2 = new ASPxHyperLink()
 				{
 					NavigateUrl = "http://stat.ethz.ch/R-manual/R-devel/library/stats/html/prcomp.html",
 					Text = "R 'prcomp' package."
 				};
+				Literal l22 = new Literal();
+				l22.Text = "<br/>However, users should replicate these results on their own before publication!";
 
 
 
@@ -966,6 +1004,7 @@ namespace uwac
 				c21.Controls.Add(hyp1);
 				c21.Controls.Add(l21);
 				c21.Controls.Add(hyp2);
+				c21.Controls.Add(l22);
 				r2.Cells.Add(c21);
 				t.Rows.Add(r2);
 
@@ -1147,6 +1186,38 @@ namespace uwac
 	}
 
 
+	public class ChiSq : AccordStats
+	{
+		public ChiSquareTest _chisq { get; set; }
+		//public FisherExactTest _fisher { get; set; }
+		private DataTable _dt;
+		private double[][] _data;
+		private List<string> _vars;
+		private int _final_N { get; set; }
+		private string _subtitle { get; set; }
+
+		public int final_N { get { return _final_N; } }
+		public string subtitle { get { return _subtitle; } }
+
+		public ChiSquareTest chisq { get { return _chisq; } }
+		//public FisherExactTest fisher { get { return _fisher; } }
+
+
+		public ChiSq(DPData dpdata, List<string> vars, string subtitle)
+		{
+			_vars = vars;
+			_subtitle = subtitle;
+
+			//need to select only the vars passed in
+			_dt = dpdata.Data_SelectColumns(_vars, false, true);
+
+			//ConvertData();
+
+		}
+
+	}
+
+
 	//public class ConvertDataTableToMatrix
 	//{
 	//	public double[][] matrix;
@@ -1168,6 +1239,32 @@ namespace uwac
 	//	}
 	//}
 
+	//public static double[][] ConvertData(DataTable _dt)  //assumes all vars in mydt are for use in the PCA
+	//{
+	//	double[][] _data;
+	//	int _final_N;
+
+	//	if (_dt != null)
+	//	{
+	//		if (_dt.Rows.Count > 0)
+	//		{
+	//			_data = Accord.Math.Matrix.ToJagged(_dt);
+	//			_final_N = _data.Length;
+	//			return _data;
+	//		}
+	//		else
+	//		{
+	//			_final_N = 0;
+	//			return null;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		_final_N = 0;
+	//		return null;
+	//	}
+
+	//}
 
 
 	public static class sqltypes
@@ -1182,171 +1279,181 @@ namespace uwac
 
 
 
-	public class DataSubsets
-	{
-		private List<DataSubset> _subsets;
-		private List<Groupingvar> _groupingvars;
+	//public class DataSubsets
+	//{
+	//	private List<DataSubset> _subsets;
+	//	private List<Groupingvar> _groupingvars;
 
-		public List<DataSubset> subsets { get { return _subsets; } }
-		public List<Groupingvar> groupingvars { get { return _groupingvars; } }
+	//	public List<DataSubset> subsets { get { return _subsets; } }
+	//	public List<Groupingvar> groupingvars { get { return _groupingvars; } }
 
-		public DataSubsets(List<DataSubset> subsets_value, List<Groupingvar> groupingvars_value) //, List<int> numlevels_value)
-		{
-			_subsets = subsets_value;
-			_groupingvars = groupingvars_value;
-			//numlevels = numlevels_value;
-		}
+	//	public DataSubsets(List<DataSubset> subsets_value, List<Groupingvar> groupingvars_value) //, List<int> numlevels_value)
+	//	{
+	//		_subsets = subsets_value;
+	//		_groupingvars = groupingvars_value;
+	//		//numlevels = numlevels_value;
+	//	}
 
-		public DataSubsets(DataTable dt_input, List<string> varnames, string groupingvar)
-		{
-			//just selected vars
-			List<string> allvars = new List<string>();
-			allvars.AddRange(varnames);
-			allvars.Add(groupingvar);
-			DataTable dt = SelectColumns(dt_input, allvars);
+	//	public DataSubsets(DataTable dt_input, List<string> varnames, string groupingvar)
+	//	{
+	//		//just selected vars
+	//		List<string> allvars = new List<string>();
+	//		allvars.AddRange(varnames);
+	//		allvars.Add(groupingvar);
+	//		DataTable dt = SelectColumns(dt_input, allvars);
 
-			_subsets = CreateSubsets(dt, varnames, new List<string> {groupingvar});
-		}
-
-
-		public DataSubsets(DataTable dt_input, List<string> varnames, List<string> groupingvarnames)
-		{
-			//just selected vars
-			List<string> allvars = new List<string>();
-			allvars.AddRange(varnames);
-			allvars.AddRange(groupingvarnames);
-			DataTable dt = SelectColumns(dt_input, allvars);
-
-			_subsets = CreateSubsets(dt, varnames, groupingvarnames);
-		}
-
-		public List<DataSubset> CreateSubsets(DataTable dt, List<string> varnames, List<string> groupingvarnames)
-		{
-			_groupingvars = new List<Groupingvar>();
-			List<DataSubset> mysubsets = new List<DataSubset>();
-			try
-			{
-				//Create the list of GroupingVars
-				for (int g = 0; g < groupingvarnames.Count; g++)
-				{
-					List<string> unsorted_levels = dt.AsEnumerable().Select(f => f.Field<string>(groupingvarnames[g])).Distinct().ToList();
-					List<string> levels = unsorted_levels.OrderBy(x => x).ToList(); 
-
-					Groupingvar gv = new Groupingvar(groupingvarnames[g], levels);
-					_groupingvars.Add(gv);
-				}
+	//		_subsets = CreateSubsets(dt, varnames, new List<string> {groupingvar});
+	//	}
 
 
-				// from: http://www.scriptscoop.net/t/7516b362c821/c-c-linq-how-to-build-group-by-clause-dynamically.html
-				IEnumerable<string> columnsToGroupBy = groupingvarnames;
-				var groups = dt.AsEnumerable()
-							.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]))
-							.OrderBy(p => p.Key);
+	//	public DataSubsets(DataTable dt_input, List<string> varnames, List<string> groupingvarnames)
+	//	{
+	//		//just selected vars
+	//		List<string> allvars = new List<string>();
+	//		allvars.AddRange(varnames);
+	//		allvars.AddRange(groupingvarnames);
+	//		DataTable dt = SelectColumns(dt_input, allvars);
 
-				//var groups = dt.AsEnumerable()
-				//	.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]));
+	//		_subsets = CreateSubsets(dt, varnames, groupingvarnames);
+	//	}
+
+	//	public List<DataSubset> CreateSubsets(DataTable dt, List<string> varnames, List<string> groupingvarnames)
+	//	{
+	//		_groupingvars = new List<Groupingvar>();
+	//		List<DataSubset> mysubsets = new List<DataSubset>();
+	//		try
+	//		{
+
+	//			//Create the list of GroupingVars
+	//			for (int g = 0; g < groupingvarnames.Count; g++)
+	//			{
+	//				string vtype = dt.Columns[groupingvarnames[g]].DataType.ToString().ToLower();
+
+	//				if(vtype != "string")
+	//				{
+	//					dt.ConvertColumnType(groupingvarnames[g], typeof(string));
+	//				}
 
 
-				foreach (var group in groups)
-				{
-					DataTable dtSub = group.CopyToDataTable();
+	//				List<string> unsorted_levels = dt.AsEnumerable().Select(f => f.Field<string>(groupingvarnames[g].ToString())).Distinct().ToList();
+	//				List<string> levels = unsorted_levels.OrderBy(x => x).ToList(); 
 
-					List<string> keyvalues = new List<string>();
-					foreach (var s in group.Key.Values)
-					{
-						keyvalues.Add(s.ToString());
-					}
+	//				Groupingvar gv = new Groupingvar(groupingvarnames[g], levels);
+	//				_groupingvars.Add(gv);
+	//			}
 
 
-					DataSubset subset = new DataSubset(dtSub, groupingvarnames, keyvalues);
-					mysubsets.Add(subset);
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("ERROR! instantiating DataSubsets  Msg:" + ex.Message); // + "............." + ex.StackTrace.ToString());
-			}
-			return mysubsets;
-		}
+	//			// from: http://www.scriptscoop.net/t/7516b362c821/c-c-linq-how-to-build-group-by-clause-dynamically.html
+	//			IEnumerable<string> columnsToGroupBy = groupingvarnames;
+	//			var groups = dt.AsEnumerable()
+	//						.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]))
+	//						.OrderBy(p => p.Key);
 
-		public DataTable SelectColumns(DataTable dtin, List<string> allvars)
-		{
+	//			//var groups = dt.AsEnumerable()
+	//			//	.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]));
 
-			DataTable dtout = dtin.Copy();
 
-			foreach (DataColumn dc in dtin.Columns)
-			{
-				string colname = dc.ColumnName.ToLower();
+	//			foreach (var group in groups)
+	//			{
+	//				DataTable dtSub = group.CopyToDataTable();
 
-				if (allvars.Contains(colname)) { /*keep it*/ }
-				else
-				{
-					dtout.Columns.Remove(colname);
-				}
-			}
-			return dtout;
-		}
+	//				List<string> keyvalues = new List<string>();
+	//				foreach (var s in group.Key.Values)
+	//				{
+	//					keyvalues.Add(s.ToString());
+	//				}
 
-	}
+
+	//				DataSubset subset = new DataSubset(dtSub, groupingvarnames, keyvalues);
+	//				mysubsets.Add(subset);
+	//			}
+	//		}
+	//		catch (Exception ex)
+	//		{
+	//			throw new Exception("ERROR! instantiating DataSubsets  Msg:" + ex.Message); // + "............." + ex.StackTrace.ToString());
+	//		}
+	//		return mysubsets;
+	//	}
+
+
+	//	public DataTable SelectColumns(DataTable dtin, List<string> allvars)
+	//	{
+
+	//		DataTable dtout = dtin.Copy();
+
+	//		foreach (DataColumn dc in dtin.Columns)
+	//		{
+	//			string colname = dc.ColumnName.ToLower();
+
+	//			if (allvars.Contains(colname)) { /*keep it*/ }
+	//			else
+	//			{
+	//				dtout.Columns.Remove(colname);
+	//			}
+	//		}
+	//		return dtout;
+	//	}
+
+	//}
 
 	
 
 
-	public class DataSubset
-	{
+	//public class DataSubset
+	//{
 	
-		public DataTable dt { get; set; }
-		public List<ColumnValue> cols_and_vals { get; set; }
+	//	public DataTable dt { get; set; }
+	//	public List<ColumnValue> cols_and_vals { get; set; }
 
-		public DataSubset() { }
+	//	public DataSubset() { }
 
-		public DataSubset(DataTable dtorig, List<string> additional_cols, List<string> additional_vals)
-		{
-			if (additional_cols.Count == additional_vals.Count)
-			{
-				cols_and_vals = new List<ColumnValue>();
+	//	public DataSubset(DataTable dtorig, List<string> additional_cols, List<string> additional_vals)
+	//	{
+	//		if (additional_cols.Count == additional_vals.Count)
+	//		{
+	//			cols_and_vals = new List<ColumnValue>();
 
-				for (int i = 0; i < additional_cols.Count; i++)
-				{
-					ColumnValue cv = new ColumnValue(additional_cols[i], additional_vals[i]);
-					cols_and_vals.Add(cv);
+	//			for (int i = 0; i < additional_cols.Count; i++)
+	//			{
+	//				ColumnValue cv = new ColumnValue(additional_cols[i], additional_vals[i]);
+	//				cols_and_vals.Add(cv);
 
-				}
-				dt = dtorig;
-			}
+	//			}
+	//			dt = dtorig;
+	//		}
 
-		}
+	//	}
 
-		public string Cols_and_Vals_ToString()
-		{
-			string output = "";
-			foreach(ColumnValue cv in cols_and_vals)
-			{
-				output += String.Format("{0}={1} ", cv.Colname, cv.Colvalue);
-			}
-			return output;
-		}
+	//	public string Cols_and_Vals_ToString()
+	//	{
+	//		string output = "";
+	//		foreach(ColumnValue cv in cols_and_vals)
+	//		{
+	//			output += String.Format("{0}={1} ", cv.Colname, cv.Colvalue);
+	//		}
+	//		return output;
+	//	}
 
-		public string Cols_ToString()
-		{
-			string output = "";
-			foreach (ColumnValue cv in cols_and_vals)
-			{
-				output += String.Format("{0} ", cv.Colname);
-			}
-			return output;
-		}
+	//	public string Cols_ToString()
+	//	{
+	//		string output = "";
+	//		foreach (ColumnValue cv in cols_and_vals)
+	//		{
+	//			output += String.Format("{0} ", cv.Colname);
+	//		}
+	//		return output;
+	//	}
 
-		public string Vals_ToString()
-		{
-			string output = "";
-			foreach (ColumnValue cv in cols_and_vals)
-			{
-				output += String.Format("{0} ", cv.Colvalue);
-			}
-			return output;
-		}
-	}
+	//	public string Vals_ToString()
+	//	{
+	//		string output = "";
+	//		foreach (ColumnValue cv in cols_and_vals)
+	//		{
+	//			output += String.Format("{0} ", cv.Colvalue);
+	//		}
+	//		return output;
+	//	}
+	//}
 
 	public class Groupingvar
 	{
@@ -1438,10 +1545,13 @@ namespace uwac
 		}
 	}
 
+
+
+
 	#endregion
 
 
-	
+
 
 
 }

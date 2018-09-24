@@ -1,10 +1,12 @@
-<%@ Register TagPrefix="def" Namespace="DataEntryFramework" %>
+<%@ Register TagPrefix="def" Namespace="DataEntryFramework3" %>
 <%@ Page Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="WMSFacesImm.aspx.cs" Inherits="DataEntryForms_Common_WMSFacesImm_WMSFacesImm" Title="Untitled Page" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
-<def:dataentrycontroller id="DataEntryController1" runat="server" LookupField1DataType="TEXT" ShowScoreButton="True"
-	VerifiedField="verified" PrimaryKeyField="wfi_pk" MeasureName="WMS Faces Immediate" LookupTextBox1LabelText="Subject ID:"
-	LookupTextBox2Visible="False" LookupField1="id" DatabaseTable="all_wmsfacesimm" OnDoScore="DataEntryController1_DoScore"
-	AllowedStudyMeasures="114,117,291,380,912,1977,2070,2247,2418,2885,3877" ></def:dataentrycontroller>
+<def:dataentrycontroller id="DataEntryController1" runat="server" DatabaseTable="all_wmsfacesimm" PrimaryKeyField="wfi_pk" 
+	 ></def:dataentrycontroller>
+<%--      LookupField1DataType="TEXT" ShowScoreButton="false"
+	VerifiedField="verified" MeasureName="WMS Faces Immediate" LookupTextBox1LabelText="Subject ID:"
+	LookupTextBox2Visible="False" LookupField1="id" 
+OnDoScore="DataEntryController1_DoScore"  Allowed StudyMeasures="114,117,291,380,912,1977,2070,2247,2418,2885,3877"--%>
 			<table class="layout">
 				<tr>
 					<td style="vertical-align:top">
@@ -13,6 +15,13 @@
 											<td><def:datafieldcontrol id="id" runat="server" FieldDataType="TEXT" IsInsertField="True" IsInsertValueRequired="True"
 													IsEntryField="False" IsEntryValueRequired="False" IsReadOnly="False" IsDoubleEntryField="False" FieldLabelText="ID"
 													FieldTextBoxTabIndex="2" DatabaseField="id" 
+													FieldLabelWidth="80px" FieldTextBoxWidth="80px"></def:datafieldcontrol>
+											</td>
+										</tr>
+										<tr>
+											<td><def:datafieldcontrol id="Datafieldcontrol3" runat="server" FieldDataType="INT" IsInsertField="True" IsInsertValueRequired="True"
+													IsEntryField="False" IsEntryValueRequired="False" IsReadOnly="False" IsDoubleEntryField="False" FieldLabelText="indexnum"
+													FieldTextBoxTabIndex="2" DatabaseField="indexnum" 
 													FieldLabelWidth="80px" FieldTextBoxWidth="80px"></def:datafieldcontrol>
 											</td>
 										</tr>

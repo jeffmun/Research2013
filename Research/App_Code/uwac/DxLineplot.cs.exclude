@@ -1,0 +1,312 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Linq;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Dynamic;
+using System.Reflection;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Drawing;
+using DevExpress.Web;
+using DevExpress.Utils;
+using DevExpress.XtraCharts;
+using DevExpress.XtraCharts.Web;
+using LinqStatistics;
+using MathNet.Numerics.Statistics;
+using uwac;
+using uwac.trk;
+using System.Text;
+
+/// <summary>
+/// Summary description for DxLineplot
+/// </summary>
+
+
+public class DxLineplot : DxCharts.Mychart
+{
+	private double _slope;
+	private double _intercept;
+	private int _n;
+	private int _coloroverride;
+
+	public double slope
+	{
+		get { return _slope; }
+		set { _slope = value; }
+	}
+	public double intercept
+	{
+		get { return _intercept; }
+		set { _intercept = value; }
+	}
+	public int n
+	{
+		get { return _n; }
+		set { _n = value; }
+	}
+
+	public DxLineplot(DxCharts dxcharts, DataTable mydt, string xvar, string yvar, string seriesby, string colorsby, string title
+		, bool xaxis_is_date, bool xaxis_is_age, bool showLegend, string legend_pos_h, string legend_pos_v)
+	{
+		_coloroverride = -1;
+		_dxcharts = dxcharts;
+		_chart = CreateLineplot(mydt, xvar, yvar, seriesby, colorsby, title, xaxis_is_date, xaxis_is_age, showLegend, legend_pos_h, legend_pos_v);
+	}
+
+	public DxLineplot(DxCharts dxcharts, DataTable mydt, string xvar, string yvar, string seriesby, string colorsby, string title
+		, bool xaxis_is_date, bool xaxis_is_age, int colorindex_override, bool showLegend, string legend_pos_h, string legend_pos_v)
+	{
+		_coloroverride = colorindex_override;
+		_dxcharts = dxcharts;
+		_chart = CreateLineplot(mydt, xvar, yvar, seriesby, colorsby, title, xaxis_is_date, xaxis_is_age, showLegend, legend_pos_h, legend_pos_v);
+	}
+
+
+	public WebChartControl CreateLineplot(DataTable mydt, string xvar, string yvar, string seriesby, string colorsby, string mytitle
+		, bool xaxis_is_date, bool xaxis_is_age, bool showLegend, string legend_pos_h, string legend_pos_v)
+	{
+		WebChartControl chart = new WebChartControl();
+		XYDiagram line = new XYDiagram();
+
+		line.AxisX.GridLines.Visible = true;
+		line.AxisY.GridLines.Visible = true;
+		line.AxisX.GridLines.MinorVisible = true;
+		line.AxisY.GridLines.MinorVisible = true;
+		chart.Diagram = line;
+
+		Color myseriescolor;
+
+		DataTable dataxy_all = _dxcharts.data.Data_SelectColumnXY(mydt, xvar, yvar, seriesby, colorsby);
+
+		List<string> series_levels = dataxy_all.AsEnumerable().Select(x => x.Field<string>("seriesby")).Distinct().ToList();
+		List<string> colors_levels = dataxy_all.AsEnumerable().Select(x => x.Field<string>("colorsby")).Distinct().ToList();
+		colors_levels.Sort();
+
+		List<string> seriesIDs = new List<string>();
+		if (seriesby == "id")
+		{
+			seriesIDs = dataxy_all.AsEnumerable().Select(x => x.Field<string>("id")).Distinct().ToList();
+		}
+		else
+		{
+			seriesIDs = dataxy_all.AsEnumerable().Select(x => x.Field<string>("seriesby")).Distinct().ToList();
+		}
+
+
+		int _nall = dataxy_all.Rows.Count;
+
+		if (_nall > 0)
+		{
+
+			//foreach (string s in seriesIDs)
+			for (int s = 0; s < seriesIDs.Count; s++)
+			{
+
+
+				DataView vw = dataxy_all.AsDataView();
+				string rowfilter = (seriesby == "id") ?
+							String.Format("{0}='{1}'", seriesby, seriesIDs[s]) :
+							String.Format("{0}='{1}'", "seriesby", seriesIDs[s]);
+
+				vw.RowFilter = rowfilter;
+				DataTable dataxy = vw.ToTable();
+
+				string current_colorlevel = dataxy.AsEnumerable().Select(f => f.Field<string>("colorsby")).Min().ToString();
+				List<string> series_colors = dataxy.AsEnumerable().Select(f => f.Field<string>("colorsby")).ToList();
+
+
+				int colorindex = 0;
+
+				//Get the correct color
+				if (colorsby != "none")
+				{
+					for (int c = 0; c < colors_levels.Count; c++)
+					{
+						if (current_colorlevel == colors_levels[c]) colorindex = c;
+					}
+				}
+				myseriescolor = _dxcharts.color(colorindex % 15);
+
+				if (_coloroverride >= 0) myseriescolor = _dxcharts.color(_coloroverride % 15);
+
+
+				_n = dataxy.Rows.Count;
+
+				if (_n > 0)
+				{
+					#region create array of SeriesPoint
+					SeriesPoint[] seriesPoints = new SeriesPoint[n];
+					for (int i = 0; i < n; i++)
+					{
+						if (xaxis_is_date)
+						{
+							seriesPoints[i] = new SeriesPoint(dataxy.Rows[i].Field<DateTime>("x"), new double[] { dataxy.Rows[i].Field<double>("y") });
+						}
+						else if (xaxis_is_age)
+						{
+							seriesPoints[i] = new SeriesPoint(dataxy.Rows[i].Field<double>("x"), new double[] { dataxy.Rows[i].Field<double>("y") });
+						}
+						else
+						{
+							seriesPoints[i] = new SeriesPoint(dataxy.Rows[i].Field<string>("x"), new double[] { dataxy.Rows[i].Field<double>("y") });
+						}
+						var rowvals = dataxy.Rows[i].ItemArray;
+						string id = dataxy.Rows[i].Field<string>("id");
+						//seriesPoints[i].Tag = id;
+						seriesPoints[i].ToolTipHint = String.Format("id: {0}", id);
+
+						//Assign color individually for each point
+						if (colorsby != "none")
+						{
+							for (int c = 0; c < colors_levels.Count; c++)
+							{
+								if (series_colors[i] == colors_levels[c]) colorindex = c;
+							}
+							seriesPoints[i].Color = _dxcharts.color(colorindex % 15);
+						}
+					}
+
+
+					if (xaxis_is_date)
+					{
+						DateTime[] x = dataxy.AsEnumerable().Select(o => o.Field<DateTime>("x")).ToArray();
+					}
+					else if (xaxis_is_age)
+					{
+						double[] x = dataxy.AsEnumerable().Select(o => o.Field<double>("x")).ToArray();
+					}
+					else
+					{
+						string[] x = dataxy.AsEnumerable().Select(o => o.Field<string>("x")).ToArray();
+					}
+
+					double[] y = dataxy.AsEnumerable().Select(o => o.Field<double>("y")).ToArray();
+
+					#endregion
+
+					//_slope = Math.Round(uwac.utilStats.Corr(x, y, "pearson"), 3);
+					//_intercept = Math.Round(uwac.utilStats.Corr(x, y, "Spearman"), 3);
+					//consider adding metanumerics or alglib to get p-values
+					//https://github.com/dcwuser/metanumerics 
+
+
+					Series series = new Series();
+					LineSeriesView lineSeriesView = new LineSeriesView();
+
+					lineSeriesView.Color = myseriescolor;
+					lineSeriesView.LineMarkerOptions.FillStyle.FillMode = FillMode.Solid;
+					lineSeriesView.LineMarkerOptions.Kind = _dxcharts._markers[s % _dxcharts._markers.Count];
+
+					if (xaxis_is_date)
+					{
+						line.AxisX.DateTimeScaleOptions.ScaleMode = ScaleMode.Continuous;
+						line.AxisX.DateTimeScaleOptions.MeasureUnit = DateTimeMeasureUnit.Month;
+						line.AxisX.Label.TextPattern = "{A:dd-MMM-yy}";
+						series.ToolTipPointPattern = "x={A:dd-MMM-yy} y={V:F2} {HINT}";
+					}
+					else
+					{
+						series.ToolTipPointPattern = "x={A:F2} y={V:F2} {HINT}";
+					}
+
+
+					ToolTipRelativePosition pos = new ToolTipRelativePosition();
+					pos.OffsetX = -10;
+					pos.OffsetY = -10;
+					chart.ToolTipOptions.ToolTipPosition = pos;
+
+
+					series.View = lineSeriesView;
+					series.Points.AddRange(seriesPoints);
+					chart.Series.Add(series);
+
+
+
+				}
+			}
+
+			// consider adding N=??, intrcpt=, slope=
+			string mainTitleText = String.Format("{0}{1}", mytitle, Environment.NewLine); //, seriesPoints.Count());
+
+			chart.Width = _dxcharts._chartWscat;
+			chart.Height = _dxcharts._chartHscat;
+
+			_dxcharts.AddTitles(chart, mainTitleText, "", xvar, yvar);
+
+			chart.BorderOptions.Color = Color.White;
+
+			chart.CustomDrawSeriesPoint += _dxcharts.Mychart_TransparentPoint;
+
+			chart.CustomDrawSeries += _dxcharts.Mychart_TransparentLine;
+
+			//chart.CustomCallback += _dxcharts.Mychart_CustomCallback;
+
+			chart.ToolTipEnabled = DevExpress.Utils.DefaultBoolean.True;
+			chart.ToolTipOptions.ShowForPoints = true;
+
+			chart.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
+
+			if (colorsby != "none")
+			{
+				for (int lev = 0; lev < colors_levels.Count; lev++)
+				{
+					// Create a new custom item.
+					CustomLegendItem item = new CustomLegendItem();
+					chart.Legend.CustomItems.Add(item);
+					// Specify its text and marker.
+					item.Text = colors_levels[lev];
+					int coloridx = (_coloroverride >= 0) ? _coloroverride : lev;
+					item.MarkerColor = _dxcharts.colors[coloridx % 15];
+				}
+			}
+
+
+
+			chart.Legend.Visibility = (showLegend) ? DevExpress.Utils.DefaultBoolean.True : DevExpress.Utils.DefaultBoolean.False;
+
+			LegendAlignmentHorizontal legend_h = new LegendAlignmentHorizontal();
+			LegendAlignmentVertical legend_v = new LegendAlignmentVertical();
+
+			if (legend_pos_h == "Right") legend_h = LegendAlignmentHorizontal.Right;
+			else if (legend_pos_h == "RightOutside") legend_h = LegendAlignmentHorizontal.RightOutside;
+			else if (legend_pos_h == "Left") legend_h = LegendAlignmentHorizontal.Left;
+			else if (legend_pos_h == "LeftOutside") legend_h = LegendAlignmentHorizontal.LeftOutside;
+			else if (legend_pos_h == "Center") legend_h = LegendAlignmentHorizontal.Center;
+
+			if (legend_pos_v == "Top") legend_v = LegendAlignmentVertical.Top;
+			else if (legend_pos_v == "TopOutside") legend_v = LegendAlignmentVertical.TopOutside;
+			else if (legend_pos_v == "Bottom") legend_v = LegendAlignmentVertical.Bottom;
+			else if (legend_pos_v == "BottomOutside") legend_v = LegendAlignmentVertical.BottomOutside;
+			else if (legend_pos_v == "Center") legend_v = LegendAlignmentVertical.Center;
+
+
+
+			chart.Legend.AlignmentHorizontal = legend_h;
+			chart.Legend.AlignmentVertical = legend_v;
+
+			if (legend_pos_v.StartsWith("TopOutside"))
+			{
+				chart.Legend.Direction = LegendDirection.LeftToRight;
+			}
+
+
+			// Set a value indicating that both autogenerated and custom items are displayed.
+			chart.Legend.ItemVisibilityMode = LegendItemVisibilityMode.AutoGeneratedAndCustom;
+
+
+
+			return chart;
+		}
+		else
+		{
+			_emptymsg = String.Format("0 cases for{3}{0}{3}{1} by {2}", mytitle, xvar, yvar, Environment.NewLine);
+			//_emptymsg = String.Format("0 cases for{3}{0}{3}{1} by {2}", mytitle, xvar, yvar, Environment.NewLine);
+			return null;
+		}
+	}
+
+}
+

@@ -2,8 +2,8 @@
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
@@ -24,8 +24,8 @@
 	<dx:ASPxCheckBoxList ID="cblItems" ClientInstanceName="cblItems" runat="server" Caption="Select Items to display:"  
 		Font-Size="X-Small" RepeatLayout="Flow" RepeatColumns="3" >
 		<Items>
-			<dx:ListEditItem Value="Actions" />
-			<dx:ListEditItem Value="Measures" />
+			<dx:ListEditItem Value="Actions" Selected="true" />
+			<dx:ListEditItem Value="Measures" Selected="true"  />
 			<%--<dx:ListEditItem Value="Consents" />--%>
 			   
 		</Items>
@@ -34,7 +34,8 @@
 			</td>
 			<td style="vertical-align:top; padding:10px">
 
-	<dx:ASPxButton ID="btnLoad" runat="server" Text="Load Study Design" OnClick="btnLoad_OnClick" AutoPostBack="false" ClientInstanceName="btnLoad" />
+	<dx:ASPxButton ID="btnLoad" runat="server" Text="Load Study Design" 
+		OnClick="btnLoad_OnClick" AutoPostBack="false" ClientInstanceName="btnLoad" />
 				
 
 					<dx:ASPxRadioButtonList ID="rblObj" runat="server" Visible="false" Font-Size="9" Border-BorderStyle="None" RepeatColumns="3" >
@@ -57,7 +58,7 @@
 	OnCustomCellDisplayText="pivotENT_CustomCellDisplayText"  OnCustomCellStyle="pivotENT_CustomCellStyle"
 		OnBeginRefresh="pivotENT_OnBeginRefresh"   --%>
 
-	<dx:ASPxPivotGrid ID="pivotENT" runat="server" DataSourceID="sql_StudyDesign"  Visible="true"  
+	<dx:ASPxPivotGrid ID="pivotENT" runat="server"    Visible="false"  
 		 OnCustomSummary="pivotENT_CustomSummary"
 		EnableCallbackAnimation="true">
 	<Fields>

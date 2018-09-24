@@ -1,8 +1,8 @@
-﻿<%@ Page Language="c#"   Debug="true" MasterPageFile="~/UWAC.master" CodeFile="Subject.aspx.cs" AutoEventWireup="true"
+﻿<%@ Page Language="c#"   Debug="true" MasterPageFile="~/UWAC.master" CodeFile="Subject.aspx.cs" AutoEventWireup="true" EnableEventValidation="true"
  Inherits="Track_Subject" Title="Subject Info"      %>   <%--Theme="Skin1" EnableEventValidation="true"--%>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
@@ -356,9 +356,17 @@
 		<tr>
 			<td style="vertical-align:top">
 				<dx:ASPxLabel ID="lblA" runat="server" Text="Actions:"  Font-Size="10" Font-Bold="true"  ForeColor="Silver"></dx:ASPxLabel>
+				<dx:ASPxButton ID="btnShowAll_Act" runat="server" ClientInstanceName="btnShowAll_Act"  Text="+" AutoPostBack="false" Paddings-Padding="0">                                <ClientSideEvents Click="onShowAll" />
+					<ClientSideEvents Click="function() { gvA.ExpandAll(); }" />
+				</dx:ASPxButton>
+				<dx:ASPxButton ID="btnCollapseAll_Act" runat="server" ClientInstanceName="btnCollapseAll_Act"  Text="-" AutoPostBack="false" Paddings-Padding="0">                                <ClientSideEvents Click="onShowAll" />
+					<ClientSideEvents Click="function() { gvA.CollapseAll(); }" />
+				</dx:ASPxButton>
+
 				<dx:ASPxLabel ID="gvAstatus" runat="server" Text=""  Font-Size="10" ForeColor="DarkGreen"></dx:ASPxLabel>
 				<br />
-				<dx:ASPxGridView ID="gvA" runat="server" DataSourceID="sqlA" AutoGenerateColumns="false"   KeyFieldName="ActionID" ClientInstanceName="gva"
+				<%--DataSourceID="sqlA"--%>
+				<dx:ASPxGridView ID="gvA" runat="server"  DataSourceID="sqlA" AutoGenerateColumns="false"   KeyFieldName="ActionID" ClientInstanceName="gvA"
 					 OnRowUpdating="gvA_OnRowUpdating" OnHtmlDataCellPrepared="gvA_HtmlDataCellPrepared"  Styles-Header-Wrap="true"   >  
 					<Columns>
 						<dx:GridViewDataColumn FieldName="timepoint_text" Caption="TimePoint" ReadOnly="true" GroupIndex="0" VisibleIndex="0"   ></dx:GridViewDataColumn>
@@ -429,11 +437,17 @@
 			</td>
 			<td style="vertical-align:top">
 				<dx:ASPxLabel ID="lblM" runat="server" Text="Measures:"  Font-Size="10" Font-Bold="true"  ForeColor="Silver"></dx:ASPxLabel>
+				<dx:ASPxButton ID="btnShowAll_M" runat="server" ClientInstanceName="btnShowAll_M"  Text="+" AutoPostBack="false" Paddings-Padding="0">                                <ClientSideEvents Click="onShowAll" />
+					<ClientSideEvents Click="function() { gvM.ExpandAll(); }" />
+				</dx:ASPxButton>
+				<dx:ASPxButton ID="btnCollapseAll_M" runat="server" ClientInstanceName="btnCollapseAll_M"  Text="-" AutoPostBack="false" Paddings-Padding="0">                                <ClientSideEvents Click="onShowAll" />
+					<ClientSideEvents Click="function() { gvM.CollapseAll(); }" />
+				</dx:ASPxButton>
 				<dx:ASPxLabel ID="gvMstatus" runat="server" Text=""  Font-Size="10" ForeColor="DarkGreen"></dx:ASPxLabel>
 				<br />
 
 
-				<dx:ASPxGridView ID="gvM" runat="server" DataSourceID="sqlM" AutoGenerateColumns="false"  ClientInstanceName="gvm"
+				<dx:ASPxGridView ID="gvM" runat="server" DataSourceID="sqlM" AutoGenerateColumns="false"  ClientInstanceName="gvM"
 					 KeyFieldName="StudyMeasSubjID"  OnHtmlDataCellPrepared="gvM_HtmlDataCellPrepared"  
 					OnRowUpdating="gvM_OnRowUpdating" OnCustomCallback="gvM_CustomCallback"    >
 					
@@ -550,9 +564,10 @@
 
 	<%--SQL Data Sources--%>
 	<asp:SqlDataSource ID="sqlS" runat="server" SelectCommandType="Text"  
-		SelectCommand="select '-select ID-' as ID union select ID from trk.vwMasterStatus_S where studyID=@studyID"
+		SelectCommand="EXEC sec.spSetUserContext @netid; select '-select ID-' as ID union select ID from trk.vwMasterStatus_S where studyID=@studyID"
 		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
 		<SelectParameters>
+			<asp:SessionParameter SessionField="netid" Name="netid" DbType="string" />
 			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
 		</SelectParameters>
 	</asp:SqlDataSource>
@@ -619,8 +634,8 @@
 		</SelectParameters>
 	</asp:SqlDataSource>
 
-	<asp:SqlDataSource ID="sqlStaff" runat="server" SelectCommandType="StoredProcedure"  
-		SelectCommand="trk.Tracking_GetActiveStaff"
+	<asp:SqlDataSource ID="sqlStaff" runat="server" SelectCommandType="Text"  
+		SelectCommand="exec trk.Tracking_GetActiveStaff @studyID"
 		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
 		<SelectParameters>
 			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />

@@ -2,8 +2,8 @@
 	 EnableEventValidation="false" Title="Data Projects"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"  />
@@ -93,8 +93,10 @@
 									<dx:GridViewDataColumn FieldName="TimePoints" Caption="Time Points" VisibleIndex="4" ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="nMeas" Caption="# Measures" VisibleIndex="5"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="nVars" Caption="# Variables" VisibleIndex="6"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="created" Caption="Created" VisibleIndex="7"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="createdBy" Caption="CreatedBy" VisibleIndex="8"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="nFiles" Caption="# Data Files" VisibleIndex="7"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="since_latestdatafile" Caption="Time since last data file created" VisibleIndex="7"  HeaderStyle-Wrap="true" Width="100px"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="created" Caption="Project Created" VisibleIndex="8"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="createdBy" Caption="Project CreatedBy" VisibleIndex="9"></dx:GridViewDataColumn>
 								</Columns>
 								<Settings ShowGroupPanel="false"    />
 								<SettingsPager Mode="ShowAllRecords" />

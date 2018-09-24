@@ -2,12 +2,12 @@
 	 EnableEventValidation="false" Title="Data Project Charts"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.Web.ASPxSpreadsheet.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSpreadsheet" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraCharts.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraCharts.v17.2.Web, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts.Web" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraPdfViewer.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraPdfViewer" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.ASPxSpreadsheet.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSpreadsheet" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.XtraCharts.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.XtraCharts.v18.1.Web, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts.Web" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.XtraPdfViewer.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraPdfViewer" TagPrefix="dx" %> 
 
 
 
@@ -27,7 +27,13 @@
 		}*/
 	</style>
 
-
+	<style type="text/css">
+	 .pivotCell
+		{
+		  padding: 10px;
+		  vertical-align: top;
+		}
+	</style>
 </asp:Content>
 
 <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server" >
@@ -48,13 +54,15 @@
 				}
 			}
 			function OnFileChanged(gridFile) {
-				btnViewData.SetEnabled(true);
+				
 				if (gridFile.InCallback())
 					lastFile = gridFile.GetValue().toString();
 				else {
 					var currfile = gridFile.GetValue().toString();
+					tabSteps.GetTabByName("tabVars").SetVisible(true);
 					callbackDataSheets.PerformCallback(currfile);
 					callbackVars.PerformCallback(currfile);
+
 				}
 			}
 
@@ -73,8 +81,7 @@
 			function OnVarsNumChanged(s, e) {
 				btnCreateCharts.SetEnabled(true);
 				btnViewData.SetEnabled(true);
-				
-
+				ShowFinalTabs();
 				callbackVarLabels.PerformCallback();
 			}
 
@@ -82,30 +89,53 @@
 			function OnVarsTextChanged(s, e) {
 				var grid = s.GetGridView();
 				var seltext = grid.GetSelectedFieldValues("varname", RefreshSelectedVars);
+				ShowFinalTabs();
 				callbackVarLabels.PerformCallback();
 			}
 
 			function OnVarsDateChanged(s, e) {
 				var grid = s.GetGridView();
 				var seltext = grid.GetSelectedFieldValues("varname", RefreshSelectedVars);
+				ShowFinalTabs();
 				callbackVarLabels.PerformCallback();
 			}
 			function OnVarsAgeChanged(s, e) {
 				var grid = s.GetGridView();
 				var seltext = grid.GetSelectedFieldValues("varname", RefreshSelectedAgeVars);
+				ShowFinalTabs();
 				callbackVarLabels.PerformCallback();
 			}
 
+			function ShowFinalTabs() {
+				tabSteps.GetTabByName("tabPlots").SetVisible(true);
+				tabSteps.GetTabByName("tabTables").SetVisible(true);
+			}
 
 			function RefreshSelectedAgeVars(selectedVals) {
 				RefreshSelectedVars2(selectedVals, cboXaxisvar);
+				RefreshSelectedVars2(selectedVals, cboXaxisvarLINE);
 			}
 
 
 			function RefreshSelectedVars(selectedVals) {
-				RefreshSelectedVars2(selectedVals, cboXaxisvar);
-				RefreshSelectedVars2(selectedVals, cboColorsvar);
-				RefreshSelectedVars2(selectedVals, cboPanelvar);
+				RefreshSelectedVars2(selectedVals, cboColorsvarHIST);
+				RefreshSelectedVars2(selectedVals, cboPanelvarHIST);
+
+				RefreshSelectedVars2(selectedVals, cboXaxisvarBAR);
+				RefreshSelectedVars2(selectedVals, cboColorsvarBAR);
+				RefreshSelectedVars2(selectedVals, cboPanelvarBAR);
+
+				RefreshSelectedVars2(selectedVals, cboXaxisvarSCAT);
+				RefreshSelectedVars2(selectedVals, cboColorsvarSCAT);
+				RefreshSelectedVars2(selectedVals, cboPanelvarSCAT);
+
+				RefreshSelectedVars2(selectedVals, cboXaxisvarLINE);
+				RefreshSelectedVars2(selectedVals, cboColorsvarLINE);
+				RefreshSelectedVars2(selectedVals, cboPanelvarLINE);
+
+				RefreshSelectedVars2(selectedVals, cboXTrow);
+				RefreshSelectedVars2(selectedVals, cboXTcol);
+				RefreshSelectedVars2(selectedVals, cboXTpanel);
 			}
 
 
@@ -143,17 +173,44 @@
 			}
 
 			function btnCreateCharts_ClientClick() {
-				var varxaxis= cboXaxisvar.GetValue();
-				var varcolors = cboColorsvar.GetValue();
-				var varpanel = cboPanelvar.GetValue();
 
-				var params = varxaxis + "," + varcolors + "," + varpanel;
+				var varcolorsHIST = cboColorsvarHIST.GetValue();
+				var varpanelHIST = cboPanelvarHIST.GetValue();
+
+				var varxaxisBAR = cboXaxisvarBAR.GetValue();
+				var varcolorsBAR = cboColorsvarBAR.GetValue();
+				var varpanelBAR = cboPanelvarBAR.GetValue();
+
+				var varxaxisSCAT = cboXaxisvarSCAT.GetValue();
+				var varcolorsSCAT = cboColorsvarSCAT.GetValue();
+				var varpanelSCAT = cboPanelvarSCAT.GetValue();
+
+				var varxaxisLINE = cboXaxisvarLINE.GetValue();
+				var varcolorsLINE = cboColorsvarLINE.GetValue();
+				var varpanelLINE = cboPanelvarLINE.GetValue();
+
+				var varXTrow = cboXTrow.GetValue();
+				var varXTcol = cboXTcol.GetValue();
+				var varXTpanel = cboXTpanel.GetValue();
+
+				var varcolorsPCA = cboColorsvarPCA.GetValue();
+
+
+				var params =                   varcolorsHIST + "," + varpanelHIST +
+					"," + varxaxisBAR + ","  + varcolorsBAR  + "," + varpanelBAR +
+					"," + varxaxisSCAT + "," + varcolorsSCAT + "," + varpanelSCAT +
+					"," + varxaxisLINE + "," + varcolorsLINE + "," + varpanelLINE +
+					"," + varXTrow + "," + varXTcol + "," + varXTpanel + 
+					"," + varcolorsPCA ;
 
 				callbackViewData.SetVisible(false);
 				callbackMissing.SetVisible(false);
 				callbackCharts.SetVisible(true);
+				//callbackCrosstabs.SetVisible(true);
 
 				callbackCharts.PerformCallback(params);
+				//callbackCrosstabs.PerformCallback(params);
+
 			}
 
 			function btnFilter_ClientClick() {
@@ -165,6 +222,7 @@
 
 				callbackCharts.SetVisible(false);
 				callbackMissing.SetVisible(false);
+				//callbackCrosstabs.SetVisible(false);
 				callbackViewData.SetVisible(true);
 				callbackViewData.PerformCallback("foo1");
 			}
@@ -173,11 +231,20 @@
 
 				callbackCharts.SetVisible(false);
 				callbackViewData.SetVisible(false);
+				//callbackCrosstabs.SetVisible(false);
 				callbackMissing.SetVisible(true);
 				callbackMissing.PerformCallback("foo2");
 			}
 
 
+			function btnViewMissingID_ClientClick() {
+
+				////TODO
+				//callbackCharts.SetVisible(false);
+				//callbackViewData.SetVisible(false);
+				//callbackMissing.SetVisible(true);
+				//callbackMissing.PerformCallback("foo2");
+			}
 
 
 			function btnViewSettings_ClientClick() {
@@ -218,47 +285,60 @@
 			//}
 
 
+
+		function btnVarLabels_Show(s, e) {
+			gvSelectedVars.SetVisible(true);
+			btnVarLabelsShow.SetEnabled(false);
+			btnVarLabelsHide.SetEnabled(true);
+		}
+		function btnVarLabels_Hide(s, e) {
+			gvSelectedVars.SetVisible(false);
+			btnVarLabelsShow.SetEnabled(true);
+			btnVarLabelsHide.SetEnabled(false);
+		}
+
+		function chkPlots_SelectedIndexChanged(e) {
+			var s = chkPlots.GetSelectedValues();
+
+			var ntabs = tabSettings.GetTabCount();
+			var nchecked = s.length;
+			for (var j = 1; j < ntabs; j++) {
+				var tab = tabSettings.GetTab(j);
+				tab.SetVisible(false);
+			}
+
+			for (var i = 0; i < nchecked; i++) {
+				var x = s[i] 
+				var tab2 = tabSettings.GetTabByName(x);
+
+				if (tab2 != null) {
+					tab2.SetVisible(true);
+				}
+			}
+
+		}
+ 
 	</script>
 
-	<script>
-
-		//function SelectionChanged_num(s, e) {
-		//	gridVarsCallback.PerformCallback("foo");
-		//}
-
-	</script>
-
-	<br /><br />
 
 
-<%--	<dx:ASPxLabel ID="lbl" runat="server" Text="Select variables to plot:"></dx:ASPxLabel>--%>
-	
-	<table>
-		<tr>
-			<td>
-				<dx:ASPxLabel ID="lblStep1" runat="server" ForeColor="LightGray" Font-Size="Medium" Font-Bold="true"
-						Text="Step 1: Select data source"></dx:ASPxLabel>
-			</td>
-			<td>
-				<dx:ASPxLabel ID="lblStep2" runat="server" ForeColor="LightGray" Font-Size="Medium" Font-Bold="true"
-						Text="Step 2: Select variables"></dx:ASPxLabel>
-			</td>
-			<td>
-				<dx:ASPxLabel ID="lblStep3" runat="server" ForeColor="LightGray" Font-Size="Medium" Font-Bold="true"
-						Text="Step 3: Set chart specifics"></dx:ASPxLabel>
-			</td>
-		</tr>
-		<tr>
-			<%--Step 1--%>
-			<td style="vertical-align: top; width: 400px">
-			
-				<dx:ASPxCallbackPanel ID="callbackSelectors" runat="server"  ClientInstanceName="callbackSelectors" OnCallback="callbackSelectors_OnCallback">
+	<br />
+
+	<dx:ASPxLabel ID="lblProjTitle" runat="server" Font-Size="Large" Font-Bold="true" Visible="false"></dx:ASPxLabel>
+	<br />
+	<dx:ASPxPageControl ID="tabSteps" Width="100%" runat="server" ClientInstanceName="tabSteps" 
+		CssClass="dxtcFixed" ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" >
+		<TabPages>
+			<dx:TabPage Text="Step 1: Select data source" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabData">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl7" runat="server">
+							<dx:ASPxCallbackPanel ID="callbackSelectors" runat="server"  ClientInstanceName="callbackSelectors" OnCallback="callbackSelectors_OnCallback">
 					<PanelCollection>
 						<dx:PanelContent ID="panelcontent0" runat="server">
 
 							<%-- OnValueChanged="gridDataProject_ValueChanged"--%>
 
-							<dx:ASPxLabel ID="lblProjTitle" runat="server" Font-Size="Large" Font-Bold="true" Visible="false"></dx:ASPxLabel>
+							
 							<dx:ASPxGridLookup ID="gridDataProject" runat="server" KeyFieldName="dataproj_pk" NullText="Select Data Project..." Width="350px"
 								 DataSourceID="SqlDataProject" EnableClientSideAPI="true" ClientInstanceName="gridDataProject">
 								<ClientSideEvents ValueChanged="function(s, e) { OnDataProjectChanged(s); }" />
@@ -345,12 +425,14 @@
 					</dx:PanelContent>
 				</PanelCollection>
 			</dx:ASPxCallbackPanel>
-			</td>
-			<%--Step 2--%>
-			<td style="vertical-align: top; width: 400px">
+						</dx:ContentControl>
+						</ContentCollection>
+				</dx:TabPage>
 
-
-				<dx:ASPxCallbackPanel ID="callbackVars" runat="server"  OnCallback="callbackVars_OnCallback" ClientInstanceName="callbackVars">
+		<dx:TabPage Text="Step 2: Select variables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabVars">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl8" runat="server">
+						<dx:ASPxCallbackPanel ID="callbackVars" runat="server"  OnCallback="callbackVars_OnCallback" ClientInstanceName="callbackVars">
 				<PanelCollection>
 					<dx:PanelContent ID="panelcontent1" runat="server">
 
@@ -392,7 +474,7 @@
 						</dx:ASPxGridLookup>
 
 
-						<dx:ASPxGridLookup ID="gridVarsText" runat="server" KeyFieldName="varname" NullText="Select text variables for grouping..." Width="350px"
+						<dx:ASPxGridLookup ID="gridVarsText" runat="server" KeyFieldName="varname" NullText="Select categorical variables for grouping..." Width="350px"
 							  GridViewProperties-EnableCallBacks="true" Visible="false"  Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
 							 SelectionMode="Multiple">
 							<ClientSideEvents ValueChanged="function(s, e) { OnVarsTextChanged(s); }" />
@@ -495,52 +577,40 @@
 					</dx:PanelContent>
 				</PanelCollection>
 			</dx:ASPxCallbackPanel>
-
-			</td>
-
-
-			<%--Step 3--%>
-			<td style="vertical-align: top;" rowspan="2">
-
-				<dx:ASPxCallbackPanel ID="callbackSpecifics" runat="server"  OnCallback="callbackSpecifics_OnCallback" ClientInstanceName="callbackSpecifics">
+						</dx:ContentControl>
+						</ContentCollection>
+				</dx:TabPage>
+		<dx:TabPage Text="Step 3a: Create plots" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabPlots">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl9" runat="server">
+							<dx:ASPxCallbackPanel ID="callbackSpecifics" runat="server"  OnCallback="callbackSpecifics_OnCallback" ClientInstanceName="callbackSpecifics">
 				<PanelCollection>
 					<dx:PanelContent ID="panelcontent3" runat="server">
 				
+						<table>
+							<tr>
+								<td> 
+									
 								<table>
-									<tr>
-										<td>
-											X axis:<br />
-											<dx:ASPxComboBox ID="cboXaxisvar" runat="server" Caption="" ClientInstanceName="cboXaxisvar" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 
-										</td>
-										<td>
-											Colors:<br />
-											<dx:ASPxComboBox ID="cboColorsvar" runat="server" Caption="" ClientInstanceName="cboColorsvar" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
-										</td>
-										<td>
-											Panels:<br />
-											<dx:ASPxComboBox ID="cboPanelvar" runat="server" Caption="" ClientInstanceName="cboPanelvar" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
-
-										</td>
-										<td style="width: 200px"></td>
-										</tr>
 									<tr>
-										<td colspan="2">
+										<td style="vertical-align: top">
 											
-											<dx:ASPxCheckBoxList ID="chkPlots" runat="server" Caption="Plots" CaptionSettings-Position="Top"  
-												 RepeatColumns="3" RepeatLayout="Flow" Font-Size="9" Paddings-Padding="2px"  >
+											<dx:ASPxCheckBoxList ID="chkPlots" ClientInstanceName="chkPlots" runat="server" Caption="Plots" CaptionSettings-Position="Top"  
+												 RepeatColumns="3" RepeatLayout="Flow" Font-Size="9" Paddings-Padding="2px" AutoPostBack="false"   >
+												<ClientSideEvents SelectedIndexChanged="chkPlots_SelectedIndexChanged"  />
 												<Items>
-													<dx:ListEditItem Value="Histogram" Selected="false" />
+													<dx:ListEditItem Value="Histogram" Selected="false"  />
 													<dx:ListEditItem Value="Scatterplot" Selected="false" />
-													<dx:ListEditItem Value="Barcharts" Selected="false" />
-													<dx:ListEditItem Value="Lineplots" Selected="false" />
+													<dx:ListEditItem Value="Barchart" Selected="false" />
+													<dx:ListEditItem Value="Lineplot" Selected="false" />
 													<dx:ListEditItem Value="PCA" Selected="false" />
-													<dx:ListEditItem Value="(Coming!) Crosstabs" Selected="false" />
+													<dx:ListEditItem Value="Crosstabs" Selected="false" />
 												</Items>
 											</dx:ASPxCheckBoxList>
 										</td>
-										<td style="padding:10px">
-											<dx:ASPxButton ID="btnViewSettings" ClientInstanceName="btnViewSettings" runat="server" Text="Show Settings"
+										<td style="vertical-align: top; padding:10px">
+											<dx:ASPxButton ID="btnViewSettings" ClientInstanceName="btnViewSettings" runat="server" Text="Show Settings" Visible="false"
 												ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
 												<Image IconID="chart_chartyaxissettings_16x16office2013"></Image>
 												<ClientSideEvents Click="btnViewSettings_ClientClick" />
@@ -548,99 +618,71 @@
 										</td>
 									</tr>
 								</table>
-
-								
-
-							<br />
+		
 
 							<br />
-							<dx:ASPxButton ID="btnCreateCharts" ClientInstanceName="btnCreateCharts" runat="server" Text="Create Charts"
+
+							<br />
+									<table>
+										<tr>
+											<td style="padding: 10px">
+							<dx:ASPxButton ID="btnCreateCharts" ClientInstanceName="btnCreateCharts" runat="server" Text="Create Plots"
 								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" >
 								<Image IconID="chart_chart_16x16office2013"></Image>
 								<ClientSideEvents Click="btnCreateCharts_ClientClick" />
 							</dx:ASPxButton>
 
-							<dx:ASPxButton ID="btnViewData" ClientInstanceName="btnViewData" runat="server" Text="View Selected Data"
-								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
-								<Image IconID="richedit_inserttable_16x16"></Image>
-								<ClientSideEvents Click="btnViewData_ClientClick" />
-							</dx:ASPxButton>
-							<dx:ASPxButton ID="btnViewMissing" ClientInstanceName="btnViewMissing" runat="server" Text="Missing Data by Var"
-								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
-								<Image IconID="support_question_16x16office2013"></Image>
-								<ClientSideEvents Click="btnViewMissing_ClientClick" />
-							</dx:ASPxButton>
-							<dx:ASPxButton ID="btnViewMissingID" ClientInstanceName="btnViewMissingID" runat="server" Text="Missing Data by ID"
-								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
-								<Image IconID="support_question_16x16office2013"></Image>
-								<ClientSideEvents Click="btnViewMissingID_ClientClick" />
-							</dx:ASPxButton>
-							<dx:ASPxButton ID="btnPDF" ClientInstanceName="btnPDF" runat="server" Text="Save to PDF" Visible="false"
-								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px"
-								OnClick="btnPDF_OnClick">
-								<Image IconID="export_exporttopdf_16x16"></Image>
-<%--								<ClientSideEvents Click="btnViewMissing_ClientClick" />--%>
-							</dx:ASPxButton>
-							<br />
-							<br /><dx:ASPxTextBox ID="txtOutputFilename" runat="server" Caption="Output filename:" Text="output" Visible="false"></dx:ASPxTextBox>
+											</td>
+											<td>
+									<dx:ASPxTrackBar ID="trkNumCols" ClientInstanceName="trkNumCols" runat="server" Caption="# Output Columns:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="8" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+											Height="45" Width="100px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
+									</dx:ASPxTrackBar>
 
-						</dx:PanelContent>
-					</PanelCollection>
-				</dx:ASPxCallbackPanel>
-				
-
-
-
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<dx:ASPxCallbackPanel ID="callbackVarLabels" runat="server"  OnCallback="callbackVarLabels_OnCallback" ClientInstanceName="callbackVarLabels">
-					<PanelCollection>
-						<dx:PanelContent ID="panelcontentVarLabels" runat="server" >
-							<br />
-							<dx:ASPXLabel ID="lblVarLabels" runat="server" ClientInstanceName="lblVarLabels" Text="Selected variables..." ForeColor="Gray" Font-Bold="true" Visible="false"></dx:ASPXLabel>
-							<dx:ASPxGridView ID="gvSelectedVars" runat="server" ClientInstanceName="gvSelectedVars" AutoGenerateColumns="false" Visible="false"  >
-								
-								<Columns>
-									<dx:GridViewDataColumn FieldName="measname" Caption="Measure"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="varname" Caption="Variable"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="FieldLabel" Caption="Label"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="DataType" Caption="Data Type"></dx:GridViewDataColumn>
-								</Columns>
-							</dx:ASPxGridView>
-
-						</dx:PanelContent>
-					</PanelCollection>
-				</dx:ASPxCallbackPanel>
-
-			</td>
-		</tr>
-	</table>
-
-				
+											</td>
+										</tr>
+									</table>
 
 						
 
 
-	<br />
-	<br />
+								</td>
+								<td style="vertical-align: top; float:left;">
+		
+									<%--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
 
-
-
-	<dx:ASPxPageControl ID="tabSettings" Width="100%" runat="server" ClientInstanceName="tabSettings" 
-		CssClass="dxtcFixed" ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="false" >
+									<asp:Label ID="lblSettings" runat="server" Text="Settings" Font-Bold="true" Font-Size="12pt" ForeColor="Silver"></asp:Label>
+									<br />
+									<%--CssClass="dxtcFixed"--%>
+	<dx:ASPxPageControl ID="tabSettings" runat="server" ClientInstanceName="tabSettings" TabPosition="Left" TabAlign="Left" 
+		 ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" Width="900px" >
 		<TabPages>
-			<dx:TabPage Text="Chart Settings">
+			<dx:TabPage Text="Colors" TabStyle-HorizontalAlign="Left">
 				<ContentCollection>
-					<dx:ContentControl ID="ContentControl1" runat="server">
+					<dx:ContentControl ID="ContentControl1" runat="server" Width="600px">
 
 						<table>
 							<tr>
+								<td>
+									X axis:<br />
+									<dx:ASPxComboBox ID="cboXaxisvar" runat="server" Caption="" ClientInstanceName="cboXaxisvar" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+
+								</td>
+								<td>
+									Colors:<br />
+									<dx:ASPxComboBox ID="cboColorsvar" runat="server" Caption="" ClientInstanceName="cboColorsvar" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+								</td>
+								<td>
+									Panels:<br />
+									<dx:ASPxComboBox ID="cboPanelvar" runat="server" Caption="" ClientInstanceName="cboPanelvar" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
+
+								</td>
+								<td style="width: 200px"></td>
+							</tr>
+						</table>
+						<br />
+						<table>
+							<tr>
 								<td style="vertical-align: top">
-									<dx:ASPxTrackBar ID="trkNumCols" ClientInstanceName="trkNumCols" runat="server" Caption="# Cols:"  MinValue="1" MaxValue="8" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-											Height="35" Width="100px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
-									</dx:ASPxTrackBar>
 
 								</td>
 								<td style="width: 50px"></td>
@@ -681,27 +723,28 @@
 					</dx:ContentControl>
 				</ContentCollection>
 			</dx:TabPage>
-			<dx:TabPage Text="Histogram settings">
+			<dx:TabPage Name="Histogram" Text="Histogram..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
 				<ContentCollection>
-					<dx:ContentControl ID="ContentControl2" runat="server">
-						<br />
+					<dx:ContentControl ID="ContentControl2" runat="server"  Width="600px">
 						<table style="padding: 5px 35px 5px 15px;">
 							<tr>
-								<td>
-								  <table>
+								<td style="vertical-align: top; padding: 5px">
+								  <table style="padding: 5px">
 										<tr>
 											<td>
 												<b>Chart Width: </b><dx:ASPxLabel ID="lblWhist" ClientInstanceName="lblWhist" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackWhist" ClientInstanceName="trackWhist" runat="server"  MinValue="100" MaxValue="1200" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-														Width="150" Height="39" Step="50" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
+														Width="150" Height="39" Step="25" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
 													<ClientSideEvents PositionChanged="OnChangeWhist" />
 												</dx:ASPxTrackBar>
 
 											</td>
+											</tr>
+											<tr>
 											<td>
 												<b>Chart Height: </b><dx:ASPxLabel ID="lblHhist" ClientInstanceName="lblHhist" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackHhist" ClientInstanceName="trackHhist" runat="server"  MinValue="100" MaxValue="1200" ScalePosition="LeftOrTop"  ShowChangeButtons="false" 
-													Width="150" Height="39" Step="50"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
+													Width="150" Height="39" Step="25"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
 													<ClientSideEvents PositionChanged="OnChangeHhist" />
 												</dx:ASPxTrackBar>
 
@@ -709,24 +752,41 @@
 										</tr>
 									</table>
 								</td>
-								<td>
-									<dx:ASPxComboBox ID="cboPanes" ClientInstanceName="cboPanes" runat="server" Caption="Histogram Panes" Width="140px">
-										<Items>
-											<dx:ListEditItem Value="horizontal" Text="Horizontal panes" Selected="true" />
-											<dx:ListEditItem Value="vertical" Text="Vertical panes" />
-										</Items>
-									</dx:ASPxComboBox>
-								</td>
-								<td>
+								<td style="align-content: center; padding: 5px">
+									<table>
+										<tr>
+											<td style="vertical-align: top">
+												<dx:ASPxComboBox ID="cboColorsvarHIST" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarHIST" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+											</td>
+											<td>
+												<dx:ASPxComboBox ID="cboPanelvarHIST" runat="server" Caption="Panels:"  CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarHIST" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
+
+											</td>
+										</tr>
+										<tr>
+											<td  style="vertical-align: top; padding: 5px">
+												<dx:ASPxComboBox ID="cboPanes" ClientInstanceName="cboPanes" runat="server" Caption="Histogram Panes" CaptionSettings-Position="Top" Width="140px">
+													<Items>
+														<dx:ListEditItem Value="horizontal" Text="Horizontal panes" Selected="true" />
+														<dx:ListEditItem Value="vertical" Text="Vertical panes" />
+													</Items>
+												</dx:ASPxComboBox>
+												<br /><br />
 									
-									<dx:ASPxTrackBar ID="trkNumBins" ClientInstanceName="trkNumBins" runat="server" Caption="# Bins:"  MinValue="0" MaxValue="40" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-											Height="35" Width="100px" LargeTickInterval="10" SmallTickFrequency="1"   Step="1"  EnableClientSideAPI="true" Position="0"   >
-									</dx:ASPxTrackBar>
-								</td>
-								<td>
+												<dx:ASPxTrackBar ID="trkNumBins" ClientInstanceName="trkNumBins" runat="server" Caption="# Bins:"  MinValue="0" MaxValue="40" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="35" Width="100px" LargeTickInterval="10" SmallTickFrequency="1"   Step="1"  EnableClientSideAPI="true" Position="0"   >
+												</dx:ASPxTrackBar>
+
+											</td>
+											<td style="padding: 10px">
+												<br />
+												<dx:ASPxCheckBox ID="chkNormalcurve" runat="server" Text="Normal curve?" Checked="True"></dx:ASPxCheckBox>
+												<br />
+												<dx:ASPxCheckBox ID="chkHistMSD" runat="server" Text="Add M +/- SD?" Checked="True"></dx:ASPxCheckBox>
+											</td>
+										</tr>
+									</table>
 									<br />
-									<dx:ASPxCheckBox ID="chkNormalcurve" runat="server" Text="Normal curve?" Checked="True"></dx:ASPxCheckBox>
-									<dx:ASPxCheckBox ID="chkHistMSD" runat="server" Text="Add M +/- SD?" Checked="True"></dx:ASPxCheckBox>
 								</td>
 							</tr>
 						</table>
@@ -737,28 +797,28 @@
 					</dx:ContentControl>
 				</ContentCollection>
 			</dx:TabPage>
-			<dx:TabPage Text="Scatterplot settings">
+			<dx:TabPage Name="Scatterplot" Text="Scatterplot..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
 				<ContentCollection>
-					<dx:ContentControl ID="ContentControl3" runat="server">
+					<dx:ContentControl ID="ContentControl3" runat="server"  Width="600px">
 
-						<br />
 						   <table>
 							<tr>
-								<td style="vertical-align: top">
+								<td style="vertical-align: top; padding: 5px">
 								  <table>
 										<tr>
 											<td>
 												<b>Chart Width: </b><dx:ASPxLabel ID="lblWscat" ClientInstanceName="lblWscat" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackWscat" ClientInstanceName="trackWscat" runat="server"  MinValue="100" MaxValue="1200" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-														Width="150" Height="39" Step="50" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
+														Width="150" Height="39" Step="25" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
 													<ClientSideEvents PositionChanged="OnChangeWscat" />
 												</dx:ASPxTrackBar>
 
-											</td>
+											</td></tr>
+											<tr>
 											<td>
 												<b>Chart Height: </b><dx:ASPxLabel ID="lblHscat" ClientInstanceName="lblHscat" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackHscat" ClientInstanceName="trackHscat" runat="server"  MinValue="100" MaxValue="1200" ScalePosition="LeftOrTop"  ShowChangeButtons="false" 
-													Width="150" Height="39" Step="50"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
+													Width="150" Height="39" Step="25"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
 													<ClientSideEvents PositionChanged="OnChangeHscat" />
 												</dx:ASPxTrackBar>
 
@@ -766,14 +826,42 @@
 										</tr>
 									</table>
 								</td>
-								<td style="vertical-align: top">
-									
-									<dx:ASPxTextBox ID="txtPtsCount" runat="server" Text="15" Caption="Moving Avg - # pts:"  Width="40px" >
-									<%--<MaskSettings  Mask="###" />--%>
-									<ValidationSettings RegularExpression-ValidationExpression="[0-9]{1,3}" SetFocusOnError="True"
-										RegularExpression-ErrorText="Enter a number."
-										Display="Dynamic" ErrorTextPosition="Right" />
-									</dx:ASPxTextBox>
+								<td style="vertical-align: top; padding: 5px">
+									<table>
+										<tr>
+											<td style="padding: 5px:">
+												<dx:ASPxComboBox ID="cboXaxisvarSCAT" runat="server" Caption="X axis:"  CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+
+											</td>
+											<td style="padding: 5px:">
+												<dx:ASPxComboBox ID="cboColorsvarSCAT" runat="server" Caption="Colors:"  CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarSCAT" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+											</td>
+											<td style="padding: 5px:">
+												<dx:ASPxComboBox ID="cboPanelvarSCAT" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarSCAT" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
+
+											</td>
+											<td style="width: 200px"></td>
+										</tr>
+									</table>
+									<br />
+									<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
+									<br />
+
+									<table>
+										<tr>
+											<td>
+												<dx:ASPxCheckBox ID="chkMovingAvg" runat="server" ClientInstanceName="chkMovingAvg" Text="Show moving avg?"></dx:ASPxCheckBox>
+											</td>
+											<td style="padding: 5px">
+												<dx:ASPxTextBox ID="txtPtsCount" runat="server" Text="15" Caption="# pts:"  Width="40px" >
+												<%--<MaskSettings  Mask="###" />--%>
+												<ValidationSettings RegularExpression-ValidationExpression="[0-9]{1,3}" SetFocusOnError="True"
+													RegularExpression-ErrorText="Enter a number."
+													Display="Dynamic" ErrorTextPosition="Right" />
+												</dx:ASPxTextBox>
+											</td>
+										</tr>
+									</table>
 									<br />
 								</td>
 								<td style="width: 30px"></td>
@@ -784,28 +872,29 @@
 					</dx:ContentControl>
 				</ContentCollection>
 			</dx:TabPage>
-			<dx:TabPage Text="Barchart settings">
+			<dx:TabPage Name="Barchart" Text="Barchart..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
 				<ContentCollection>
-					<dx:ContentControl ID="ContentControl4" runat="server">
+					<dx:ContentControl ID="ContentControl4" runat="server"  Width="600px">
 
-						<br />
 						<table>
 							<tr>
-								<td>
+								<td style="vertical-align: top; padding: 5px">
 								  <table>
 										<tr>
 											<td>
 												<b>Chart Width: </b><dx:ASPxLabel ID="lblWbar" ClientInstanceName="lblWbar" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackWbar" ClientInstanceName="trackWbar" runat="server"  MinValue="100" MaxValue="1000" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-														Width="150" Height="39" Step="50" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
+														Width="150" Height="39" Step="25" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
 													<ClientSideEvents PositionChanged="OnChangeWbar" />
 												</dx:ASPxTrackBar>
 
 											</td>
+										</tr>
+										<tr>
 											<td>
 												<b>Chart Height: </b><dx:ASPxLabel ID="lblHbar" ClientInstanceName="lblHbar" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackHbar" ClientInstanceName="trackHbar" runat="server"  MinValue="100" MaxValue="1000" ScalePosition="LeftOrTop"  ShowChangeButtons="false" 
-													Width="150" Height="39" Step="50"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
+													Width="150" Height="39" Step="25"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
 													<ClientSideEvents PositionChanged="OnChangeHbar" />
 												</dx:ASPxTrackBar>
 
@@ -813,10 +902,25 @@
 										</tr>
 									</table>
 								</td>
-								<td>
 
-								</td>
-								<td>
+								<td style="vertical-align: top; padding: 5px">
+
+									<table>
+										<tr>
+											<td style="padding: 5px:">
+												<dx:ASPxComboBox ID="cboXaxisvarBAR" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarBAR" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+
+											</td>
+											<td style="padding: 5px:">
+												<dx:ASPxComboBox ID="cboColorsvarBAR" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarBAR" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+											</td>
+											<td style="padding: 5px:">
+												<dx:ASPxComboBox ID="cboPanelvarBAR" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarBAR" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
+
+											</td>
+										</tr>
+									</table>
+									<br />
 									<dx:ASPxCheckBox ID="chkStatsTable" runat="server" Text="Display Descriptive Stats table?" Checked="True"></dx:ASPxCheckBox>
 								</td>
 							</tr>
@@ -827,28 +931,43 @@
 					</dx:ContentControl>
 				</ContentCollection>
 			</dx:TabPage>
-			<dx:TabPage Text="Lineplot settings">
+			<dx:TabPage Name="Lineplot" Text="Lineplot..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
 				<ContentCollection>
-					<dx:ContentControl ID="ContentControl5" runat="server">
+					<dx:ContentControl ID="ContentControl5" runat="server"  Width="800px">
+						Lineplots will display values for specific subjects.  If there are multiple timepoints in your data <br />you should probably include a time-oriented variable (timept, date, or age) somewhere in the plot. <br />
+						<table>
+							<tr>
+								<td>Common uses:</td>
+								<td>(1) Display a variable over time for each subject (x-axis: timept, age, or date)</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>(2) Display different variables collected at the same time for each subject (x-axis: variable)</td>
+							</tr>
+						</table>
+						
 
+						<br />
 						<br />
 						<table>
 							<tr>
-								<td>
+								<td style="padding: 5px">
 								  <table>
 										<tr>
-											<td>
+											<td >
 												<b>Chart Width: </b><dx:ASPxLabel ID="lblWline" ClientInstanceName="lblWline" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackWline" ClientInstanceName="trackWline" runat="server"  MinValue="100" MaxValue="1000" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-														Width="150" Height="39" Step="50" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
+														Width="150" Height="40" Step="25" LargeTickInterval="200"  EnableClientSideAPI="true" Position="350" DragHandleToolTip="false"   >
 													<ClientSideEvents PositionChanged="OnChangeWline" />
 												</dx:ASPxTrackBar>
 
 											</td>
+											</tr>
+											<tr>
 											<td>
 												<b>Chart Height: </b><dx:ASPxLabel ID="lblHline" ClientInstanceName="lblHline" runat="server" Font-Bold="true" Font-Size="12" ></dx:ASPxLabel>
 												<dx:ASPxTrackBar ID="trackHline" ClientInstanceName="trackHline" runat="server"  MinValue="100" MaxValue="1000" ScalePosition="LeftOrTop"  ShowChangeButtons="false" 
-													Width="150" Height="39" Step="50"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
+													Width="150" Height="40" Step="25"  LargeTickInterval="200"  EnableClientSideAPI="true" Position="350"  >
 													<ClientSideEvents PositionChanged="OnChangeHline" />
 												</dx:ASPxTrackBar>
 
@@ -856,14 +975,57 @@
 										</tr>
 									</table>
 								</td>
-								<td>
+								<td style="padding: 5px">
+									<table>
+										<tr>
+											<td style="padding: 5px">
+												<dx:ASPxComboBox ID="cboXaxisvarLINE" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarLINE" Width="130px" EnableCallbackMode="true" DropDownRows="12"></dx:ASPxComboBox>
+											</td>
+											<td style="padding: 5px">
+												<dx:ASPxComboBox ID="cboColorsvarLINE" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarLINE" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+											</td>
+											<td style="padding: 5px">
+												<dx:ASPxComboBox ID="cboPanelvarLINE" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarLINE" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
 
-								</td>
-								<td>
-									<dx:ASPxCheckBox ID="chkLineMatchYaxisRange" runat="server" Text="Match Y axis range across panels?" Checked="True"></dx:ASPxCheckBox>
-								</td>
-								<td>
-									<dx:ASPxCheckBox ID="chkLineShowLegend" runat="server" Text="Show Legend?" Checked="True"></dx:ASPxCheckBox>
+											</td>
+											<td style="width: 200px"></td>
+										</tr>
+										<tr>
+										<td colspan="2">
+											<br />
+											  
+											<dx:ASPxCheckBox ID="chkLineMatchYaxisRange" runat="server" Text="Match Y axis range across panels?" Checked="True"></dx:ASPxCheckBox>
+												<br />
+												<dx:ASPxCheckBox ID="chkLineShowLegend" runat="server" Text="Show Legend?" Checked="True"></dx:ASPxCheckBox>
+											<br />
+												<dx:ASPxCheckBox ID="chkLineHideBlank" runat="server" Text="Hide blank plots?" Checked="False"></dx:ASPxCheckBox>
+										</td>
+										<td>
+											Legend position:
+											<dx:ASPxComboBox ID="cboLegendH_LINE" runat="server" Caption="" ClientInstanceName="cboLegendH_LINE" Width="130px" EnableCallbackMode="true" DropDownRows="5">
+												<Items>
+													<dx:ListEditItem Value="Right"  />
+													<dx:ListEditItem Value="RightOutside" Selected="True"/>
+													<dx:ListEditItem Value="Left" />
+													<dx:ListEditItem Value="LeftOutside" />
+													<dx:ListEditItem Value="Center" />
+
+												</Items>
+											</dx:ASPxComboBox>
+											<dx:ASPxComboBox ID="cboLegendV_LINE" runat="server" Caption="" ClientInstanceName="cboLegendV_LINE" Width="130px" EnableCallbackMode="true" DropDownRows="5">
+												<Items>
+													<dx:ListEditItem Value="Top" Selected="True" />
+													<dx:ListEditItem Value="TopOutside" />
+													<dx:ListEditItem Value="Bottom" />
+													<dx:ListEditItem Value="BottomOutside" />
+													<dx:ListEditItem Value="Center" />
+
+												</Items>
+											</dx:ASPxComboBox>
+										</td>							
+										</tr>
+									</table>
+									
 								</td>
 							</tr>
 						</table>
@@ -873,7 +1035,70 @@
 					</dx:ContentControl>
 				</ContentCollection>
 			</dx:TabPage>
-			<dx:TabPage Text="PCA settings">
+			
+			
+			<dx:TabPage Name="Crosstabs" Text="Crosstabs..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl10" runat="server">
+						<table>
+							<tr>
+								<td colspan="3">
+									<asp:Label ID="lblXT1" runat="server" Text="Crosstabs tables will be created for each selected categorical variable."></asp:Label><br />
+									<asp:Label ID="lblXT2" runat="server" Text="Select any additional row or column variables here."></asp:Label>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Rows:<br />
+<%--									<dx:ASPxComboBox ID="cboXTrow" runat="server" Caption="" ClientInstanceName="cboXTrow" Width="180px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxComboBox>--%>
+									<dx:ASPxTokenBox ID="cboXTrow" runat="server" Caption="" ClientInstanceName="cboXTrow" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+
+								</td>
+								<td>
+									Columns:<br />
+									<dx:ASPxTokenBox ID="cboXTcol" runat="server" Caption="" ClientInstanceName="cboXTcol" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+								</td>
+								<td>
+									Panels:<br />
+									<dx:ASPxTokenBox ID="cboXTpanel" runat="server" Caption="" ClientInstanceName="cboXTpanel" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+								</td>							</tr>
+
+							<tr>
+								<td colspan="3">
+									<br />
+									<asp:Label ID="Label2" runat="server" Text="Separate vs. combined tables mode:"></asp:Label>
+									<br />
+									<%--<dx:ASPxCheckBox ID="chkXTpairwise" ClientInstanceName="chkXTpairwise" runat="server" ></dx:ASPxCheckBox>
+									<asp:Label ID="Label3" runat="server" Text="All pairs of selected vars?"></asp:Label>--%>
+
+									<dx:ASPxComboBox ID="cboXTmode" runat="server" Caption="" ClientInstanceName="cboXTmode" Width="450px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12"  >
+										<Items>
+											<dx:ListEditItem  Value="1" Text="1. Use each Row/Col var combination in a separate table" Selected="true" />
+											<dx:ListEditItem  Value="2" Text="2. Use all Row/Col vars in a single, combined table" />
+										</Items>
+									</dx:ASPxComboBox>
+								</td>
+
+							</tr>
+							<tr>
+								<td colspan="3">
+									<br />
+									<asp:Label ID="Label1" runat="server" Text="If you wish to create crosstabs tables for the numeric variables you have selected, check the box below."></asp:Label>
+									<br />
+									<dx:ASPxCheckBox ID="chkXTincludenumeric" ClientInstanceName="chkXTincludenumeric" runat="server" ></dx:ASPxCheckBox>
+									<asp:Label ID="lblXT3" runat="server" Text="Include numeric variables?"></asp:Label>
+								</td>
+
+							</tr>
+						</table>
+
+
+
+						</dx:ContentControl>
+					</ContentCollection>
+				</dx:TabPage>
+			
+			<dx:TabPage Name="PCA" Text="PCA..." ClientEnabled="true" TabStyle-HorizontalAlign="Left" ClientVisible="False">
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl6" runat="server">
 						<table>
@@ -885,6 +1110,10 @@
 											<dx:ListEditItem Value="Standardize" Text="Standardize (mean-centered & standardized data) [same as R prcomp with: 'scale.=T']" Selected="true"/>
 										</Items>
 									</dx:ASPxRadioButtonList>
+
+									<dx:ASPxComboBox ID="cboColorsvarPCA" runat="server" Caption="Subgroups:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarPCA" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+
+									</td>
 							</tr>
 						</table>
 
@@ -894,6 +1123,117 @@
 
 		</TabPages>
 	</dx:ASPxPageControl>
+
+
+								</td>
+							</tr>
+						</table>
+
+						</dx:PanelContent>
+					</PanelCollection>
+				</dx:ASPxCallbackPanel>
+				
+
+
+						</dx:ContentControl>
+						</ContentCollection>
+				</dx:TabPage>
+			
+		
+		<dx:TabPage Text="Step 3b: Create Tables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabTables">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl11" runat="server">
+							<dx:ASPxButton ID="btnViewData" ClientInstanceName="btnViewData" runat="server" Text="View Selected Data"
+								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
+								<Image IconID="richedit_inserttable_16x16"></Image>
+								<ClientSideEvents Click="btnViewData_ClientClick" />
+							</dx:ASPxButton>
+
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<dx:ASPxButton ID="btnViewMissing" ClientInstanceName="btnViewMissing" runat="server" Text="Missing Data by Var"
+								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
+								<Image IconID="support_question_16x16office2013"></Image>
+								<ClientSideEvents Click="btnViewMissing_ClientClick" />
+							</dx:ASPxButton>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<dx:ASPxButton ID="btnViewMissingID" ClientInstanceName="btnViewMissingID" runat="server" Text="Missing Data by ID"
+								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px">
+								<Image IconID="support_question_16x16office2013"></Image>
+								<ClientSideEvents Click="btnViewMissingID_ClientClick" />
+							</dx:ASPxButton>
+
+							<dx:ASPxButton ID="btnPDF" ClientInstanceName="btnPDF" runat="server" Text="Save to PDF" Visible="true"
+								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px"
+								OnClick="btnPDF_OnClick">
+								<Image IconID="export_exporttopdf_16x16"></Image>
+					<%-- <ClientSideEvents Click="btnViewMissing_ClientClick" />--%>
+							</dx:ASPxButton>
+							<br />
+							<br /><dx:ASPxTextBox ID="txtOutputFilename" runat="server" Caption="Output filename:" Text="output" Visible="false"></dx:ASPxTextBox>
+
+					</dx:ContentControl>
+				</ContentCollection>
+		</dx:TabPage>
+
+		</TabPages>
+		</dx:ASPxPageControl>
+
+<%--	<dx:ASPxLabel ID="lbl" runat="server" Text="Select variables to plot:"></dx:ASPxLabel>--%>
+	
+	<table >
+
+
+		<tr>
+			<td colspan="2" style="vertical-align: top;">
+				<dx:ASPxCallbackPanel ID="callbackVarLabels" runat="server"  OnCallback="callbackVarLabels_OnCallback" ClientInstanceName="callbackVarLabels" >
+					<PanelCollection>
+						<dx:PanelContent ID="panelcontentVarLabels" runat="server" >
+							<br />
+							<table style="vertical-align: top;">
+								<tr>
+									<td style="vertical-align: top;">
+							<dx:ASPXLabel ID="lblVarLabels" runat="server" ClientInstanceName="lblVarLabels" Text="Details for selected variables..." ForeColor="Gray" Font-Bold="true" Visible="false"></dx:ASPXLabel>
+							<dx:ASPxButton ID="btnVarLabelsShow" runat="server" ClientInstanceName="btnVarLabelsShow" Text="Show" Visible="false" Paddings-Padding="0" AutoPostBack="false"  ClientEnabled="true"  >
+								<ClientSideEvents  Click="btnVarLabels_Show"/>
+							</dx:ASPxButton>
+							<dx:ASPxButton ID="btnVarLabelsHide" runat="server" ClientInstanceName="btnVarLabelsHide" Text="Hide" Visible="false" Paddings-Padding="0" AutoPostBack="false" ClientEnabled="true" Checked="false" >
+								<ClientSideEvents  Click="btnVarLabels_Hide"/>
+							</dx:ASPxButton>
+
+									</td>
+								</tr>
+								<tr>
+									<td>
+							<dx:ASPxGridView ID="gvSelectedVars" runat="server" ClientInstanceName="gvSelectedVars" AutoGenerateColumns="false" Visible="false"  >
+								
+								<Columns>
+									<dx:GridViewDataColumn FieldName="measname" Caption="Measure"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="varname" Caption="Variable"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="FieldLabel" Caption="Label"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="DataType" Caption="Data Type"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="vartype" Caption="Var Type"></dx:GridViewDataColumn>
+								</Columns>
+							</dx:ASPxGridView>
+									</td>
+								</tr>
+							</table>
+
+						</dx:PanelContent>
+					</PanelCollection>
+				</dx:ASPxCallbackPanel>
+
+			</td>
+		</tr>
+	</table>
+
+				
+
+						
+
+
+	<br />
+	<br />
+
 
 
 
@@ -950,17 +1290,37 @@
 	</dx:ASPxCallbackPanel>
 
 
+		
+<%--	<dx:ASPxCallbackPanel ID="callbackCrosstabs" runat="server"  OnCallback="callbackCrosstabs_OnCallback" ClientInstanceName="callbackCrosstabs">
+		<PanelCollection>
+			<dx:PanelContent ID="panelcontent8" runat="server">
+			</dx:PanelContent>
+		</PanelCollection>
+	</dx:ASPxCallbackPanel>--%>
+
+
 
 	<asp:UpdatePanel ID="panel" runat="server" UpdateMode="Conditional">	</asp:UpdatePanel>
 
 	<asp:Panel ID="testpanel" runat="server" Visible="true" >	</asp:Panel>
 
 
+	<dx:ASPxPopupControl ID="pcError" runat="server" Width="320" CloseAction="CloseButton" CloseOnEscape="true" Modal="True">
+												  <ContentCollection>
+													  <dx:PopupControlContentControl>
+															<dx:ASPxLabel ID="lblError" runat="server" ClientInstanceName="lblError" Text="" ForeColor="Red" EnableClientSideAPI="true" ClientVisible="false"></dx:ASPxLabel>
+													  </dx:PopupControlContentControl>
+												  </ContentCollection>
+											  </dx:ASPxPopupControl>
+
+
+
+	<%--<dx:ASPxPivotGrid ID="pivot" runat="server" ClientInstanceName="pivot2"></dx:ASPxPivotGrid>--%>
 
 
 	<asp:SqlDataSource ID="SqlDataProject" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
 		SelectCommandType="text"
-		SelectCommand="select * from dp.DataProject where studyID=@studyID">
+		SelectCommand="select 0 dataproj_pk, 'LIVE DATA (coming...)' projTitle  union select dataproj_pk, projTitle from dp.DataProject where studyID=@studyID">
 		 <SelectParameters>
 			 <asp:SessionParameter SessionField="studyID" Name="studyID" />
 		 </SelectParameters>

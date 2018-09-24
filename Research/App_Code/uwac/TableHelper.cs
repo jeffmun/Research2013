@@ -37,6 +37,44 @@ public class TableHelper
 		return t;
 	}
 
+	public static Table VerticalTable(List<DxCharts.Mychart> charts, int W, int H, double pctW, double pctH, bool hideEmptyCharts)
+	{
+		Table t = new Table();
+
+		int numrow = charts.Count ;
+		int counter = 0;
+
+		for (int i = 0; i < numrow; i++)
+		{
+			TableRow r = new TableRow();
+			TableCell c = new TableCell();
+			bool addcell = true;
+			if (counter < charts.Count)
+			{
+				int newW = Convert.ToInt32(W * pctW);
+				int newH = Convert.ToInt32(H * pctH);
+
+				if (charts[counter].chart == null & hideEmptyCharts)
+				{
+					//do nothing, the missing chart and emptymsg is not displayed
+					addcell = false;
+				}
+				else
+				{
+					PlaceChartInCell(charts[counter], c, newW, newH);
+				}
+				counter++;
+			}
+			if (addcell) r.Cells.Add(c);
+			
+			t.Rows.Add(r);
+		}
+
+		return t;
+	}
+
+
+
 	public static Table HorizontalTable(List<Table> tables)
 	{
 		Table t = new Table();
@@ -74,8 +112,13 @@ public class TableHelper
 
 	//	return t;
 	//}
-
 	public static Table HorizontalTable(List<DxCharts.Mychart> charts, int W, int H, double pctW, double pctH, int maxCol)
+	{
+		return HorizontalTable(charts, W, H, pctW, pctH, maxCol, false);
+	}
+
+
+	public static Table HorizontalTable(List<DxCharts.Mychart> charts, int W, int H, double pctW, double pctH, int maxCol, bool hideEmptyCharts)
 	{
 		Table t = new Table();
 
@@ -88,17 +131,62 @@ public class TableHelper
 			for (int j = 0; j < maxCol; j++)
 			{
 				TableCell c = new TableCell();
+				bool addcell = true;
 				if (counter < charts.Count)
 				{
 					int newW = Convert.ToInt32(W * pctW);
 					int newH = Convert.ToInt32(H * pctH);
-					PlaceChartInCell(charts[counter], c, newW, newH);
+
+					if ( charts[counter].chart == null & hideEmptyCharts)
+					{
+						//do nothing, the missing chart and emptymsg is not displayed
+						addcell = false;
+					}
+					else 
+					{
+						PlaceChartInCell(charts[counter], c, newW, newH);
+					}
 					counter++;
 				}
+				if (addcell) r.Cells.Add(c);
+			}
+			t.Rows.Add(r);
+		}
+
+		return t;
+	}
+
+
+	public static Table HorizontalTable(Literal literal)
+	{
+		List<Literal> literals = new List<Literal> { literal };
+		return HorizontalTable(literals);
+	}
+
+
+	public static Table HorizontalTable(List<Literal> literals)
+	{
+		Table t = new Table();
+		//t.CellPadding = 10;
+		//t.CellSpacing = 10;
+		//t.BorderStyle = BorderStyle.Solid;
+		//t.BorderColor = Color.Blue;
+		//t.BorderWidth = 1;
+		int numcol = literals.Count;
+
+		for (int i = 0; i < 1; i++) //just one row
+		{
+			TableRow r = new TableRow();
+			for (int j = 0; j < numcol; j++)
+			{
+				TableCell c = new TableCell();
+				c.Controls.Add(literals[j]);
+				c.Attributes.Add("class", "pivotCell");
 				r.Cells.Add(c);
 			}
 			t.Rows.Add(r);
 		}
+
 
 		return t;
 	}
@@ -218,6 +306,8 @@ public class TableHelper
 			mychart.chart.ClientInstanceName = chartname;
 			mychart.chart.ID = chartname;
 
+			//Render the Checkbox here for when selecting specific charts to save.
+			//container.Controls.Add(mychart.chk);
 			container.Controls.Add(mychart.chart);
 		}
 		else
@@ -261,4 +351,5 @@ public class TableHelper
 
 
 	#endregion
+
 }

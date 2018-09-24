@@ -17,26 +17,26 @@ public partial class DataEntryForms_Common_WMSFacesDel_WMSFacesDel : System.Web.
     {
 
     }
-    protected void DataEntryController1_DoScore(object sender, EventArgs e)
-    {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(WebConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ConnectionString))
-                {
-                        SqlCommand cmd = new SqlCommand();
-                        cmd.Connection = conn;
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = "spScoreWMSDetail_ALL";
-                        cmd.Parameters.AddWithValue("@pk", DataEntryController1.PrimaryKeyVal);
-                        cmd.Parameters.AddWithValue("@studymeasid", DataEntryController1.StudyMeasID);
-                        conn.Open();
-                        cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                DataEntryController1.AddNotification(string.Format("An exception ocurred while scoring: {0}", ex.Message));
-                DataEntryController1.FormError = true;
-            }
-    }
+    //protected void DataEntryController1_DoScore(object sender, EventArgs e)
+    //{
+    //        try
+    //        {
+    //            using (SqlConnection conn = new SqlConnection(WebConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ConnectionString))
+    //            {
+    //                    SqlCommand cmd = new SqlCommand();
+    //                    cmd.Connection = conn;
+    //                    cmd.CommandType = CommandType.StoredProcedure;
+    //                    cmd.CommandText = "spScoreWMSDetail_ALL";
+    //                    cmd.Parameters.AddWithValue("@pk", DataEntryController1.PrimaryKeyVal);
+    //                    cmd.Parameters.AddWithValue("@studymeasid", DataEntryController1.StudyMeasID);
+    //                    conn.Open();
+    //                    cmd.ExecuteNonQuery();
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            DataEntryController1.AddNotification(string.Format("An exception ocurred while scoring: {0}", ex.Message));
+    //            DataEntryController1.FormError = true;
+    //        }
+    //}
 }

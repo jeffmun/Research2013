@@ -62,8 +62,8 @@
 
  </table>
 
-<def:datafieldcontrol runat="server" id="smellroom" databasefield="smellroom" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="smellodor1" databasefield="smellodor1" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="campsmellroom" databasefield="campsmellroom" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="campsmellodor1" databasefield="campsmellodor1" isentryfield="true" isdoubleentryfield="true" fieldlabelwidth="160px" fieldtextboxwidth="40px"></def:datafieldcontrol>
 
       <br />
       <br />

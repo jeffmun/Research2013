@@ -63,10 +63,14 @@ namespace uwac.data
 			CreateSqlForIntHx();
 			GetData();
 
-			if (this._dataset.Tables["CompVars"].Rows.Count > 0)
+
+			if (this._dataset.Tables.Contains("CompVars"))
 			{
-				GetCompvars();
-				CalculateZscores();
+				if (this._dataset.Tables["CompVars"].Rows.Count > 0)
+				{
+					GetCompvars();
+					CalculateZscores();
+				}
 			}
 
 			//StackData();
@@ -111,9 +115,29 @@ namespace uwac.data
 			_ID_list = _dataset.Tables["Subjects"].AsEnumerable().Select(f => f.Field<string>("id")).ToList();
 			_timepointID_list = _dataset.Tables["Timepoints"].AsEnumerable().Where(f => f.Field<int?>("timepointID")>0).Select(f => f.Field<int>("timepointID")).ToList();
 
+
+			RemoveTableIfRowsEq0("Subjects_Excluded");
+			RemoveTableIfRowsEq0("CompVars");
+			RemoveTableIfRowsEq0("Subj Timepoints");
+
+
 			_fldname_list = _dataset.Tables["DataDictionary"].AsEnumerable().Select(f => f.Field<string>("varname")).ToList();
 
 		}
+
+		private void RemoveTableIfRowsEq0(string tbl)
+		{
+			int nrows = _dataset.Tables[tbl].Rows.Count;
+
+			if (nrows == 0)
+			{
+				DataTableCollection tablesCol = _dataset.Tables;
+
+				if (tablesCol.Contains(tbl) && tablesCol.CanRemove(tablesCol[tbl]))
+					tablesCol.Remove(tbl);
+			}
+		}
+
 
 		private void AddInfoTable()
 		{
@@ -714,20 +738,18 @@ namespace uwac.data
 				for (int i = 0; i < sqlcode_final_Data_array.Length; i++)
 				{
 					string codechunk = sqlcode_final_Data_array[i];
-					double numchunks = Math.Truncate((Double)(codechunk.Length / 30000));
+					int codechunk_length = codechunk.Length;
+					int numchunks = Convert.ToInt32(Math.Truncate((Double)(codechunk.Length / 30000)));
 
 					for (int j = 0; j <= numchunks; j++)
 					{
 						int from = (j * 30000);
 						int to =  (from + 30000) - 1;
 
-						bool istoolong = (to > codechunk.Length) ? true : false;
-						if(istoolong)
-						{
-							to = codechunk.Length - from;
-						}
+						int leng = (j == numchunks) ? codechunk_length - from : to - from;
+						
 
-						string tmp = codechunk.Substring(from, to);
+						string tmp = codechunk.Substring(from, leng);
 						DataRow row = dt_sql.NewRow();
 						row["sql_code"] = tmp;
 						dt_sql.Rows.Add(row);

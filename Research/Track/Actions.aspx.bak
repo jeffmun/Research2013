@@ -3,8 +3,8 @@
 
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
 
@@ -272,6 +272,24 @@
                 <dx:ASPxGridView ID="gvENT" runat="server"  Visible="false" AutoGenerateColumns="false"   KeyFieldName="ActionID" ClientInstanceName="gva"
                      OnRowUpdating="gvENT_OnRowUpdating" OnDataBinding="gvENT_DataBinding"  OnHtmlDataCellPrepared="gvENT_HtmlDataCellPrepared"   >  
                     <ClientSideEvents EndCallback="function(s, e) {ASPxClientHint.Update();}" />
+                                        <SettingsExport EnableClientSideExportAPI="true" FileName="Actions"></SettingsExport>
+                      <Toolbars>
+                        <dx:GridViewToolbar EnableAdaptivity="true">
+                            <Items>
+                                <dx:GridViewToolbarItem Text="Export" Image-IconID="export_export_16x16">
+                                    <Items>
+                                        <dx:GridViewToolbarItem Command="ExportToPdf" />
+                                        <dx:GridViewToolbarItem Command="ExportToXls" />
+                                        <dx:GridViewToolbarItem Command="ExportToXlsx" />
+                                        <dx:GridViewToolbarItem Command="ExportToDocx" />
+                                        <dx:GridViewToolbarItem Command="ExportToRtf" />
+                                        <dx:GridViewToolbarItem Command="ExportToCsv" />
+                                    </Items>
+                                </dx:GridViewToolbarItem>
+                                <dx:GridViewToolbarItem Command="ShowCustomizationWindow" />
+                             </Items>
+                        </dx:GridViewToolbar>
+                    </Toolbars>
                     <Columns>
                         <dx:GridViewDataColumn FieldName="timepoint_text" Caption="TimePoint" ReadOnly="true"  VisibleIndex="0" Width="80px"  ></dx:GridViewDataColumn>
                         <dx:GridViewDataColumn FieldName="ID" Caption="ID" ReadOnly="true" VisibleIndex="1" Width="100px"></dx:GridViewDataColumn>
