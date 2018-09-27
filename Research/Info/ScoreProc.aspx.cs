@@ -15,8 +15,10 @@ using AutismCenterBase.Utilities;
 using System.IO;
 using System.Drawing;
 using System.Text;
+using uwac;
 
-public partial class Info_ScoreProc : System.Web.UI.Page
+
+public partial class Info_ScoreProc : BasePage
 {
 
 	private SqlConnection oConn = new SqlConnection();
@@ -56,40 +58,41 @@ public partial class Info_ScoreProc : System.Web.UI.Page
 	{
 		try
 		{
-			SqlCommand cmd = new SqlCommand();
-			cmd.Connection = oConnData;
-			if (oConnData.State == ConnectionState.Closed) oConnData.Open();
-			cmd.CommandType = CommandType.StoredProcedure;
-			cmd.CommandText = "spDEF__spScore_by_tblpk";
 
-			cmd.Parameters.Add("@tblpk", SqlDbType.Int);
-			cmd.Parameters["@tblpk"].Value = tblpk;
+			SQL_utils sql = new SQL_utils("data");
+			List<SqlParameter> ps = new List<SqlParameter>();
+			ps.Add(sql.CreateParam("tblpk", tblpk.ToString(), "int"));
 
-			SqlDataReader rdr = cmd.ExecuteReader();
 
-			DataTable dt = new DataTable();
-			dt.Load(rdr);
+			DataTable dt = sql.DataTable_from_ProcName("spDEF__spScore_by_tblpk", ps);
+			
+			
 
-			int i =0;
+			sql.Close();
+
+
+			int i = 0;
 			foreach (DataRow row in dt.Rows)
 			{
-				if (i==0) 
+				if (i == 0)
 				{
-				 lblTableName.Text =  Convert.ToString(row["tblname"]);
+					lblTableName.Text = Convert.ToString(row["tblname"]);
 					lblspName.Text = Convert.ToString(row["spName"]);
-					lblLength.Text = Convert.ToString(row["spTextHTML_Length"]); 
+					lblLength.Text = Convert.ToString(row["spTextHTML_Length"]);
+
+					foo.Text = "<pre class=\"prettyprint\">" + Convert.ToString(row["spTextHTML"]) + "</pre>";
 				}
 				i++;
 			}
 
-			gv_ScoreProc.DataSource = dt;
-			
-			gv_ScoreProc.DataBind();
+			//gv_ScoreProc.DataSource = dt;
+
+			//gv_ScoreProc.DataBind();
 
 
 
 		}
-		catch (SqlException )
+		catch (SqlException)
 		{
 
 		}
