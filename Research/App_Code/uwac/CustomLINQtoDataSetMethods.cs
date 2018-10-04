@@ -209,10 +209,12 @@ namespace uwac
 			{
 				if (!_ordinalMap.ContainsKey(p.Name))
 				{
-					// Add the property as a column in the table if it doesn't exist
-					// already.
+					// Add the property as a column in the table if it doesn't exist already.
+					//DataColumn dc = table.Columns.Contains(p.Name) ? table.Columns[p.Name]
+					//	: table.Columns.Add(p.Name, p.PropertyType);
 					DataColumn dc = table.Columns.Contains(p.Name) ? table.Columns[p.Name]
-						: table.Columns.Add(p.Name, p.PropertyType);
+						: table.Columns.Add(p.Name, (Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType));
+						
 
 					// Add the property to the ordinal map.
 					_ordinalMap.Add(p.Name, dc.Ordinal);

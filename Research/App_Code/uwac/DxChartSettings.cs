@@ -46,6 +46,7 @@ namespace uwac
 		private string _colorvar = "none";
 		private string _panelvar = "none";
 		private List<string> _numvars;
+		private PaneLayoutDirection _panesLayoutDirection = PaneLayoutDirection.Horizontal;
 
 		public DxChartType DxChartType { get { return _charttype; } set { _charttype = value; } }
 		public int W { get { return _W; } set { _W = value; } }
@@ -61,6 +62,7 @@ namespace uwac
 		public string colorvar { get { return _colorvar; } set { _colorvar = value; } }
 		public string panelvar { get { return _panelvar; } set { _panelvar = value; } }
 		public List<string> numvars { get { return _numvars; } set { _numvars = value; } }
+		public PaneLayoutDirection panesLayoutDirection { get { return _panesLayoutDirection; } set { _panesLayoutDirection = value; } }
 
 		private List<Color> _colors;
 

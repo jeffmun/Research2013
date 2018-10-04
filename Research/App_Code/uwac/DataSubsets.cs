@@ -72,58 +72,67 @@ namespace uwac
 
 		public List<DataSubset> CreateSubsets(DataTable dt, List<string> varnames, List<string> groupingvarnames)
 		{
+
+			bool boo1 = (groupingvarnames[0] == "none") ? false : true;
+			bool boo2 = (groupingvarnames.Count >= 1) ? true : false;
+
+			bool hasgroupingvars = (groupingvarnames[0] != "none" && groupingvarnames.Count >= 1) ? true : false;
 			_groupingvars = new List<Groupingvar>();
 			List<DataSubset> mysubsets = new List<DataSubset>();
-			try
+
+			if (hasgroupingvars)
 			{
-
-				//Create the list of GroupingVars
-				for (int g = 0; g < groupingvarnames.Count; g++)
+				try
 				{
-					string vtype = dt.Columns[groupingvarnames[g]].DataType.ToString().ToLower();
 
-					if (vtype != "string")
+					//Create the list of GroupingVars
+					for (int g = 0; g < groupingvarnames.Count; g++)
 					{
-						dt.ConvertColumnType(groupingvarnames[g], typeof(string));
+						string vtype = dt.Columns[groupingvarnames[g]].DataType.ToString().ToLower();
+
+						if (vtype != "string")
+						{
+							dt.ConvertColumnType(groupingvarnames[g], typeof(string));
+						}
+
+
+						List<string> unsorted_levels = dt.AsEnumerable().Select(f => f.Field<string>(groupingvarnames[g].ToString())).Distinct().ToList();
+						List<string> levels = unsorted_levels.OrderBy(x => x).ToList();
+
+						Groupingvar gv = new Groupingvar(groupingvarnames[g], levels);
+						_groupingvars.Add(gv);
 					}
 
 
-					List<string> unsorted_levels = dt.AsEnumerable().Select(f => f.Field<string>(groupingvarnames[g].ToString())).Distinct().ToList();
-					List<string> levels = unsorted_levels.OrderBy(x => x).ToList();
+					// from: http://www.scriptscoop.net/t/7516b362c821/c-c-linq-how-to-build-group-by-clause-dynamically.html
+					IEnumerable<string> columnsToGroupBy = groupingvarnames;
+					var groups = dt.AsEnumerable()
+								.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]))
+								.OrderBy(p => p.Key);
 
-					Groupingvar gv = new Groupingvar(groupingvarnames[g], levels);
-					_groupingvars.Add(gv);
-				}
-
-
-				// from: http://www.scriptscoop.net/t/7516b362c821/c-c-linq-how-to-build-group-by-clause-dynamically.html
-				IEnumerable<string> columnsToGroupBy = groupingvarnames;
-				var groups = dt.AsEnumerable()
-							.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]))
-							.OrderBy(p => p.Key);
-
-				//var groups = dt.AsEnumerable()
-				//	.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]));
+					//var groups = dt.AsEnumerable()
+					//	.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]));
 
 
-				foreach (var group in groups)
-				{
-					DataTable dtSub = group.CopyToDataTable();
-
-					List<string> keyvalues = new List<string>();
-					foreach (var s in group.Key.Values)
+					foreach (var group in groups)
 					{
-						keyvalues.Add(s.ToString());
+						DataTable dtSub = group.CopyToDataTable();
+
+						List<string> keyvalues = new List<string>();
+						foreach (var s in group.Key.Values)
+						{
+							keyvalues.Add(s.ToString());
+						}
+
+
+						DataSubset subset = new DataSubset(dtSub, groupingvarnames, keyvalues);
+						mysubsets.Add(subset);
 					}
-
-
-					DataSubset subset = new DataSubset(dtSub, groupingvarnames, keyvalues);
-					mysubsets.Add(subset);
 				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("ERROR! instantiating DataSubsets  Msg:" + ex.Message); // + "............." + ex.StackTrace.ToString());
+				catch (Exception ex)
+				{
+					throw new Exception("ERROR! instantiating DataSubsets  Msg:" + ex.Message); // + "............." + ex.StackTrace.ToString());
+				}
 			}
 			return mysubsets;
 		}
@@ -148,5 +157,7 @@ namespace uwac
 		}
 
 	}
+
+
 
 }

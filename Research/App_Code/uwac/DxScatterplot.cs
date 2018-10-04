@@ -80,18 +80,25 @@ namespace uwac
 				DataTableExtensions.Data_SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar, _settings.colorvar) :
 				DataTableExtensions.Data_SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar);
 
-			//note colors stored in the "seriesby" column as this is how SelectColumnXY works with just a single string overload
 			List<string> color_levels = (_settings.colorvar == "none") ? 
 				null : 
-				dataxy.AsEnumerable().Select(x => x.Field<string>("seriesby")).Distinct().ToList();
+				dataxy.AsEnumerable().Select(x => x.Field<string>(_settings.colorvar)).Distinct().ToList();
 
-			int colorindex = 0;
+			//int colorindex = 0;
 
 			if (dataxy.Rows.Count > 0)
 			{
 				//HACK!
-				_settings.xaxisvar = "x";
-				_settings.yaxisvar = "y";
+				//_settings.xaxisvar = "x";
+				//_settings.yaxisvar = "y";
+
+				if(_settings.jitter)
+				{
+					dataxy.JitterColumn(_settings.xaxisvar, _settings.jitteramtX);
+					dataxy.JitterColumn(_settings.yaxisvar, _settings.jitteramtY);
+				}
+
+
 
 
 				SeriesPoint[] seriesPoints = new DxSeriesPoints(dataxy, _settings.xaxisvar, _settings.yaxisvar
@@ -224,9 +231,17 @@ namespace uwac
 
 	public class DxScatterplotSettings : DxChartSettings
 	{
+		private List<string> _xvars;
+		private List<string> _yvars;
 		public bool _useMovAvg = false;
 		public int _movavgNumPts = 15;
 		public bool _showregline = false;
+		public bool _jitter = false;
+		public double _jitteramtX = 0;
+		public double _jitteramtY = 0;
+		public List<string> xvars { get { return _xvars; } set { _xvars = value; } }
+		public List<string> yvars { get { return _yvars; } set { _yvars = value; } }
+
 
 		public DxScatterplotSettings() {
 			SetChartType(DxChartType.Scatterplot);
@@ -249,6 +264,21 @@ namespace uwac
 		{
 			get { return _showregline; }
 			set { _showregline = value; }
+		}
+		public bool jitter
+		{
+			get { return _jitter; }
+			set { _jitter = value; }
+		}
+		public double jitteramtX
+		{
+			get { return _jitteramtX; }
+			set { _jitteramtX = value; }
+		}
+		public double jitteramtY
+		{
+			get { return (_jitteramtY == 0 ) ? _jitteramtX : _jitteramtY; }
+			set { _jitteramtY = value; }
 		}
 	}
 

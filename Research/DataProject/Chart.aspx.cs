@@ -138,10 +138,11 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 
 		PopulateDropdownItems(cboXaxisvarBAR, defaultvals);
-		PopulateDropdownItems(cboColorsvarBAR, new List<string> { "none", "timept", "group", "txgrp", "sex" });
+		PopulateDropdownItems(cboColorsvarBAR, new List<string> { "none", "variable","timept", "group", "txgrp", "sex" });
 		PopulateDropdownItems(cboPanelvarBAR, new List<string> { "none", "timept", "group", "txgrp", "sex" });
 
-		PopulateDropdownItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
+		//PopulateTokenboxItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
+		//PopulateTokenboxItems(cboYaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
 		PopulateDropdownItems(cboColorsvarSCAT, new List<string> { "none", "timept", "group", "txgrp", "sex" });
 		PopulateDropdownItems(cboPanelvarSCAT, new List<string> { "none", "timept", "group", "txgrp", "sex" });
 
@@ -155,11 +156,15 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 		cboColorsvarHIST.Value = "none";
 		cboPanelvarHIST.Value = "none";
+
+		cboXaxisvarBAR.Value = "variable";
 		cboColorsvarBAR.Value = "none";
 		cboPanelvarBAR.Value = "none";
+
 		cboColorsvarSCAT.Value = "none";
 		cboPanelvarSCAT.Value = "none";
 
+		cboXaxisvarLINE.Value = "variable";
 		cboColorsvarLINE.Value = "none";
 		cboPanelvarLINE.Value = "none";
 
@@ -171,7 +176,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		cboXTcol.Value = "group";
 
 		//ToggleTabVisible("tabVars", false);
-		ToggleTabVisible("tabPlots", false);
+		ToggleTabVisible("tabPlots", true);
 		ToggleTabVisible("tabTables", false);
 
 
@@ -314,7 +319,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			dpdata.textvars = selected_textvars;
 			dpdata.datevars = selected_datevars;
 
-			PopulateDropdownItems(cboXaxisvar, selected_textvars);
+			//PopulateDropdownItems(cboXaxisvar, selected_textvars);
 
 
 			PopulateDropdownItems(cboColorsvarHIST, selected_textvars);
@@ -340,9 +345,13 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			PopulateTokenboxItems(cboXTpanel, selected_textvars);
 
 
+			PopulateTokenboxItems(cboXaxisvarSCAT, selected_numvars);
+			PopulateTokenboxItems(cboYaxisvarSCAT, selected_numvars);
+
 
 			//LoadDxChartSettings(dxchart);
 			//LoadColors();
+			GetColors();
 		}
 
 
@@ -1267,24 +1276,25 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		string panelvarBAR = chart_vars[4];
 
 		string xaxisvarSCAT = chart_vars[5];
-		string colorsvarSCAT = chart_vars[6];
-		string panelvarSCAT = chart_vars[7];
+		string yaxisvarSCAT = chart_vars[6];
+		string colorsvarSCAT = chart_vars[7];
+		string panelvarSCAT = chart_vars[8];
 
-		string xaxisvarLINE = chart_vars[8];
-		string colorsvarLINE = chart_vars[9];
-		string panelvarLINE = chart_vars[10];
+		string xaxisvarLINE = chart_vars[9];
+		string colorsvarLINE = chart_vars[10];
+		string panelvarLINE = chart_vars[11];
 
-		string xtrowvar = chart_vars[11];
-		string xtcolvar = chart_vars[12];
-		string xtpanelvar = chart_vars[13];
+		string xtrowvar = chart_vars[12];
+		string xtcolvar = chart_vars[13];
+		string xtpanelvar = chart_vars[14];
 
-		string colorsvarPCA = chart_vars[14];
+		string colorsvarPCA = chart_vars[15];
 
 		callbackCharts.Controls.Clear();
 
 		CreateCharts( colorsvarHIST, panelvarHIST
 			, xaxisvarBAR, colorsvarBAR, panelvarBAR
-			, xaxisvarSCAT, colorsvarSCAT, panelvarSCAT
+			, xaxisvarSCAT, yaxisvarSCAT, colorsvarSCAT, panelvarSCAT
 			, xaxisvarLINE, colorsvarLINE, panelvarLINE
 			, xtrowvar, xtcolvar, xtpanelvar
 			, colorsvarPCA
@@ -1407,30 +1417,30 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	#region Create Charts
 
 
-	protected void UpdateGroupingvars()
-	{
+	//protected void UpdateGroupingvars()
+	//{
 
-		List<string> groupingvars = new List<string>();
-		if (cboXaxisvar.Value.ToString() != "Variable" && cboXaxisvar.Value != null) groupingvars.Add(cboXaxisvar.Value.ToString());
-		if (cboColorsvar.Value.ToString() != "Variable" && cboColorsvar.Value.ToString() != "none" && cboColorsvar.Value != null) groupingvars.Add(cboColorsvar.Value.ToString());
-		if (cboPanelvar.Value.ToString() != "Variable" && cboPanelvar.Value.ToString() != "none" && cboPanelvar.Value != null) groupingvars.Add(cboPanelvar.Value.ToString());
+	//	List<string> groupingvars = new List<string>();
+	//	if (cboXaxisvar.Value.ToString() != "Variable" && cboXaxisvar.Value != null) groupingvars.Add(cboXaxisvar.Value.ToString());
+	//	if (cboColorsvar.Value.ToString() != "Variable" && cboColorsvar.Value.ToString() != "none" && cboColorsvar.Value != null) groupingvars.Add(cboColorsvar.Value.ToString());
+	//	if (cboPanelvar.Value.ToString() != "Variable" && cboPanelvar.Value.ToString() != "none" && cboPanelvar.Value != null) groupingvars.Add(cboPanelvar.Value.ToString());
 
-		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+	//	List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
 
-		if (txtvars.Count > 0) groupingvars.AddRange(txtvars);
+	//	if (txtvars.Count > 0) groupingvars.AddRange(txtvars);
 
-		groupingvars = groupingvars.Distinct().ToList();
+	//	groupingvars = groupingvars.Distinct().ToList();
 
-		//Always create DataSubsets
-		//dpdata.groupingvars = groupingvars;
-		//dpdata.CreateDataSubsets();
+	//	//Always create DataSubsets
+	//	//dpdata.groupingvars = groupingvars;
+	//	//dpdata.CreateDataSubsets();
 
-	}
+	//}
 
 
 	protected void CreateCharts(string colorsvarHIST, string panelvarHIST
 			, string xaxisvarBAR, string colorsvarBAR, string panelvarBAR
-			, string xaxisvarSCAT, string colorsvarSCAT, string panelvarSCAT
+			, string xaxisvarSCAT, string yaxisvarSCAT, string colorsvarSCAT, string panelvarSCAT
 			, string xaxisvarLINE, string colorsvarLINE, string panelvarLINE
 			, string xtrowvar, string xtcolvar, string xtpanelvar
 			, string colorsvarPCA)
@@ -1449,6 +1459,8 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		//addtoPDF(complink, SelectedVars_GridView());
 
 
+
+
 		//Then depending on what is selected create the specific charts
 		if (plots.Contains("Scatterplot")) //&& plots.Count == 1)
 		{
@@ -1465,6 +1477,20 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			settings.showregline = chkRegline.Checked;
 			settings.useMovAvg = chkMovingAvg.Checked;
 			settings.colors = GetColors();
+			settings.colorvar = cboColorsvarSCAT.Value.ToString();
+
+			if(chkJitter.Checked)
+			{
+				settings.jitter = true;
+
+				double amtx;
+				if (Double.TryParse((txtJitterAmtX.Text), out amtx)) settings.jitteramtX = amtx;
+				double amty;
+				if (Double.TryParse((txtJitterAmtY.Text), out amty)) settings.jitteramtY = amty;
+
+
+			}
+
 
 			settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 			
@@ -1483,6 +1509,52 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 
 		}
+
+
+		if (plots.Contains("Barchart")) //&& plots.Count == 1)
+		{
+			string colvar1 = colorsvarBAR;
+			string colvar2 = cboColorsvarBAR.Value.ToString();
+
+			DxBarchartSettings settings = new DxBarchartSettings();
+			settings.W = Convert.ToInt32(trackWbar.Position);
+			settings.H = Convert.ToInt32(trackHbar.Position);
+
+			settings.xaxisvar = xaxisvarBAR;
+			settings.colorvar = colorsvarBAR;
+			settings.panelvar = panelvarBAR;
+
+			settings.colors = GetColors();
+
+			settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+
+
+			//	numvars = numvars.ConvertAll(x => x.ToLower());
+			//	numvars.Add("id"); //Add ID so that points can be identified
+
+			DxChartFactory chartfactory = new DxChartFactory(DxChartType.Barchart, settings, dpdata.dt);
+
+			//CreateScatterplots(xaxisvarSCAT, colorsvarSCAT, panelvarSCAT);
+
+			foreach (DxChart basechart in chartfactory.charts)
+			{
+				DxBarchart chart = (DxBarchart)basechart;
+				callbackCharts.Controls.Add(chart.chart);
+
+				if(chkStatsTable.Checked)
+				{
+					ASPxGridView grid = new ASPxGridView();
+					grid.SettingsPager.PageSize = 30;
+					grid.DataSource = chart.statstable.dt;
+					grid.DataBind();
+					callbackCharts.Controls.Add(grid);
+				}
+			}
+
+
+		}
+
+
 		//if (plots.Contains("PCA")) //&& plots.Count == 1)
 		//{
 		//	CreatePCA(colorsvarPCA,  complink);

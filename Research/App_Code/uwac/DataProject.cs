@@ -165,10 +165,10 @@ namespace uwac.data
 
 
 		private string CreateTxgrpCode(int studyID){
-			string txgrp_code = " '' txgrp, ";
+			string txgrp_code = " ";
 
 			// Tadpole
-			if (studyID==1076 | studyID==1077) txgrp_code = " txstyle, txintensity, coalesce(txgrp, '**NA**') txgrp, ";
+			if (studyID==1076 | studyID==1077) txgrp_code = " txprop1value as txstyle, txprop2value as txintensity, coalesce(txgrp, '**NA**') txgrp, ";
 			// TAP
 			else if (studyID==1065 | studyID == 1011 | studyID == 1015 | studyID == 1022 | studyID == 1030) txgrp_code = " coalesce(txgrp, '**NA**') txgrp, ";
 			// Path
@@ -182,7 +182,7 @@ namespace uwac.data
 
 		private string CreateStartdateCode(int studyID)
 		{
-			string startdate_code = " '' startdate, ";
+			string startdate_code = " ";
 
 			List<int> tx_studies = new List<int> { 1011, 1015, 1022, 1030, 1039, 1073, 1065, 1072, 1076, 1077 };
 
@@ -208,10 +208,10 @@ namespace uwac.data
 
 			_sqlcode_subj = String.Format(Environment.NewLine + " /*SUBJECTS*/ ( select ref_id, studyname, timept, a1.id, [group], {0} " + Environment.NewLine +
 				"  subjstatus, subjstatusdetail, sex, race, ethnicity " + Environment.NewLine +
-				" , subjNotes, {1} a1.personID, a1.subjID, studyID  " + Environment.NewLine +
+				" , {1} a1.personID, a1.subjID, studyID  " + Environment.NewLine +
 				" fROM ( " + Environment.NewLine +
 				"    select  dp.fnRef_ID({2}, personID) as ref_id " + Environment.NewLine +
-				"    , * from vwMasterStatus_S_txgrp_wTimept " + Environment.NewLine +
+				"    , * from uwautism_research_backend.trk.vwMasterStatus_S_wTimept   " + Environment.NewLine +
 				"    where timepointID in " + Environment.NewLine +
 				"           (select distinct(timepointID) from dp.Meas m1 " + Environment.NewLine +
 				"             JOIN uwautism_research_backend..tblStudymeas m2 ON m1.studymeasID = m2.studymeasID " + Environment.NewLine +

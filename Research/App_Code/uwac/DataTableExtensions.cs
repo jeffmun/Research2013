@@ -40,6 +40,86 @@ namespace uwac
 			}
 		}
 
+		public static void JitterColumn(this DataTable dt, string columnName, double amt)
+		{
+			Random random = new Random(Guid.NewGuid().GetHashCode());
+
+
+			using (DataColumn dc = new DataColumn(columnName + "_new", typeof(double) ))
+			{
+				// Add the new column which has the new type, and move it to the ordinal of the old column
+				int ordinal = dt.Columns[columnName].Ordinal;
+				dt.Columns.Add(dc);
+				dc.SetOrdinal(ordinal);
+
+				// Get and convert the values of the old column, and insert them into the new
+				foreach (DataRow dr in dt.Rows)
+				{
+					double rand = random.NextDouble();
+					double jit = (rand * (2.0 * amt)) - amt;
+					double orig = Convert.ToDouble(dr[columnName]);
+
+					dr[dc.ColumnName] = orig + jit;
+				}
+				// Remove the old column
+				dt.Columns.Remove(columnName);
+
+				// Give the new column the old column's name
+				dc.ColumnName = columnName;
+			}
+		}
+
+
+		public static List<string> ColumnNames(this DataTable dt)
+		{
+			List<string> colnames = new List<string>();
+
+			foreach (DataColumn col in dt.Columns)
+			{
+				colnames.Add(col.ColumnName);
+			}
+			return colnames;
+		}
+
+
+		public static void DebugTable(this DataTable table)
+		{
+			Debug.WriteLine("--- DebugTable(" + table.TableName + ") ---");
+			int zeilen = table.Rows.Count;
+			int spalten = table.Columns.Count;
+
+			// Header
+			for (int i = 0; i < table.Columns.Count; i++)
+			{
+				string s = table.Columns[i].ToString();
+				Debug.Write(String.Format("{0,-20} | ", s));
+			}
+			Debug.Write(Environment.NewLine);
+			for (int i = 0; i < table.Columns.Count; i++)
+			{
+				Debug.Write("---------------------|-");
+			}
+			Debug.Write(Environment.NewLine);
+
+			// Data
+			for (int i = 0; i < zeilen; i++)
+			{
+				DataRow row = table.Rows[i];
+				//Debug.WriteLine("{0} {1} ", row[0], row[1]);
+				for (int j = 0; j < spalten; j++)
+				{
+					string s = row[j].ToString();
+					if (s.Length > 20) s = s.Substring(0, 17) + "...";
+					Debug.Write(String.Format("{0,-20} | ", s));
+				}
+				Debug.Write(Environment.NewLine);
+			}
+			for (int i = 0; i < table.Columns.Count; i++)
+			{
+				Debug.Write("---------------------|-");
+			}
+			Debug.Write(Environment.NewLine);
+		}
 
 
 		//// Data
@@ -206,6 +286,9 @@ namespace uwac
 
 				DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
 
+				data.Columns["x"].ColumnName = xvar;
+				data.Columns["y"].ColumnName = yvar;
+
 				return data;
 			}
 			else
@@ -219,7 +302,8 @@ namespace uwac
 				});
 
 				DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-
+				data.Columns["x"].ColumnName = xvar;
+				data.Columns["y"].ColumnName = yvar;
 				return data;
 			}
 		}
@@ -280,6 +364,7 @@ namespace uwac
 
 			if (data != null)
 			{
+				data.Columns["seriesby"].ColumnName = seriesby; 
 				data.Columns["x"].ColumnName = xvar;
 				data.Columns["y"].ColumnName = yvar;
 			}
@@ -393,6 +478,103 @@ namespace uwac
 		}
 
 
+
+
+		public static DataTable StackData(DataTable dt, List<string> vars_to_keep, List<string> vars_to_stack)
+		{
+			//returns a DataTable in which the vars_to_stack become represented in a "Variable" and "Value" column
+			List<DataTable> dts = new List<DataTable>();
+			foreach (string v in vars_to_stack)
+			{
+				DataTable dt_for_var = new DataTable();
+				dt_for_var = GetDataTable_for_Variable(dt, vars_to_keep.ToArray<string>(), v);
+
+				dts.Add(dt_for_var);
+
+			}
+
+			DataTable dtStacked = new DataTable();
+			dtStacked = AddRows(dts);
+
+			return dtStacked;
+		}
+
+
+		//public DataTable GetDataTable_for_Variable(IEnumerable<DataRow> rows, string[] fields_to_keep, string var_to_stack)
+		public static DataTable GetDataTable_for_Variable(DataTable dt, string[] fields_to_keep, string var_to_stack)
+		{
+			DataTable retVal = new DataTable();
+
+			foreach (DataColumn col in dt.Columns)
+			{
+				if (fields_to_keep.Contains(col.ColumnName))
+				{
+					retVal.Columns.Add(col.ColumnName, col.DataType);
+				}
+			}
+			retVal.Columns.Add("Variable", typeof(string));
+			retVal.Columns.Add("Value", typeof(double));
+
+
+			foreach (DataRow curRow in dt.Rows)
+			{
+				//    if (retVal.Columns.Count < 0)
+				//    {
+				//        for (int i = 0; i < fields_to_keep.Length; i++)
+				//        {
+				//            if (!curRow.IsNull(fields_to_keep[i]))
+				//            {
+				//                retVal.Columns.Add(fields_to_keep[i], curRow[fields_to_keep[i]].GetType());
+				//            }
+				//            else
+				//            {
+				//                // try to find the source columns type...
+				//            }
+				//        }
+				//    }
+
+				//    retVal.Columns.Add("Variable", typeof(string));
+				//    retVal.Columns.Add("Value", typeof(double));
+
+
+				DataRow newRow = retVal.NewRow();
+
+				for (int i = 0; i < fields_to_keep.Length; i++)
+				{
+					if (!curRow.IsNull(fields_to_keep[i]))
+					{
+						var thevalue = curRow[fields_to_keep[i]];
+						newRow[fields_to_keep[i]] = curRow[fields_to_keep[i]];
+					}
+				}
+
+				newRow["Variable"] = var_to_stack;
+				newRow["Value"] = curRow[var_to_stack];
+
+
+				retVal.Rows.Add(newRow);
+			}
+
+			return retVal;
+		}
+
+
+		public static DataTable AddRows(List<DataTable> dts)
+		{
+			DataTable dtStacked = new DataTable();
+			for (int i = 0; i < dts.Count; i++)
+			{
+				if (i == 0)
+				{
+					dtStacked = dts[0]; //set the first table 
+				}
+				else
+				{
+					dtStacked.Merge(dts[i]);
+				}
+			}
+			return dtStacked;
+		}
 
 		public static void log(string s)
 		{

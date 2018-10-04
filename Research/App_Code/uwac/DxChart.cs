@@ -67,6 +67,12 @@ namespace uwac
 
 
 		#region Titles
+		public void AddTitles(string main)
+		{
+			List<string> subs = new List<string>();
+			subs = null;
+			AddTitles(main, subs, null, null , 10f);
+		}
 		public void AddTitles( string main, string sub, string x, string y)
 		{
 			AddTitles( main, new List<string>() { sub }, x, y, 10f);
@@ -77,7 +83,7 @@ namespace uwac
 		}
 		public void AddTitles(string main, List<string> sub, string x, string y, float fontsize)
 		{
-			string mainTitle_subtitles = String.Join("; ", sub);
+			string mainTitle_subtitles = (sub == null) ? "" :  String.Join("; ", sub);
 
 			Font fnt_main = new Font("Arial", fontsize);
 			Font fnt_x = new Font("Arial", fontsize);
@@ -90,18 +96,22 @@ namespace uwac
 				//Indent = 20
 			};
 
-			ChartTitle xTitle = new ChartTitle() { Text = x, Dock = ChartTitleDockStyle.Bottom };
-			ChartTitle yTitle = new ChartTitle() { Text = y, Dock = ChartTitleDockStyle.Left };
-
 			mainTitle.Font = fnt_main;
-			xTitle.Font = fnt_x;
-			yTitle.Font = fnt_y;
-
 			mainTitle.Alignment = StringAlignment.Near;
-
 			_chart.Titles.Add(mainTitle);
-			_chart.Titles.Add(xTitle);
-			_chart.Titles.Add(yTitle);
+
+			if (x != null)
+			{
+				ChartTitle xTitle = new ChartTitle() { Text = x, Dock = ChartTitleDockStyle.Bottom };
+				xTitle.Font = fnt_x;
+				_chart.Titles.Add(xTitle);
+			}
+			if (y != null)
+			{
+				ChartTitle yTitle = new ChartTitle() { Text = y, Dock = ChartTitleDockStyle.Left };
+				yTitle.Font = fnt_y;
+				_chart.Titles.Add(yTitle);
+			}
 
 		}
 		#endregion

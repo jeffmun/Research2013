@@ -126,6 +126,7 @@
 				RefreshSelectedVars2(selectedVals, cboPanelvarBAR);
 
 				RefreshSelectedVars2(selectedVals, cboXaxisvarSCAT);
+				RefreshSelectedVars2(selectedVals, cboYaxisvarSCAT);
 				RefreshSelectedVars2(selectedVals, cboColorsvarSCAT);
 				RefreshSelectedVars2(selectedVals, cboPanelvarSCAT);
 
@@ -182,6 +183,7 @@
 				var varpanelBAR = cboPanelvarBAR.GetValue();
 
 				var varxaxisSCAT = cboXaxisvarSCAT.GetValue();
+				var varyaxisSCAT = cboYaxisvarSCAT.GetValue();
 				var varcolorsSCAT = cboColorsvarSCAT.GetValue();
 				var varpanelSCAT = cboPanelvarSCAT.GetValue();
 
@@ -198,7 +200,7 @@
 
 				var params =                   varcolorsHIST + "," + varpanelHIST +
 					"," + varxaxisBAR + ","  + varcolorsBAR  + "," + varpanelBAR +
-					"," + varxaxisSCAT + "," + varcolorsSCAT + "," + varpanelSCAT +
+					"," + varxaxisSCAT + "," + varyaxisSCAT + "," + varcolorsSCAT + "," + varpanelSCAT +
 					"," + varxaxisLINE + "," + varcolorsLINE + "," + varpanelLINE +
 					"," + varXTrow + "," + varXTcol + "," + varXTpanel + 
 					"," + varcolorsPCA ;
@@ -246,6 +248,27 @@
 				//callbackMissing.PerformCallback("foo2");
 			}
 
+			function ShowJitterAmounts(e) {
+				if (txtJitterAmtX.GetVisible() == true) {
+					txtJitterAmtX.SetVisible(false);
+				} else {
+					txtJitterAmtX.SetVisible(true);
+				}
+				if (txtJitterAmtY.GetVisible() == true) {
+					txtJitterAmtY.SetVisible(false);
+				} else {
+					txtJitterAmtY.SetVisible(true);
+				}
+			}
+
+			
+			function ShowPtsCount(e) {
+				if (txtPtsCount.GetVisible() == true) {
+					txtPtsCount.SetVisible(false);
+				} else {
+					txtPtsCount.SetVisible(true);
+				}
+			}
 
 			function btnViewSettings_ClientClick() {
 				if (tabSettings.GetVisible() == true) {
@@ -660,7 +683,7 @@
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl1" runat="server" Width="600px">
 
-						<table>
+					<%--	<table>
 							<tr>
 								<td>
 									X axis:<br />
@@ -678,7 +701,7 @@
 								</td>
 								<td style="width: 200px"></td>
 							</tr>
-						</table>
+						</table>--%>
 						<br />
 						<table>
 							<tr>
@@ -825,12 +848,14 @@
 											</td>
 										</tr>
 									</table>
+									<br />
 								</td>
 								<td style="vertical-align: top; padding: 5px">
 									<table>
 										<tr>
 											<td style="padding: 5px:">
-												<dx:ASPxComboBox ID="cboXaxisvarSCAT" runat="server" Caption="X axis:"  CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+												<dx:ASPxTokenBox ID="cboXaxisvarSCAT" runat="server" Caption="X axis vars:"  CaptionSettings-Position="Left" ClientInstanceName="cboXaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxTokenBox>
+												<dx:ASPxTokenBox ID="cboYaxisvarSCAT" runat="server" Caption="Y axis vars:"  CaptionSettings-Position="Left" ClientInstanceName="cboYaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxTokenBox>
 
 											</td>
 											<td style="padding: 5px:">
@@ -844,22 +869,59 @@
 										</tr>
 									</table>
 									<br />
-									<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
-									<br />
 
 									<table>
 										<tr>
 											<td>
-												<dx:ASPxCheckBox ID="chkMovingAvg" runat="server" ClientInstanceName="chkMovingAvg" Text="Show moving avg?"></dx:ASPxCheckBox>
+												<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
 											</td>
 											<td style="padding: 5px">
-												<dx:ASPxTextBox ID="txtPtsCount" runat="server" Text="15" Caption="# pts:"  Width="40px" >
-												<%--<MaskSettings  Mask="###" />--%>
-												<ValidationSettings RegularExpression-ValidationExpression="[0-9]{1,3}" SetFocusOnError="True"
+												<dx:ASPxCheckBox ID="chkMovingAvg" runat="server" ClientInstanceName="chkMovingAvg" Text="Show moving avg?">
+													<ClientSideEvents ValueChanged="ShowPtsCount" />
+												</dx:ASPxCheckBox>
+											</td>
+											<td style="padding: 5px; width:200px">
+												<dx:ASPxCheckBox ID="chkJitter" runat="server" ClientInstanceName="chkMovingAvg" Text="Add jitter?">
+													<ClientSideEvents ValueChanged="ShowJitterAmounts" />
+												</dx:ASPxCheckBox>
+											</td>
+											<td style="padding: 5px">
+
+											</td>
+										</tr>
+										<tr>
+											<td style="padding: 5px">
+												</td>
+											<td style="padding: 5px">
+												<dx:ASPxTextBox ID="txtPtsCount" ClientInstanceName="txtPtsCount" runat="server" Text="15" Caption="# pts:"  Width="40px" ClientVisible="False" >
+													<ValidationSettings RegularExpression-ValidationExpression="[0-9]{1,3}" SetFocusOnError="True"
 													RegularExpression-ErrorText="Enter a number."
 													Display="Dynamic" ErrorTextPosition="Right" />
 												</dx:ASPxTextBox>
-											</td>
+												</td>
+											<td style="padding: 5px">
+												<table>
+													<tr>
+														<td>
+															<dx:ASPxTextBox ID="txtJitterAmtX" ClientInstanceName="txtJitterAmtX" runat="server" Text="0" Caption="Jitter amount (+/-) x:"  Width="40px" ClientVisible="false" >
+															<ValidationSettings RegularExpression-ValidationExpression="(?:\d*\.\d{1,2}|\d+)$" SetFocusOnError="True"
+																RegularExpression-ErrorText="Enter a number"
+																Display="Dynamic" ErrorTextPosition="Bottom" />
+															</dx:ASPxTextBox>
+
+														</td>
+														<td>
+															&nbsp;&nbsp;
+															<dx:ASPxTextBox ID="txtJitterAmtY" ClientInstanceName="txtJitterAmtY" runat="server" Text="0" Caption=" y:"  Width="40px"  ClientVisible="false" >
+															<ValidationSettings RegularExpression-ValidationExpression="(?:\d*\.\d{1,2}|\d+)$" SetFocusOnError="True"
+																RegularExpression-ErrorText="Enter a number"
+																Display="Dynamic" ErrorTextPosition="Bottom" />
+															</dx:ASPxTextBox>
+														</td>
+													</tr>
+												</table>
+
+												</td>
 										</tr>
 									</table>
 									<br />

@@ -564,7 +564,7 @@
 
 	<%--SQL Data Sources--%>
 	<asp:SqlDataSource ID="sqlS" runat="server" SelectCommandType="Text"  
-		SelectCommand="EXEC sec.spSetUserContext @netid; select '-select ID-' as ID union select ID from trk.vwMasterStatus_S where studyID=@studyID"
+		SelectCommand="EXEC sec.spSetUserContext @netid; select '-select ID-' as ID union select ID from trk.vwMasterStatus_S2 where studyID=@studyID"
 		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
 		<SelectParameters>
 			<asp:SessionParameter SessionField="netid" Name="netid" DbType="string" />
