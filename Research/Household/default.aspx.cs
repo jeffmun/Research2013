@@ -17,7 +17,7 @@ using uwac;
 
 namespace Household
 {
-	public partial class _default : System.Web.UI.Page
+	public partial class _default : BasePage //System.Web.UI.Page
 	{
 		private TextFormatter oFormatter = new TextFormatter();
 		private ReadConfig oConfig = new ReadConfig();

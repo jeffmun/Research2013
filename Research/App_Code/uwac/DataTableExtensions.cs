@@ -402,76 +402,96 @@ namespace uwac
 
 		public static DataTable Data_SelectColumnXY(DataTable mydt, string xvar, string yvar, string seriesby, string colorsby)
 		{
-			var coltypeX = mydt.Columns[xvar].DataType;
-			var coltypeY = mydt.Columns[yvar].DataType;
-
-			if (colorsby == "none")
-			{ colorsby = seriesby; }
-			else
+			try
 			{
-				var coltypeColors = mydt.Columns[colorsby].DataType;
-				if (coltypeColors.Name.ToLower() != "string")
+				var coltypeX = mydt.Columns[xvar].DataType;
+				var coltypeY = mydt.Columns[yvar].DataType;
+
+				if (colorsby == "none")
 				{
-					mydt.ConvertColumnType(colorsby, typeof(string));
+					//colorsby = seriesby; 
+					bool has_none = false;
+					foreach (DataColumn col in mydt.Columns)
+					{
+						if (col.ColumnName == "none") has_none = true;
+					}
+					if (!has_none)
+					{
+						DataColumn col = new DataColumn() { ColumnName = "none", DataType = typeof(string) };
+						col.DefaultValue = "none";
+						mydt.Columns.Add(col);
+					}
+				}
+				else
+				{
+					var coltypeColors = mydt.Columns[colorsby].DataType;
+					if (coltypeColors.Name.ToLower() != "string")
+					{
+						mydt.ConvertColumnType(colorsby, typeof(string));
+					}
+				}
+
+
+				if (coltypeX.Name.ToLower() == "datetime")
+				{
+					var qry = mydt.AsEnumerable()
+						.Where(f => f.Field<DateTime?>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						seriesby = r.Field<string>(seriesby),
+						colorsby = r.Field<string>(colorsby.ToString()),
+						id = r.Field<string>("id"),
+						x = r.Field<DateTime>(xvar),
+						y = r.Field<double>(yvar)
+					});
+
+					DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+					return data;
+				}
+
+				else if (coltypeX.Name.ToLower() == "string")
+				{
+					var qry = mydt.AsEnumerable()
+						.Where(f => f.Field<string>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						seriesby = r.Field<string>(seriesby),
+						colorsby = r.Field<string>(colorsby).ToString(),
+						id = r.Field<string>("id"),
+						x = r.Field<string>(xvar),
+						y = r.Field<double>(yvar)
+					})
+					.OrderBy(o => o.x)
+					.ThenBy(o => o.id);
+
+					DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+					return data;
+				}
+				else if (coltypeX.Name.ToLower() == "double")
+				{
+					var qry = mydt.AsEnumerable()
+						.Where(f => f.Field<double?>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						seriesby = r.Field<string>(seriesby),
+						colorsby = r.Field<string>(colorsby),
+						id = r.Field<string>("id"),
+						x = r.Field<double>(xvar),
+						y = r.Field<double>(yvar)
+					});
+
+					DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+					return data;
+				}
+				else
+				{
+					return null;
 				}
 			}
-
-
-			if (coltypeX.Name.ToLower() == "datetime")
-			{
-				var qry = mydt.AsEnumerable()
-					.Where(f => f.Field<DateTime?>(xvar) != null && f.Field<double?>(yvar) != null)
-				.Select(r => new
-				{
-					seriesby = r.Field<string>(seriesby),
-					colorsby = r.Field<string>(colorsby.ToString()),
-					id = r.Field<string>("id"),
-					x = r.Field<DateTime>(xvar),
-					y = r.Field<double>(yvar)
-				});
-
-				DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-
-				return data;
-			}
-
-			else if (coltypeX.Name.ToLower() == "string")
-			{
-				var qry = mydt.AsEnumerable()
-					.Where(f => f.Field<string>(xvar) != null && f.Field<double?>(yvar) != null)
-				.Select(r => new
-				{
-					seriesby = r.Field<string>(seriesby),
-					colorsby = r.Field<string>(colorsby).ToString(),
-					id = r.Field<string>("id"),
-					x = r.Field<string>(xvar),
-					y = r.Field<double>(yvar)
-				})
-				.OrderBy(o => o.x)
-				.ThenBy(o => o.id);
-
-				DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-
-				return data;
-			}
-			else if (coltypeX.Name.ToLower() == "double")
-			{
-				var qry = mydt.AsEnumerable()
-					.Where(f => f.Field<double?>(xvar) != null && f.Field<double?>(yvar) != null)
-				.Select(r => new
-				{
-					seriesby = r.Field<string>(seriesby),
-					colorsby = r.Field<string>(colorsby),
-					id = r.Field<string>("id"),
-					x = r.Field<double>(xvar),
-					y = r.Field<double>(yvar)
-				});
-
-				DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-
-				return data;
-			}
-			else
+			catch(Exception ex)
 			{
 				return null;
 			}
@@ -512,8 +532,8 @@ namespace uwac
 					retVal.Columns.Add(col.ColumnName, col.DataType);
 				}
 			}
-			retVal.Columns.Add("Variable", typeof(string));
-			retVal.Columns.Add("Value", typeof(double));
+			retVal.Columns.Add("variable", typeof(string));
+			retVal.Columns.Add("value", typeof(double));
 
 
 			foreach (DataRow curRow in dt.Rows)
@@ -548,8 +568,8 @@ namespace uwac
 					}
 				}
 
-				newRow["Variable"] = var_to_stack;
-				newRow["Value"] = curRow[var_to_stack];
+				newRow["variable"] = var_to_stack;
+				newRow["value"] = curRow[var_to_stack];
 
 
 				retVal.Rows.Add(newRow);

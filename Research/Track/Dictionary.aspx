@@ -27,8 +27,14 @@
     function GotSelectedValues(selectedValues)
     {
         gridDict.PerformCallback(selectedValues);
-
     }
+
+    function onFocusedCellChanging(s, e) 
+    {
+        if (e.cellInfo.column.name == 'command') e.cancel = true;
+        else if (e.cellInfo.column.fieldName == 'datatype' && e.cellInfo.rowVisibleIndex > -1) e.cancel = true; 
+    }
+
 
 </script>
 
@@ -64,20 +70,25 @@
                 <br />
 
                 <dx:ASPxGridView ID="gridDict" ClientInstanceName="gridDict" runat="server" KeyFieldName="fldpk" 
-                    Settings-ShowFilterRow="true"  Settings-ShowFilterRowMenu="true"
+                    Settings-ShowFilterRow="true"  Settings-ShowFilterRowMenu="true" AllowAddingRecords="true"
                     OnCustomCallback="gridDict_CustomCallback"  
-                    OnDataBinding="gridDict_DataBinding" OnHtmlRowPrepared="gridDict_HtmlRowPrepared">
+                    OnDataBinding="gridDict_DataBinding" OnHtmlRowPrepared="gridDict_HtmlRowPrepared" 
+                    OnRowInserting="gridDict_OnRowInserting" OnRowUpdating="gridDict_OnRowUpdating">
                     <Styles>
                         <AlternatingRow BackColor="WhiteSmoke"></AlternatingRow>
                     </Styles>
                     <SettingsPager PageSize="50" Summary-Visible="true" AlwaysShowPager="true" >
                         <PageSizeItemSettings Visible="true" Items="20,50,100,200" ShowAllItem="true" />
                     </SettingsPager>
+                    <SettingsEditing Mode="EditForm"></SettingsEditing>
+                    <ClientSideEvents FocusedCellChanging="onFocusedCellChanging" />
+
                 <Columns>
                     <dx:GridViewDataColumn FieldName="fldpk" CellStyle-ForeColor="Silver" Visible="false" ReadOnly="true"></dx:GridViewDataColumn>
+                    <dx:GridViewCommandColumn ShowEditButton="true" ShowNewButtonInHeader="true" />
                     <dx:GridViewDataColumn FieldName="ord_pos" Caption="Position"  CellStyle-ForeColor="Silver" Width="70px"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fldname" Caption="Field Name" CellStyle-Font-Bold="true"></dx:GridViewDataColumn>
-                    <dx:GridViewDataColumn FieldName="datatype" Caption="Data Type" Width="100px"></dx:GridViewDataColumn>
+                    <dx:GridViewDataColumn FieldName="datatype" Caption="Data Type" Width="100px" ></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fielddatatype" Visible="false"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fielddatatypelength" Visible="false"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label"></dx:GridViewDataColumn>
@@ -86,6 +97,38 @@
                     <dx:GridViewDataTextColumn FieldName="valuelabels" Caption="Value Labels" PropertiesTextEdit-EncodeHtml="false" CellStyle-ForeColor="Gray"></dx:GridViewDataTextColumn>
                     
                 </Columns>
+                <EditFormLayoutProperties ColCount="2" >
+                    <Items>
+                        <dx:GridViewColumnLayoutItem ColumnName="fldname" ColumnSpan="1" Width="40%" />
+                        <dx:GridViewLayoutGroup ColCount="4" ColumnSpan="1" Caption="Field settings">
+                            <Items>
+
+                                <dx:GridViewColumnLayoutItem ColumnName="ord_pos"  ColumnSpan="1"/>
+                                <dx:GridViewColumnLayoutItem ColumnName="fielddatatype" Caption="Data type" ColumnSpan="1">
+                                    <Template>
+                                        <dx:ASPxComboBox ID="cbofielddatatype" runat="server" Text='<%# Bind("fielddatatype") %>' Width="75px" >
+                                            <Items>
+                                                <dx:ListEditItem Value="int" />
+                                                <dx:ListEditItem Value="float" />
+                                                <dx:ListEditItem Value="varchar" />
+                                                <dx:ListEditItem Value="date" />
+                                                <dx:ListEditItem Value="datetime" />
+                                            </Items>
+                                        </dx:ASPxComboBox>
+                                    </Template>
+                                </dx:GridViewColumnLayoutItem>
+                                <dx:GridViewColumnLayoutItem ColumnName="fielddatatypelength" Caption="Length" ColumnSpan="1"/>
+                                <dx:GridViewColumnLayoutItem ColumnName="missval" Caption="Miss Val" ColumnSpan="1"/>
+                            </Items>
+                        </dx:GridViewLayoutGroup>
+
+
+
+                        <dx:GridViewColumnLayoutItem ColumnName="fieldlabel" ColumnSpan="2"/>
+                        <dx:GridViewColumnLayoutItem ColumnName="fieldvaluesetID" Caption="Field value set ID" Width="150px" />
+                        <dx:EditModeCommandLayoutItem Width="100%" HorizontalAlign="Right" />
+                    </Items>
+                </EditFormLayoutProperties>
             </dx:ASPxGridView>
 
 

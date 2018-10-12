@@ -34,6 +34,31 @@ namespace uwac.trk
 			sql.Close();
 		}
 
+		public static int CountValues(List<object> selectedValues, string targetvalue)
+		{
+			List<string> csv = new List<string>();
+			if (selectedValues.Count > 0)
+			{
+				for (int i = 0; i < selectedValues.Count; i++)
+				{
+					if (selectedValues[i] != null)
+					{
+						string x = selectedValues[i].ToString();
+						csv.Add(x);
+					}
+				}
+			}
+
+			int num = 0;
+			foreach(string s in csv)
+			{
+				if (s == targetvalue) num++;
+			}
+			
+			return num;
+		}
+
+
 		public static List<string> GetListString(List<object> selectedValues)
 		{
 			List<string> csv = new List<string>();

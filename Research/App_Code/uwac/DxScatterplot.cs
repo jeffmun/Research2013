@@ -55,6 +55,7 @@ namespace uwac
 			set { _n = value; }
 		}
 
+
 		public DxScatterplot(DxScatterplotSettings settings,  DataTable mydt) //, string xvar, string yvar, string titleinput, string colorsby)
 		{
 			_settings = settings;
@@ -236,6 +237,7 @@ namespace uwac
 		public bool _useMovAvg = false;
 		public int _movavgNumPts = 15;
 		public bool _showregline = false;
+		public bool _showhist = false;
 		public bool _jitter = false;
 		public double _jitteramtX = 0;
 		public double _jitteramtY = 0;
@@ -259,6 +261,11 @@ namespace uwac
 		{
 			get { return _movavgNumPts; }
 			set { _movavgNumPts = value; }
+		}
+		public bool showhist
+		{
+			get { return _showhist; }
+			set { _showhist = value; }
 		}
 		public bool showregline
 		{

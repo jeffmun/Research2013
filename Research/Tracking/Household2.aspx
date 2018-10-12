@@ -207,7 +207,14 @@
 						<dx:GridViewDataColumn FieldName="FirstName" Caption="First Name"  Width="100px"  CellStyle-Font-Bold="true"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="NickName" Caption="Nick Name"  Width="80px"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="MiddleName" Caption="Middle Name"  Visible="false" Width="80px"></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="Sex" Caption="Sex" Width="50px"></dx:GridViewDataColumn>
+						<dx:GridViewDataTextColumn FieldName="Sex" Caption="Sex" Width="50px" >
+							<PropertiesTextEdit>
+								<ValidationSettings ErrorDisplayMode="ImageWithText">
+									<RegularExpression ValidationExpression="^(M|F)*$" ErrorText="Please enter F or M." />
+								</ValidationSettings>
+							</PropertiesTextEdit>
+
+						</dx:GridViewDataTextColumn>
 						<dx:GridViewDataColumn FieldName="DOB" Caption="DOB" Width="100px"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="currageYM" Caption="Age (Y:M)" Width="60px"   ReadOnly="true"  EditFormSettings-Visible="false"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="CityOfBirth" Caption="City of birth" Visible="false" ></dx:GridViewDataColumn>

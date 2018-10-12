@@ -29,23 +29,37 @@ namespace uwac
 
 		public static bool BuildInsertSqlCode(ASPxDataInsertingEventArgs e, string tbl, string db)
 		{
-			return BuildInsertSqlCode(e.NewValues, tbl, db);
+			return BuildInsertSqlCode(e.NewValues, tbl, db, "dbo");
+		}
+		public static bool BuildInsertSqlCode(ASPxDataInsertingEventArgs e, string tbl, string db, string schema)
+		{
+			return BuildInsertSqlCode(e.NewValues, tbl, db, schema);
 		}
 
 
 		public static bool BuildInsertSqlCode(ASPxDataInsertValues e, string tbl, string db)
 		{
-			return BuildInsertSqlCode(e.NewValues, tbl, db);
+			return BuildInsertSqlCode(e.NewValues, tbl, db, "dbo");
 		}
 
-		public static bool BuildInsertSqlCode(OrderedDictionary NewValues , string tbl, string db)
+		public static bool BuildInsertSqlCode(ASPxDataInsertValues e, string tbl, string db, string schema)
+		{
+			return BuildInsertSqlCode(e.NewValues, tbl, db, schema);
+		}
+
+		public static bool BuildInsertSqlCode(OrderedDictionary NewValues, string tbl, string db)
+		{
+			return BuildInsertSqlCode(NewValues, tbl, db, "dbo");
+		}
+
+		public static bool BuildInsertSqlCode(OrderedDictionary NewValues , string tbl, string db, string schema)
 		{
 			bool result = false;
 
 			SQL_utils sql1 = new SQL_utils(db);
-			DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "'");
-			string hasCreated = sql1.StringScalar_from_SQLstring("select coalesce(column_name,'null') colname from information_schema.columns where column_name = 'created' and table_name='" + tbl + "'");
-			string hasCreatedBy = sql1.StringScalar_from_SQLstring("select coalesce(column_name,'null') colname from information_schema.columns where column_name = 'createdby' and table_name='" + tbl + "'");
+			DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "' and table_schema = '" + schema + "'");
+			string hasCreated = sql1.StringScalar_from_SQLstring("select coalesce(column_name,'null') colname from information_schema.columns where column_name = 'created' and table_name='" + tbl + "' and table_schema = '" + schema + "'");
+			string hasCreatedBy = sql1.StringScalar_from_SQLstring("select coalesce(column_name,'null') colname from information_schema.columns where column_name = 'createdby' and table_name='" + tbl + "' and table_schema = '" + schema + "'");
 			sql1.Close();
 
 			List<string> insert_flds = new List<string>();
@@ -100,8 +114,8 @@ namespace uwac
 				}
 
 				
-				string insert_code = String.Format("insert into {0}({1}) values({2}) "
-					, tbl, String.Join(",", insert_flds), String.Join(",", insert_vals));
+				string insert_code = String.Format("insert into {0}.{1}({2}) values({3}) "
+					, schema, tbl, String.Join(",", insert_flds), String.Join(",", insert_vals));
 
 				SQL_utils sql = new SQL_utils(db);
 				try
@@ -124,14 +138,27 @@ namespace uwac
 		{
 			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db);
 		}
+		public static bool BuildUpdateSqlCode(ASPxDataUpdatingEventArgs e, string tbl, string db, string schema)
+		{
+			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db, schema);
+		}
 
 		public static bool BuildUpdateSqlCode(ASPxDataUpdateValues e, string tbl, string db)
 		{
-			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db);
+			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db, "dbo");
 		}
 
+		public static bool BuildUpdateSqlCode(ASPxDataUpdateValues e, string tbl, string db, string schema)
+		{
+			return BuildUpdateSqlCode(e.Keys, e.NewValues, e.OldValues, tbl, db, schema);
+		}
 
 		public static bool BuildUpdateSqlCode(OrderedDictionary Keys, OrderedDictionary NewValues, OrderedDictionary OldValues, string tbl, string db)
+		{
+			return BuildUpdateSqlCode(Keys, NewValues, OldValues, tbl, db, "dbo");
+		}
+
+		public static bool BuildUpdateSqlCode(OrderedDictionary Keys, OrderedDictionary NewValues, OrderedDictionary OldValues, string tbl, string db, string schema)
 		{
 			bool result = false;
 			int n_newvals = NewValues.Count;
@@ -152,7 +179,7 @@ namespace uwac
 			if (n_newvals == n_oldvals && pkvalue != "-1" && pkfld != "")
 			{
 				SQL_utils sql1 = new SQL_utils(db);
-				DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "'");
+				DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "' and table_schema = '" + schema + "'");
 				sql1.Close();
 
 
@@ -270,7 +297,7 @@ namespace uwac
 					}
 				}
 
-				string update_code = String.Format("update {0} set {1} where {2}={3}", tbl, String.Join(",", fldupdates), pkfld, pkvalue);
+				string update_code = String.Format("update {0}.{1} set {2} where {3}={4}", schema, tbl, String.Join(",", fldupdates), pkfld, pkvalue);
 
 				try
 				{

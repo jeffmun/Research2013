@@ -59,7 +59,7 @@
 					lastFile = gridFile.GetValue().toString();
 				else {
 					var currfile = gridFile.GetValue().toString();
-					tabSteps.GetTabByName("tabVars").SetVisible(true);
+					//tabSteps.GetTabByName("tab_name_here").SetVisible(true);
 					callbackDataSheets.PerformCallback(currfile);
 					callbackVars.PerformCallback(currfile);
 
@@ -75,6 +75,7 @@
 					callbackVars.PerformCallback(currdatasheet);
 				}
 				callbackVarLabels.PerformCallback();
+				callbackCharts.PerformCallback("clear");
 			}
 
 
@@ -112,7 +113,6 @@
 			}
 
 			function RefreshSelectedAgeVars(selectedVals) {
-				RefreshSelectedVars2(selectedVals, cboXaxisvar);
 				RefreshSelectedVars2(selectedVals, cboXaxisvarLINE);
 			}
 
@@ -125,8 +125,8 @@
 				RefreshSelectedVars2(selectedVals, cboColorsvarBAR);
 				RefreshSelectedVars2(selectedVals, cboPanelvarBAR);
 
-				RefreshSelectedVars2(selectedVals, cboXaxisvarSCAT);
-				RefreshSelectedVars2(selectedVals, cboYaxisvarSCAT);
+//				RefreshSelectedVars2(selectedVals, tokXaxisvarSCAT);
+//				RefreshSelectedVars2(selectedVals, tokYaxisvarSCAT);
 				RefreshSelectedVars2(selectedVals, cboColorsvarSCAT);
 				RefreshSelectedVars2(selectedVals, cboPanelvarSCAT);
 
@@ -134,9 +134,10 @@
 				RefreshSelectedVars2(selectedVals, cboColorsvarLINE);
 				RefreshSelectedVars2(selectedVals, cboPanelvarLINE);
 
-				RefreshSelectedVars2(selectedVals, cboXTrow);
-				RefreshSelectedVars2(selectedVals, cboXTcol);
-				RefreshSelectedVars2(selectedVals, cboXTpanel);
+				RefreshSelectedVars2(selectedVals, tokXTrow);
+				RefreshSelectedVars2(selectedVals, tokXTcol);
+				RefreshSelectedVars2(selectedVals, tokXTpanel);
+				RefreshSelectedVars2(selectedVals, tokXTcell);
 			}
 
 
@@ -182,8 +183,8 @@
 				var varcolorsBAR = cboColorsvarBAR.GetValue();
 				var varpanelBAR = cboPanelvarBAR.GetValue();
 
-				var varxaxisSCAT = cboXaxisvarSCAT.GetValue();
-				var varyaxisSCAT = cboYaxisvarSCAT.GetValue();
+//				var varxaxisSCAT =tokXaxisvarSCAT.GetValue();
+//				var varyaxisSCAT =tokYaxisvarSCAT.GetValue();
 				var varcolorsSCAT = cboColorsvarSCAT.GetValue();
 				var varpanelSCAT = cboPanelvarSCAT.GetValue();
 
@@ -191,19 +192,20 @@
 				var varcolorsLINE = cboColorsvarLINE.GetValue();
 				var varpanelLINE = cboPanelvarLINE.GetValue();
 
-				var varXTrow = cboXTrow.GetValue();
-				var varXTcol = cboXTcol.GetValue();
-				var varXTpanel = cboXTpanel.GetValue();
+				var varXTrow = tokXTrow.GetValue();
+				var varXTcol = tokXTcol.GetValue();
+				var varXTpanel = tokXTpanel.GetValue();
 
-				var varcolorsPCA = cboColorsvarPCA.GetValue();
+				var varsubgroupsPCA = cboSubgroupsvarPCA.GetValue();
 
 
 				var params =                   varcolorsHIST + "," + varpanelHIST +
 					"," + varxaxisBAR + ","  + varcolorsBAR  + "," + varpanelBAR +
-					"," + varxaxisSCAT + "," + varyaxisSCAT + "," + varcolorsSCAT + "," + varpanelSCAT +
+					//"," + varxaxisSCAT + "," + varyaxisSCAT +
+										 "," + varcolorsSCAT + "," + varpanelSCAT +
 					"," + varxaxisLINE + "," + varcolorsLINE + "," + varpanelLINE +
 					"," + varXTrow + "," + varXTcol + "," + varXTpanel + 
-					"," + varcolorsPCA ;
+					"," + varsubgroupsPCA  ;
 
 				callbackViewData.SetVisible(false);
 				callbackMissing.SetVisible(false);
@@ -325,7 +327,7 @@
 
 			var ntabs = tabSettings.GetTabCount();
 			var nchecked = s.length;
-			for (var j = 1; j < ntabs; j++) {
+			for (var j = 0; j < ntabs; j++) {
 				var tab = tabSettings.GetTab(j);
 				tab.SetVisible(false);
 			}
@@ -340,7 +342,64 @@
 			}
 
 		}
- 
+
+
+		function changeOutputStyleHIST(e) {
+			if (trkNumColsHIST.GetVisible() == true) {
+				trkNumColsHIST.SetVisible(false);
+				trkNumRowsHIST.SetVisible(true);
+			} else {
+				trkNumColsHIST.SetVisible(true);
+				trkNumRowsHIST.SetVisible(false);
+			}
+		}
+
+		function changeOutputStyleBAR(e) {
+			if (trkNumColsBAR.GetVisible() == true) {
+				trkNumColsBAR.SetVisible(false);
+				trkNumRowsBAR.SetVisible(true);
+			} else {     
+				trkNumColsBAR.SetVisible(true);
+				trkNumRowsBAR.SetVisible(false);
+			}
+		 }
+
+		function changeOutputStyleLINE(e) {
+			if (trkNumColsLINE.GetVisible() == true) {
+				trkNumColsLINE.SetVisible(false);
+				trkNumRowsLINE.SetVisible(true);
+			} else {
+				trkNumColsLINE.SetVisible(true);
+				trkNumRowsLINE.SetVisible(false);
+			}
+			}
+
+		function changeOutputStyleXT(e) {
+			if (trkNumColsXT.GetVisible() == true) {
+				trkNumColsXT.SetVisible(false);
+				trkNumRowsXT.SetVisible(true);
+			} else {    
+				trkNumColsXT.SetVisible(true);
+				trkNumRowsXT.SetVisible(false);
+			}
+		}
+
+
+		function cboXaxisvarLINE_changed(e) {
+			if (cboXaxisvarLINE.GetValue() == "variable" & 
+				cboColorsvarLINE.GetValue() == "variable")
+			{
+				cboColorsvarLINE.SetValue("none");
+			}
+			}
+
+		function cboColorsvarLINE_changed(e) {
+			if (cboXaxisvarLINE.GetValue() == "variable" & 
+				cboColorsvarLINE.GetValue() == "variable")
+			{
+				cboColorsvarLINE.SetValue("none");
+			}
+		}
 	</script>
 
 
@@ -352,258 +411,269 @@
 	<dx:ASPxPageControl ID="tabSteps" Width="100%" runat="server" ClientInstanceName="tabSteps" 
 		CssClass="dxtcFixed" ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" >
 		<TabPages>
-			<dx:TabPage Text="Step 1: Select data source" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabData">
+			<dx:TabPage Name="tabData" Text="Select data & variables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl7" runat="server">
-							<dx:ASPxCallbackPanel ID="callbackSelectors" runat="server"  ClientInstanceName="callbackSelectors" OnCallback="callbackSelectors_OnCallback">
-					<PanelCollection>
-						<dx:PanelContent ID="panelcontent0" runat="server">
+					
+						<table>
+							<tr>
+								<td style="vertical-align: top; padding:5px">
+									<br />
+									<dx:ASPxCallbackPanel ID="callbackSelectors" runat="server"  ClientInstanceName="callbackSelectors" OnCallback="callbackSelectors_OnCallback">
+										<PanelCollection>
+											<dx:PanelContent ID="panelcontent0" runat="server">
 
-							<%-- OnValueChanged="gridDataProject_ValueChanged"--%>
+												<%-- OnValueChanged="gridDataProject_ValueChanged"--%>
 
 							
-							<dx:ASPxGridLookup ID="gridDataProject" runat="server" KeyFieldName="dataproj_pk" NullText="Select Data Project..." Width="350px"
-								 DataSourceID="SqlDataProject" EnableClientSideAPI="true" ClientInstanceName="gridDataProject">
-								<ClientSideEvents ValueChanged="function(s, e) { OnDataProjectChanged(s); }" />
-								<Columns>
-									<dx:GridViewDataColumn FieldName="dataproj_pk" Caption="Project #" VisibleIndex="0" Width="60px"/>
-									<dx:GridViewDataColumn FieldName="projTitle" Caption="Project Title" VisibleIndex="0" Width="150px"/>
-								</Columns>
-								<GridViewProperties>
-									<SettingsBehavior EnableRowHotTrack="true" /> 
-								</GridViewProperties>
-							</dx:ASPxGridLookup>
-					</dx:PanelContent>
-				</PanelCollection>
-			</dx:ASPxCallbackPanel>
+												<dx:ASPxGridLookup ID="gridDataProject" runat="server" KeyFieldName="dataproj_pk" NullText="Select Data Project..." Width="350px"
+													 DataSourceID="SqlDataProject" EnableClientSideAPI="true" ClientInstanceName="gridDataProject">
+													<ClientSideEvents ValueChanged="function(s, e) { OnDataProjectChanged(s); }" />
+													<Columns>
+														<dx:GridViewDataColumn FieldName="dataproj_pk" Caption="Project #" VisibleIndex="0" Width="60px"/>
+														<dx:GridViewDataColumn FieldName="projTitle" Caption="Project Title" VisibleIndex="0" Width="150px"/>
+													</Columns>
+													<GridViewProperties>
+														<SettingsBehavior EnableRowHotTrack="true" /> 
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
+										</dx:PanelContent>
+									</PanelCollection>
+								</dx:ASPxCallbackPanel>
 
-				<dx:ASPxCallbackPanel ID="callbackFile" runat="server"  ClientInstanceName="callbackFile" OnCallback="callbackFile_OnCallback"  >
-					<PanelCollection>
-						<dx:PanelContent ID="panelcontent2" runat="server" >
-							<dx:ASPxGridLookup ID="gridFile" runat="server" KeyFieldName="filename" NullText="" Width="350px"
-									TextFormatString="{0}" Visible="true" Enabled="true" ClientInstanceName="gridFile" 
-								 EnableClientSideAPI="true"  >  <%-- --%>
-								<ClientSideEvents   ValueChanged="function(s, e) { OnFileChanged(s); }"   /> <%--  EndCallback="OnEndCallbackFiles"  --%>
-								<Columns>
-									<dx:GridViewDataColumn FieldName="filename" Caption="Filename" VisibleIndex="0" Width="260px"/>
-									<dx:GridViewDataColumn FieldName="N_subjects" Caption="N Subjects" VisibleIndex="0" Width="70px"/>
-									<dx:GridViewDataColumn FieldName="N_measures" Caption="N Measures" VisibleIndex="0" Width="70px"/>
-									<dx:GridViewDataColumn FieldName="N_datarows" Caption="N Data Rows" VisibleIndex="0" Width="70px"/>
-									<dx:GridViewDataColumn FieldName="N_other_datarows" Caption="N Other Data Rows" VisibleIndex="0" Width="70px"/>
-									<dx:GridViewDataColumn FieldName="N_data_dups" Caption="N Other Data Rows" VisibleIndex="0" Width="70px"/>
-									<dx:GridViewDataColumn FieldName="elaptime" Caption="File age" VisibleIndex="0" />
-									<dx:GridViewDataColumn FieldName="created" Caption="Created" VisibleIndex="0" />
-									<dx:GridViewDataColumn FieldName="createdBy" Caption="Created By" VisibleIndex="0" />
 
-								</Columns>
-								<GridViewProperties>
-									<SettingsBehavior EnableRowHotTrack="true" /> 
-								</GridViewProperties>
-							</dx:ASPxGridLookup>
+									<dx:ASPxCallbackPanel ID="callbackFile" runat="server"  ClientInstanceName="callbackFile" OnCallback="callbackFile_OnCallback"  >
+										<PanelCollection>
+											<dx:PanelContent ID="panelcontent2" runat="server" >
+												<dx:ASPxGridLookup ID="gridFile" runat="server" KeyFieldName="filename" NullText="" Width="350px"
+														TextFormatString="{0}" Visible="true" Enabled="true" ClientInstanceName="gridFile" 
+													 EnableClientSideAPI="true"  >  <%-- --%>
+													<ClientSideEvents   ValueChanged="function(s, e) { OnFileChanged(s); }"   /> <%--  EndCallback="OnEndCallbackFiles"  --%>
+													<Columns>
+														<dx:GridViewDataColumn FieldName="filename" Caption="Filename" VisibleIndex="0" Width="260px"/>
+														<dx:GridViewDataColumn FieldName="N_subjects" Caption="N Subjects" VisibleIndex="0" Width="70px"/>
+														<dx:GridViewDataColumn FieldName="N_measures" Caption="N Measures" VisibleIndex="0" Width="70px"/>
+														<dx:GridViewDataColumn FieldName="N_datarows" Caption="N Data Rows" VisibleIndex="0" Width="70px"/>
+														<dx:GridViewDataColumn FieldName="N_other_datarows" Caption="N Other Data Rows" VisibleIndex="0" Width="70px"/>
+														<dx:GridViewDataColumn FieldName="N_data_dups" Caption="N Other Data Rows" VisibleIndex="0" Width="70px"/>
+														<dx:GridViewDataColumn FieldName="elaptime" Caption="File age" VisibleIndex="0" />
+														<dx:GridViewDataColumn FieldName="created" Caption="Created" VisibleIndex="0" />
+														<dx:GridViewDataColumn FieldName="createdBy" Caption="Created By" VisibleIndex="0" />
 
-					</dx:PanelContent>
-				</PanelCollection>
-			</dx:ASPxCallbackPanel>
+													</Columns>
+													<GridViewProperties>
+														<SettingsBehavior EnableRowHotTrack="true" /> 
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
 
-	
+										</dx:PanelContent>
+									</PanelCollection>
+								</dx:ASPxCallbackPanel>
 
-				<dx:ASPxCallbackPanel ID="callbackDataSheets" runat="server"  ClientInstanceName="callbackDataSheets" OnCallback="callbackDataSheets_OnCallback"  >
-					<PanelCollection>
-						<dx:PanelContent ID="panelcontent5" runat="server" >
+
+									<dx:ASPxCallbackPanel ID="callbackDataSheets" runat="server"  ClientInstanceName="callbackDataSheets" OnCallback="callbackDataSheets_OnCallback"  >
+										<PanelCollection>
+											<dx:PanelContent ID="panelcontent5" runat="server" >
 							
-							<dx:ASPxGridLookup ID="gridDataSheets" runat="server" KeyFieldName="sheetname" NullText="" Width="350px"
-									TextFormatString="{0}" Visible="false" Enabled="true" ClientInstanceName="gridDataSheets" 
-								 EnableClientSideAPI="true"  >  <%-- --%>
-								<ClientSideEvents   ValueChanged="function(s, e) { OnDataSheetChanged(s); }"   /> <%--  EndCallback="OnEndCallbackFiles"  --%>
-								<Columns>
-									<dx:GridViewDataColumn FieldName="sheetname" Caption="Data Sheet" VisibleIndex="0" Width="260px"/>
-									<dx:GridViewDataColumn FieldName="nrows" Caption="# Data Rows" VisibleIndex="1" Width="70px"/>
-								</Columns>
-								<GridViewProperties>
-									<SettingsBehavior EnableRowHotTrack="true" /> 
-								</GridViewProperties>
-							</dx:ASPxGridLookup>
+												<dx:ASPxGridLookup ID="gridDataSheets" runat="server" KeyFieldName="sheetname" NullText="" Width="350px"
+														TextFormatString="{0}" Visible="false" Enabled="true" ClientInstanceName="gridDataSheets" 
+													 EnableClientSideAPI="true"  >  <%-- --%>
+													<ClientSideEvents   ValueChanged="function(s, e) { OnDataSheetChanged(s); }"   /> <%--  EndCallback="OnEndCallbackFiles"  --%>
+													<Columns>
+														<dx:GridViewDataColumn FieldName="sheetname" Caption="Data Sheet" VisibleIndex="0" Width="260px"/>
+														<dx:GridViewDataColumn FieldName="nrows" Caption="# Data Rows" VisibleIndex="1" Width="70px"/>
+													</Columns>
+													<GridViewProperties>
+														<SettingsBehavior EnableRowHotTrack="true" /> 
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
 							
-							<table>
-								<tr>
-									<td>
-										<dx:ASPxTextBox ID="txtFilter" runat="server" Width="270px" Visible="false" NullText="Enter filter criteria here..." ClientInstanceName="txtFilter"></dx:ASPxTextBox>
-									</td>
-									<td>
-										<dx:ASPxButton ID="btnFilter" runat="server" Text="Filter" Visible="false" Font-Size="XX-Small" 
-											ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false">
-											<ClientSideEvents Click="btnFilter_ClientClick" />
-										</dx:ASPxButton>
-									</td>
-								</tr>
-								<tr>
-									<td colspan=2>
-										<dx:ASPxLabel ID="lblFilterExample" runat="server" Visible="false" ForeColor="Silver"  ClientInstanceName="lblFilterExample"
-											Text="E.g, timept='T1' AND group='ASD';  mucss >= 100;" Font-Size="XX-Small"></dx:ASPxLabel>
-									</td>
-								</tr>
-							</table>
+												<table>
+													<tr>
+														<td>
+															<dx:ASPxTextBox ID="txtFilter" runat="server" Width="270px" Visible="false" NullText="Enter filter criteria here..." ClientInstanceName="txtFilter"></dx:ASPxTextBox>
+														</td>
+														<td>
+															<dx:ASPxButton ID="btnFilter" runat="server" Text="Filter" Visible="false" Font-Size="XX-Small" 
+																ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false">
+																<ClientSideEvents Click="btnFilter_ClientClick" />
+															</dx:ASPxButton>
+														</td>
+													</tr>
+													<tr>
+														<td colspan=2>
+															<dx:ASPxLabel ID="lblFilterExample" runat="server" Visible="false" ForeColor="Silver"  ClientInstanceName="lblFilterExample"
+																Text="E.g, timept='T1' AND group='ASD';  mucss >= 100;" Font-Size="XX-Small"></dx:ASPxLabel>
+														</td>
+													</tr>
+												</table>
 							
 
-					</dx:PanelContent>
-				</PanelCollection>
-			</dx:ASPxCallbackPanel>
-						</dx:ContentControl>
-						</ContentCollection>
-				</dx:TabPage>
+										</dx:PanelContent>
+									</PanelCollection>
+								</dx:ASPxCallbackPanel>
+								</td>
+								<td style="vertical-align: top; padding:5px">
 
-		<dx:TabPage Text="Step 2: Select variables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabVars">
-				<ContentCollection>
-					<dx:ContentControl ID="ContentControl8" runat="server">
-						<dx:ASPxCallbackPanel ID="callbackVars" runat="server"  OnCallback="callbackVars_OnCallback" ClientInstanceName="callbackVars">
-				<PanelCollection>
-					<dx:PanelContent ID="panelcontent1" runat="server">
+									<dx:ASPxCallbackPanel ID="callbackVars" runat="server"  OnCallback="callbackVars_OnCallback" ClientInstanceName="callbackVars">
+										<PanelCollection>
+											<dx:PanelContent ID="panelcontent1" runat="server">
 
-						<dx:ASPxLabel ID="lblSelectedDataInfo2" runat="server" Text="" ClientVisible="true" ClientInstanceName="lblSelectedDataInfo2" EncodeHtml="false" ></dx:ASPxLabel>
+												<dx:ASPxLabel ID="lblSelectedDataInfo2" runat="server" Text="" ClientVisible="true" ClientInstanceName="lblSelectedDataInfo2" EncodeHtml="false" ></dx:ASPxLabel>
 
-						<dx:ASPxGridLookup ID="gridVarsNum" runat="server" KeyFieldName="varname" NullText="Select numeric variables to plot..." Width="350px"
-							   ClientInstanceName="gridVarsNum" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-							 SelectionMode="Multiple"  EnableClientSideAPI="true"    >
-							<ClientSideEvents ValueChanged="function(s, e) { OnVarsNumChanged(s); }" />
-							<Columns>
-								<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0" SelectAllCheckboxMode="AllPages"/>
-								<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								 <dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" VisibleIndex="4" Width="80px"/>
-							</Columns>
-							<GridViewProperties>
-								<Settings  ShowGroupPanel="true" ShowFilterRow="true" 
-									VerticalScrollBarMode="Visible" VerticalScrollableHeight="400"  />
-								<SettingsPopup>
-									<HeaderFilter>
-										<SettingsAdaptivity Mode="OnWindowInnerWidth" />
-									</HeaderFilter>
-								</SettingsPopup>
-								<SettingsPager Mode="ShowAllRecords" />
-								<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick" EnableRowHotTrack="true"   />
+												<dx:ASPxGridLookup ID="gridVarsNum" runat="server" KeyFieldName="varname" NullText="Select numeric variables to plot..." Width="350px"
+													   ClientInstanceName="gridVarsNum" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
+													 SelectionMode="Multiple"  EnableClientSideAPI="true"    >
+													<ClientSideEvents ValueChanged="function(s, e) { OnVarsNumChanged(s); }" />
+													<Columns>
+														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0" SelectAllCheckboxMode="AllPages"/>
+														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														 <dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" VisibleIndex="4" Width="80px"/>
+													</Columns>
+													<GridViewProperties>
+														<Settings  ShowGroupPanel="true" ShowFilterRow="true" 
+															VerticalScrollBarMode="Visible" VerticalScrollableHeight="400"  />
+														<SettingsPopup>
+															<HeaderFilter>
+																<SettingsAdaptivity Mode="OnWindowInnerWidth" />
+															</HeaderFilter>
+														</SettingsPopup>
+														<SettingsPager Mode="ShowAllRecords" />
+														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick" EnableRowHotTrack="true"   />
 								
 
-								<GroupSummary>
-									<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-								</GroupSummary>
-							</GridViewProperties>
-						</dx:ASPxGridLookup>
+														<GroupSummary>
+															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
+														</GroupSummary>
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
 
 
-						<dx:ASPxGridLookup ID="gridVarsText" runat="server" KeyFieldName="varname" NullText="Select categorical variables for grouping..." Width="350px"
-							  GridViewProperties-EnableCallBacks="true" Visible="false"  Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-							 SelectionMode="Multiple">
-							<ClientSideEvents ValueChanged="function(s, e) { OnVarsTextChanged(s); }" />
-							<Columns>
-								<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
-								<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-							</Columns>
-							<GridViewProperties>
-								<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
-											VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
-								<SettingsPager Mode="ShowAllRecords" />
-								<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
-								<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
+												<dx:ASPxGridLookup ID="gridVarsText" runat="server" KeyFieldName="varname" NullText="Select categorical variables for grouping..." Width="350px"
+													  GridViewProperties-EnableCallBacks="true" Visible="false"  Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
+													 SelectionMode="Multiple">
+													<ClientSideEvents ValueChanged="function(s, e) { OnVarsTextChanged(s); }" />
+													<Columns>
+														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
+														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+													</Columns>
+													<GridViewProperties>
+														<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
+																	VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
+														<SettingsPager Mode="ShowAllRecords" />
+														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
+														<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
 
-								<GroupSummary>
-									<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-								</GroupSummary>
-
-
-							</GridViewProperties>
-						</dx:ASPxGridLookup>
+														<GroupSummary>
+															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
+														</GroupSummary>
 
 
-						<dx:ASPxGridLookup ID="gridVarsDate" runat="server" KeyFieldName="varname" NullText="Select date variables..." Width="350px"
-							  GridViewProperties-EnableCallBacks="true" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-							 SelectionMode="Multiple">
-							<ClientSideEvents ValueChanged="function(s, e) { OnVarsDateChanged(s); }" />
-							<Columns>
-								<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
-								<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-							</Columns>
-							<GridViewProperties>
-								<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
-											VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
-								<SettingsPager Mode="ShowAllRecords" />
-								<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
-								<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
-
-								<GroupSummary>
-									<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-								</GroupSummary>
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
 
 
-							</GridViewProperties>
-						</dx:ASPxGridLookup>
+												<dx:ASPxGridLookup ID="gridVarsDate" runat="server" KeyFieldName="varname" NullText="Select date variables..." Width="350px"
+													  GridViewProperties-EnableCallBacks="true" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
+													 SelectionMode="Multiple">
+													<ClientSideEvents ValueChanged="function(s, e) { OnVarsDateChanged(s); }" />
+													<Columns>
+														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
+														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+													</Columns>
+													<GridViewProperties>
+														<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
+																	VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
+														<SettingsPager Mode="ShowAllRecords" />
+														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
+														<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
+
+														<GroupSummary>
+															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
+														</GroupSummary>
+
+
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
 
 
 						
-						<dx:ASPxGridLookup ID="gridVarsAge" runat="server" KeyFieldName="varname" NullText="Select age variables..." Width="350px"
-							  GridViewProperties-EnableCallBacks="true" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-							 SelectionMode="Multiple">
-							<ClientSideEvents ValueChanged="function(s, e) { OnVarsAgeChanged(s); }" />
-							<Columns>
-								<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
-								<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-									<Settings AutoFilterCondition="Contains" />
-								</dx:GridViewDataColumn>
-							</Columns>
-							<GridViewProperties>
-								<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
-											VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
-								<SettingsPager Mode="ShowAllRecords" />
-								<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
-								<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
+												<dx:ASPxGridLookup ID="gridVarsAge" runat="server" KeyFieldName="varname" NullText="Select age variables..." Width="350px"
+													  GridViewProperties-EnableCallBacks="true" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
+													 SelectionMode="Multiple">
+													<ClientSideEvents ValueChanged="function(s, e) { OnVarsAgeChanged(s); }" />
+													<Columns>
+														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
+														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
+															<Settings AutoFilterCondition="Contains" />
+														</dx:GridViewDataColumn>
+													</Columns>
+													<GridViewProperties>
+														<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
+																	VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
+														<SettingsPager Mode="ShowAllRecords" />
+														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
+														<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
 
-								<GroupSummary>
-									<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-								</GroupSummary>
-
-
-							</GridViewProperties>
-						</dx:ASPxGridLookup>
+														<GroupSummary>
+															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
+														</GroupSummary>
 
 
+													</GridViewProperties>
+												</dx:ASPxGridLookup>
 
 
 
-					</dx:PanelContent>
-				</PanelCollection>
-			</dx:ASPxCallbackPanel>
-						</dx:ContentControl>
-						</ContentCollection>
-				</dx:TabPage>
-		<dx:TabPage Text="Step 3a: Create plots" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabPlots">
+						
+
+											</dx:PanelContent>
+										</PanelCollection>
+									</dx:ASPxCallbackPanel>
+									
+
+
+								</td>
+							</tr>
+						</table>
+
+
+				</dx:ContentControl>
+			</ContentCollection>
+		</dx:TabPage>
+
+	
+		<dx:TabPage Name="tabPlots" Text="Create plots" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl9" runat="server">
 							<dx:ASPxCallbackPanel ID="callbackSpecifics" runat="server"  OnCallback="callbackSpecifics_OnCallback" ClientInstanceName="callbackSpecifics">
@@ -612,7 +682,7 @@
 				
 						<table>
 							<tr>
-								<td> 
+								<td style="vertical-align: top">
 									
 								<table>
 
@@ -620,8 +690,9 @@
 										<td style="vertical-align: top">
 											
 											<dx:ASPxCheckBoxList ID="chkPlots" ClientInstanceName="chkPlots" runat="server" Caption="Plots" CaptionSettings-Position="Top"  
-												 RepeatColumns="3" RepeatLayout="Flow" Font-Size="9" Paddings-Padding="2px" AutoPostBack="false"   >
-												<ClientSideEvents SelectedIndexChanged="chkPlots_SelectedIndexChanged"  />
+												 RepeatColumns="3" RepeatLayout="Table" RepeatDirection="Vertical" Font-Size="9" Paddings-Padding="2px" AutoPostBack="false" 
+												 Width="320px"  >
+												<ClientSideEvents SelectedIndexChanged="chkPlots_SelectedIndexChanged"   />
 												<Items>
 													<dx:ListEditItem Value="Histogram" Selected="false"  />
 													<dx:ListEditItem Value="Scatterplot" Selected="false" />
@@ -629,6 +700,7 @@
 													<dx:ListEditItem Value="Lineplot" Selected="false" />
 													<dx:ListEditItem Value="PCA" Selected="false" />
 													<dx:ListEditItem Value="Crosstabs" Selected="false" />
+													<dx:ListEditItem Value="Set Colors" Selected="false" />
 												</Items>
 											</dx:ASPxCheckBoxList>
 										</td>
@@ -657,9 +729,6 @@
 
 											</td>
 											<td>
-									<dx:ASPxTrackBar ID="trkNumCols" ClientInstanceName="trkNumCols" runat="server" Caption="# Output Columns:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="8" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-											Height="45" Width="100px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
-									</dx:ASPxTrackBar>
 
 											</td>
 										</tr>
@@ -679,73 +748,7 @@
 	<dx:ASPxPageControl ID="tabSettings" runat="server" ClientInstanceName="tabSettings" TabPosition="Left" TabAlign="Left" 
 		 ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" Width="900px" >
 		<TabPages>
-			<dx:TabPage Text="Colors" TabStyle-HorizontalAlign="Left">
-				<ContentCollection>
-					<dx:ContentControl ID="ContentControl1" runat="server" Width="600px">
-
-					<%--	<table>
-							<tr>
-								<td>
-									X axis:<br />
-									<dx:ASPxComboBox ID="cboXaxisvar" runat="server" Caption="" ClientInstanceName="cboXaxisvar" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
-
-								</td>
-								<td>
-									Colors:<br />
-									<dx:ASPxComboBox ID="cboColorsvar" runat="server" Caption="" ClientInstanceName="cboColorsvar" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
-								</td>
-								<td>
-									Panels:<br />
-									<dx:ASPxComboBox ID="cboPanelvar" runat="server" Caption="" ClientInstanceName="cboPanelvar" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
-
-								</td>
-								<td style="width: 200px"></td>
-							</tr>
-						</table>--%>
-						<br />
-						<table>
-							<tr>
-								<td style="vertical-align: top">
-
-								</td>
-								<td style="width: 50px"></td>
-								<td>
-									
-							<table>
-								<tr>
-									<td>Colors<br /> 1 - 5:</td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color1" Color="#377eb8" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color2" Color="#e41a1c" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color3" Color="#4daf4a" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color4" Color="#984ea3" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color5" Color="#626567" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-								</tr>
-								<tr>
-									<td>Colors<br /> 6 - 10:</td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color6"  Color="#81d4fa" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color7"  Color="#ff7f00" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color8"  Color="#99ff00" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color9"  Color="#f781bf" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color10" Color="#BDC3C7" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-								</tr>
-								<tr>
-									<td>Colors<br />11 - 15:</td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color11" Color="#0000CC" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color12" Color="#B71C1C" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color13" Color="#145A32" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color14" Color="#311B92" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-									<td><dx:ASPxColorEdit runat="server" ID="Color15" Color="#212121" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
-								</tr>
-							</table>
-
-								</td>
-							</tr>
-						</table>
-
-
-					</dx:ContentControl>
-				</ContentCollection>
-			</dx:TabPage>
+			
 			<dx:TabPage Name="Histogram" Text="Histogram..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl2" runat="server"  Width="600px">
@@ -778,12 +781,21 @@
 								<td style="align-content: center; padding: 5px">
 									<table>
 										<tr>
-											<td style="vertical-align: top">
+											<td  style="vertical-align: top; padding: 5px">
 												<dx:ASPxComboBox ID="cboColorsvarHIST" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarHIST" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 											</td>
-											<td>
+											<td  style="vertical-align: top; padding: 5px">
 												<dx:ASPxComboBox ID="cboPanelvarHIST" runat="server" Caption="Panels:"  CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarHIST" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
 
+											</td>
+											<td  style="vertical-align: top; padding: 5px">
+												<dx:ASPxComboBox ID="cboOutputStyleHIST" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleHIST" Width="130px" EnableCallbackMode="true" >
+													<ClientSideEvents SelectedIndexChanged="changeOutputStyleHIST" />
+													<Items>
+														<dx:ListEditItem Value="Rows, Left to Right" Selected="true" />
+														<dx:ListEditItem Value="Cols, Top to Bottom"  />
+													</Items>
+												</dx:ASPxComboBox>
 											</td>
 										</tr>
 										<tr>
@@ -797,7 +809,7 @@
 												<br /><br />
 									
 												<dx:ASPxTrackBar ID="trkNumBins" ClientInstanceName="trkNumBins" runat="server" Caption="# Bins:"  MinValue="0" MaxValue="40" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
-														Height="35" Width="100px" LargeTickInterval="10" SmallTickFrequency="1"   Step="1"  EnableClientSideAPI="true" Position="0"   >
+														Height="40" Width="100px" LargeTickInterval="10" SmallTickFrequency="1"   Step="1"  EnableClientSideAPI="true" Position="0"   >
 												</dx:ASPxTrackBar>
 
 											</td>
@@ -806,6 +818,14 @@
 												<dx:ASPxCheckBox ID="chkNormalcurve" runat="server" Text="Normal curve?" Checked="True"></dx:ASPxCheckBox>
 												<br />
 												<dx:ASPxCheckBox ID="chkHistMSD" runat="server" Text="Add M +/- SD?" Checked="True"></dx:ASPxCheckBox>
+											</td>
+											<td style="vertical-align: top;">
+												<dx:ASPxTrackBar ID="trkNumColsHIST" ClientInstanceName="trkNumColsHIST" runat="server" Caption="# Output Cols:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
+												</dx:ASPxTrackBar>
+												<dx:ASPxTrackBar ID="trkNumRowsHIST" ClientInstanceName="trkNumRowsHIST" runat="server" Caption="# Output Rows:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"  ClientVisible="false"  >
+												</dx:ASPxTrackBar>
 											</td>
 										</tr>
 									</table>
@@ -826,6 +846,7 @@
 
 						   <table>
 							<tr>
+								<%--Column 1 - SCAT Width & Height sliders--%>
 								<td style="vertical-align: top; padding: 5px">
 								  <table>
 										<tr>
@@ -850,28 +871,48 @@
 									</table>
 									<br />
 								</td>
+								<%--Column 2--%>
 								<td style="vertical-align: top; padding: 5px">
+
 									<table>
 										<tr>
-											<td style="padding: 5px:">
-												<dx:ASPxTokenBox ID="cboXaxisvarSCAT" runat="server" Caption="X axis vars:"  CaptionSettings-Position="Left" ClientInstanceName="cboXaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxTokenBox>
-												<dx:ASPxTokenBox ID="cboYaxisvarSCAT" runat="server" Caption="Y axis vars:"  CaptionSettings-Position="Left" ClientInstanceName="cboYaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxTokenBox>
+											<td style="padding: 5px;">
+												<dx:ASPxTokenBox ID="tokXaxisvarSCAT" runat="server" Caption="[TO DO] X axis vars:" Enabled="false" CaptionStyle-ForeColor="Silver" CaptionSettings-Position="Left" ClientInstanceName="tokXaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxTokenBox>
+												</td>
+											<td style="padding: 5px;">
+												<dx:ASPxTokenBox ID="tokYaxisvarSCAT" runat="server" Caption="Y axis vars:" Enabled="false" CaptionStyle-ForeColor="Silver" CaptionSettings-Position="Left" ClientInstanceName="tokYaxisvarSCAT" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxTokenBox>
 
 											</td>
-											<td style="padding: 5px:">
+											</tr>
+										</table>
+									<table>
+										<tr>
+											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboColorsvarSCAT" runat="server" Caption="Colors:"  CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarSCAT" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 											</td>
-											<td style="padding: 5px:">
+											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboPanelvarSCAT" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarSCAT" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
 
 											</td>
-											<td style="width: 200px"></td>
+											<td style="width: 200px">
+												<dx:ASPxComboBox ID="cboOutputStyleSCAT" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleSCAT" Width="130px" EnableCallbackMode="true" >
+													<Items>
+														<dx:ListEditItem Value="UpperDiag"  Selected="true"/>
+														<dx:ListEditItem Value="Rows, Left to Right"  />
+														<dx:ListEditItem Value="Cols, Top to Bottom"  />
+													</Items>
+												</dx:ASPxComboBox>
+											</td>
 										</tr>
 									</table>
 									<br />
 
+									<%--CheckBox settings--%>
 									<table>
 										<tr>
+											<td>
+												<dx:ASPxCheckBox ID="chkHist" runat="server" ClientInstanceName="chkHist" Text="Show histograms?"></dx:ASPxCheckBox>
+											</td>
 											<td>
 												<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
 											</td>
@@ -885,13 +926,13 @@
 													<ClientSideEvents ValueChanged="ShowJitterAmounts" />
 												</dx:ASPxCheckBox>
 											</td>
-											<td style="padding: 5px">
 
-											</td>
 										</tr>
 										<tr>
 											<td style="padding: 5px">
-												</td>
+											</td>
+											<td style="padding: 5px">
+											</td>
 											<td style="padding: 5px">
 												<dx:ASPxTextBox ID="txtPtsCount" ClientInstanceName="txtPtsCount" runat="server" Text="15" Caption="# pts:"  Width="40px" ClientVisible="False" >
 													<ValidationSettings RegularExpression-ValidationExpression="[0-9]{1,3}" SetFocusOnError="True"
@@ -899,27 +940,18 @@
 													Display="Dynamic" ErrorTextPosition="Right" />
 												</dx:ASPxTextBox>
 												</td>
-											<td style="padding: 5px">
-												<table>
-													<tr>
-														<td>
-															<dx:ASPxTextBox ID="txtJitterAmtX" ClientInstanceName="txtJitterAmtX" runat="server" Text="0" Caption="Jitter amount (+/-) x:"  Width="40px" ClientVisible="false" >
+											<td style="padding: 2px">
+												<dx:ASPxTextBox ID="txtJitterAmtX" ClientInstanceName="txtJitterAmtX" runat="server" Text="0" Caption="Amt(+/-) x:"  Width="40px" ClientVisible="false" >
 															<ValidationSettings RegularExpression-ValidationExpression="(?:\d*\.\d{1,2}|\d+)$" SetFocusOnError="True"
 																RegularExpression-ErrorText="Enter a number"
 																Display="Dynamic" ErrorTextPosition="Bottom" />
 															</dx:ASPxTextBox>
-
-														</td>
-														<td>
-															&nbsp;&nbsp;
-															<dx:ASPxTextBox ID="txtJitterAmtY" ClientInstanceName="txtJitterAmtY" runat="server" Text="0" Caption=" y:"  Width="40px"  ClientVisible="false" >
+												<br />
+												<dx:ASPxTextBox ID="txtJitterAmtY" ClientInstanceName="txtJitterAmtY" runat="server" Text="0" Caption="Amt(+/-) y:"  Width="40px"  ClientVisible="false" >
 															<ValidationSettings RegularExpression-ValidationExpression="(?:\d*\.\d{1,2}|\d+)$" SetFocusOnError="True"
 																RegularExpression-ErrorText="Enter a number"
 																Display="Dynamic" ErrorTextPosition="Bottom" />
 															</dx:ASPxTextBox>
-														</td>
-													</tr>
-												</table>
 
 												</td>
 										</tr>
@@ -969,27 +1001,49 @@
 
 									<table>
 										<tr>
-											<td style="padding: 5px:">
+											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboXaxisvarBAR" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarBAR" Width="130px" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 
 											</td>
-											<td style="padding: 5px:">
+											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboColorsvarBAR" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarBAR" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 											</td>
-											<td style="padding: 5px:">
+											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboPanelvarBAR" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarBAR" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
+
+											</td>
+											<td style="padding: 5px;">
+												<dx:ASPxComboBox ID="cboOutputStyleBAR" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleBAR" Width="130px" EnableCallbackMode="true" >
+													<ClientSideEvents SelectedIndexChanged="changeOutputStyleBAR" />
+													<Items>
+														<dx:ListEditItem Value="Rows, Left to Right" Selected="true" />
+														<dx:ListEditItem Value="Cols, Top to Bottom"  />
+													</Items>
+												</dx:ASPxComboBox>
+											</td>
+										</tr>
+										<tr>
+											<td style="vertical-align:top;" colspan="2">
+												<dx:ASPxCheckBox ID="chkStatsTable" runat="server" Text="Display Descriptive Stats table?" Checked="True"></dx:ASPxCheckBox>
+											</td>
+											<td></td>
+											<td style="vertical-align:top;">
+												<dx:ASPxTrackBar ID="trkNumColsBAR" ClientInstanceName="trkNumColsBAR" runat="server" Caption="# Output Cols:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
+												</dx:ASPxTrackBar>
+												<dx:ASPxTrackBar ID="trkNumRowsBAR" ClientInstanceName="trkNumRowsBAR" runat="server" Caption="# Output Rows:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"  ClientVisible="false"  >
+												</dx:ASPxTrackBar>
 
 											</td>
 										</tr>
 									</table>
 									<br />
-									<dx:ASPxCheckBox ID="chkStatsTable" runat="server" Text="Display Descriptive Stats table?" Checked="True"></dx:ASPxCheckBox>
 								</td>
 							</tr>
 						</table>
 
-
-						<br />
+						<br/>
 					</dx:ContentControl>
 				</ContentCollection>
 			</dx:TabPage>
@@ -1008,8 +1062,6 @@
 							</tr>
 						</table>
 						
-
-						<br />
 						<br />
 						<table>
 							<tr>
@@ -1041,16 +1093,28 @@
 									<table>
 										<tr>
 											<td style="padding: 5px">
-												<dx:ASPxComboBox ID="cboXaxisvarLINE" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarLINE" Width="130px" EnableCallbackMode="true" DropDownRows="12"></dx:ASPxComboBox>
+												<dx:ASPxComboBox ID="cboXaxisvarLINE" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarLINE" Width="130px" EnableCallbackMode="true" DropDownRows="12">
+														<ClientSideEvents SelectedIndexChanged="cboXaxisvarLINE_changed" />
+												</dx:ASPxComboBox>
 											</td>
 											<td style="padding: 5px">
-												<dx:ASPxComboBox ID="cboColorsvarLINE" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarLINE" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+												<dx:ASPxComboBox ID="cboColorsvarLINE" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarLINE" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" >
+														<ClientSideEvents SelectedIndexChanged="cboColorsvarLINE_changed" />
+												</dx:ASPxComboBox>
 											</td>
 											<td style="padding: 5px">
 												<dx:ASPxComboBox ID="cboPanelvarLINE" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarLINE" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
 
 											</td>
-											<td style="width: 200px"></td>
+											<td style="padding: 5px; width: 200px;">
+												<dx:ASPxComboBox ID="cboOutputStyleLINE" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleLINE" Width="130px" EnableCallbackMode="true" >
+													<ClientSideEvents SelectedIndexChanged="changeOutputStyleLINE" />
+													<Items>
+														<dx:ListEditItem Value="Rows, Left to Right" Selected="true" />
+														<dx:ListEditItem Value="Cols, Top to Bottom"  />
+													</Items>
+												</dx:ASPxComboBox>
+											</td>
 										</tr>
 										<tr>
 										<td colspan="2">
@@ -1084,7 +1148,16 @@
 
 												</Items>
 											</dx:ASPxComboBox>
-										</td>							
+										</td>	
+											<td style="vertical-align:top;">
+												<dx:ASPxTrackBar ID="trkNumColsLINE" ClientInstanceName="trkNumColsLINE" runat="server" Caption="# Output Cols:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
+												</dx:ASPxTrackBar>
+												<dx:ASPxTrackBar ID="trkNumRowsLINE" ClientInstanceName="trkNumRowsLINE" runat="server" Caption="# Output Rows:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+														Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"  ClientVisible="false"  >
+												</dx:ASPxTrackBar>
+
+											</td>
 										</tr>
 									</table>
 									
@@ -1107,24 +1180,55 @@
 								<td colspan="3">
 									<asp:Label ID="lblXT1" runat="server" Text="Crosstabs tables will be created for each selected categorical variable."></asp:Label><br />
 									<asp:Label ID="lblXT2" runat="server" Text="Select any additional row or column variables here."></asp:Label>
+									<asp:Label ID="lblXTError" runat="server" Text="" ForeColor="red" ></asp:Label>
 								</td>
 							</tr>
 							<tr>
-								<td>
-									Rows:<br />
-<%--									<dx:ASPxComboBox ID="cboXTrow" runat="server" Caption="" ClientInstanceName="cboXTrow" Width="180px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxComboBox>--%>
-									<dx:ASPxTokenBox ID="cboXTrow" runat="server" Caption="" ClientInstanceName="cboXTrow" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+								<td style="padding: 5px">
+									<dx:ASPxTokenBox ID="tokXTrow" runat="server" Caption="Rows:" CaptionSettings-Position="Top" ClientInstanceName="tokXTrow" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
 
 								</td>
-								<td>
-									Columns:<br />
-									<dx:ASPxTokenBox ID="cboXTcol" runat="server" Caption="" ClientInstanceName="cboXTcol" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+								<td style="padding: 5px">
+									<dx:ASPxTokenBox ID="tokXTcol" runat="server" Caption="Columns:" CaptionSettings-Position="Top" ClientInstanceName="tokXTcol" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
 								</td>
-								<td>
-									Panels:<br />
-									<dx:ASPxTokenBox ID="cboXTpanel" runat="server" Caption="" ClientInstanceName="cboXTpanel" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
-								</td>							</tr>
+								<td style="padding: 5px">
+									<dx:ASPxTokenBox ID="tokXTpanel" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="tokXTpanel" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+								</td>							
+								<td style="padding: 5px">
+									<dx:ASPxComboBox ID="cboOutputStyleXT" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleXT" Width="130px" EnableCallbackMode="true" >
+										<ClientSideEvents SelectedIndexChanged="changeOutputStyleXT" />
+										<Items>
+											<dx:ListEditItem Value="Rows, Left to Right" Selected="true" />
+											<dx:ListEditItem Value="Cols, Top to Bottom"  />
+										</Items>
+									</dx:ASPxComboBox>
+								</td>							
 
+							</tr>
+							<tr>
+								<td style="padding: 5px">
+									<dx:ASPxTokenBox ID="tokXTcell" runat="server" Caption="Cell contents:" CaptionSettings-Position="Top" ClientInstanceName="tokXTcell" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+
+								</td>
+								<td style="padding: 5px">
+									<dx:ASPxTokenBox ID="tokXTstats" runat="server" Caption="Cell Stats:" CaptionSettings-Position="Top" ClientInstanceName="tokXTstats" Width="150px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ClearButton-DisplayMode="Always" ></dx:ASPxTokenBox>
+
+								</td>
+								<td style="padding: 5px">
+									<dx:ASPxTrackBar ID="trkDecPlaces" ClientInstanceName="trkDecPlaces" runat="server" Caption="Decimal places:" CaptionSettings-Position="Top"  MinValue="0" MaxValue="5" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+											Height="45" Width="80px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="2"   >
+									</dx:ASPxTrackBar>
+
+								</td>
+								<td style="padding: 5px">
+									<dx:ASPxTrackBar ID="trkNumColsXT" ClientInstanceName="trkNumColsXT" runat="server" Caption="# Output Cols:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+											Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"   >
+									</dx:ASPxTrackBar>
+									<dx:ASPxTrackBar ID="trkNumRowsXT" ClientInstanceName="trkNumRowsXT" runat="server" Caption="# Output Rows:" CaptionSettings-Position="Top"  MinValue="1" MaxValue="12" ScalePosition="LeftOrTop" ShowChangeButtons="false" 
+											Height="45" Width="130px" LargeTickInterval="1" SmallTickFrequency="1" Step="1"  EnableClientSideAPI="true" Position="4"  ClientVisible="false"  >
+									</dx:ASPxTrackBar>
+								</td>
+							</tr>
 							<tr>
 								<td colspan="3">
 									<br />
@@ -1139,6 +1243,13 @@
 											<dx:ListEditItem  Value="2" Text="2. Use all Row/Col vars in a single, combined table" />
 										</Items>
 									</dx:ASPxComboBox>
+								</td>
+								<td style="vertical-align:top;">
+									
+									
+									
+
+
 								</td>
 
 							</tr>
@@ -1173,7 +1284,7 @@
 										</Items>
 									</dx:ASPxRadioButtonList>
 
-									<dx:ASPxComboBox ID="cboColorsvarPCA" runat="server" Caption="Subgroups:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarPCA" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+									<dx:ASPxComboBox ID="cboSubgroupsvarPCA" runat="server" Caption="Subgroups:" CaptionSettings-Position="Top" ClientInstanceName="cboSubgroupsvarPCA" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 
 									</td>
 							</tr>
@@ -1182,7 +1293,47 @@
 						</dx:ContentControl>
 					</ContentCollection>
 				</dx:TabPage>
+			<dx:TabPage Name="Set Colors" Text="Set Colors..." TabStyle-HorizontalAlign="Left"  ClientVisible="false">
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl1" runat="server" Width="600px">
 
+						<br />
+	
+									
+							<table>
+								<tr>
+									<td>Colors<br /> 1 - 5:</td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color1" Color="#377eb8" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color2" Color="#e41a1c" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color3" Color="#4daf4a" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color4" Color="#984ea3" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color5" Color="#626567" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+								</tr>
+								<tr>
+									<td>Colors<br /> 6 - 10:</td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color6"  Color="#81d4fa" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color7"  Color="#ff7f00" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color8"  Color="#99ff00" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color9"  Color="#f781bf" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color10" Color="#BDC3C7" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+								</tr>
+								<tr>
+									<td>Colors<br />11 - 15:</td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color11" Color="#0000CC" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color12" Color="#B71C1C" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color13" Color="#145A32" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color14" Color="#311B92" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+									<td><dx:ASPxColorEdit runat="server" ID="Color15" Color="#212121" Width="30px" ClearButton-DisplayMode="Never" EnableCustomColors="true"/></td>
+								</tr>
+							</table>
+
+						<br />
+
+
+
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
 		</TabPages>
 	</dx:ASPxPageControl>
 
@@ -1202,7 +1353,7 @@
 				</dx:TabPage>
 			
 		
-		<dx:TabPage Text="Step 3b: Create Tables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" Name="tabTables">
+		<dx:TabPage Name="tabTables" Text="Create Tables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl11" runat="server">
 							<dx:ASPxButton ID="btnViewData" ClientInstanceName="btnViewData" runat="server" Text="View Selected Data"
@@ -1255,7 +1406,7 @@
 								<tr>
 									<td style="vertical-align: top;">
 							<dx:ASPXLabel ID="lblVarLabels" runat="server" ClientInstanceName="lblVarLabels" Text="Details for selected variables..." ForeColor="Gray" Font-Bold="true" Visible="false"></dx:ASPXLabel>
-							<dx:ASPxButton ID="btnVarLabelsShow" runat="server" ClientInstanceName="btnVarLabelsShow" Text="Show" Visible="false" Paddings-Padding="0" AutoPostBack="false"  ClientEnabled="true"  >
+							<dx:ASPxButton ID="btnVarLabelsShow" runat="server" ClientInstanceName="btnVarLabelsShow" Text="Show" Visible="false" Paddings-Padding="0" AutoPostBack="false"  ClientEnabled="false"  >
 								<ClientSideEvents  Click="btnVarLabels_Show"/>
 							</dx:ASPxButton>
 							<dx:ASPxButton ID="btnVarLabelsHide" runat="server" ClientInstanceName="btnVarLabelsHide" Text="Hide" Visible="false" Paddings-Padding="0" AutoPostBack="false" ClientEnabled="true" Checked="false" >
@@ -1276,6 +1427,7 @@
 									<dx:GridViewDataColumn FieldName="vartype" Caption="Var Type"></dx:GridViewDataColumn>
 								</Columns>
 							</dx:ASPxGridView>
+						  <dx:ASPxGridViewExporter ID="gvSelectedVarsExporter" runat="server" GridViewID="gvSelectedVars"></dx:ASPxGridViewExporter>
 									</td>
 								</tr>
 							</table>
@@ -1353,21 +1505,12 @@
 
 
 		
-<%--	<dx:ASPxCallbackPanel ID="callbackCrosstabs" runat="server"  OnCallback="callbackCrosstabs_OnCallback" ClientInstanceName="callbackCrosstabs">
-		<PanelCollection>
-			<dx:PanelContent ID="panelcontent8" runat="server">
-			</dx:PanelContent>
-		</PanelCollection>
-	</dx:ASPxCallbackPanel>--%>
-
-
-
 	<asp:UpdatePanel ID="panel" runat="server" UpdateMode="Conditional">	</asp:UpdatePanel>
 
 	<asp:Panel ID="testpanel" runat="server" Visible="true" >	</asp:Panel>
 
 
-	<dx:ASPxPopupControl ID="pcError" runat="server" Width="320" CloseAction="CloseButton" CloseOnEscape="true" Modal="True">
+	<dx:ASPxPopupControl ID="popError" ClientInstanceName="popError" runat="server" Width="320" CloseAction="CloseButton" CloseOnEscape="true" Modal="True">
 												  <ContentCollection>
 													  <dx:PopupControlContentControl>
 															<dx:ASPxLabel ID="lblError" runat="server" ClientInstanceName="lblError" Text="" ForeColor="Red" EnableClientSideAPI="true" ClientVisible="false"></dx:ASPxLabel>

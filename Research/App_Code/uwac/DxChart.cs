@@ -26,13 +26,17 @@ namespace uwac
 	/// <summary>
 	/// Summary description for DxChart
 	/// </summary>
+	[Serializable]
 	public abstract class DxChart
 	{
 		private WebChartControl _chart;
 		private XYDiagram _xydiagram;
 		private string _emptymsg;
 		private ASPxCheckBox _chk;
-
+		public string guid { get; set; }
+		public int W { get; set; }
+		public int H { get; set; }
+		public bool isdiag { get; set; }
 
 		public WebChartControl chart { get { return _chart; } set { _chart = value; } }
 		public XYDiagram xydiagram {  get { return _xydiagram; } set { _xydiagram = value; } }
@@ -44,9 +48,13 @@ namespace uwac
 
 		public DxChart()
 		{
+			Guid newguid = Guid.NewGuid();
+			guid = newguid.ToString();
+			isdiag = false;
 			_chart = new WebChartControl();
 			_xydiagram = new XYDiagram();
 			_chart.Diagram = _xydiagram;
+			_chart.EnableViewState = true;
 
 			_xydiagram.AxisX.GridLines.Visible = true;
 			_xydiagram.AxisY.GridLines.Visible = true;

@@ -46,7 +46,12 @@ namespace uwac
 		private string _colorvar = "none";
 		private string _panelvar = "none";
 		private List<string> _numvars;
+		private List<string> _datevars;
+		private List<string> _agevars;
 		private PaneLayoutDirection _panesLayoutDirection = PaneLayoutDirection.Horizontal;
+		private DxChartLayout _chartlayout = DxChartLayout.Horizontal;
+		public int maxRow { get; set; }
+		public int maxCol { get; set; }
 
 		public DxChartType DxChartType { get { return _charttype; } set { _charttype = value; } }
 		public int W { get { return _W; } set { _W = value; } }
@@ -62,7 +67,10 @@ namespace uwac
 		public string colorvar { get { return _colorvar; } set { _colorvar = value; } }
 		public string panelvar { get { return _panelvar; } set { _panelvar = value; } }
 		public List<string> numvars { get { return _numvars; } set { _numvars = value; } }
+		public List<string> datevars { get { return _datevars; } set { _datevars = value; } }
+		public List<string> agevars { get { return _agevars; } set { _agevars = value; } }
 		public PaneLayoutDirection panesLayoutDirection { get { return _panesLayoutDirection; } set { _panesLayoutDirection = value; } }
+		public DxChartLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
 
 		private List<Color> _colors;
 
@@ -121,7 +129,12 @@ namespace uwac
 		Lineplot = 4,
 		PCA = 5
 	}
-
+	public enum DxChartLayout
+	{
+		Horizontal = 1,
+		Vertical = 2,
+		Diagnonal = 3
+	}
 }
 
 

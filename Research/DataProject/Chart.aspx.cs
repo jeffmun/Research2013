@@ -3,29 +3,36 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Drawing;
-using DevExpress.Web;
-using DevExpress.Web.ASPxPivotGrid;
-using DevExpress.XtraCharts;
-using DevExpress.XtraCharts.Web;
 using uwac;
 using uwac.trk;
+using DevExpress.Web;
+using DevExpress.Web.WebClientUIControl;
+using DevExpress.Docs;
 using DevExpress.Pdf;
 using DevExpress.Pdf.Interop;
-using DevExpress.XtraPrinting;
 using DevExpress.Xpf.Printing;
-using DevExpress.XtraPrinting.Links;
+using DevExpress.XtraCharts;
 using DevExpress.XtraCharts.Native;
+using DevExpress.XtraCharts.Web;
+using DevExpress.XtraCharts.Web.Designer;
+using DevExpress.XtraPivotGrid;
+using DevExpress.XtraPrinting;
+using DevExpress.XtraPrinting.Links;
+
 using DevExpress.XtraReports;
 using DevExpress.XtraReports.UI;
-using DevExpress.XtraPivotGrid;
 using NReco.PivotData;
 using System.IO;
 using NReco.PivotData.Output;
+using DevExpress.XtraPrintingLinks;
+using System.Xml;
+using System.Xml.Serialization;
 
 //public partial class PointSeries : ChartBasePage{
 public partial class DataProject_Chart : System.Web.UI.Page
@@ -53,6 +60,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	#region Page Setup
 	protected void Page_Init(object sender, EventArgs e)
 	{
+		printDebug = true;
 		this.Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
 		Session["studyID"] = this.Master.Master_studyID.ToString();	
 	}
@@ -105,90 +113,20 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		}
 
 
+		SQL_utils sql = new SQL_utils("backend");
+		int n_txgrp_levels = sql.IntScalar_from_SQLstring("select count(distinct(txgrp)) from trk.vwMasterStatus_S where studyID=" + Master.Master_studyID.ToString());
+		bool addtxgrp = (n_txgrp_levels > 1) ? true : false;
+		int n_timept_levels = sql.IntScalar_from_SQLstring("select count(distinct(timepointID)) from tblTimePoint where studyID=" + Master.Master_studyID.ToString());
+		bool addtimept = (n_timept_levels > 1) ? true : false;
+		sql.Close();
 
-		chartWhist = 300;
-		chartHhist = 300;
-		chartWscat = 300;
-		chartHscat = 300;
-		chartWbar = 300;
-		chartHbar = 300;
-		chartWline = 300;
-		chartHline = 300;
+		InitializeChartSizes();
+		InitializeDropdowns(addtxgrp, addtimept);
+		InitializeTokenboxes(addtxgrp, addtimept);
 
-		lblWhist.Text = chartWhist.ToString();
-		lblHhist.Text = chartHhist.ToString();
-		lblWscat.Text = chartWscat.ToString();
-		lblHscat.Text = chartHscat.ToString();
-		lblWbar.Text  = chartWbar.ToString();
-		lblHbar.Text  = chartHbar.ToString();
-		lblWline.Text = chartWline.ToString();
-		lblHline.Text = chartHline.ToString();
-
-		trackWhist.Value = chartWhist;
-		trackHhist.Value = chartHhist;
-		trackWscat.Value = chartWscat;
-		trackHscat.Value = chartHscat;
-		trackWbar.Value = chartWbar ;
-		trackHbar.Value = chartHbar;
-
-		List<string> defaultvals = new List<string> { "variable", "timept", "group", "txgrp", "sex" };
-
-		PopulateDropdownItems(cboColorsvarHIST, new List<string> { "timept", "group", "txgrp", "sex" });
-		PopulateDropdownItems(cboPanelvarHIST, new List<string> { "timept", "group", "txgrp", "sex" });
-
-
-		PopulateDropdownItems(cboXaxisvarBAR, defaultvals);
-		PopulateDropdownItems(cboColorsvarBAR, new List<string> { "none", "variable","timept", "group", "txgrp", "sex" });
-		PopulateDropdownItems(cboPanelvarBAR, new List<string> { "none", "timept", "group", "txgrp", "sex" });
-
-		//PopulateTokenboxItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
-		//PopulateTokenboxItems(cboYaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
-		PopulateDropdownItems(cboColorsvarSCAT, new List<string> { "none", "timept", "group", "txgrp", "sex" });
-		PopulateDropdownItems(cboPanelvarSCAT, new List<string> { "none", "timept", "group", "txgrp", "sex" });
-
-
-		PopulateDropdownItems(cboXaxisvarLINE,   new List<string> { "variable", "timept" });
-		PopulateDropdownItems(cboColorsvarLINE, new List<string> { "none", "variable", "timept", "group", "txgrp", "sex" });
-		PopulateDropdownItems(cboPanelvarLINE, new List<string> { "none","variable", "timept", "group", "txgrp", "sex", "id" });
-
-		PopulateDropdownItems(cboColorsvarPCA, defaultvals);
-
-
-		cboColorsvarHIST.Value = "none";
-		cboPanelvarHIST.Value = "none";
-
-		cboXaxisvarBAR.Value = "variable";
-		cboColorsvarBAR.Value = "none";
-		cboPanelvarBAR.Value = "none";
-
-		cboColorsvarSCAT.Value = "none";
-		cboPanelvarSCAT.Value = "none";
-
-		cboXaxisvarLINE.Value = "variable";
-		cboColorsvarLINE.Value = "none";
-		cboPanelvarLINE.Value = "none";
-
-		PopulateTokenboxItems(cboXTrow, defaultvals);
-		PopulateTokenboxItems(cboXTcol, defaultvals);
-		PopulateTokenboxItems(cboXTpanel, defaultvals);
-
-		cboXTrow.Value = "variable";
-		cboXTcol.Value = "group";
-
-		//ToggleTabVisible("tabVars", false);
 		ToggleTabVisible("tabPlots", true);
-		ToggleTabVisible("tabTables", false);
-
-
+		ToggleTabVisible("tabTables", true);
 	}
-
-
-	protected void ToggleTabVisible(string name, bool makeVisible)
-	{
-		int idx = tabSteps.TabPages.IndexOfName(name);
-		tabSteps.TabPages[idx].ClientVisible = makeVisible;
-	}
-
 
 
 	protected void PageLoad_PostBack()
@@ -198,10 +136,11 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		Int32.TryParse(trackWhist.Value.ToString(), out chartWhist);
 		Int32.TryParse(trackHhist.Value.ToString(), out chartHhist);
 
-
+		//DataSet is NULL
 		if (Session["dset"] == null){
 			log(String.Format("Page_Load Is PostBack - {0}   A1 Session[dset] IS NULL", IsPostBack));
 		}
+		//DataSet is NOT NULL
 		else if (Session["dset"] != null)
 		{
 			log(String.Format("Page_Load Is PostBack - {0}   B1 Session[dset] IS NOT NULL", IsPostBack));
@@ -209,6 +148,8 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 			//Set the selected sheet
 			string source = "";
+
+			//Selected sheet is NULL or Empty
 			if (String.IsNullOrEmpty(gridDataSheets.Text))
 			{
 				if (Session["selectedsheet"] == null)
@@ -222,6 +163,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 					source = "Session";
 				}
 			}
+			//Selected sheet is NOT NULL 
 			else
 			{
 				selectedsheet = gridDataSheets.Text;
@@ -234,6 +176,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 
 
+			//dpdata IS NOT NULL
 			if (Session["dpdata"] != null)
 			{
 				log(String.Format(" !!!!!!!!!!!! dpdata IS NOT NULL !!!!!!!!!!!!"));
@@ -252,7 +195,8 @@ public partial class DataProject_Chart : System.Web.UI.Page
 				lblSelectedDataInfo2.Text = dpdata.Info();
 
 			}
-			else 
+			//dpdata IS NULL
+			else
 			{
 				log(String.Format(" ******** dpdata IS NULL ********"));
 				log(String.Format(" ******** CREATING NEW dpdata **********"));
@@ -273,17 +217,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 				Session["dpdata"] = dpdata;
 
 				lblSelectedDataInfo2.Text = dpdata.Info();
-			}
-
-
-			if (Session["dxchart"] != null)
-			{
-				dxchart = (DxCharts)Session["dxchart"];
-			}
-			else
-			{
-				dxchart = new DxCharts(dpdata);
-				Session["dxchart"] = dxchart;
 			}
 
 
@@ -308,54 +241,13 @@ public partial class DataProject_Chart : System.Web.UI.Page
 				gridDataSheets.DataBind();
 			}
 
-			
-			List<string> selected_numvars  = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-			List<string> selected_textvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-			List<string> selected_datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-			List<string> selected_agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+			ReInitialize();
 
 
-			dpdata.numericvars = selected_numvars;
-			dpdata.textvars = selected_textvars;
-			dpdata.datevars = selected_datevars;
-
-			//PopulateDropdownItems(cboXaxisvar, selected_textvars);
-
-
-			PopulateDropdownItems(cboColorsvarHIST, selected_textvars);
-			PopulateDropdownItems(cboPanelvarHIST, selected_textvars);
-
-			PopulateDropdownItems(cboColorsvarBAR, selected_textvars);
-			PopulateDropdownItems(cboPanelvarBAR, selected_textvars);
-			PopulateDropdownItems(cboColorsvarSCAT, selected_textvars);
-			PopulateDropdownItems(cboPanelvarSCAT, selected_textvars);
-
-
-
-
-			List<string> vars_for_xaxis_lineplot = new List<string> { "variable", "timept " };
-			if (selected_datevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_datevars);
-			if (selected_agevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_agevars);
-
-			PopulateDropdownItems(cboXaxisvarLINE,  vars_for_xaxis_lineplot);
-
-
-			PopulateTokenboxItems(cboXTrow, selected_textvars);
-			PopulateTokenboxItems(cboXTcol, selected_textvars);
-			PopulateTokenboxItems(cboXTpanel, selected_textvars);
-
-
-			PopulateTokenboxItems(cboXaxisvarSCAT, selected_numvars);
-			PopulateTokenboxItems(cboYaxisvarSCAT, selected_numvars);
-
-
-			//LoadDxChartSettings(dxchart);
 			//LoadColors();
 			GetColors();
 		}
-
-
-
 	}
 
 	protected void ProcessQueryStringParams()
@@ -393,21 +285,161 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 	protected void LogDPDataInfo(DPData dpdata)
 	{
-		log(String.Format(" /// dpdata.dt has {0} rows.", dpdata.dt.Rows.Count));
-		log(String.Format(" /// dpdata.dtdict has {0} rows.", dpdata.dtdict.Rows.Count));
+		if (dpdata.dt != null)
+		{
+			log(String.Format(" /// dpdata.dt has {0} rows.", dpdata.dt.Rows.Count));
+			log(String.Format(" /// dpdata.dtdict has {0} rows.", dpdata.dtdict.Rows.Count));
 
-		if (dpdata.dtstacked == null)
-		{
-			log(String.Format(" /// dpdata.dtstacked IS NULL"));
-		}
-		else
-		{
-			log(String.Format(" /// dpdata.dtstacked has {0}", dpdata.dtstacked.Rows.Count));
+			if (dpdata.dtstacked == null)
+			{
+				log(String.Format(" /// dpdata.dtstacked IS NULL"));
+			}
+			else
+			{
+				log(String.Format(" /// dpdata.dtstacked has {0}", dpdata.dtstacked.Rows.Count));
+			}
 		}
 
 	}
 
 	#endregion
+
+	#region Initialize controls
+	protected void InitializeChartSizes()
+	{
+
+		chartWhist = 300;
+		chartHhist = 300;
+		chartWscat = 300;
+		chartHscat = 300;
+		chartWbar = 300;
+		chartHbar = 300;
+		chartWline = 300;
+		chartHline = 300;
+
+		lblWhist.Text = chartWhist.ToString();
+		lblHhist.Text = chartHhist.ToString();
+		lblWscat.Text = chartWscat.ToString();
+		lblHscat.Text = chartHscat.ToString();
+		lblWbar.Text = chartWbar.ToString();
+		lblHbar.Text = chartHbar.ToString();
+		lblWline.Text = chartWline.ToString();
+		lblHline.Text = chartHline.ToString();
+
+		trackWhist.Value = chartWhist;
+		trackHhist.Value = chartHhist;
+		trackWscat.Value = chartWscat;
+		trackHscat.Value = chartHscat;
+		trackWbar.Value = chartWbar;
+		trackHbar.Value = chartHbar;
+	}
+
+	protected void InitializeDropdowns(bool addtxgrp, bool addtimept)
+	{
+		PopulateDropdownItems(cboColorsvarHIST, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+		PopulateDropdownItems(cboPanelvarHIST, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+
+
+		PopulateDropdownItems(cboXaxisvarBAR, new List<string> { "variable", "group", "sex" }, false, addtimept);
+		PopulateDropdownItems(cboColorsvarBAR, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
+		PopulateDropdownItems(cboPanelvarBAR, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+
+		//PopulateTokenboxItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
+		//PopulateTokenboxItems(cboYaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
+		PopulateDropdownItems(cboColorsvarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+		PopulateDropdownItems(cboPanelvarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+
+
+		PopulateDropdownItems(cboXaxisvarLINE, new List<string> { "variable" }, false, addtimept);
+		PopulateDropdownItems(cboColorsvarLINE, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
+		PopulateDropdownItems(cboPanelvarLINE, new List<string> { "none", "variable", "group", "sex", "id" }, addtxgrp, addtimept);
+
+		PopulateDropdownItems(cboSubgroupsvarPCA, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+
+
+		cboColorsvarHIST.Value = "none";
+		cboPanelvarHIST.Value = "none";
+
+		cboXaxisvarBAR.Value = "variable";
+		cboColorsvarBAR.Value = "none";
+		cboPanelvarBAR.Value = "none";
+
+		cboColorsvarSCAT.Value = "none";
+		cboPanelvarSCAT.Value = "none";
+
+		cboXaxisvarLINE.Value = "variable";
+		cboColorsvarLINE.Value = "none";
+		cboPanelvarLINE.Value = "none";
+	}
+
+	protected void InitializeTokenboxes(bool addtxgrp, bool addtimept)
+	{
+		PopulateTokenboxItems(tokXTrow, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
+		PopulateTokenboxItems(tokXTcol, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
+		PopulateTokenboxItems(tokXTpanel, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
+
+		PopulateTokenboxItems(tokXTcell, new List<string> { "id" });
+		PopulateTokenboxItems(tokXTstats, new List<string> { "N", "Mean", "SD" });
+
+
+		tokXTrow.Value = "variable";
+		tokXTcol.Value = "group";
+		tokXTcell.Value = "id";
+		tokXTstats.Value = "N";
+
+	}
+
+
+	protected void ReInitialize()
+	{
+		List<string> selected_numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		List<string> selected_textvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+		List<string> selected_datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		List<string> selected_agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+
+		dpdata.numericvars = selected_numvars;
+		dpdata.textvars = selected_textvars;
+		dpdata.datevars = selected_datevars;
+
+		//PopulateDropdownItems(cboXaxisvar, selected_textvars);
+
+
+		PopulateDropdownItems(cboColorsvarHIST, selected_textvars);
+		PopulateDropdownItems(cboPanelvarHIST, selected_textvars);
+
+		PopulateDropdownItems(cboColorsvarBAR, selected_textvars);
+		PopulateDropdownItems(cboPanelvarBAR, selected_textvars);
+		PopulateDropdownItems(cboColorsvarSCAT, selected_textvars);
+		PopulateDropdownItems(cboPanelvarSCAT, selected_textvars);
+
+
+
+
+		List<string> vars_for_xaxis_lineplot = new List<string> { "variable", "timept " };
+		if (selected_datevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_datevars);
+		if (selected_agevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_agevars);
+
+		PopulateDropdownItems(cboXaxisvarLINE, vars_for_xaxis_lineplot);
+
+
+		PopulateTokenboxItems(tokXTrow, selected_textvars);
+		PopulateTokenboxItems(tokXTcol, selected_textvars);
+		PopulateTokenboxItems(tokXTpanel, selected_textvars);
+
+
+		List<string> selected_num_text = new List<string>();
+		selected_num_text.AddRange(selected_numvars);
+		selected_num_text.AddRange(selected_textvars);
+
+
+		PopulateTokenboxItems(tokXTcell, selected_num_text);
+
+		//PopulateTokenboxItems(tokXaxisvarSCAT, selected_numvars);
+		//PopulateTokenboxItems(tokYaxisvarSCAT, selected_numvars);
+	}
+	#endregion
+
 
 
 	protected void BindVarGrids()
@@ -464,43 +496,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 	}
 
-	//protected void LoadDxChartSettings(DxCharts chart)
-	//{
-	//	log(" === LoadDxChartSettings === ");
-	//	chart.chartWhist = chartWhist;
-	//	chart.chartHhist = chartHhist;
-
-	//	chart.numtablecols = Convert.ToInt32(trkNumCols.Position);
-	//	chart.numbins = Convert.ToInt32(trkNumBins.Position);
-
-
-	//	chart.SetColor((Color)Color1.Value, 0);
-	//	chart.SetColor((Color)Color2.Value, 1);
-	//	chart.SetColor((Color)Color3.Value, 2);
-	//	chart.SetColor((Color)Color4.Value, 3);
-	//	chart.SetColor((Color)Color5.Value, 4);
-	//	chart.SetColor((Color)Color6.Value, 5);
-	//	chart.SetColor((Color)Color7.Value, 6);
-	//	chart.SetColor((Color)Color8.Value, 7);
-	//	chart.SetColor((Color)Color9.Value, 8);
-	//	chart.SetColor((Color)Color10.Value, 9);
-	//	chart.SetColor((Color)Color11.Value, 10);
-	//	chart.SetColor((Color)Color12.Value, 11);
-	//	chart.SetColor((Color)Color13.Value, 12);
-	//	chart.SetColor((Color)Color14.Value, 13);
-	//	chart.SetColor((Color)Color15.Value, 14);
-
-
-	//	if (cboPanes.SelectedItem.Value.ToString() == "none")
-	//	{
-	//		chart.usepanes = false;
-	//	}
-	//	else
-	//	{
-	//		chart.usepanes = true;
-	//		chart.SetLayoutDirection(cboPanes.SelectedItem.Value.ToString());
-	//	}
-	//}
 
 
 	protected void LoadFiles(int pk)
@@ -525,9 +520,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		sql.Close();
 	}
 
-
-	//DataTable dtv = uwac.trk.dataops.GetVarsForDataproject(pk, smID_csv);
-
+	
 	protected void LoadExcelData(string xlfile)
 	{
 		log(String.Format(" === LoadExcelData {0} ===", xlfile));
@@ -569,7 +562,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		foreach (DataTable dt in dset.Tables)
 		{
 			string tblname = dt.TableName;
-			if (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode")
+			if (tblname=="Subjects" | (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode"))
 			{
 				DataRow row = datasheets.NewRow();
 
@@ -618,7 +611,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			foreach (DataTable dt in dset.Tables)
 			{
 				string tblname = dt.TableName;
-				if (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode")
+				if (tblname=="Subjects" | (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode"))
 				{
 					datasheetnames.Add(dt.TableName);
 				}
@@ -631,6 +624,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		}
 
 	}
+
 
 	protected DataTable DataDictionaryForSheet(DataSet dset, string sheet)
 	{
@@ -652,6 +646,40 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			DataTable dt = vw.ToTable();
 			return dt;
 		}
+		else if (sheet == "Subjects")
+		{
+			DataView vw = dictorig.AsDataView();
+			vw.RowFilter = "[measname] = '!'";  //no records
+			DataTable dt = vw.ToTable();
+
+			int counter = 0;
+			foreach(DataColumn subjcol in dset.Tables["Subjects"].Columns)
+			{
+				counter++;
+				string dtype = subjcol.DataType.ToString().Replace("System.","");
+
+				string sqldatatype = "";
+
+				if (subjcol.ColumnName.Contains("date")) sqldatatype = "date";
+				else if (subjcol.ColumnName == "studystart") sqldatatype = "date";
+				else if (subjcol.ColumnName == "txstart") sqldatatype = "date";
+				else if (dtype == "Double") sqldatatype = "float";
+				else if (dtype.StartsWith("Int")) sqldatatype = "int";
+				else if (dtype == "String") sqldatatype = "varchar";
+				else sqldatatype = "varchar";
+
+
+				DataRow row = dt.NewRow();
+				row["pos"] = counter;
+				row["measname"] = "Subjects";
+				row["varname"] = subjcol.ColumnName;
+				row["DataType"] = sqldatatype;
+				row["FieldLabel"] = SubjectVarLabel(subjcol.ColumnName);
+				row["InAnalysis"] = 0;
+				dt.Rows.Add(row);
+			}
+			return dt;
+		}
 		else
 		{
 			DataView vw = dictorig.AsDataView();
@@ -662,12 +690,32 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 	}
 
+	public string SubjectVarLabel (string v)
+	{
+		string varlabel = "";
 
+		switch (v)
+		{
+			case "subjstatus": varlabel = "Subject status"; break;
+			case "subjstatusdetail": varlabel = "Subject status detail"; break;
+			case "txstart": varlabel = "Date Treatment started"; break;
+			case "txstart_agemos": varlabel = "Age when Treatment started"; break;
+			case "studystart": varlabel = "Date subject started the study"; break;
+			case "studystart_agemos": varlabel = "Age when subject started the study"; break;
+			case "txstartnote": varlabel = "Notes regarding treatment start date"; break;
+			case "subjnotes": varlabel = "Subject notes"; break;
+			default: varlabel = v; break;
+		}
+		return varlabel;
+	}
 
 	protected void LoadVars(DataSet dset)
 	{
 		LoadVars(dset, "Data");
 	}
+
+
+
 
 	protected void LoadVars(DataSet dset, string sheet)
 	{
@@ -706,7 +754,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 
 		DataView vwdatadict_age = datadict.AsDataView();
-		vwdatadict_age.RowFilter = "(FieldLabel like '% age (mo%' or FieldLabel like '%age mos%')";
+		vwdatadict_age.RowFilter = "(FieldLabel like '%age in%' or FieldLabel like '%age (mo%' or FieldLabel like '%age mos%')";
 		DataTable tmpdatadict_age = vwdatadict_age.ToTable();
 
 
@@ -860,6 +908,103 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	}
 
 
+
+	protected void PopulatePivotMissing(DataTable dtstacked)
+	{
+		pivotMissing.DataSource = dtstacked;
+		pivotMissing.DataBind();
+
+		pivotMissing.Visible = true;
+	}
+
+
+	protected void DisplaySelectedVars()
+	{
+
+		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+		List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+		List<string> allvars = new List<string>();
+		allvars.AddRange(numvars);
+		allvars.AddRange(txtvars);
+		allvars.AddRange(datevars);
+		allvars.AddRange(agevars);
+
+		DataTable dt_selvars = new DataTable();
+		dt_selvars.Columns.Add(new DataColumn("varname"));
+
+
+		if (allvars.Count > 0)
+		{
+			DataView dv = new DataView();
+
+			//get the correct data dictionary
+			if (selectedsheet == "Subjects")
+			{
+				DataTable dtdict_subj = DataDictionaryForSheet((DataSet)Session["dset"], "Subjects");
+				dv = dtdict_subj.AsDataView();
+			}
+			else
+			{
+				dv = dpdata.dtdict.AsDataView();
+			}
+
+			string notDataSheet = (selectedsheet != "Data") ?
+				String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
+
+			string filter = String.Format("varname in ('{0}') {1}"
+				, String.Join("','", allvars)
+				, notDataSheet);
+			dv.RowFilter = filter;
+			DataTable dt = dv.ToTable();
+
+
+			dt.Columns.Add(new DataColumn("vartype", typeof(string)));
+
+
+			foreach (DataRow row in dt.Rows)
+			{
+				string v = row["varname"].ToString();
+				string vt = "";
+				if (numvars.Contains(v)) vt = "numeric";
+				else if (txtvars.Contains(v)) vt = "categorical";
+				else if (datevars.Contains(v)) vt = "date";
+				else if (agevars.Contains(v)) vt = "age";
+				row["vartype"] = vt;
+			}
+
+
+			gvSelectedVars.DataSource = dt;
+			gvSelectedVars.DataBind();
+
+
+
+			gvSelectedVars.Visible = true;
+			lblVarLabels.Visible = true;
+			btnVarLabelsHide.Visible = true;
+			btnVarLabelsShow.Visible = true;
+			//btnVarLabelsShow.Enabled = false;
+		}
+		else
+		{
+			gvSelectedVars.Visible = false;
+			lblVarLabels.Visible = false;
+			btnVarLabelsHide.Visible = false;
+			btnVarLabelsShow.Visible = false;
+		}
+	}
+
+
+	protected void ToggleTabVisible(string name, bool makeVisible)
+	{
+		int idx = tabSteps.TabPages.IndexOfName(name);
+		tabSteps.TabPages[idx].ClientVisible = makeVisible;
+	}
+
+
+
 	//protected void AddTextVarToSelector(DataTable dt, string varname, string label)
 	//{
 	//	DataRow add_var = dt.NewRow();
@@ -871,21 +1016,17 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 	#endregion
 
+
+
 	#region Populate Dropdowns
 
 
-	//protected void PopulateDropdownItems(ASPxComboBox cbo)
-	//{
-	//	//defaults
-	//	cbo.Items.Clear();
-	//	string cboname = cbo.ID;
-
-	//	cbo.Items.AddRange(PopulateItems(cbo.ClientInstanceName
-	//		, new List<string> { "none", "variable", "timept", "group", "txgrp", "sex" }
-	//		, null));
-	//}
-
 	protected void PopulateDropdownItems(ASPxComboBox cbo, List<string> defaultvals)
+	{
+		PopulateDropdownItems(cbo, defaultvals, false, false);
+	}
+
+	protected void PopulateDropdownItems(ASPxComboBox cbo, List<string> defaultvals, bool addtxgrp, bool addtimept)
 	{
 		cbo.Items.Clear();
 		string cboname = cbo.ID;
@@ -893,6 +1034,15 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		cbo.Items.AddRange(PopulateItems(cbo.ClientInstanceName
 			, defaultvals
 			, null));
+
+		if (addtimept)
+		{
+			cbo.Items.Add("timept");
+		}
+		if (addtxgrp)
+		{
+			cbo.Items.Add("txgrp");
+		}
 
 	}
 
@@ -904,22 +1054,26 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		cbo.Items.AddRange(PopulateItems(cbo.ClientInstanceName, defaultvals, datavals));
 	}
 
+	#endregion
 
 
-	//protected void PopulateTokenboxItems(ASPxTokenBox cbo)
-	//{
-	//	List<string> defaultvals = new List<string> { "variable", "timept", "group", "txgrp", "sex" };
-	//	cbo.Items.Clear();
-	//	string cboname = cbo.ID;
-	//	cbo.Items.AddRange(PopulateItems(cbo.ClientInstanceName, defaultvals, null));
-	//}
+	#region Populate Tokenboxes
 
 	protected void PopulateTokenboxItems(ASPxTokenBox cbo, List<string> defaultvals )
+	{
+		PopulateTokenboxItems(cbo, defaultvals, false, false);
+	}
+
+	protected void PopulateTokenboxItems(ASPxTokenBox cbo, List<string> defaultvals, bool addtxgrp, bool addtimept)
 	{
 		cbo.Items.Clear();
 		string cboname = cbo.ID;
 		cbo.Items.AddRange(PopulateItems(cbo.ClientInstanceName, defaultvals, null));
+		if (addtimept) cbo.Items.Add("timept");
+		if (addtxgrp) cbo.Items.Add("txgrp");
 	}
+
+
 	protected void PopulateTokenboxItems(ASPxTokenBox cbo, List<string> defaultvals, List<string> datavals)
 	{
 		cbo.Items.Clear();
@@ -936,14 +1090,18 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 		if (Master.Master_studyID == 1076)
 		{
-			defaultvals.Add("txstyle");
-			defaultvals.Add("txintensity");
+			List<string> exempt = new List<string> { "cboXaxisvarLINE", "tokXTcell", "tokXTstats" };
+			if (!exempt.Contains(controlname) )
+			{
+				defaultvals.Add("txstyle");
+				defaultvals.Add("txintensity");
+			}
 		}
-		if (controlname == "cboColorsvar" || controlname == "cboPanelvar")
-		{
-			defaultvals.Add("id");
-			defaultvals.Add("ref_id");
-		}
+		//if (controlname == "cboColorsvar" || controlname == "cboPanelvar")
+		//{
+		//	defaultvals.Add("id");
+		//	defaultvals.Add("ref_id");
+		//}
 
 		foreach (string v in defaultvals)
 		{
@@ -1096,10 +1254,22 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			//string info = GetDataSheetInfo((DataSet)Session["dset"], "Data");
 			//Session["datasheetinfo"] = info;
 		}
+		else if (par == "Subjects")
+		{
+			DataSet dset = (DataSet)Session["dset"];
+			dpdata = new DPData(dset.Tables["Subjects"], dset.Tables["DataDictionary"]);
+			Session["dpdata"] = dpdata;
+			lblSelectedDataInfo2.Text = dpdata.Info();
+
+
+			log(" - - heading to LoadVars from callbackVars_OnCallback");
+			LoadVars((DataSet)Session["dset"], par);
+
+		}
 		else if (par == "varstext")
 		{
 
-		
+
 		}
 
 		if(par.StartsWith("filter!"))
@@ -1137,27 +1307,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	}
 
 
-	//	protected void cboPanelvar_DataBound(object sender, EventArgs e)
-	//{
-	//	//List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-	//	//int x = 0;
-
-	//	//foreach (string s in txtvars)
-	//	//{
-	//	//	bool alreadyinlist = false;
-	//	//	foreach (ListEditItem itm in cboPanelvar.Items)
-	//	//	{
-	//	//		if (itm.Value.ToString() == s) alreadyinlist = true;
-	//	//	}
-	//	//	if (!alreadyinlist)
-	//	//	{
-	//	//		ListEditItem newitm = new ListEditItem() { Value = s, Text = s };
-	//	//		cboPanelvar.Items.Insert(0, newitm);
-	//	//	}
-	//	//}
-
-	//}
-
 	protected void callbackMissing_OnCallback(object sender, CallbackEventArgsBase e)
 	{
 		log(String.Format(">>> callbackMissing_OnCallback {0}", e.Parameter.ToString()));
@@ -1193,14 +1342,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			PopulatePivotMissing(dpdata.dtstacked);
 		}
 
-	}
-
-	protected void PopulatePivotMissing(DataTable dtstacked)
-	{
-		pivotMissing.DataSource = dtstacked;
-		pivotMissing.DataBind();
-
-		pivotMissing.Visible = true;
 	}
 
 
@@ -1266,1285 +1407,554 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		//CreateCharts();
 
 		var p = e.Parameter;
-		List<string> chart_vars = p.Split(',').ToList();
-
-		string colorsvarHIST = chart_vars[0];
-		string panelvarHIST = chart_vars[1];
-
-		string xaxisvarBAR = chart_vars[2];
-		string colorsvarBAR = chart_vars[3];
-		string panelvarBAR = chart_vars[4];
-
-		string xaxisvarSCAT = chart_vars[5];
-		string yaxisvarSCAT = chart_vars[6];
-		string colorsvarSCAT = chart_vars[7];
-		string panelvarSCAT = chart_vars[8];
-
-		string xaxisvarLINE = chart_vars[9];
-		string colorsvarLINE = chart_vars[10];
-		string panelvarLINE = chart_vars[11];
-
-		string xtrowvar = chart_vars[12];
-		string xtcolvar = chart_vars[13];
-		string xtpanelvar = chart_vars[14];
-
-		string colorsvarPCA = chart_vars[15];
-
 		callbackCharts.Controls.Clear();
-
-		CreateCharts( colorsvarHIST, panelvarHIST
-			, xaxisvarBAR, colorsvarBAR, panelvarBAR
-			, xaxisvarSCAT, yaxisvarSCAT, colorsvarSCAT, panelvarSCAT
-			, xaxisvarLINE, colorsvarLINE, panelvarLINE
-			, xtrowvar, xtcolvar, xtpanelvar
-			, colorsvarPCA
-			);
-
-	}
-
-
-
-	protected void DisplaySelectedVars()
-	{
-
-		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
-
-		List<string> allvars = new List<string>();
-		allvars.AddRange(numvars);
-		allvars.AddRange(txtvars);
-		allvars.AddRange(datevars);
-		allvars.AddRange(agevars);
-
-		DataTable dt_selvars = new DataTable();
-		dt_selvars.Columns.Add(new DataColumn("varname"));
-
-
-		if (allvars.Count > 0)
+		if (p == "clear")
 		{
-			string notDataSheet = (selectedsheet != "Data") ? String.Format(" and measname='{0}'" , selectedsheet.Replace("Data_", "")) : "";
 
-			string filter = String.Format("varname in ('{0}') {1}", String.Join("','", allvars), notDataSheet);
-
-
-
-
-			DataView dv = dpdata.dtdict.AsDataView();
-			
-			dv.RowFilter = filter;
-			DataTable dt = dv.ToTable();
-			dt.Columns.Add(new DataColumn("vartype", typeof(string)));
-
-
-			foreach (DataRow row in dt.Rows)
-			{
-				string v = row["varname"].ToString();
-				string vt = "";
-				if (numvars.Contains(v)) vt = "numeric";
-				else if (txtvars.Contains(v)) vt = "categorical";
-				else if (datevars.Contains(v)) vt = "date";
-				else if (agevars.Contains(v)) vt = "age";
-				row["vartype"] = vt;
-			}
-
-
-			gvSelectedVars.DataSource = dt;
-			gvSelectedVars.DataBind();
-
-
-
-			gvSelectedVars.Visible = true;
-			lblVarLabels.Visible = true;
-			btnVarLabelsHide.Visible = true;
-			btnVarLabelsShow.Visible = true;
-			//btnVarLabelsShow.Enabled = false;
 		}
-		else {
-			gvSelectedVars.Visible = false;
-			lblVarLabels.Visible = false;
-			btnVarLabelsHide.Visible = false;
-			btnVarLabelsShow.Visible = false;
-		}
-	}
-
-
-	protected ASPxGridView SelectedVars_GridView()
-	{
-		ASPxGridView gv = new ASPxGridView();
-
-		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
-
-		List<string> allvars = new List<string>();
-		allvars.AddRange(numvars);
-		allvars.AddRange(txtvars);
-		allvars.AddRange(datevars);
-		allvars.AddRange(agevars);
-
-
-		if (allvars.Count > 0)
+		else if (p != "")
 		{
-			string notDataSheet = (selectedsheet != "Data") ? String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
+			List<string> chart_vars = p.Split(',').ToList();
 
-			string filter = String.Format("varname in ('{0}') {1}", String.Join("','", allvars), notDataSheet);
+			string colorsvarHIST = chart_vars[0];
+			string panelvarHIST = chart_vars[1];
 
+			string xaxisvarBAR = chart_vars[2];
+			string colorsvarBAR = chart_vars[3];
+			string panelvarBAR = chart_vars[4];
 
-			DataView dv = dpdata.dtdict.AsDataView();
-			dv.RowFilter = filter;
-			DataTable dt = dv.ToTable();
+			//string xaxisvarSCAT = chart_vars[5];
+			//string yaxisvarSCAT = chart_vars[6];
+			string colorsvarSCAT = chart_vars[5];
+			string panelvarSCAT = chart_vars[6];
 
-			gv.Columns.Add(new GridViewDataColumn() { FieldName = "measname" });
-			gv.Columns.Add(new GridViewDataColumn() { FieldName = "varname" });
-			gv.Columns.Add(new GridViewDataColumn() { FieldName = "FieldLabel" });
-			gv.DataSource = dt;
-			gv.DataBind();
+			string xaxisvarLINE = chart_vars[7];
+			string colorsvarLINE = chart_vars[8];
+			string panelvarLINE = chart_vars[9];
 
-			return gv;
-		}
-		else
-		{
-			return null;
+			string xtrowvar = chart_vars[10];
+			string xtcolvar = chart_vars[11];
+			string xtpanelvar = chart_vars[12];
+
+			string colorsvarPCA = chart_vars[13];
+
+			callbackCharts.Controls.Clear();
+
+			CreateCharts(colorsvarHIST, panelvarHIST
+				, xaxisvarBAR, colorsvarBAR, panelvarBAR
+				//, xaxisvarSCAT, yaxisvarSCAT
+				, colorsvarSCAT, panelvarSCAT
+				, xaxisvarLINE, colorsvarLINE, panelvarLINE
+				, xtrowvar, xtcolvar, xtpanelvar
+				, colorsvarPCA
+				);
 		}
 	}
 
 	#endregion
 
 
-	#region Create Charts
 
-
-	//protected void UpdateGroupingvars()
+	//protected ASPxGridView SelectedVars_GridView()
 	//{
+	//	ASPxGridView gv = new ASPxGridView();
 
-	//	List<string> groupingvars = new List<string>();
-	//	if (cboXaxisvar.Value.ToString() != "Variable" && cboXaxisvar.Value != null) groupingvars.Add(cboXaxisvar.Value.ToString());
-	//	if (cboColorsvar.Value.ToString() != "Variable" && cboColorsvar.Value.ToString() != "none" && cboColorsvar.Value != null) groupingvars.Add(cboColorsvar.Value.ToString());
-	//	if (cboPanelvar.Value.ToString() != "Variable" && cboPanelvar.Value.ToString() != "none" && cboPanelvar.Value != null) groupingvars.Add(cboPanelvar.Value.ToString());
-
+	//	List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 	//	List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+	//	List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+	//	List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 
-	//	if (txtvars.Count > 0) groupingvars.AddRange(txtvars);
+	//	List<string> allvars = new List<string>();
+	//	allvars.AddRange(numvars);
+	//	allvars.AddRange(txtvars);
+	//	allvars.AddRange(datevars);
+	//	allvars.AddRange(agevars);
 
-	//	groupingvars = groupingvars.Distinct().ToList();
 
-	//	//Always create DataSubsets
-	//	//dpdata.groupingvars = groupingvars;
-	//	//dpdata.CreateDataSubsets();
+	//	if (allvars.Count > 0)
+	//	{
+	//		string notDataSheet = (selectedsheet != "Data") ? String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
 
+	//		string filter = String.Format("varname in ('{0}') {1}", String.Join("','", allvars), notDataSheet);
+
+
+	//		DataView dv = dpdata.dtdict.AsDataView();
+	//		dv.RowFilter = filter;
+	//		DataTable dt = dv.ToTable();
+
+	//		gv.Columns.Add(new GridViewDataColumn() { FieldName = "measname" });
+	//		gv.Columns.Add(new GridViewDataColumn() { FieldName = "varname" });
+	//		gv.Columns.Add(new GridViewDataColumn() { FieldName = "FieldLabel" });
+	//		gv.DataSource = dt;
+	//		gv.DataBind();
+
+	//		return gv;
+	//	}
+	//	else
+	//	{
+	//		return null;
+	//	}
 	//}
+
+
+
+
+
 
 
 	protected void CreateCharts(string colorsvarHIST, string panelvarHIST
 			, string xaxisvarBAR, string colorsvarBAR, string panelvarBAR
-			, string xaxisvarSCAT, string yaxisvarSCAT, string colorsvarSCAT, string panelvarSCAT
+			//, string xaxisvarSCAT, string yaxisvarSCAT
+			, string colorsvarSCAT, string panelvarSCAT
 			, string xaxisvarLINE, string colorsvarLINE, string panelvarLINE
 			, string xtrowvar, string xtcolvar, string xtpanelvar
-			, string colorsvarPCA)
+			, string subgroupsvarPCA)
 	{
+		DeleteChartFiles();
 		callbackCharts.Controls.Clear();
-		//CreateSubsets();
-		//UpdateGroupingvars();
-		//dpdata.CreateDataSubsets();
 
-		List<string> plots = dataops.GetListString(chkPlots.SelectedValues);
+		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
 
-		DevExpress.XtraPrintingLinks.CompositeLink complink = initializePDF();
+		DxChartOrders orders = GatherOrder(plotrequests);
+		DxChartFactory factory = new DxChartFactory(dpdata.dt, orders);
 
-		//addtoPDF(complink, String.Format("{0} {1}   file={2}", Request.QueryString["pk"], Session["projTitle"].ToString(), gridFile.Value), true);
-		//addtoPDF(complink, "Selected variables:", true);
-		//addtoPDF(complink, SelectedVars_GridView());
+		DeliverChartsToPage(factory);
 
-
-
-
-		//Then depending on what is selected create the specific charts
-		if (plots.Contains("Scatterplot")) //&& plots.Count == 1)
-		{
-			DxScatterplotSettings settings = new DxScatterplotSettings();
-			settings.W = Convert.ToInt32(trackWscat.Position);
-			settings.H = Convert.ToInt32(trackHscat.Position);
-
-			int movavgNumPts = Convert.ToInt32(txtPtsCount.Text);
-			if (movavgNumPts > 0)
-			{
-				settings.movavgNumPts = movavgNumPts;
-			}
-
-			settings.showregline = chkRegline.Checked;
-			settings.useMovAvg = chkMovingAvg.Checked;
-			settings.colors = GetColors();
-			settings.colorvar = cboColorsvarSCAT.Value.ToString();
-
-			if(chkJitter.Checked)
-			{
-				settings.jitter = true;
-
-				double amtx;
-				if (Double.TryParse((txtJitterAmtX.Text), out amtx)) settings.jitteramtX = amtx;
-				double amty;
-				if (Double.TryParse((txtJitterAmtY.Text), out amty)) settings.jitteramtY = amty;
-
-
-			}
-
-
-			settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-			
-
-			//	numvars = numvars.ConvertAll(x => x.ToLower());
-			//	numvars.Add("id"); //Add ID so that points can be identified
-
-			DxChartFactory chartfactory = new DxChartFactory(DxChartType.Scatterplot, settings, dpdata.dt);
-
-			//CreateScatterplots(xaxisvarSCAT, colorsvarSCAT, panelvarSCAT);
-
-			foreach(DxChart chart in chartfactory.charts)
-			{
-				callbackCharts.Controls.Add(chart.chart);
-			}
-
-
-		}
-
-
-		if (plots.Contains("Barchart")) //&& plots.Count == 1)
-		{
-			string colvar1 = colorsvarBAR;
-			string colvar2 = cboColorsvarBAR.Value.ToString();
-
-			DxBarchartSettings settings = new DxBarchartSettings();
-			settings.W = Convert.ToInt32(trackWbar.Position);
-			settings.H = Convert.ToInt32(trackHbar.Position);
-
-			settings.xaxisvar = xaxisvarBAR;
-			settings.colorvar = colorsvarBAR;
-			settings.panelvar = panelvarBAR;
-
-			settings.colors = GetColors();
-
-			settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-
-
-			//	numvars = numvars.ConvertAll(x => x.ToLower());
-			//	numvars.Add("id"); //Add ID so that points can be identified
-
-			DxChartFactory chartfactory = new DxChartFactory(DxChartType.Barchart, settings, dpdata.dt);
-
-			//CreateScatterplots(xaxisvarSCAT, colorsvarSCAT, panelvarSCAT);
-
-			foreach (DxChart basechart in chartfactory.charts)
-			{
-				DxBarchart chart = (DxBarchart)basechart;
-				callbackCharts.Controls.Add(chart.chart);
-
-				if(chkStatsTable.Checked)
-				{
-					ASPxGridView grid = new ASPxGridView();
-					grid.SettingsPager.PageSize = 30;
-					grid.DataSource = chart.statstable.dt;
-					grid.DataBind();
-					callbackCharts.Controls.Add(grid);
-				}
-			}
-
-
-		}
-
-
-		//if (plots.Contains("PCA")) //&& plots.Count == 1)
-		//{
-		//	CreatePCA(colorsvarPCA,  complink);
-		//}
-		//if (plots.Contains("Histogram")) //&& plots.Count == 1)
-		//{
-		//	CreateHistograms( colorsvarHIST, panelvarHIST, complink);
-		//}
-
-		//if(plots.Contains("Barchart")) //&& plots.Count == 1)
-		//{
-		//	CreateBarcharts(xaxisvarBAR, colorsvarBAR, panelvarBAR, complink);
-		//}
-		//if (plots.Contains("Lineplot")) //&& plots.Count == 1)
-		//{
-		//	CreateLineplots(xaxisvarLINE, colorsvarLINE, panelvarLINE);
-		//}
-		//if (plots.Contains("Crosstabs")) //&& plots.Count == 1)
-		//{
-		//	CreateCrosstabs( xtpanelvar, xtrowvar, xtcolvar);
-		//}
-
-
+		SerializeObject<DxChartOrders>(orders, @"c:\_temp\factory\orders.xml");
 
 	}
 
-	//protected void CreateCrosstabs(string panelvar, string rowvar, string colvar)
-	//{
-	//	DevExpress.XtraPrintingLinks.CompositeLink complink = new DevExpress.XtraPrintingLinks.CompositeLink();
-	//	CreateCrosstabs(panelvar, rowvar, colvar, complink);
-	//}
 
-	//protected void CreateCrosstabs(string panelvar, string rowvar, string colvar, DevExpress.XtraPrintingLinks.CompositeLink complink)
-	//{
-	//	var includenumeric = chkXTincludenumeric.Checked;
-	//	//var pairwise = chkXTpairwise.Checked;
-	//	List<string> vars = new List<string>();
-	//	List<string> pivot_rows = new List<string>();
-	//	List<string> pivot_cols = new List<string>();
+	protected DxChartOrders GatherOrder(List<string> plotrequests )
+	{
+		DxChartOrders orders = new DxChartOrders();
+
+
+		if (plotrequests.Contains("Barchart")) orders.settingsbar = BarchartSettings();
+		if (plotrequests.Contains("Histogram")) orders.settingshist = HistogramSettings();
+		if (plotrequests.Contains("Lineplot")) orders.settingsline = LineplotSettings();
+		if (plotrequests.Contains("Scatterplot")) orders.settingsscat = ScatterplotSettings();
+
+		return orders;
+	}
+
+	#region chart settings 
+	protected DxHistogramSettings HistogramSettings()
+	{
+		DxHistogramSettings settings = new DxHistogramSettings();
+		settings.maxRow = Convert.ToInt32(trkNumRowsHIST.Value);
+		settings.maxCol = Convert.ToInt32(trkNumColsHIST.Value);
+		settings.W = Convert.ToInt32(trackWhist.Position);
+		settings.H = Convert.ToInt32(trackHhist.Position);
+
+		int numbins = Convert.ToInt32(trkNumBins.Value);
+		settings.numbins = (numbins == 0) ? 15 : numbins;
+
+
+		settings.shownormalcurve = chkNormalcurve.Checked;
+		settings.histMSD = chkHistMSD.Checked;
+
+		settings.panesLayoutDirection = (cboPanes.Value.ToString() == "horizontal") ? PaneLayoutDirection.Horizontal : PaneLayoutDirection.Vertical;
+		settings.colors = GetColors();
+		settings.colorvar = cboColorsvarHIST.Value.ToString();
+		settings.panelvar = cboPanelvarHIST.Value.ToString();
+
+
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		return settings;
+	}
+
+	protected DxBarchartSettings BarchartSettings()
+	{
+		DxBarchartSettings settings = new DxBarchartSettings();
+		settings.maxRow = Convert.ToInt32(trkNumRowsBAR.Value);
+		settings.maxCol = Convert.ToInt32(trkNumColsBAR.Value);
+		settings.W = Convert.ToInt32(trackWbar.Position);
+		settings.H = Convert.ToInt32(trackHbar.Position);
+
+		settings.xaxisvar = cboXaxisvarBAR.Value.ToString(); //xaxisvar;
+		settings.colorvar = cboColorsvarBAR.Value.ToString(); //colorsvar;
+		settings.panelvar = cboPanelvarBAR.Value.ToString(); //panelvar;
+
+		settings.colors = GetColors();
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		return settings;
+	}
+
+	protected DxLineplotSettings LineplotSettings()
+	{
+		DxLineplotSettings settings = new DxLineplotSettings();
+		settings.maxRow = Convert.ToInt32(trkNumRowsLINE.Value);
+		settings.maxCol = Convert.ToInt32(trkNumColsLINE.Value);
+		settings.W = Convert.ToInt32(trackWline.Position);
+		settings.H = Convert.ToInt32(trackHline.Position);
+
+		settings.xaxisvar = cboXaxisvarLINE.Value.ToString(); //xaxisvar;
+		settings.colorvar = cboColorsvarLINE.Value.ToString(); //colorsvar;
+		settings.panelvar = cboPanelvarLINE.Value.ToString(); //panelvar;
+		settings.legend_pos_h = cboLegendH_LINE.Value.ToString();
+		settings.legend_pos_v = cboLegendV_LINE.Value.ToString();
+		settings.matchYAxes = chkLineMatchYaxisRange.Checked;
+		settings.showLegend = chkLineShowLegend.Checked;
+
+		settings.colors = GetColors();
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		settings.datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+		if (settings.datevars.Contains(settings.xaxisvar)) settings.xaxis_is_date = true;
+		if (settings.agevars.Contains(settings.xaxisvar)) settings.xaxis_is_age = true;
+		return settings;
+	}
+
+	protected DxScatterplotSettings ScatterplotSettings()
+	{
+		DxScatterplotSettings settings = new DxScatterplotSettings();
+		settings.W = Convert.ToInt32(trackWscat.Position);
+		settings.H = Convert.ToInt32(trackHscat.Position);
+
+		int movavgNumPts = Convert.ToInt32(txtPtsCount.Text);
+		if (movavgNumPts > 0)
+		{
+			settings.movavgNumPts = movavgNumPts;
+		}
+
+		settings.showhist = chkHist.Checked;
+		settings.showregline = chkRegline.Checked;
+		settings.useMovAvg = chkMovingAvg.Checked;
+		settings.colors = GetColors();
+		settings.colorvar = cboColorsvarSCAT.Value.ToString();
+		settings.panelvar = cboPanelvarSCAT.Value.ToString();
 
-	//	//Get the list of vars to process
-	//	if (includenumeric)
-	//	{
-	//		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-	//		numvars = numvars.ConvertAll(x => x.ToLower());
 
-	//		List<string> catvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-	//		catvars = catvars.ConvertAll(x => x.ToLower());
+		if (chkJitter.Checked)
+		{
+			settings.jitter = true;
 
-	//		if (numvars.Count > 0) vars.AddRange(numvars);
-	//		if (catvars.Count > 0) vars.AddRange(catvars);
-	//	}
-	//	else
-	//	{
-	//		List<string> catvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-	//		catvars = catvars.ConvertAll(x => x.ToLower());
+			double amtx;
+			if (Double.TryParse((txtJitterAmtX.Text), out amtx)) settings.jitteramtX = amtx;
+			double amty;
+			if (Double.TryParse((txtJitterAmtY.Text), out amty)) settings.jitteramtY = amty;
 
-	//		if (catvars.Count > 0) vars.AddRange(catvars);
-	//	}
 
+		}
 
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 
-	//	//Build the Crosstabs tables
-	//	var XTmode = cboXTmode.Value.ToString();
-
-	//	List<string> row_vars_list = cboXTrow.Value.ToString().Replace("Data: ", "").Split(',').ToList();
-	//	List<string> col_vars_list = cboXTcol.Value.ToString().Replace("Data: ", "").Split(',').ToList();
-
-	//	bool var_in_rows = row_vars_list.Contains("variable");
-	//	bool var_in_cols = col_vars_list.Contains("variable");
-
-	//	//Validate the selections to ensure a crosstab table can be created
-	//	bool isMissingRowsAndCols = (cboXTrow.Value.ToString() == "" && cboXTcol.Value.ToString() == "") ? true : false;
-
-	//	bool isMissingSelectedVars = ((var_in_rows || var_in_cols) && vars.Count == 0) ? true : false;
-
-
-
-
-	//	List<string> panel_vars_list = cboXTpanel.Value.ToString().Replace("Data: ", "").Split(',').ToList();
-
-
-	//	//Make sure we're not missing anything
-	//	if (!isMissingRowsAndCols && !isMissingSelectedVars)
-	//	{
-	//		List<DataTable> dts = new List<DataTable>();
-	//		bool useSubsets = false;
-	//		int n = 1;
-
-	//		//Setup a list of datatables is there is a panel var selected
-	//		if (panel_vars_list[0] != "")
-	//		{
-	//			List<string> allvars = new List<string>();
-	//			allvars.AddRange(vars);
-	//			allvars.AddRange(row_vars_list);
-	//			allvars.AddRange(col_vars_list);
-	//			allvars.Add(panel_vars_list[0]);
-	//			allvars.Add("id");
-
-	//			DataSubsets datasubsets = new DataSubsets(dpdata.dt, allvars, panel_vars_list[0]);
-
-	//			useSubsets = true;
-
-	//			n = datasubsets.subsets.Count;
-
-	//			for (int s = 0; s < n; s++)
-	//			{
-	//				if (datasubsets.subsets[s].dt.Rows.Count > 1)
-	//				{
-	//					DataTable foo = datasubsets.subsets[s].dt;
-	//					foo.TableName = datasubsets.subsets[s].Cols_and_Vals_ToString();
-	//					dts.Add(foo);
-	//				}
-	//			}
-
-	//		}
-	//		else
-	//		{
-	//			dts.Add(dpdata.dt);
-	//		}
-
-	//		Literal head = new Literal();
-	//		head.Text = "<b>Crosstabs</b></br>";
-	//		callbackCharts.Controls.Add(head);
-
-
-	//		int foof = dts.Count;
-	//		//Loop through panel var if there is one
-	//		for (int a = 0; a < dts.Count; a++)
-	//		{
-	//			List<Table> xtabs = new List<Table>();
-	//			DataTable pivot_dt = dts[a];
-	//			pivot_rows.Clear();
-	//			pivot_cols.Clear();
-
-				
-	//			if (useSubsets)
-	//			{
-	//				Literal subhead = new Literal(); 
-	//				subhead.Text = String.Format("<b>{0}</b></br>", dts[a].TableName);
-	//				callbackCharts.Controls.Add(subhead);
-	//			}
-
-
-
-	//			//Selected var in both rows and columns
-	//			if (var_in_rows && var_in_cols)
-	//			{
-	//				int foo = 1;
-	//			}
-	//			//Selected var in rows
-	//			else if (var_in_rows || var_in_cols)
-	//			{
-	//				List<string> vars_list = (var_in_rows) ? row_vars_list : col_vars_list;
-
-	//				if (XTmode == "1")  // each fixed var as a separate table
-	//				{
-	//					List<string> fixed_vars = (var_in_rows) ? col_vars_list : row_vars_list;
-	//					List<Literal> row_of_lits = new List<Literal>();
-	//					for (int h = 0; h < fixed_vars.Count(); h++)
-	//					{
-	//						pivot_rows.Clear();
-	//						pivot_cols.Clear();
-	//						if (var_in_rows) {pivot_cols.Add(fixed_vars[h]); } else { pivot_rows.Add(fixed_vars[h]); }
-	//						for (int i = 0; i < vars.Count(); i++)
-	//						{
-	//							for (int j = 0; j < vars_list.Count; j++)
-	//							{
-	//								if(j==0 && var_in_rows) { pivot_rows.Clear(); } else { pivot_cols.Clear(); }
-	//								string var_to_add = (vars_list[j] == "variable") ? vars[i] : vars_list[j];
-	//								if (var_in_rows) { pivot_rows.Add(var_to_add); } else { pivot_cols.Add(var_to_add); }
-	//							}
-	//							Literal lit0 = CreatePivot(pivot_dt, pivot_rows, pivot_cols, "id");
-	//							row_of_lits.Add(lit0); // callbackCharts.Controls.Add(lit0);
-	//						}
-	//					}
-	//					Table t = TableHelper.HorizontalTable(row_of_lits);
-	//					xtabs.Add(t);
-
-	//				}
-	//				else if (XTmode == "2")  // all fixed vars in same table
-	//				{
-	//					if (var_in_rows) { pivot_cols.AddRange(col_vars_list); } else { pivot_rows.AddRange(row_vars_list); }
-	//					for (int i = 0; i < vars.Count(); i++)
-	//					{
-	//						for (int j = 0; j < vars_list.Count; j++)
-	//						{
-	//							string var_to_add = (vars_list[j] == "variable") ? vars[i] : vars_list[j];
-	//							if (var_in_rows) { pivot_rows.Add(var_to_add); } else { pivot_cols.Add(var_to_add); }
-	//						}
-	//						Literal lit0 = CreatePivot(pivot_dt, pivot_rows, pivot_cols, "id");
-
-	//						xtabs.Add(TableHelper.HorizontalTable(lit0)); // callbackCharts.Controls.Add(lit0);
-	//					}
-	//				}
-	//			}
-	//			else //not using selected vars, thus no need to loop through selected vars
-	//			{
-	//				pivot_rows.AddRange(row_vars_list);
-	//				pivot_cols.AddRange(col_vars_list);
-
-	//				Literal lit0 = CreatePivot(pivot_dt, pivot_rows, pivot_cols, "id");
-	//				xtabs.Add(TableHelper.HorizontalTable(lit0)); // callbackCharts.Controls.Add(lit0);
-
-	//			}
-
-	//			foreach (Table tbl in xtabs)
-	//			{
-	//				tbl.CellPadding = 10;
-	//				tbl.CellSpacing = 10;
-	//				callbackCharts.Controls.Add(tbl);
-	//			}
-
-	//		}
-	//	}
-	//	else
-	//	{
-	//		//Missing a selection for row or col
-	//	}
-
-		
-	//}
-
-
-	//protected Literal CreatePivot(DataTable dt, List<string> pivot_rows, List<string> pivot_cols, string v0)
-	//{
-	//	List<utilPivotTable.AggrFx> fx = new List<utilPivotTable.AggrFx>();
-	//	fx.Add(utilPivotTable.AggrFx.N);
-
-	//	PivotTable pivot = utilPivotTable.DataTable_to_PivotTable(dt, pivot_rows, pivot_cols, v0, fx);
-
-
-	//	var strHtmlWr = new StringWriter();
-	//	var pvtHtmlWr = new PivotTableHtmlWriter(strHtmlWr);
-	//	pvtHtmlWr.TableClass = "table table-bordered table-condensed pvtTable";
-	//	pvtHtmlWr.Write(pivot);
-	//	var htmlContent = strHtmlWr.ToString();
-
-
-	//	Literal lit = new Literal();
-
-	//	string headerRow = String.Join(" > ", pivot_rows);
-	//	string headerCol = String.Join(" > ", pivot_cols);
-
-	//	lit.Text = String.Format("<b>{0}</b> by <b>{1}</b><br/><br/>{2}<br/><br/>", headerRow, headerCol, htmlContent);
-
-	//	return lit;
-	//}
-
-
-
-	//protected DevExpress.Web.ASPxPivotGrid.PivotGridField AddPivotGridField(string v, DevExpress.XtraPivotGrid.PivotArea area)
-	//{
-	//	DevExpress.Web.ASPxPivotGrid.PivotGridField fld = new DevExpress.Web.ASPxPivotGrid.PivotGridField();
-	//	fld.ID = String.Format("fld{0}", v);
-	//	fld.FieldName = v;
-	//	fld.Area = area;
-	//	return fld;
-	//}
-
-
-
-	//protected void CreatePCA(string colorsvar,   DevExpress.XtraPrintingLinks.CompositeLink complink)
-	//{
-	//	List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-	//	string method = rblMethod.SelectedItem.Value.ToString();
-	//	List<Table> tables = new List<Table>();
-
-	//	if (colorsvar == "group" || 
-	//		colorsvar == "timept" ||
-	//		colorsvar == "txgrp" ) 
-	//	{
-	//		List<PCA> pcas = new List_O_PCA(dpdata, numvars, method, colorsvar).pcas;
-	//		for(int a=0; a < pcas.Count; a++)
-	//		{
-	//			tables.Add(pcas[a].OutputTable);
-	//		}
-
-	//		if (tables.Count > 0)
-	//		{
-	//			//addtoPDF(complink, pcas);
-	//		}
-
-	//	}
-	//	else //no subsets
-	//	{			
-	//		PCA pca = new PCA(dpdata, numvars, method,"");
-	//		if (pca.OutputTable != null)
-	//		{
-	//			//addtoPDF(complink, pca);
-	//			tables.Add(pca.OutputTable);
-	//		}
-
-	//	}
-
-	//	foreach(Table t in tables)
-	//	{
-	//		callbackCharts.Controls.Add(t);
-	//	}
-
-
-	//}
-
-	//protected void CreateHistograms(string colorsvar, string panelvar, DevExpress.XtraPrintingLinks.CompositeLink complink)
-	//{
-	//	List<DxCharts.Mychart> charts = new List<DxCharts.Mychart>();
-	//	dxchart.shownormalcurve = chkNormalcurve.Checked;
-	//	dxchart.histMSD= chkHistMSD.Checked;
-	//	int chartW = Convert.ToInt32(trackWhist.Position);
-	//	int chartH = Convert.ToInt32(trackHhist.Position);
-
-	//	dxchart.chartWhist = chartW;
-	//	dxchart.chartHhist = chartH;
-
-
-	//	var numcols = trkNumCols.Position;
-	//	var numbins = trkNumBins.Position;
-	//	List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-	//	numvars = numvars.ConvertAll(x => x.ToLower());
-
-	//	//Just vars
-	//	if (panelvar == "none" & colorsvar == "none" )
-	//	{
-	//		foreach (string v in numvars)
-	//		{
-	//			DxCharts.Histogram hist = new DxCharts.Histogram(dxchart, dpdata.dt, v, 0);
-	//			charts.Add(hist);
-	//		}
-	//		Table t = dxchart.TableOfCharts(charts, Convert.ToInt32(trackWhist.Position), Convert.ToInt32(trackHhist.Position), 1, Convert.ToInt32(numcols));
-	//		callbackCharts.Controls.Add(t);
-	//	}
-	//	//Just a color var
-	//	else if (panelvar == "none" & (colorsvar != "none" & colorsvar != "Variable"))
-	//	{
-	//		DataSubsets dataSubsets1 = new DataSubsets(dpdata.dt, numvars, colorsvar);
-	//		foreach (string v in numvars)
-	//		{
-	//			DxCharts.Histogram hist = new DxCharts.Histogram(dxchart, dataSubsets1, "", v, 0);
-	//			charts.Add(hist);
-	//		}
-	//		Table t = dxchart.TableOfCharts(charts, Convert.ToInt32(trackWhist.Position), Convert.ToInt32(trackHhist.Position), 1, Convert.ToInt32(numcols));
-	//		callbackCharts.Controls.Add(t);
-	//	}
-	//	//With a color and panel var
-	//	if ((panelvar != "none" & panelvar != "Variable") & (colorsvar != "none" & colorsvar != "Variable"))
-	//	{
-	//		//Get first set of DataSubsets based on the Panels selection
-	//		List<string> allvars = new List<string> { colorsvar };
-	//		allvars.AddRange(numvars);
-	//		DataSubsets dataSubsets1 = new DataSubsets(dpdata.dt, allvars, panelvar);
-
-
-	//		//Loop through these and make another set of DataSubsets
-	//		foreach (DataSubset subset1 in dataSubsets1.subsets)
-	//		{
-	//			string subtitle = subset1.Cols_and_Vals_ToString();
-	//			List<string> grpvars = new List<string> { colorsvar };
-
-	//			int chkN = subset1.dt.Rows.Count;
-
-	//			////Get first set of DataSubsets based on the Panels selection 
-	//			DataSubsets dataSubsets2 = new DataSubsets(subset1.dt, numvars, grpvars);
-
-	//			foreach (string v in numvars)
-	//			{
-	//				DxCharts.Histogram hist = new DxCharts.Histogram(dxchart, dataSubsets2, subtitle, v, 0);
-	//				charts.Add(hist);
-	//			}
-	//			Table t = dxchart.TableOfCharts(charts, Convert.ToInt32(trackWhist.Position), Convert.ToInt32(trackHhist.Position), 1, Convert.ToInt32(numcols));
-
-	//			callbackCharts.Controls.Add(t);
-
-	//		}
-	//	}
-
-
-	//	//addtoPDF(complink, charts);
-
-
-	//}
-
-
-
-	//protected void CreateScatterplots(string xaxisvar, string colorsvar, string panelvar)
-	//{
-	//	List<WebChartControl> charts = new List<WebChartControl>();
-
-
-	//	var numcols = trkNumCols.Position;
-	//	var numbins = trkNumBins.Position;
-	//	List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-	//	numvars = numvars.ConvertAll(x => x.ToLower());
-	//	numvars.Add("id"); //Add ID so that points can be identified
-
-	//	//Just vars
-	//	if (panelvar == "none" & colorsvar == "none")
-	//	{
-	//		int nrows = dpdata.dt.Rows.Count;
-	//		Table t = dxchart.TableOfPairwiseScatterplots(dxchart, dpdata.dt, numvars, "Scatterplot", chartW, chartH, 0, colorsvar);
-	//		callbackCharts.Controls.Add(t);
-	//	}
-	//	//Just a color var
-	//	else if ( colorsvar != "none" & panelvar == "none" )
-	//	{
-	//		//DataSubsets dataSubsets1 = new DataSubsets(dpdata.dt, numvars, colorsvar);
-
-	//		//for(int i=0; i < dataSubsets1.subsets.Count; i++)
-	//		//{
-	//		//	DataSubset subset = dataSubsets1.subsets[i];
-	//		//	int nrows = subset.dt.Rows.Count;
-	//		//	string title = subset.Cols_and_Vals_ToString();
-	//		//	Table t = dxchart.TableOfPairwiseScatterplots(dxchart, dpdata.dt, numvars, title, chartW, chartH, i, colorsvar);
-	//		//	callbackCharts.Controls.Add(t);
-	//		//}
-
-	//		Table t = dxchart.TableOfPairwiseScatterplots(dxchart, dpdata.dt, numvars, String.Format("Scatterplot: colors by {0}", colorsvar)
-	//			, chartW, chartH, 0, colorsvar);
-	//		callbackCharts.Controls.Add(t);
-	//	}
-
-	//	else if ( panelvar != "none")
-	//	{
-	//		DataSubsets dataSubsets1 = new DataSubsets(dpdata.dt, numvars, panelvar);
-
-	//		for (int i = 0; i < dataSubsets1.subsets.Count; i++)
-	//		{
-	//			DataSubset subset = dataSubsets1.subsets[i];
-	//			int nrows = subset.dt.Rows.Count;
-	//			string title = subset.Cols_and_Vals_ToString();
-	//			Table t = dxchart.TableOfPairwiseScatterplots(dxchart, subset.dt, numvars, title, chartW, chartH, i, colorsvar);
-	//			callbackCharts.Controls.Add(t);
-	//		}
-	//		//Table t = dxchart.TableOfCharts(charts, 1, Convert.ToInt32(numcols));
-	//		//callbackCharts.Controls.Add(t);
-	//	}
-
-	//}
-
-
-
-	//protected void CreateLineplots(string xaxisvar, string colorsvar, string panelvar)
-	//{
-	//	List<WebChartControl> charts = new List<WebChartControl>();
-
-	//	bool hideblanks = (chkLineHideBlank.Checked) ? true : false;
-	//	bool showlegend = (chkLineShowLegend.Checked) ? true : false;
-	//	string legend_h = cboLegendH_LINE.Value.ToString();
-	//	string legend_v = cboLegendV_LINE.Value.ToString();
-
-	//	int chartW = Convert.ToInt32(trackWline.Position);
-	//	int chartH = Convert.ToInt32(trackHline.Position);
-
-	//	dxchart.chartWscat = chartW;
-	//	dxchart.chartHscat = chartH;
-
-
-	//	var numcols = trkNumCols.Position;
-	//	var numbins = trkNumBins.Position;
-	//	List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-	//	numvars = numvars.ConvertAll(x => x.ToLower());
-	//	//numvars.Add("id"); //Add ID so that points can be identified
-
-	//	List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-	//	List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
-
-	//	bool isdate = (datevars.Contains(xaxisvar)) ? true : false;
-	//	bool isage = (agevars.Contains(xaxisvar)) ? true : false;
-
-	//	//NOTE all line plots add series as a function of ID.
-	//	List<DxCharts.Mychart> lineplots = new List<DxCharts.Mychart>();
-
-
-	//	// =========== Variables within the Plots ===========
-	//	if ((xaxisvar == "variable" || colorsvar == "variable") & xaxisvar != colorsvar)
-	//		{
-	//			//lblLineplotError.ClientVisible = false;
-
-	//			//Need to stack the data because variable is within the plot 
-	//			List<string> idvars = new List<string>() { "id", "timept", "group" };
-	//			if (colorsvar != "none" & colorsvar != "variable" & !idvars.Contains(colorsvar)) idvars.Add(colorsvar);
-	//			if (panelvar != "none" & panelvar != "variable" & !idvars.Contains(panelvar)) idvars.Add(panelvar);
-
-	//			dpdata.Data_FullyStacked(idvars, numvars);
-
-
-	//			//No Panels
-	//			if (panelvar == "none")
-	//			{
-
-	//				//Variables on X-axis
-	//				if (xaxisvar == "variable")
-	//				{
-	//					DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, dpdata.dtstacked, "varname", "value", "id", colorsvar
-	//						, String.Format("Lineplot {0}", String.Join(", ", numvars)), isdate, isage, showlegend, legend_h, legend_v);
-	//					lineplots.Add(lineplot);
-
-	//				//Table t = dxchart.TableOfCharts(lineplots, chartW, chartH, 1, Convert.ToInt32(numcols));
-
-	//				Table t = new TableOCharts(lineplots, LayoutMode.Horizontal).table;
-
-	//					callbackCharts.Controls.Add(t);
-	//				}
-	//				//Variables as Colors
-	//				if (colorsvar == "variable")
-	//				{
-	//					DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, dpdata.dtstacked, xaxisvar, "value", "id", "varname"
-	//						, String.Format("Lineplot {0}", String.Join(", ", numvars)), isdate, isage, showlegend, legend_h, legend_v);
-	//					lineplots.Add(lineplot);
-
-	//					Table t = dxchart.TableOfCharts(lineplots, chartW, chartH, 1, Convert.ToInt32(numcols));
-	//					callbackCharts.Controls.Add(t);
-	//				}
-	//			}
-
-	//			//Yes Panels
-	//			else
-	//			{
-
-
-	//				////Stack the data and create a new "variable" variable
-	//				//List<string> idvars = new List<string>() { "id", "timept", "group" };
-	//				//if (colorsvar != "none" & !idvars.Contains(colorsvar)) idvars.Add(colorsvar);
-
-	//				//dpdata.Data_FullyStacked(idvars, numvars);
-
-
-	//				//
-	//				//Get first set of DataSubsets based on the Panels selection
-	//				List<string> allvars = new List<string> { xaxisvar, colorsvar, panelvar, "id", "varname", "value" };
-	//				allvars.Remove("variable");
-
-	//				List<string> allvars_with_id = new List<string>();
-	//				allvars_with_id.AddRange(allvars.Distinct());
-
-	//				DataSubsets dataSubsets1 = new DataSubsets(dpdata.dtstacked, allvars_with_id, panelvar);
-
-	//				int colorcounter = 0;
-	//				//Loop through these and make a lineplot
-	//				foreach (DataSubset subset1 in dataSubsets1.subsets)
-	//				{
-
-	//					//Ensure that there is data to plot
-	//					int n = subset1.dt.AsEnumerable().Where(f => f.Field<double?>("value") != null).Count();
-
-	//					if (n > 2)
-	//					{
-	//						string title = subset1.Cols_and_Vals_ToString();
-
-	//					//Variables on X-axis  with Panel
-	//					if (xaxisvar == "variable")
-	//					{
-
-	//						if (colorsvar == panelvar) //Manually set the color based on the current panelvar iteration
-	//						{
-	//							DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, subset1.dt, "varname", "value", "id", colorsvar
-	//								, String.Format("Lineplot: {0}{1}{2}", title, Environment.NewLine, String.Join(", ", numvars))
-	//								, isdate, isage, colorcounter, showlegend, legend_h, legend_v);
-	//							lineplots.Add(lineplot);
-
-	//						}
-	//						else
-	//						{
-	//							DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, subset1.dt, "varname", "value", "id", colorsvar
-	//								, String.Format("Lineplot: {0}{1}{2}", title, Environment.NewLine, String.Join(", ", numvars))
-	//								, isdate, isage, showlegend, legend_h, legend_v);
-	//							lineplots.Add(lineplot);
-
-	//						}
-	//					}
-
-	//					//Variables as color  with Panel
-	//					else if (colorsvar == "variable")
-	//					{
-	//							DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, subset1.dt, xaxisvar, "value", "varname", "varname"
-	//										, String.Format("Lineplot: {0}{1}{2}", title, Environment.NewLine, String.Join(", ", numvars))
-	//										, isdate, isage, showlegend, legend_h, legend_v);
-	//							lineplots.Add(lineplot);
-
-	//						}
-
-	//					}
-	//				}
-	//				Table t = dxchart.TableOfCharts(lineplots, chartW, chartH, 1, Convert.ToInt32(numcols));
-	//				callbackCharts.Controls.Add(t);
-
-	//			}
-				
-	//		}
-
-	//	// =========== Variables not within the Plots ===========
-	//	else if (xaxisvar != "variable" & colorsvar != "variable")
-	//	{
-		
-	//		//No Panels
-	//		if (xaxisvar != "variable" & (panelvar == "variable" || panelvar=="none"))
-	//		{
-
-
-	//			for (int i = 0; i < numvars.Count; i++)
-	//			{
-	//				DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, dpdata.dt, xaxisvar, numvars[i], "id", colorsvar
-	//					, String.Format("Lineplot {0}", numvars[i]), isdate, isage, showlegend, legend_h, legend_v);
-	//				lineplots.Add(lineplot);
-	//			}
-	//			Table t = dxchart.TableOfCharts(lineplots, chartW, chartH, 1, Convert.ToInt32(numcols));
-	//			callbackCharts.Controls.Add(t);
-	//		}
-	//		//Panels
-	//		else if ((xaxisvar != "variable" & panelvar != "none"))
-	//		{
-	//			//Get first set of DataSubsets based on the Panels selection
-	//			List<string> allvars = new List<string> { xaxisvar, colorsvar, panelvar, "id" };
-	//			allvars.AddRange(numvars);
-
-	//			List<string> allvars_with_id = new List<string>();
-	//			allvars_with_id.AddRange(allvars.Distinct());
-
-	//			DataSubsets dataSubsets1 = new DataSubsets(dpdata.dt, allvars_with_id, panelvar);
-
-	//			int colorcounter = 0;
-	//			//Loop through these and make a lineplot
-	//			foreach (DataSubset subset1 in dataSubsets1.subsets)
-	//			{
-
-	//				for (int i = 0; i < numvars.Count; i++)
-	//				{
-	//					string title = subset1.Cols_and_Vals_ToString();
-
-	//					if (colorsvar == panelvar) //Manually set the color based on the current panelvar iteration
-	//					{
-	//						DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, subset1.dt, xaxisvar, numvars[i], "id", colorsvar,
-	//								String.Format("Lineplot {0}", title), isdate, isage, colorcounter, showlegend, legend_h, legend_v);
-	//						lineplots.Add(lineplot);
-	//					}
-	//					else
-	//					{
-	//						DxCharts.Lineplot lineplot = new DxCharts.Lineplot(dxchart, subset1.dt, xaxisvar, numvars[i], "id", colorsvar,
-	//								String.Format("Lineplot {0}", title), isdate, isage, showlegend, legend_h, legend_v);
-	//						lineplots.Add(lineplot);
-	//					}
-	//				}
-	//				colorcounter++;
-	//			}
-
-	//			Table t = dxchart.TableOfCharts(lineplots, chartW, chartH, 1, Convert.ToInt32(numcols), hideblanks);
-	//			callbackCharts.Controls.Add(t);
-	//		}
-
-	//	}
-
-	//	bool matchaxes = (chkLineMatchYaxisRange.Checked) ? true : false;
-	//	if (matchaxes)
-	//	{
-	//		MatchYAxes(lineplots);
-	//	}
-	//	//}
-	
-	//}
-
-
-
-	//protected void CreateBarcharts(string xaxisvar, string colorsvar, string panelvar, DevExpress.XtraPrintingLinks.CompositeLink complink)
-	//{
-	//	List<string> groupingvars = new List<string>();
-	//	if (colorsvar != "Variable" && colorsvar != "none" && colorsvar != null) groupingvars.Add(colorsvar);
-	//	if (panelvar != "Variable" && panelvar != "none" && panelvar != null) groupingvars.Add(panelvar);
-
-	//	List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-	//	numvars = numvars.ConvertAll(x => x.ToLower());
-
-	//	int chartW = Convert.ToInt32(trackWbar.Position);
-	//	int chartH = Convert.ToInt32(trackHbar.Position);
-
-	//	dxchart.chartWbar = chartW;
-	//	dxchart.chartHbar = chartH;
-
-	//	//Calculate the stats needed
-	//	//Use the Panels variable for a set of barcharts
-	//	if (panelvar != "none" && panelvar != "Variable" && panelvar != null)
-	//	{
-	//		List<DxCharts.Mychart> barcharts = new List<DxCharts.Mychart>();
-	//		List<ASPxGridView> grids = new List<ASPxGridView>();
-	//		//Get first set of DataSubsets based on the Panels selection
-	//		List<string> allvars = new List<string> { colorsvar };
-	//		allvars.AddRange(numvars);
-	//		DataSubsets dataSubsets1 = new DataSubsets(dpdata.dt, allvars, panelvar);
-
-	//		//Loop through these and make another set of DataSubsets
-	//		foreach(DataSubset subset1 in dataSubsets1.subsets)
-	//		{
-	//			string subtitle = subset1.Cols_and_Vals_ToString();
-	//			List<string> grpvars = new List<string> { colorsvar };
-	//			//List<string> grpvars = dpdata.groupingvars;
-	//			//grpvars.Remove(panelvar);
-	//			////Get first set of DataSubsets based on the Panels selection 
-	//			DataSubsets dataSubsets2 = new DataSubsets(subset1.dt, numvars, grpvars);
-	//			StatsTable stats = new StatsTable(dataSubsets2, numvars, grpvars);
-
-	//			//Only add the chart and stats if there are rows
-	//			if (stats.dt.Rows.Count > 0)
-	//			{
-	//				if (chkStatsTable.Checked)
-	//				{
-	//					ASPxGridView statsgrid = new DevExpress.Web.ASPxGridView();
-	//					statsgrid.DataSource = stats.dt;
-	//					statsgrid.DataBind();
-	//					statsgrid.Caption = subset1.Cols_and_Vals_ToString();
-	//					grids.Add(statsgrid);
-	//				}
-
-	//				DxCharts.Barchart barchart = new DxCharts.Barchart(dxchart, stats, xaxisvar, colorsvar,  "", subtitle);
-
-
-	//				barcharts.Add(barchart);
-
-	//			}
-	//		}
-						
-	//		callbackCharts.Controls.Add(dxchart.TableOfCharts(barcharts, chartW, chartH, 1));
-
-	//		//addtoPDF(complink, barcharts);
-	//		//addtoPDF(complink, grids);
-
-
-	//		bool matchaxes = true;
-	//		if (matchaxes)
-	//		{
-	//			MatchYAxes(barcharts);
-				
-	//		}
-			
-
-	//		foreach (ASPxGridView gv in grids)
-	//		{
-	//			callbackCharts.Controls.Add(gv);
-	//		}
-
-	//	}
-
-	//	else 
-	//	{
-
-	//		//First get the needed DataSubsets
-	//		DataSubsets dataSubsets = new DataSubsets(dpdata.dt, numvars, groupingvars);
-	//		StatsTable stats = new StatsTable(dataSubsets, numvars, groupingvars);
-
-	//		colorsvar = (colorsvar == "none") ? "Variable" : colorsvar;
-
-	//		DxCharts.Barchart barchart = new DxCharts.Barchart(dxchart, stats, xaxisvar, colorsvar);
-			
-			
-	//		callbackCharts.Controls.Add(barchart.chart);
-	//		//addtoPDF(complink, barchart);
-
-
-	//		if (chkStatsTable.Checked)
-	//		{
-	//			ASPxGridView statsgrid = new ASPxGridView();
-	//			statsgrid.DataSource = stats.dt;
-	//			statsgrid.DataBind();
-	//			callbackCharts.Controls.Add(statsgrid);
-
-				
-	//			//addtoPDF(complink, statsgrid);
-
-	//		}
-
-	//	}
-
-
-	//}
-
-
-	//protected void MatchYAxes (List<DxCharts.Mychart> mycharts)
-	//{
-
-	//	double miny = 0;
-	//	double maxy = 0;
-
-	//	foreach (DxCharts.Mychart mychart in mycharts)
-	//	{
-	//		if (mychart.chart != null)
-	//		{
-	//			double tmp_miny_who = (double)((XYDiagram)mychart.chart.Diagram).AxisY.WholeRange.MinValue;
-	//			double tmp_maxy_who = (double)((XYDiagram)mychart.chart.Diagram).AxisY.WholeRange.MaxValue;
-
-	//			double tmp_miny_vis = (double)((XYDiagram)mychart.chart.Diagram).AxisY.VisualRange.MinValue;
-	//			double tmp_maxy_vis = (double)((XYDiagram)mychart.chart.Diagram).AxisY.VisualRange.MaxValue;
-
-
-	//			if (miny > tmp_miny_who) miny = tmp_miny_who;
-	//			if (maxy < tmp_maxy_who) maxy = tmp_maxy_who;
-	//		}
-	//	}
-
-	//	foreach (DxCharts.Mychart mychart in mycharts)
-	//	{
-	//		if (mychart.chart != null)
-	//		{
-	//			((XYDiagram)mychart.chart.Diagram).AxisY.WholeRange.SetMinMaxValues(miny, maxy);
-	//			((XYDiagram)mychart.chart.Diagram).AxisY.VisualRange.SetMinMaxValues(miny, maxy);
-	//		}
-	//	}
-
-	//}
-
+		return settings;
+	}
 	#endregion
 
-
-	#region Create PDF 
-	protected void btnPDF_OnClick(object source, EventArgs e)
+	protected void DeliverChartsToPage(DxChartFactory factory)
 	{
-		string filename = HttpContext.Current.Server.MapPath(@"~/App_Data/DataDownloads/complink2.pdf");
-
-
-		//Response.Redirect(filename);
-		//WebClient User = new WebClient();
-		//Byte[] FileBuffer = User.DownloadData(name);
-		//if (FileBuffer != null)
-		//{
-		//	Response.ContentType = "application/pdf";
-		//	Response.AddHeader("content-length", FileBuffer.Length.ToString());
-		//	Response.BinaryWrite(FileBuffer);
-		//}
-
-
-	}
-
-
-
-
-	protected DevExpress.XtraPrintingLinks.CompositeLink initializePDF()
-	{
-
-		DevExpress.XtraPrinting.PrintingSystem ps = new DevExpress.XtraPrinting.PrintingSystem();
-		
-		DevExpress.XtraPrintingLinks.CompositeLink compositeLink = new DevExpress.XtraPrintingLinks.CompositeLink();
-		compositeLink.PrintingSystem = ps;
-
-		ps.ExportOptions.Pdf.ConvertImagesToJpeg = true;
-		ps.ExportOptions.Pdf.ImageQuality = PdfJpegImageQuality.Highest;
-		ps.PageMargins.Top = 40;
-		ps.PageMargins.Bottom = 40;
-		ps.PageMargins.Left = 40;
-		ps.PageMargins.Right = 40;
-
-
-		return compositeLink;
-	}
-
-
-
-	protected void savePDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink)
-	{
-		for(int i=0; i < compositeLink.Links.Count; i++)
+		foreach(DxBatchOcharts batch in factory.batches)
 		{
-			string x = String.Format("{0} {1}", i, compositeLink.Links[i].PrintableObjectType.GetType().ToString());
-			log(x);
+			Table t = ChartOutput.LayoutBatch(batch);
+			callbackCharts.Controls.Add(t);
 		}
+	}
 
 
-
-		compositeLink.CreateDocument();
-		string filepath = HttpContext.Current.Server.MapPath(@"~/App_Data/DataDownloads/");
-
-		string filename = String.Format("{0}{1}", filepath, txtOutputFilename.Text);
+	public void SerializeObject<T>(T serializableObject, string fileName)
+	{
+		if (serializableObject == null) { return; }
 
 		try
 		{
-			
-			compositeLink.ExportToPdf(String.Format("{0}.pdf",filename));
-			compositeLink.ExportToDocx(String.Format("{0}.docx", filename));
-
+			XmlDocument xmlDocument = new XmlDocument();
+			XmlSerializer serializer = new XmlSerializer(serializableObject.GetType());
+			using (MemoryStream stream = new MemoryStream())
+			{
+				serializer.Serialize(stream, serializableObject);
+				stream.Position = 0;
+				xmlDocument.Load(stream);
+				xmlDocument.Save(fileName);
+			}
 		}
 		catch (Exception ex)
-		{ }
-	}
-
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, string text, bool bold)
-	{
-		addtoPDF(compositeLink, text, bold, 0);
-	}		
-
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, string text, bool bold, int numblanklines)
-	{
-		string blanklines = "";
-		for(int i=0; i < numblanklines; i++)
 		{
-			blanklines += Environment.NewLine;
-		}
-		text = String.Format("{0}{1}", blanklines, text);
-		ASPxGridView gv = new ASPxGridView();
-		gv.DataSource = new List<string>() { text };
-		gv.DataBind();
-		gv.Settings.ShowColumnHeaders = false;
-		gv.Columns[0].ExportCellStyle.BorderColor = Color.White;
-		gv.Columns[0].ExportWidth = 700;
-		gv.Columns[0].ExportCellStyle.Font.Size = 12;
-
-		if (bold)
-		{
-			gv.Columns[0].ExportCellStyle.Font.Bold = true;
-		}
-
-		PrintableComponentLink link = new PrintableComponentLink();
-		link.Component = gv;
-		compositeLink.Links.Add(link);
-
-	}
-
-
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, ASPxGridView grid)
-	{
-		PrintableComponentLink link = new PrintableComponentLink();
-		link.Component = grid;
-		compositeLink.Links.Add(link);
-	}
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, List<ASPxGridView> grids)
-	{
-		foreach(ASPxGridView grid in grids)
-		{
-			PrintableComponentLink link = new PrintableComponentLink();
-			link.Component = grid;
-			compositeLink.Links.Add(link);
-		}
-
-	}
-
-
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, DxCharts.Mychart chart)
-	{
-		List<DxCharts.Mychart> charts = new List<DxCharts.Mychart>();
-		charts.Add(chart);
-		addtoPDF(compositeLink, charts);
-	}
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, List<DxCharts.Mychart> charts)
-	{
-
-		foreach (DxCharts.Mychart mychart in charts)
-		{
-
-			mychart.chart.RenderFormat = RenderFormat.Png;
-			
-
-			mychart.chart.Width = (int)(mychart.chart.Width.Value * 1.0f);
-			mychart.chart.Height = (int)(mychart.chart.Height.Value * 1.0f);
-
-			WebChartControl c = mychart.chart;
-
-
-
-			PrintableComponentLink link = new PrintableComponentLink();
-			//link.Component = ((IChartContainer)mychart.chart).Chart;
-
-			
-
-			IChartContainer cc = ((IChartContainer)mychart.chart);
-			
-
-			link.Component = cc.Chart;
-
-
-			compositeLink.Links.Add(link);
-		}
-
-	}
-
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, PCA pca)
-	{
-		addtoPDF(compositeLink, pca.OutputMainTitle, true, 1);
-		foreach (OutputGridview ogv in pca.OutputGridviews)
-		{
-			addtoPDF(compositeLink, ogv.Title, false);
-			addtoPDF(compositeLink, ogv.Grid);
+			//Log exception here
 		}
 	}
 
 
-	protected void addtoPDF(DevExpress.XtraPrintingLinks.CompositeLink compositeLink, List<PCA> pcas)
-	{
-		foreach (PCA pca in pcas )
-		{
-			addtoPDF(compositeLink, pca);
-		}
 
+	//protected void LaunchHistograms(DxHistogramSettings settings) // string xaxisvar, string colorsvar, string panelvar)
+	//{
+
+
+	//	DxChartFactory chartfactory = new DxChartFactory(DxChartType.Histogram, settings, dpdata.dt);
+
+	//	string layout = cboOutputStyleHIST.Value.ToString();
+
+	//	if (layout == "Rows, Left to Right")
+	//	{
+	//		Table t = ChartOutput.HorizontalTable(chartfactory.charts, settings.W, settings.H, Convert.ToInt32(trkNumColsHIST.Value));
+	//		callbackCharts.Controls.Add(t);
+	//	}
+	//	else if (layout == "Cols, Top to Bottom")
+	//	{
+	//		Table t = ChartOutput.VerticalTable(chartfactory.charts, settings.W, settings.H, Convert.ToInt32(trkNumRowsHIST.Value));
+	//		callbackCharts.Controls.Add(t);
+	//	}
+
+	//	ChartsToDisk(chartfactory);
+
+	//}
+
+	//protected void LaunchLineplots() // string xaxisvar, string colorsvar, string panelvar)
+	//{
+
+
+	//	DxChartFactory chartfactory = new DxChartFactory(DxChartType.Lineplot, settings, dpdata.dt);
+
+	//	string layout = cboOutputStyleLINE.Value.ToString();
+
+	//	if(!settings.showLegend)
+	//	{
+	//		DxLineplot plot = (DxLineplot)chartfactory.charts[0];
+	//		Table legend = plot.ManualColorLegend();
+	//		callbackCharts.Controls.Add(legend);
+	//	}
+
+
+	//	if (layout == "Rows, Left to Right")
+	//	{
+	//		Table t = ChartOutput.HorizontalTable(chartfactory.charts, settings.W, settings.H, Convert.ToInt32(trkNumColsLINE.Value));
+	//		callbackCharts.Controls.Add(t);
+	//	}
+	//	else if (layout == "Cols, Top to Bottom")
+	//	{
+	//		Table t = ChartOutput.VerticalTable(chartfactory.charts, settings.W, settings.H, Convert.ToInt32(trkNumRowsLINE.Value));
+	//		callbackCharts.Controls.Add(t);
+	//	}
+
+	//	if (settings.matchYAxes)
+	//	{
+	//		chartfactory.MatchYAxes();
+	//	}
+
+	//	ChartsToDisk(chartfactory);
+	//}
+
+	//protected void LaunchCrosstabs() // string xaxisvar, string colorsvar, string panelvar)
+	//{
+	//	//protected Literal CreatePivot(DataTable dt, List<string> pivot_rows, List<string> pivot_cols, string v0)
+	//	int x = 0;
+	//	var row = tokXTrow.Value.ToString().Replace("Data: ","");
+	//	var col = tokXTcol.Value.ToString().Replace("Data: ", "");
+	//	var panel = tokXTpanel.Value.ToString().Replace("Data: ", "");
+	//	var cell = tokXTcell.Value.ToString().Replace("Data: ", "");
+	//	var stats = tokXTstats.Value.ToString().Replace("Data: ", "");
+
+
+
+	//	List<string> rowvars = row.Split(',').ToList();
+	//	List<string> colvars = col.Split(',').ToList();
+	//	List<string> panelvars = panel.Split(',').ToList();
+	//	List<string> cellvars = cell.Split(',').ToList();
+	//	List<string> statsvars = stats.Split(',').ToList();
+
+
+	//	var foo = gvSelectedVars.GetSelectedFieldValues("vartype");
+
+	//	int number_cat_vars = (chkXTincludenumeric.Checked) ?
+	//		gridVarsNum.GridView.GetSelectedFieldValues("varname").Count() :
+	//		gridVarsText.GridView.GetSelectedFieldValues("varname").Count();
+
+	//	int dec_places = Convert.ToInt32(trkDecPlaces.Value);
+
+	//	if (number_cat_vars == 0)
+	//	{
+	//		//lblXTError.Text = "No categorical variables are selected.";
+	//	}
+	//	else
+	//	{
+	//		//lblXTError.Text = "ok.";
+
+	//		List<Panel> crosstabs = new List<Panel>();
+
+	//		if (panel != "")
+	//		{
+	//			List<string> allvars = new List<string>();
+	//			allvars.AddRange(rowvars);
+	//			allvars.AddRange(colvars);
+	//			allvars.Add("id");
+
+	//			DataSubsets subsets = new DataSubsets(dpdata.dt, allvars, panelvars);
+
+	//			foreach (uwac.DataSubset sub in subsets.subsets)
+	//			{
+	//				Panel xtpanel = new DxCrosstab(sub.dt, rowvars, colvars, statsvars, cellvars[0], sub.Cols_and_Vals_ToString(), dec_places).AsPanel();
+	//				crosstabs.Add(xtpanel);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			Panel xtpanel = new DxCrosstab(dpdata.dt, rowvars, colvars, statsvars, cellvars[0], "Crosstabs ", dec_places).AsPanel();
+	//			//Panel xtpanel = CreatePivot(dpdata.dt, rowvars, colvars, statsvars, cellvars[0], "Crosstabs ", dec_places);
+	//			crosstabs.Add(xtpanel);
+	//		}
+
+	//		string layout = cboOutputStyleXT.Value.ToString();
+
+	//		if (layout == "Rows, Left to Right")
+	//		{
+	//			Table t = ChartOutput.HorizontalTable(crosstabs, Convert.ToInt32(trkNumColsXT.Value));
+	//			callbackCharts.Controls.Add(t);
+
+	//		}
+	//		else if (layout == "Cols, Top to Bottom")
+	//		{
+	//			Table t = ChartOutput.HorizontalTable(crosstabs, Convert.ToInt32(trkNumRowsXT.Value));
+	//			callbackCharts.Controls.Add(t);
+	//		}
+
+	//	}
+
+
+	//}
+
+	//protected void LaunchScatterplots() // string xaxisvar, string colorsvar, string panelvar)
+	//{
+
+
+
+	//	if (settings.panelvar == "none")
+	//	{
+
+	//		DxChartFactory chartfactory = new DxChartFactory(DxChartType.Scatterplot, settings, dpdata.dt);
+
+	//		string temptitle = "foo";
+	//		Table t = (settings.showhist) ?
+	//			ChartOutput.UpperDiagTable(chartfactory.charts, chartfactory.altcharts, settings.W, settings.H, 1.0, .8, temptitle, settings.numvars) :
+	//			ChartOutput.UpperDiagTable(chartfactory.charts, settings.W, settings.H, 1.0, temptitle, settings.numvars);
+
+	//		callbackCharts.Controls.Add(t);
+
+	//		ChartsToDisk(chartfactory);
+	//	}
+	//	else{
+
+	//		List<string> keepvars = new List<string>();
+	//		keepvars.AddRange(settings.numvars);
+	//		keepvars.Add("id");
+	//		if (settings.colorvar != "none" & settings.colorvar != "variable") keepvars.Add(settings.colorvar);
+
+	//		DataSubsets subsets = new DataSubsets(dpdata.dt, keepvars, new List<string> { settings.panelvar });
+
+	//		foreach (uwac.DataSubset subset in subsets.subsets)
+	//		{
+
+	//			DxChartFactory chartfactory = new DxChartFactory(DxChartType.Scatterplot, settings, subset.dt);
+
+	//			string temptitle = "foo";
+	//			Table t = (settings.showhist) ?
+	//				ChartOutput.UpperDiagTable(chartfactory.charts, chartfactory.altcharts, settings.W, settings.H, 1.0, .8, temptitle, settings.numvars) :
+	//				ChartOutput.UpperDiagTable(chartfactory.charts, settings.W, settings.H, 1.0, temptitle, settings.numvars);
+
+	//			Label label = new Label();
+	//			label.Text = String.Format("<br/><br/>{0}",subset.Cols_and_Vals_ToString());
+	//			label.Font.Bold = true;
+	//			label.Font.Size = 12;
+	//			callbackCharts.Controls.Add(label);
+	//			callbackCharts.Controls.Add(t);
+
+	//			ChartsToDisk(chartfactory);
+	//		}
+	//	}
+
+	//}
+
+	//protected void LaunchBarcharts() //string xaxisvar, string colorsvar, string panelvar)
+	//{
+
+
+	//	DxChartFactory chartfactory = new DxChartFactory(DxChartType.Barchart, settings, dpdata.dt);
+
+
+	//	string layout = cboOutputStyleBAR.Value.ToString();
+
+	//	if (layout == "Rows, Left to Right")
+	//	{
+	//		Table t = ChartOutput.HorizontalTable(chartfactory.charts, settings.W, settings.H, Convert.ToInt32(trkNumColsBAR.Value));
+	//		callbackCharts.Controls.Add(t);
+	//	}
+	//	else if (layout == "Cols, Top to Bottom")
+	//	{
+	//		Table t = ChartOutput.VerticalTable(chartfactory.charts, settings.W, settings.H, Convert.ToInt32(trkNumRowsBAR.Value));
+	//		callbackCharts.Controls.Add(t);
+	//	}
+
+	//	//TODO stats tables
+	//	//if (chkStatsTable.Checked)
+	//	//{
+	//	//	if (chart.statstable.dt.Rows.Count > 0)
+	//	//	{
+	//	//		ASPxGridView grid = new ASPxGridView();
+	//	//		grid.SettingsPager.PageSize = 30;
+	//	//		grid.DataSource = chart.statstable.dt;
+	//	//		grid.DataBind();
+	//	//		callbackCharts.Controls.Add(grid);
+	//	//	}
+	//	//}
+
+	//	ChartsToDisk(chartfactory);
+	//}
+
+
+
+
+	protected DevExpress.Web.ASPxPivotGrid.PivotGridField AddPivotGridField(string v, DevExpress.XtraPivotGrid.PivotArea area)
+	{
+		DevExpress.Web.ASPxPivotGrid.PivotGridField fld = new DevExpress.Web.ASPxPivotGrid.PivotGridField();
+		fld.ID = String.Format("fld{0}", v);
+		fld.FieldName = v;
+		fld.Area = area;
+		return fld;
 	}
 
 
-	#endregion
 
+	protected void LaunchPCA()
+	{
+		string subgroupsvar = cboSubgroupsvarPCA.Value.ToString();
+		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		string method = rblMethod.SelectedItem.Value.ToString();
+		List<Table> tables = new List<Table>();
+
+		if (subgroupsvar != "none")
+		{
+			List<PCA> pcas = new List_O_PCA(dpdata, numvars, method, subgroupsvar).pcas;
+			for (int a = 0; a < pcas.Count; a++)
+			{
+				tables.Add(pcas[a].OutputTable);
+			}
+
+			if (tables.Count > 0)
+			{
+				//addtoPDF(complink, pcas);
+			}
+
+		}
+		else //no subsets
+		{
+			PCA pca = new PCA(dpdata, numvars, method, "");
+			if (pca.OutputTable != null)
+			{
+				//addtoPDF(complink, pca);
+				tables.Add(pca.OutputTable);
+			}
+
+		}
+
+		foreach (Table t in tables)
+		{
+			callbackCharts.Controls.Add(t);
+		}
+
+
+	}
 
 
 
@@ -2557,5 +1967,277 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	}
 
 
+	protected void btnPDF_OnClick(object source, EventArgs e)
+	{
+		//Response.Redirect(filename);
+		//WebClient User = new WebClient();
+		//Byte[] FileBuffer = User.DownloadData(name);
+		//if (FileBuffer != null)
+		//{
+		//	Response.ContentType = "application/pdf";
+		//	Response.AddHeader("content-length", FileBuffer.Length.ToString());
+		//	Response.BinaryWrite(FileBuffer);
+		//}
+
+		//DxChartFactory factory = (DxChartFactory)Session["chartfactory"];
+
+		//ChartsToDisk(factory);
+		string path = @"c:\_temp\factory\";
+		List<string> files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly).ToList();
+
+		for(int i=0; i < files.Count; i++)
+		{
+			string f = files[i];
+			files[i] = f.Replace(path, "").Replace(".xml","");
+		}
+
+
+
+		MakePDF(files);
+	}
+
+	protected void DeleteChartFiles()
+	{
+		System.IO.DirectoryInfo di = new DirectoryInfo(@"c:\_temp\factory\");
+
+		foreach (FileInfo file in di.GetFiles())
+		{
+			file.Delete();
+		}
+	}
+
+
+protected void ChartsToDisk(DxChartFactory factory )
+	{
+		string path = @"c:\_temp\factory\";
+		List<string> chartfiles = new List<string>();
+		int counter = 0;
+		foreach (DxBatchOcharts batch in factory.batches)
+		{
+			foreach (DxChart chart in batch.charts)
+			{
+				try
+				{
+					string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
+					chartfiles.Add(chart.guid);
+					chart.chart.SaveToFile(xmlfile);
+					SaveChartToImage(chart.chart, path, chart.guid);
+					//chart.chart.ExportToImage(String.Format("{0}PNGchart{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
+
+				}
+				catch (Exception ex) { }
+			}
+		}
+		//if (factory.altcharts != null)
+		//{
+		//	foreach (DxChart chart in factory.altcharts)
+		//	{
+		//		try
+		//		{
+		//			string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
+		//			chartfiles.Add(chart.guid);
+		//			chart.chart.SaveToFile(xmlfile);
+		//			SaveChartToImage(chart.chart, path, chart.guid);
+		//			//chart.chart.ExportToImage(String.Format("{0}PNGchart{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
+		//		}
+		//		catch (Exception ex) { }
+		//	}
+		//}
+
+
+	}
+
+	protected void SaveChartToImage(WebChartControl chart, string filepath, string filename )
+	{
+		chart.ExportToImage(String.Format("{0}{1}.{2}", filepath, filename, "png"), ImageFormat.Png);
+	}
+
+
+	protected float PDFAddPageHeader(PdfGraphics g, int pagenumber)
+	{
+		float y = 10f;
+		float x = 10f;
+		float x_right = 760f;
+		float yoffset = 4f;
+		SolidBrush black = (SolidBrush)Brushes.Black;
+		using (Font font16 = new Font("Arial", 16, FontStyle.Bold | FontStyle.Underline))
+		using (Font font12 = new Font("Segoe UI", 12))
+		using (Font font = new Font("Segoe UI", 10))
+		{
+
+			string page = String.Format("pg. {0}", pagenumber.ToString());
+			string s1 = lblProjTitle.Text;
+			string s2 = gridFile.Value.ToString();
+			string s3 = lblSelectedDataInfo2.Text;
+
+
+			string user_time = String.Format("{0}     {1:MM/dd/yy H:mm}", Master.Master_netid, System.DateTime.Now);
+
+
+			//page number
+			g.DrawString(page, font, black, x_right - (g.MeasureString(page, font).Width) , 10);
+			//project title
+			g.DrawString(s1, font16, black, x, y);
+			y = y + g.MeasureString(s1, font16).Height - yoffset;
+			//file, user, date
+			g.DrawString(s2, font12, black, x, y);
+			float x2 = x_right - g.MeasureString(user_time, font).Width ;
+			g.DrawString(user_time, font, black, x2, y);
+			y = y + g.MeasureString(s2, font12).Height - yoffset;
+			//Worksheet & filter
+			g.DrawString(s3, font, black, x, y);
+			y = y + g.MeasureString(s3, font).Height - yoffset;
+
+		}
+
+
+		return y;
+	}
+
+	protected void MakePDF(List<string> chartfiles)
+	{
+		const float imageLocationX = 40;
+		const float imageLocationY = 40;
+		int counter = 0;
+		using (PdfDocumentProcessor documentProcessor = new PdfDocumentProcessor())
+		{
+			documentProcessor.CreateEmptyDocument();
+			IList<PdfBookmark> bookmarks = documentProcessor.Document.Bookmarks;
+			SolidBrush black = (SolidBrush)Brushes.Black;
+
+			//using (Bitmap signatureImage = new Bitmap(HostingEnvironment.MapPath("~/App_Data/PdfDocumentCreationAPIDemoSignHere.emf")))
+			using (Font employeeNameFont = new Font("Arial", 16, FontStyle.Bold | FontStyle.Underline))
+			using (Font employeeTitleFont = new Font("Segoe UI", 14))
+			using (Font defaultFont = new Font("Segoe UI", 10))
+				//foreach (DxChart chart in factory.charts)
+			//using (Pdf)
+			using (PdfGraphics graphics = documentProcessor.CreateGraphics())
+			{
+
+				counter++;
+				graphics.UseKerning = true;
+				//int x = Convert.ToInt32(imageLocationX * counter);
+				//int y = Convert.ToInt32(imageLocationY * counter);
+
+				float x = imageLocationX;
+				float y = PDFAddPageHeader(graphics, 1);
+
+				//				float y = imageLocationY ;
+				float scalex = 0.5f;
+				float scaley = 0.8f;
+				float yoffset = 4f;
+
+				float tmpy = y;
+				float ypos_last_chart = y;
+
+				try
+				{
+					for (int i = 0; i < chartfiles.Count; i++)
+					{
+						scalex = 0.5f;
+						x = imageLocationX;
+						tmpy = ypos_last_chart;
+						string path = @"c:\_temp\factory\";
+
+
+						//WebChartControl chart = new WebChartControl();
+						//chart.LoadFromFile(String.Format("{0}{1}.xml", path, chartfiles[i]));
+						//chart.RefreshData();
+						//chart.DataBind();
+
+						//callbackCharts.Controls.Add(chart);
+
+						//Save image from the loaded data
+						//SaveChartToImage(chart, path, String.Format("{0}{1}","X",chartfiles[i]));
+
+
+						string file1 = String.Format("{0}{1}.{2}", path, chartfiles[i], "png");
+						Bitmap bitmap1 = new Bitmap(file1);
+						graphics.DrawImage(bitmap1, new RectangleF(x, tmpy, bitmap1.Width * scalex, bitmap1.Height * scalex));
+
+						ypos_last_chart = tmpy + (bitmap1.Height * scalex) + yoffset;
+
+
+
+					}
+				}
+				catch(Exception ex)
+				{ }
+				//PrintingSystemBase ps = new PrintingSystemBase();
+				//PrintableComponentLinkBase gv1 = new PrintableComponentLinkBase(ps);
+				//gv1.Component = gvSelectedVarsExporter;
+
+				//PdfExportOptions options = new PdfExportOptions();
+				//options.Compressed = false;
+				//gvSelectedVars.ExportPdfToResponse(options);
+
+				//gvSelectedVars.Export
+
+
+				//MemoryStream chart_stream = (MemoryStream)Session["stream"];
+
+				//WebChartControl chart = new WebChartControl();
+				//chart.LoadFromStream(chart_stream);
+
+				////(IChartContainer)chart.chart).Chart.LoadLayout(chart_stream);
+
+				//graphics.DrawImage()
+
+				//graphics.DrawImage(chart_stream
+				//	, new Rectangle(x, y, 300, 300));
+
+				//using (Bitmap photo = new Bitmap(HostingEnvironment.MapPath("~/App_Data/Photo" + employee.EmployeeID + ".jpeg")))
+				//{
+				//	graphics.DrawImage(photo, new RectangleF(x, y, photo.Width, photo.Height));
+				//	x = x + photo.Width + 75;
+				//}
+
+
+				//y = y - 16.5f;
+				//string text = "Hi there";
+				//graphics.DrawString(text, employeeNameFont, black, x - 4.5f, y);
+				//y = y + graphics.MeasureString(text, employeeNameFont).Height - 7;
+				//text = "here is the title";
+				//graphics.DrawString(text, employeeTitleFont, black, x, y);
+				//y = y + graphics.MeasureString(text, employeeTitleFont).Height + 25;
+				//text = " and the phone 555-1212";
+				//graphics.DrawString(text, defaultFont, black, x, y);
+				//y = y + graphics.MeasureString(text, defaultFont).Height + 2.5f;
+				//text = employee.FirstName.ToLower() + "." + employee.LastName.ToLower()[0] + "@example.com";
+				//graphics.DrawString(text, defaultFont, black, x, y);
+				//y = y + graphics.MeasureString(text, defaultFont).Height + 3;
+				//RectangleF rectangle = new RectangleF(816 - signatureImage.Width - imageLocationX, y + 31, signatureImage.Width, signatureImage.Height);
+				//graphics.AddFormField(new PdfGraphicsAcroFormSignatureField("Signature" + employee.EmployeeID, rectangle) { ContentImage = signatureImage });
+				int pageNumber = documentProcessor.RenderNewPage(PdfPaperSize.Letter, graphics);
+				PdfDestination destination = documentProcessor.CreateDestination(pageNumber, imageLocationX, imageLocationY);
+				//bookmarks.Add(new PdfBookmark() { Title = employee.FirstName + " " + employee.LastName, Destination = destination });
+			}
+			//DevExpress.Web.Demos.
+			documentProcessor.SaveDocument(@"c:\_temp\foo.pdf");
+
+			MemoryStream ms = new MemoryStream();
+			documentProcessor.SaveDocument(ms);
+
+			ms.Seek(0, SeekOrigin.Begin);
+			byte[] report = ms.ToArray();
+
+			Response.ContentType = "application/pdf";
+			Response.AddHeader("content-disposition", "attachment;filename=huzzah.pdf");
+			Response.Cache.SetCacheability(HttpCacheability.NoCache);
+			Response.OutputStream.Write(report, 0, report.Length);
+			Response.End();
+
+			//PdfDocumentReponse.SendDocument(Response, documentProcessor, "PDF Document Processor - Document Creation API Demo", "PDF Document Creation API");
+		}
+	}
 }
+
+//TODO
+//bar - stacked bar
+//bar  - desc stats
+//pca  - plot scree plot for eigenvalues and polar coords for loadings...
+
+//PDF horizontal, vertical, and diag
+
+
 

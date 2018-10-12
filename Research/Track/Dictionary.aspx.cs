@@ -17,7 +17,7 @@ using uwac;
 using uwac.trk;
 
 
-public partial class Track_Dictionary : System.Web.UI.Page
+public partial class Track_Dictionary: BasePage
 {
 	private string ID;
 	private string group_csv;
@@ -155,13 +155,35 @@ public partial class Track_Dictionary : System.Web.UI.Page
 
 
 
+
 	#endregion
 
+	protected void gridDict_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxGridView.BuildUpdateSqlCode(e, "fld", "data", "def");
+		//((ASPxGridView) sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+		gv.CancelEdit();
+		e.Cancel = true;
 
+		gridDict.DataBind();
+	}
 
+	protected void gridDict_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
 
+		SQL_utils sql = new SQL_utils("data");
+		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["measureID"]);
+		e.NewValues.Add("tblpk", tblpk);
 
+		DxGridView.BuildInsertSqlCode(e, "fld", "data", "def");
+		//((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+		gv.CancelEdit();
+		e.Cancel = true;
 
+		gridDict.DataBind();
 
+	}
 
 }
