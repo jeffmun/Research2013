@@ -129,12 +129,18 @@ namespace uwac
 		Lineplot = 4,
 		PCA = 5
 	}
+
 	public enum DxChartLayout
 	{
 		Horizontal = 1,
 		Vertical = 2,
-		Diagnonal = 3
+		Upper = 3,
+		UpperDiag = 4,
+		Lower = 5,
+		LowerDiag = 6
 	}
+
+
 }
 
 

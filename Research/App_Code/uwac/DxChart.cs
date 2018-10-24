@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Linq;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Reflection;
@@ -71,7 +72,6 @@ namespace uwac
 			}
 			_xydiagram.PaneLayoutDirection = layoutdirection;
 		}
-
 
 
 		#region Titles

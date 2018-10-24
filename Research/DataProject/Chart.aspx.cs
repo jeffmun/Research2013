@@ -14,6 +14,7 @@ using uwac.trk;
 using DevExpress.Web;
 using DevExpress.Web.WebClientUIControl;
 using DevExpress.Docs;
+using DevExpress.Office.API;
 using DevExpress.Pdf;
 using DevExpress.Pdf.Interop;
 using DevExpress.Xpf.Printing;
@@ -33,6 +34,7 @@ using NReco.PivotData.Output;
 using DevExpress.XtraPrintingLinks;
 using System.Xml;
 using System.Xml.Serialization;
+using DevExpress.XtraRichEdit.API.Native;
 
 //public partial class PointSeries : ChartBasePage{
 public partial class DataProject_Chart : System.Web.UI.Page
@@ -50,8 +52,9 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	int dataproj_pk;
 	string filename;
 	string projTitle;
-	DxCharts dxchart;
+	//DxCharts dxchart;
 	List<Color> colors;
+	DxChartOrders orders;
 	DPData dpdata;
 	string selectedsheet;
 	bool printDebug = true;
@@ -98,6 +101,8 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	protected void PageLoad_Initial()
 	{
 		log(String.Format("Page_Load NOT PostBack - {0}", IsPostBack));
+		orders = new DxChartOrders();
+		Session["orders"] = orders;
 
 		panel.ContentTemplateContainer.Controls.Clear();
 
@@ -124,17 +129,18 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		InitializeDropdowns(addtxgrp, addtimept);
 		InitializeTokenboxes(addtxgrp, addtimept);
 
-		ToggleTabVisible("tabPlots", true);
-		ToggleTabVisible("tabTables", true);
+		//ToggleTabVisible("tabPlots", true);
+		//ToggleTabVisible("tabTables", true);
 	}
 
 
 	protected void PageLoad_PostBack()
 	{
 		log(String.Format("Page_Load Is PostBack - {0}", IsPostBack));
-
 		Int32.TryParse(trackWhist.Value.ToString(), out chartWhist);
 		Int32.TryParse(trackHhist.Value.ToString(), out chartHhist);
+
+
 
 		//DataSet is NULL
 		if (Session["dset"] == null){
@@ -247,6 +253,12 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 			//LoadColors();
 			GetColors();
+		}
+
+
+		if (Session["orders"] != null)
+		{
+			orders = (DxChartOrders)Session["orders"];
 		}
 	}
 
@@ -467,6 +479,25 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			gridVarsAge.DataSource = (DataTable)Session["datadict_age"];
 			gridVarsAge.DataBind();
 			gridVarsAge.Visible = true;
+		}
+		if (Session["orders"] != null)
+		{
+			orders = (DxChartOrders)Session["orders"];
+			if (orders.Count > 0)
+			{
+				//callbackCharts.Controls.Clear();
+				//ASPxGridView gridOrders = new ASPxGridView();
+				gridOrders.DataSource = orders.ToDataTable();
+				gridOrders.DataBind();
+				gridOrders.Visible = true;
+
+				//callbackCharts.Controls.Add(gridOrders);
+			}
+			else
+			{
+
+			}
+
 		}
 	}
 
@@ -1149,6 +1180,17 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 
 	#region Callbacks 
+
+
+
+	//protected void tabSteps_OnCallback(object sender, CallbackEventArgsBase e)
+	//{
+	//	orders = (DxChartOrders)Session["orders"];
+	//	string sets_text = String.Format("Chart Sets (N={0})", orders.Count);
+	//	tabSteps.TabPages[3].Text = sets_text;
+
+	//}
+
 	protected void callbackSelectors_OnCallback(object sender, CallbackEventArgsBase e)
 	{
 		log(String.Format("callbackSelectors_OnCallback {0}", e.Parameter.ToString()));
@@ -1405,53 +1447,268 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	{
 		log(String.Format(">>> callbackCharts_OnCallback {0}", e.Parameter.ToString()));
 		//CreateCharts();
+		bool isNewOrder = true; bool isNotNewOrder = false;
 
 		var p = e.Parameter;
-		callbackCharts.Controls.Clear();
+		
 		if (p == "clear")
 		{
 
 		}
-		else if (p != "")
+		else if (p.StartsWith( "OldOrder"))		
 		{
-			List<string> chart_vars = p.Split(',').ToList();
+			List<string> ps = p.Split('|').ToList();
 
-			string colorsvarHIST = chart_vars[0];
-			string panelvarHIST = chart_vars[1];
+			DxChartOrder order = orders[Convert.ToInt32(ps[1])-1];
+			CreateCharts(order, isNotNewOrder);
+		}
+		else if (p == "NewOrder")
+		{
+			DxChartOrder order = GatherOrder();
+			CreateCharts(order);
+		}
+		else if (p == "SaveNewOrder")
+		{
+			DxChartOrder order = GatherOrder();
+			CreateCharts(order, true);
+		}
+		else if (p.StartsWith("DisplayAllOrders"))
+		{
+			CreateCharts(orders);
+		}
+		else if (p == "Docx")
+		{
+			CreateCharts(orders, "docx");
+		}
+	}
 
-			string xaxisvarBAR = chart_vars[2];
-			string colorsvarBAR = chart_vars[3];
-			string panelvarBAR = chart_vars[4];
 
-			//string xaxisvarSCAT = chart_vars[5];
-			//string yaxisvarSCAT = chart_vars[6];
-			string colorsvarSCAT = chart_vars[5];
-			string panelvarSCAT = chart_vars[6];
 
-			string xaxisvarLINE = chart_vars[7];
-			string colorsvarLINE = chart_vars[8];
-			string panelvarLINE = chart_vars[9];
+	protected void gridOrders_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+		if (e.ButtonID == "OldOrder")
+		{
+			//display this order
+			int ordernum = e.VisibleIndex;
+			string p = String.Format("{0}|{1}", "OldOrder",ordernum);
+			CallbackEventArgsBase arg = new CallbackEventArgsBase(p);
+			callbackCharts_OnCallback(callbackCharts, arg);
+		}
+	}
 
-			string xtrowvar = chart_vars[10];
-			string xtcolvar = chart_vars[11];
-			string xtpanelvar = chart_vars[12];
 
-			string colorsvarPCA = chart_vars[13];
+	protected void callbackOrders_OnCallback(object source, CallbackEventArgsBase e)
+	{
+		var p = e.Parameter;
 
-			callbackCharts.Controls.Clear();
+		if (p.StartsWith("RemoveOrder"))
+		{
+			List<string> ps = p.Split('|').ToList();
+			int idx = Convert.ToInt32(ps[1]);
 
-			CreateCharts(colorsvarHIST, panelvarHIST
-				, xaxisvarBAR, colorsvarBAR, panelvarBAR
-				//, xaxisvarSCAT, yaxisvarSCAT
-				, colorsvarSCAT, panelvarSCAT
-				, xaxisvarLINE, colorsvarLINE, panelvarLINE
-				, xtrowvar, xtcolvar, xtpanelvar
-				, colorsvarPCA
-				);
+			orders.RemoveAt(idx - 1);
+
+			Session["orders"] = orders;
+
+			gridOrders.DataSource = orders.ToDataTable();
+			gridOrders.DataBind();
+			gridOrders.Visible = true;
+
 		}
 	}
 
 	#endregion
+
+
+
+
+	protected void CreateCharts(DxChartOrder myorder)
+	{
+		DxChartOrders myorders = new DxChartOrders() { myorder };
+		CreateCharts(myorders, false, "");
+	}
+	protected void CreateCharts(DxChartOrder myorder, bool saveOrder)
+	{
+		DxChartOrders myorders = new DxChartOrders() { myorder };
+		CreateCharts(myorders, saveOrder, "");
+	}
+
+	protected void CreateCharts(DxChartOrders myorders)
+	{
+		CreateCharts(myorders, false, "");
+	}
+	protected void CreateCharts(DxChartOrders myorders, string exportfiletype)
+	{
+		CreateCharts(myorders, false, exportfiletype);
+	}
+
+	protected void CreateCharts(DxChartOrders myorders, bool saveOrder, string exportfiletype)
+	{
+		log("----- CreateCharts -----");
+
+
+		DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
+
+		if(saveOrder)
+		{
+			myorders[0].UpdateCounts(factory);
+			orders.Add(myorders[0]);
+			Session["orders"] = orders;
+		}
+
+		DeliverChartsToPage(factory);
+
+		if (exportfiletype == "docx")
+		{
+			MakeDocx(factory);
+			DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+		}
+
+		SerializeObject<DxChartOrders>(myorders, @"c:\_temp\factory\orders.xml");
+	}
+
+
+
+	protected DxChartOrder GatherOrder()
+	{
+		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
+		DxChartOrder order = new DxChartOrder();
+
+		order.worksheet = gridDataSheets.Value.ToString();
+		if (plotrequests.Contains("Barchart")) order.settingsbar = BarchartSettings();
+		if (plotrequests.Contains("Histogram")) order.settingshist = HistogramSettings();
+		if (plotrequests.Contains("Lineplot")) order.settingsline = LineplotSettings();
+		if (plotrequests.Contains("Scatterplot")) order.settingsscat = ScatterplotSettings();
+		order.PopulateVars();
+
+		return order;
+	}
+
+
+	#region chart settings 
+	protected DxHistogramSettings HistogramSettings()
+	{
+		DxHistogramSettings settings = new DxHistogramSettings();
+		settings.maxRow = Convert.ToInt32(trkNumRowsHIST.Value);
+		settings.maxCol = Convert.ToInt32(trkNumColsHIST.Value);
+		settings.W = Convert.ToInt32(trackWhist.Position);
+		settings.H = Convert.ToInt32(trackHhist.Position);
+		settings.chartlayout = ConvertChartLayout(cboOutputStyleHIST.Value.ToString());
+
+
+		int numbins = Convert.ToInt32(trkNumBins.Value);
+		settings.numbins = (numbins == 0) ? 15 : numbins;
+
+
+		settings.shownormalcurve = chkNormalcurve.Checked;
+		settings.histMSD = chkHistMSD.Checked;
+
+		settings.panesLayoutDirection = (cboPanes.Value.ToString() == "horizontal") ? PaneLayoutDirection.Horizontal : PaneLayoutDirection.Vertical;
+		settings.colors = GetColors();
+		settings.colorvar = cboColorsvarHIST.Value.ToString();
+		settings.panelvar = cboPanelvarHIST.Value.ToString();
+
+
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		return settings;
+	}
+
+	protected DxBarchartSettings BarchartSettings()
+	{
+		DxBarchartSettings settings = new DxBarchartSettings();
+		settings.maxRow = Convert.ToInt32(trkNumRowsBAR.Value);
+		settings.maxCol = Convert.ToInt32(trkNumColsBAR.Value);
+		settings.W = Convert.ToInt32(trackWbar.Position);
+		settings.H = Convert.ToInt32(trackHbar.Position);
+		settings.chartlayout = ConvertChartLayout(cboOutputStyleBAR.Value.ToString());
+
+		settings.xaxisvar = cboXaxisvarBAR.Value.ToString(); //xaxisvar;
+		settings.colorvar = cboColorsvarBAR.Value.ToString(); //colorsvar;
+		settings.panelvar = cboPanelvarBAR.Value.ToString(); //panelvar;
+
+		settings.colors = GetColors();
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		return settings;
+	}
+
+	protected DxLineplotSettings LineplotSettings()
+	{
+		DxLineplotSettings settings = new DxLineplotSettings();
+		settings.maxRow = Convert.ToInt32(trkNumRowsLINE.Value);
+		settings.maxCol = Convert.ToInt32(trkNumColsLINE.Value);
+		settings.W = Convert.ToInt32(trackWline.Position);
+		settings.H = Convert.ToInt32(trackHline.Position);
+		settings.chartlayout = ConvertChartLayout(cboOutputStyleLINE.Value.ToString());
+
+		settings.xaxisvar = cboXaxisvarLINE.Value.ToString(); //xaxisvar;
+		settings.colorvar = cboColorsvarLINE.Value.ToString(); //colorsvar;
+		settings.panelvar = cboPanelvarLINE.Value.ToString(); //panelvar;
+		settings.legend_pos_h = cboLegendH_LINE.Value.ToString();
+		settings.legend_pos_v = cboLegendV_LINE.Value.ToString();
+		settings.matchYAxes = chkLineMatchYaxisRange.Checked;
+		settings.showLegend = chkLineShowLegend.Checked;
+
+		settings.colors = GetColors();
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		settings.datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+		if (settings.datevars.Contains(settings.xaxisvar)) settings.xaxis_is_date = true;
+		if (settings.agevars.Contains(settings.xaxisvar)) settings.xaxis_is_age = true;
+		return settings;
+	}
+
+	protected DxScatterplotSettings ScatterplotSettings()
+	{
+		DxScatterplotSettings settings = new DxScatterplotSettings();
+		settings.W = Convert.ToInt32(trackWscat.Position);
+		settings.H = Convert.ToInt32(trackHscat.Position);
+		settings.chartlayout = ConvertChartLayout(cboOutputStyleSCAT.Value.ToString(), chkHist.Checked);
+
+		int movavgNumPts = Convert.ToInt32(txtPtsCount.Text);
+		if (movavgNumPts > 0)
+		{
+			settings.movavgNumPts = movavgNumPts;
+		}
+
+		settings.showhist = chkHist.Checked;
+		settings.showregline = chkRegline.Checked;
+		settings.useMovAvg = chkMovingAvg.Checked;
+		settings.colors = GetColors();
+		settings.colorvar = cboColorsvarSCAT.Value.ToString();
+		settings.panelvar = cboPanelvarSCAT.Value.ToString();
+
+
+		if (chkJitter.Checked)
+		{
+			settings.jitter = true;
+
+			double amtx;
+			if (Double.TryParse((txtJitterAmtX.Text), out amtx)) settings.jitteramtX = amtx;
+			double amty;
+			if (Double.TryParse((txtJitterAmtY.Text), out amty)) settings.jitteramtY = amty;
+
+		}
+
+		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		settings.maxCol = settings.numvars.Count;
+		settings.maxRow = settings.numvars.Count;
+
+		return settings;
+	}
+	#endregion
+
+	protected void DeliverChartsToPage(DxChartFactory factory) 
+	{
+		callbackCharts.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
+
+		foreach (DxBatchOcharts batch in factory.batches)
+		{
+			System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
+			callbackCharts.Controls.Add(t);
+		}
+	}
+
 
 
 
@@ -1497,164 +1754,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	//}
 
 
-
-
-
-
-
-	protected void CreateCharts(string colorsvarHIST, string panelvarHIST
-			, string xaxisvarBAR, string colorsvarBAR, string panelvarBAR
-			//, string xaxisvarSCAT, string yaxisvarSCAT
-			, string colorsvarSCAT, string panelvarSCAT
-			, string xaxisvarLINE, string colorsvarLINE, string panelvarLINE
-			, string xtrowvar, string xtcolvar, string xtpanelvar
-			, string subgroupsvarPCA)
-	{
-		DeleteChartFiles();
-		callbackCharts.Controls.Clear();
-
-		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
-
-		DxChartOrders orders = GatherOrder(plotrequests);
-		DxChartFactory factory = new DxChartFactory(dpdata.dt, orders);
-
-		DeliverChartsToPage(factory);
-
-		SerializeObject<DxChartOrders>(orders, @"c:\_temp\factory\orders.xml");
-
-	}
-
-
-	protected DxChartOrders GatherOrder(List<string> plotrequests )
-	{
-		DxChartOrders orders = new DxChartOrders();
-
-
-		if (plotrequests.Contains("Barchart")) orders.settingsbar = BarchartSettings();
-		if (plotrequests.Contains("Histogram")) orders.settingshist = HistogramSettings();
-		if (plotrequests.Contains("Lineplot")) orders.settingsline = LineplotSettings();
-		if (plotrequests.Contains("Scatterplot")) orders.settingsscat = ScatterplotSettings();
-
-		return orders;
-	}
-
-	#region chart settings 
-	protected DxHistogramSettings HistogramSettings()
-	{
-		DxHistogramSettings settings = new DxHistogramSettings();
-		settings.maxRow = Convert.ToInt32(trkNumRowsHIST.Value);
-		settings.maxCol = Convert.ToInt32(trkNumColsHIST.Value);
-		settings.W = Convert.ToInt32(trackWhist.Position);
-		settings.H = Convert.ToInt32(trackHhist.Position);
-
-		int numbins = Convert.ToInt32(trkNumBins.Value);
-		settings.numbins = (numbins == 0) ? 15 : numbins;
-
-
-		settings.shownormalcurve = chkNormalcurve.Checked;
-		settings.histMSD = chkHistMSD.Checked;
-
-		settings.panesLayoutDirection = (cboPanes.Value.ToString() == "horizontal") ? PaneLayoutDirection.Horizontal : PaneLayoutDirection.Vertical;
-		settings.colors = GetColors();
-		settings.colorvar = cboColorsvarHIST.Value.ToString();
-		settings.panelvar = cboPanelvarHIST.Value.ToString();
-
-
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		return settings;
-	}
-
-	protected DxBarchartSettings BarchartSettings()
-	{
-		DxBarchartSettings settings = new DxBarchartSettings();
-		settings.maxRow = Convert.ToInt32(trkNumRowsBAR.Value);
-		settings.maxCol = Convert.ToInt32(trkNumColsBAR.Value);
-		settings.W = Convert.ToInt32(trackWbar.Position);
-		settings.H = Convert.ToInt32(trackHbar.Position);
-
-		settings.xaxisvar = cboXaxisvarBAR.Value.ToString(); //xaxisvar;
-		settings.colorvar = cboColorsvarBAR.Value.ToString(); //colorsvar;
-		settings.panelvar = cboPanelvarBAR.Value.ToString(); //panelvar;
-
-		settings.colors = GetColors();
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		return settings;
-	}
-
-	protected DxLineplotSettings LineplotSettings()
-	{
-		DxLineplotSettings settings = new DxLineplotSettings();
-		settings.maxRow = Convert.ToInt32(trkNumRowsLINE.Value);
-		settings.maxCol = Convert.ToInt32(trkNumColsLINE.Value);
-		settings.W = Convert.ToInt32(trackWline.Position);
-		settings.H = Convert.ToInt32(trackHline.Position);
-
-		settings.xaxisvar = cboXaxisvarLINE.Value.ToString(); //xaxisvar;
-		settings.colorvar = cboColorsvarLINE.Value.ToString(); //colorsvar;
-		settings.panelvar = cboPanelvarLINE.Value.ToString(); //panelvar;
-		settings.legend_pos_h = cboLegendH_LINE.Value.ToString();
-		settings.legend_pos_v = cboLegendV_LINE.Value.ToString();
-		settings.matchYAxes = chkLineMatchYaxisRange.Checked;
-		settings.showLegend = chkLineShowLegend.Checked;
-
-		settings.colors = GetColors();
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		settings.datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
-
-		if (settings.datevars.Contains(settings.xaxisvar)) settings.xaxis_is_date = true;
-		if (settings.agevars.Contains(settings.xaxisvar)) settings.xaxis_is_age = true;
-		return settings;
-	}
-
-	protected DxScatterplotSettings ScatterplotSettings()
-	{
-		DxScatterplotSettings settings = new DxScatterplotSettings();
-		settings.W = Convert.ToInt32(trackWscat.Position);
-		settings.H = Convert.ToInt32(trackHscat.Position);
-
-		int movavgNumPts = Convert.ToInt32(txtPtsCount.Text);
-		if (movavgNumPts > 0)
-		{
-			settings.movavgNumPts = movavgNumPts;
-		}
-
-		settings.showhist = chkHist.Checked;
-		settings.showregline = chkRegline.Checked;
-		settings.useMovAvg = chkMovingAvg.Checked;
-		settings.colors = GetColors();
-		settings.colorvar = cboColorsvarSCAT.Value.ToString();
-		settings.panelvar = cboPanelvarSCAT.Value.ToString();
-
-
-		if (chkJitter.Checked)
-		{
-			settings.jitter = true;
-
-			double amtx;
-			if (Double.TryParse((txtJitterAmtX.Text), out amtx)) settings.jitteramtX = amtx;
-			double amty;
-			if (Double.TryParse((txtJitterAmtY.Text), out amty)) settings.jitteramtY = amty;
-
-
-		}
-
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-
-		return settings;
-	}
-	#endregion
-
-	protected void DeliverChartsToPage(DxChartFactory factory)
-	{
-		foreach(DxBatchOcharts batch in factory.batches)
-		{
-			Table t = ChartOutput.LayoutBatch(batch);
-			callbackCharts.Controls.Add(t);
-		}
-	}
-
-
 	public void SerializeObject<T>(T serializableObject, string fileName)
 	{
 		if (serializableObject == null) { return; }
@@ -1676,6 +1775,8 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			//Log exception here
 		}
 	}
+
+
 
 
 
@@ -1921,7 +2022,7 @@ public partial class DataProject_Chart : System.Web.UI.Page
 		string subgroupsvar = cboSubgroupsvarPCA.Value.ToString();
 		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 		string method = rblMethod.SelectedItem.Value.ToString();
-		List<Table> tables = new List<Table>();
+		List<System.Web.UI.WebControls.Table> tables = new List<System.Web.UI.WebControls.Table>();
 
 		if (subgroupsvar != "none")
 		{
@@ -1933,7 +2034,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 			if (tables.Count > 0)
 			{
-				//addtoPDF(complink, pcas);
 			}
 
 		}
@@ -1942,13 +2042,12 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			PCA pca = new PCA(dpdata, numvars, method, "");
 			if (pca.OutputTable != null)
 			{
-				//addtoPDF(complink, pca);
 				tables.Add(pca.OutputTable);
 			}
 
 		}
 
-		foreach (Table t in tables)
+		foreach (System.Web.UI.WebControls.Table t in tables)
 		{
 			callbackCharts.Controls.Add(t);
 		}
@@ -1969,19 +2068,6 @@ public partial class DataProject_Chart : System.Web.UI.Page
 
 	protected void btnPDF_OnClick(object source, EventArgs e)
 	{
-		//Response.Redirect(filename);
-		//WebClient User = new WebClient();
-		//Byte[] FileBuffer = User.DownloadData(name);
-		//if (FileBuffer != null)
-		//{
-		//	Response.ContentType = "application/pdf";
-		//	Response.AddHeader("content-length", FileBuffer.Length.ToString());
-		//	Response.BinaryWrite(FileBuffer);
-		//}
-
-		//DxChartFactory factory = (DxChartFactory)Session["chartfactory"];
-
-		//ChartsToDisk(factory);
 		string path = @"c:\_temp\factory\";
 		List<string> files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly).ToList();
 
@@ -1991,10 +2077,26 @@ public partial class DataProject_Chart : System.Web.UI.Page
 			files[i] = f.Replace(path, "").Replace(".xml","");
 		}
 
-
-
 		MakePDF(files);
 	}
+
+	//protected void btnWord_OnClick(object source, EventArgs e)
+	//{
+	//	string path = @"c:\_temp\factory\";
+	//	List<string> files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly).ToList();
+
+	//	for (int i = 0; i < files.Count; i++)
+	//	{
+	//		string f = files[i];
+	//		files[i] = f.Replace(path, "").Replace(".xml", "");
+	//	}
+
+	//	MakeDocx(files);
+	//}
+
+
+
+
 
 	protected void DeleteChartFiles()
 	{
@@ -2007,50 +2109,201 @@ public partial class DataProject_Chart : System.Web.UI.Page
 	}
 
 
-protected void ChartsToDisk(DxChartFactory factory )
+	protected void ChartsToDisk(DxChartFactory factory, string path )
 	{
-		string path = @"c:\_temp\factory\";
-		List<string> chartfiles = new List<string>();
-		int counter = 0;
+		log("----- ChartsToDisk !!!!! -----");
+
 		foreach (DxBatchOcharts batch in factory.batches)
 		{
 			foreach (DxChart chart in batch.charts)
 			{
 				try
 				{
-					string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
-					chartfiles.Add(chart.guid);
-					chart.chart.SaveToFile(xmlfile);
-					SaveChartToImage(chart.chart, path, chart.guid);
-					//chart.chart.ExportToImage(String.Format("{0}PNGchart{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
+					//chartfiles.Add(chart.guid);
+					//string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
+					//chart.chart.SaveToFile(xmlfile);
+					chart.W = Convert.ToInt32(chart.W / 4);
+					chart.H = Convert.ToInt32(chart.H / 2);
 
+					chart.chart.ExportToImage(String.Format("{0}{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
 				}
 				catch (Exception ex) { }
 			}
 		}
-		//if (factory.altcharts != null)
-		//{
-		//	foreach (DxChart chart in factory.altcharts)
-		//	{
-		//		try
-		//		{
-		//			string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
-		//			chartfiles.Add(chart.guid);
-		//			chart.chart.SaveToFile(xmlfile);
-		//			SaveChartToImage(chart.chart, path, chart.guid);
-		//			//chart.chart.ExportToImage(String.Format("{0}PNGchart{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
-		//		}
-		//		catch (Exception ex) { }
-		//	}
-		//}
-
-
 	}
 
-	protected void SaveChartToImage(WebChartControl chart, string filepath, string filename )
+	protected void DeleteChartsOnDisk(DxChartFactory factory, string path)
 	{
-		chart.ExportToImage(String.Format("{0}{1}.{2}", filepath, filename, "png"), ImageFormat.Png);
+		log("----- DeleteChartsOnDisk  !!!!! -----");
+
+		foreach (DxBatchOcharts batch in factory.batches)
+		{
+			foreach (DxChart chart in batch.charts)
+			{
+				//try
+				//{
+				//	File.Delete(String.Format("{0}{1}.{2}", path, chart.guid, "xml"));
+				//}
+				//catch (Exception ex) { }
+				try
+				{
+					File.Delete(String.Format("{0}{1}.{2}", path, chart.guid, "png"));
+				}
+				catch (Exception ex) { }
+			}
+		}
 	}
+
+
+	//protected void SaveChartToImage(WebChartControl chart, string filepath, string filename )
+	//{
+	//	chart.ExportToImage(String.Format("{0}{1}.{2}", filepath, filename, "png"), ImageFormat.Png);
+	//}
+
+
+
+	#region Export to Word
+
+	protected  void DocxHeader(DevExpress.XtraRichEdit.API.Native.Document doc, string s1, string s2)
+	{
+		DevExpress.XtraRichEdit.API.Native.Section firstSection = doc.Sections[0];
+		// Create an empty header.
+		SubDocument newHeader = firstSection.BeginUpdateHeader();
+		firstSection.EndUpdateHeader(newHeader);
+		// Check whether the document already has a header (the same header for all pages).
+		if (firstSection.HasHeader(DevExpress.XtraRichEdit.API.Native.HeaderFooterType.Primary))
+		{
+			SubDocument myHeader = firstSection.BeginUpdateHeader();
+			doc.ChangeActiveDocument(myHeader);
+			doc.CaretPosition = myHeader.CreatePosition(0);
+
+			string txt = String.Format("{0}     p.", s1);
+			DocumentRange range = myHeader.InsertText(myHeader.CreatePosition(0), txt);
+			Field fld = myHeader.Fields.Create(range.End, "PAGE"); //  "PAGE \\* ARABICDASH");
+			myHeader.Fields.Update();
+
+			myHeader.Paragraphs.Append();
+			string user_time = String.Format("{0}     {1:MM/dd/yy H:mm}", Master.Master_netid, System.DateTime.Now);
+			myHeader.AppendText(String.Format("{0}                             {1}",s2, user_time));
+
+
+			firstSection.EndUpdateHeader(myHeader);
+		}
+
+
+
+	}
+
+	protected void MakeDocx(DxChartFactory factory)
+	{
+		log(" ====== MakeDocx ======");
+		const float imageLocationX = 40;
+		const float imageLocationY = 40;
+		int counter = 0;
+		string path = @"C:\_temp\factory\";
+		ChartsToDisk(factory, path);
+
+		string fileName = String.Format(@"{0}{1}", path, "Test.docx");
+
+
+		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
+		{ 
+
+			DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+
+			DocxHeader(doc, lblProjTitle.Text, gridFile.Value.ToString());
+
+			DocumentPosition pos = doc.Range.Start;
+			//New Section
+
+			foreach (DxBatchOcharts batch in factory.batches)
+			{
+				foreach (DxChart chart in batch.charts)
+				{
+					string chartfile = String.Format(@"{0}{1}.png", path, chart.guid);
+					log(chartfile);
+					//MemoryStream s = new MemoryStream();
+					//chart.chart.ExportToImage(s, System.Drawing.Imaging.ImageFormat.Png);
+					doc.Images.Insert(pos, DocumentImageSource.FromFile(chartfile));
+
+				}
+
+			}
+
+			
+
+			srv.SaveDocument(fileName, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+		}
+
+
+		//System.Diagnostics.Process.Start(fileName);
+
+
+		//MemoryStream ms = new MemoryStream();
+		//srv.SaveDocument(ms, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+		////System.Diagnostics.Process.Start(fileName);
+
+		//ms.Seek(0, SeekOrigin.Begin);
+		//byte[] output = ms.ToArray();
+
+
+		//Response.ContentType = "application/docx";
+		//Response.AddHeader("content-disposition", String.Format("attachment;filename={0}", fileName));
+		//Response.Cache.SetCacheability(HttpCacheability.NoCache);
+		//Response.OutputStream.Write(output, 0, output.Length);
+		//Response.End();
+
+
+	}
+
+
+	protected float DocxAddPageHeader(PdfGraphics g, int pagenumber)
+	{
+		float y = 10f;
+		float x = 10f;
+		float x_right = 760f;
+		float yoffset = 4f;
+		SolidBrush black = (SolidBrush)Brushes.Black;
+		using (Font font16 = new Font("Arial", 16, FontStyle.Bold | FontStyle.Underline))
+		using (Font font12 = new Font("Segoe UI", 12))
+		using (Font font = new Font("Segoe UI", 10))
+		{
+
+			string page = String.Format("pg. {0}", pagenumber.ToString());
+			string s1 = lblProjTitle.Text;
+			string s2 = gridFile.Value.ToString();
+			string s3 = lblSelectedDataInfo2.Text;
+
+
+			string user_time = String.Format("{0}     {1:MM/dd/yy H:mm}", Master.Master_netid, System.DateTime.Now);
+
+
+			//page number
+			g.DrawString(page, font, black, x_right - (g.MeasureString(page, font).Width), 10);
+			//project title
+			g.DrawString(s1, font16, black, x, y);
+			y = y + g.MeasureString(s1, font16).Height - yoffset;
+			//file, user, date
+			g.DrawString(s2, font12, black, x, y);
+			float x2 = x_right - g.MeasureString(user_time, font).Width;
+			g.DrawString(user_time, font, black, x2, y);
+			y = y + g.MeasureString(s2, font12).Height - yoffset;
+			//Worksheet & filter
+			g.DrawString(s3, font, black, x, y);
+			y = y + g.MeasureString(s3, font).Height - yoffset;
+
+		}
+
+
+		return y;
+	}
+
+	#endregion
+
+
+
+
+
 
 
 	protected float PDFAddPageHeader(PdfGraphics g, int pagenumber)
@@ -2093,6 +2346,9 @@ protected void ChartsToDisk(DxChartFactory factory )
 
 		return y;
 	}
+
+
+
 
 	protected void MakePDF(List<string> chartfiles)
 	{
@@ -2230,6 +2486,21 @@ protected void ChartsToDisk(DxChartFactory factory )
 			//PdfDocumentReponse.SendDocument(Response, documentProcessor, "PDF Document Processor - Document Creation API Demo", "PDF Document Creation API");
 		}
 	}
+
+	protected DxChartLayout ConvertChartLayout(string layout)
+	{
+		return ConvertChartLayout(layout, false);
+	}
+
+	protected DxChartLayout ConvertChartLayout(string layout, bool withDiag)
+	{
+		if (layout == "Upper" & !withDiag) return DxChartLayout.Upper;
+		else if (layout == "Upper" & withDiag) return DxChartLayout.UpperDiag;
+		else if (layout.StartsWith("Rows")) return DxChartLayout.Horizontal;
+		else if (layout.StartsWith("Cols")) return DxChartLayout.Vertical;
+		else return DxChartLayout.Horizontal;
+	}
+
 }
 
 //TODO

@@ -1386,7 +1386,7 @@ namespace uwac
 				{ msg = String.Format("No records inserted into [{0}]", dest_tbl); }
 				else
 				{
-					msg = String.Format("{0} records inserted into [{0}].", n_end - n_start, dest_tbl);
+					msg = String.Format("{0} records inserted into [{1}].", n_end - n_start, dest_tbl);
 				}
 			}
 
@@ -1987,5 +1987,6 @@ namespace uwac
 
 			return cleanvalue;
 		}
-	}
+			
+		}
 }

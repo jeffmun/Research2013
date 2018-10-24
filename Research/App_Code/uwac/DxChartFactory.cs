@@ -39,38 +39,51 @@ namespace uwac
 
 		public DataTable dt { get { return _dt; } set { _dt = value; } }
 
+		public DxChartFactory(DataTable dt, DxChartOrder order)
+		{
+			_batches = new List<DxBatchOcharts>();
+			_orders = new DxChartOrders() { order };
+			_dt = dt;
+			ProcessOrders();
+		}
 		public DxChartFactory(DataTable dt, DxChartOrders orders)
 		{
 			_batches = new List<DxBatchOcharts> ();
 			_orders = orders;
 			_dt = dt;
-			BuildCharts();
+			ProcessOrders();
 		}
-
-		public void BuildCharts()
+		public void ProcessOrders()
+		{
+			foreach(DxChartOrder order in orders)
+			{
+				ProcessOrder(order);
+			}
+		}
+			public void ProcessOrder(DxChartOrder order)
 		{
 
-			if (orders.settingshist != null)
+			if (order.settingshist != null)
 			{
-				DxBatchOcharts batch = BuildHistograms(orders.settingshist);
-				AddBatch(batch, orders.settingshist);
+				DxBatchOcharts batch = BuildHistograms(order.settingshist);
+				AddBatch(batch, order.settingshist);
 			}
-			if (orders.settingsbar != null)
+			if (order.settingsbar != null)
 			{
-				DxBatchOcharts batch = BuildBarcharts(orders.settingsbar);
-				AddBatch(batch, orders.settingsbar);
-			}
-
-			if (orders.settingsline != null)
-			{
-				DxBatchOcharts batch = BuildLineplots(orders.settingsline);
-				AddBatch(batch, orders.settingsline);
+				DxBatchOcharts batch = BuildBarcharts(order.settingsbar);
+				AddBatch(batch, order.settingsbar);
 			}
 
-			if (orders.settingsscat != null)
+			if (order.settingsline != null)
 			{
-				DxBatchOcharts batch = BuildScatterplots(orders.settingsscat);
-				AddBatch(batch, orders.settingsscat);
+				DxBatchOcharts batch = BuildLineplots(order.settingsline);
+				AddBatch(batch, order.settingsline);
+			}
+
+			if (order.settingsscat != null)
+			{
+				DxBatchOcharts batch = BuildScatterplots(order.settingsscat);
+				AddBatch(batch, order.settingsscat);
 			}
 		}
 
@@ -79,6 +92,7 @@ namespace uwac
 			DxBatchOcharts batch = new DxBatchOcharts();
 			batch.charttype = DxChartType.Histogram;
 			batch.chartlayout = settings.chartlayout;
+			batch.vars = settings.numvars;
 
 			settings.numvars.Remove("id");
 
@@ -126,7 +140,7 @@ namespace uwac
 		{
 
 			DxBatchOcharts batch = new DxBatchOcharts();
-
+			batch.vars = settings.numvars;
 
 			//NO Panels
 			if (settings.panelvar == "none" | settings.panelvar == "variable")
@@ -165,7 +179,7 @@ namespace uwac
 			DxBatchOcharts batch = new DxBatchOcharts();
 			batch.charttype = DxChartType.Lineplot;
 			batch.chartlayout = settings.chartlayout;
-
+			batch.vars = settings.numvars;
 
 			if (settings.xaxisvar == "variable") //This is just one plot
 			{
@@ -208,6 +222,7 @@ namespace uwac
 			DxBatchOcharts batch = new DxBatchOcharts();
 			batch.charttype = DxChartType.Barchart;
 			batch.chartlayout = settings.chartlayout;
+			batch.vars = settings.numvars;
 
 			settings.numvars.Remove("id");
 
@@ -247,6 +262,7 @@ namespace uwac
 			DxBatchOcharts batch = new DxBatchOcharts();
 			batch.charttype = DxChartType.Scatterplot;
 			batch.chartlayout = settings.chartlayout;
+			batch.vars = settings.numvars;
 
 
 			//pairwise
@@ -362,6 +378,19 @@ namespace uwac
 
 		}
 
+
+		public int CountCharts(DxChartType type)
+		{
+			int n = 0;
+			foreach (DxBatchOcharts batch in _batches)
+			{
+				if (batch.charttype == type)
+				{
+					n = batch.charts.Count;
+				}
+			}
+			return n;
+		}
 
 	}
 }

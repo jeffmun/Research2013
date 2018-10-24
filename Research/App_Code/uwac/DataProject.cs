@@ -441,6 +441,8 @@ namespace uwac.data
 			int Ns1_TimePts = 0;
 
 			List<int> inthx_measureIDs = new List<int> { 815, 816, 817, 819 };
+			List<int> actigraph_measureIDs= new List<int> { 3842, 4853, 4855 }; //Actigraph measures
+
 
 
 			if (N_vars == 0)
@@ -469,10 +471,16 @@ namespace uwac.data
 				string remove_dup_IDs = "";
 				var dupsIDs_csv = "";
 
+
+				// STEP 0 - Actigraph
+				if ( actigraph_measureIDs.Contains(measureID))
+				{
+					//Wait until next step
+				}
+
 				#region  STEP 1 - check for dups in a studymeas.
 
-
-				if (Ns2 > 0)
+				else if (Ns2 > 0 )
 				{
 					//IF there are ID's with dups in a studymeas, remove it when checking the next type of dups
 					string plural = (Ns2 > 1) ? "s" : "";
@@ -510,17 +518,12 @@ namespace uwac.data
 					msg = String.Format("No records for these subjects.", measname);
 				}
 
-
 				//STEP 3b - MULTIPLE, prepare to save this measure as it's own table. 
-
-				else if (Ns3 > 0)
+				else if (Ns3 > 0 )
 				{
 					//Collected Multiple Times
 					_meas_to_skip.Add(measureID.ToString());
 					msg = String.Format("{0} collected multiple times within a timepoint. Placed on separate worksheet.", measname);
-
-
-
 
 
 					//NEXT get the fieldnames
@@ -531,14 +534,6 @@ namespace uwac.data
 						" UNION " +
 						" select fldname + '_agemos' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') as ' + fldname + '_agemos'" +
 						"   as fldname_agemos, flddatatype  from def.vwFld " +
-						//" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
-						//" UNION " +
-						//" select fldname + '_mos_since_studystart' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') - studystart_agemos as ' + fldname + '_mos_since_studystart'" +
-						//"   as fldname_agemos, flddatatype  from def.vwFld " +
-						//" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
-						//" UNION " +
-						//" select fldname + '_mos_since_txstart' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') - txstart_agemos as ' + fldname + '_mos_since_txstart'" +
-						//"   as fldname_agemos, flddatatype  from def.vwFld " +
 						" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) "
 						, fldpk_csv, measureID, t);
 					DataTable flds = sql.DataTable_from_SQLstring(sqlcode_flds);
@@ -587,6 +582,47 @@ namespace uwac.data
 
 				}
 
+				//STEP 3c - Actigraph, prepare to save this measure as it's own table. 
+				else if (actigraph_measureIDs.Contains(measureID))
+				{
+					//Collected Multiple Times
+					_meas_to_skip.Add(measureID.ToString());
+					msg = String.Format("{0} collected multiple times within a timepoint. Placed on separate worksheet.", measname);
+
+
+					//NEXT get the fieldnames
+					//AND automatically create an "_agemos" variable for every date variable that is selected
+					//  - this is the UNION portion of the query.
+					string sqlcode_flds = String.Format("select fldname, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
+						" UNION " +
+						" select fldname + '_agemos' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') as ' + fldname + '_agemos'" +
+						"   as fldname_agemos, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) "
+						, fldpk_csv, measureID, t);
+					DataTable flds = sql.DataTable_from_SQLstring(sqlcode_flds);
+
+
+					//vars_names   contains the list of var names (without the additional code to recode missing or calculate age)
+					List<string> vars_names = flds.AsEnumerable().Select(f => f.Field<string>("fldname")).ToList();
+
+					_sqlcode_vars_mult.Add(String.Join(",", vars_names));
+
+					string _sqlcode_final_mult = "";
+
+					//string _sqlcode_final_mult = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine +
+					//	" from {0} " + Environment.NewLine +
+					//	" where verified in (0,1) and studymeasID in ({3}) ) t{1} " + 
+					//	" ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})" + Environment.NewLine
+					//	, tblname, t, String.Join(",", vars_recode), studymeasID_csv);
+
+					//!!!!
+					_measname_mult.Add(measname);
+					_sqlcode_tbl_mult.Add(_sqlcode_final_mult);
+
+
+				}
+
 				//STEP 4 - final checks 
 
 				//OK so far, try to get the data now...
@@ -602,14 +638,6 @@ namespace uwac.data
 						" UNION " +
 						" select fldname + '_agemos' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') as ' + fldname + '_agemos'" +
 						"   as fldname_agemos, flddatatype  from def.vwFld " +
-						//" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
-						//" UNION " +
-						//" select fldname + '_mos_since_studystart' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') - studystart_agemos as ' + fldname + '_mos_since_studystart'" +
-						//"   as fldname_agemos, flddatatype  from def.vwFld " +
-						//" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
-						//" UNION " +
-						//" select fldname + '_mos_since_txstart' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') - txstart_agemos as ' + fldname + '_mos_since_txstart'" +
-						//"   as fldname_agemos, flddatatype  from def.vwFld " +
 						" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) "
 						, fldpk_csv, measureID, t);
 					DataTable flds = sql.DataTable_from_SQLstring(sqlcode_flds);

@@ -26,7 +26,8 @@ namespace uwac
 			Table t = new Table();
 			if (batch.chartlayout == DxChartLayout.Horizontal) t = HorizontalTable(batch);
 			else if (batch.chartlayout == DxChartLayout.Vertical) t = VerticalTable(batch);
-			//else if (batch.chartlayout == DxChartLayout.Diagnonal) return VerticalTable(batch);
+			else if (batch.chartlayout == DxChartLayout.Upper) return UpperTable(batch);
+			else if (batch.chartlayout == DxChartLayout.UpperDiag) return UpperDiagTable(batch);
 
 			return t;
 		}
@@ -121,6 +122,93 @@ namespace uwac
 
 			return t;
 		}
+
+
+		public static Table UpperTable(DxBatchOcharts batch)
+		{
+			Table t = new Table();
+
+			int counter = 0;
+			int ncols = NCols(batch.charts.Count);
+
+			//TableRow headerrow = CreateHeaderRow(title, ncols);
+			//t.Rows.Add(headerrow);
+			t.Rows.Add(CreateHeaderRow(batch.vars, ncols));
+
+
+			for (int rows = 0; rows < ncols; rows++)
+			{
+				TableRow r = new TableRow();
+				//add the first column
+
+				TableCell c0 = new TableCell();
+				PlaceTextInCell(c0, batch.vars[rows], true, 12, Color.Gray);
+				r.Cells.Add(c0);
+
+
+				for (int cols = 0; cols < ncols; cols++)
+				{
+					TableCell c = new TableCell();
+					if (cols == rows)
+					{
+						//if(hasAlternateDiag)
+						//{
+						//	PlaceChartInCell(charts[chartnum], c, W, H, pct);
+						//	chartnum++;
+						//}
+					}
+					else if (cols > rows)
+					{
+						PlaceChartInCell(batch.charts[counter], c, batch.charts[counter].W, batch.charts[counter].H, 1.0);
+						counter++;
+					}
+					r.Cells.Add(c);
+				}
+				t.Rows.Add(r);
+			}
+
+			return t;
+		}
+
+		public static Table UpperDiagTable(DxBatchOcharts batch)
+		{
+			Table t = new Table();
+
+			int counter = 0;
+			int ncols = batch.maxCol;//NCols(batch.charts.Count);
+
+			//TableRow headerrow = CreateHeaderRow(title, ncols);
+			//t.Rows.Add(headerrow);
+			t.Rows.Add(CreateHeaderRow(batch.vars, ncols));
+
+
+			for (int rows = 0; rows < ncols; rows++)
+			{
+				TableRow r = new TableRow();
+				//add the first column
+
+				TableCell c0 = new TableCell();
+				PlaceTextInCell(c0, batch.vars[rows], true, 12, Color.Gray);
+				r.Cells.Add(c0);
+
+
+				for (int cols = 0; cols < ncols; cols++)
+				{
+					TableCell c = new TableCell();
+					if (cols >= rows)
+					{
+						PlaceChartInCell(batch.charts[counter], c, batch.charts[counter].W, batch.charts[counter].H, 1.0);
+						counter++;
+					}
+					r.Cells.Add(c);
+				}
+				t.Rows.Add(r);
+			}
+
+			return t;
+		}
+
+
 
 		#endregion
 

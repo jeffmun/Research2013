@@ -27,6 +27,39 @@ namespace uwac
 		//}
 
 
+		public static string ProcessBatch(ASPxDataBatchUpdateEventArgs e, string tbl, string db, string schema)
+		{
+			string results = "";
+
+			if(e.InsertValues.Count > 0)
+			{
+				foreach(ASPxDataInsertValues i in e.InsertValues)
+				{
+					BuildInsertSqlCode(i, tbl, db, schema);
+				}
+			}
+
+
+			if (e.UpdateValues.Count > 0)
+			{
+				foreach (ASPxDataUpdateValues u in e.UpdateValues)
+				{
+					BuildUpdateSqlCode(u, tbl, db, schema);
+				}
+			}
+
+			if (e.DeleteValues.Count > 0)
+			{
+				foreach (ASPxDataDeleteValues d in e.DeleteValues)
+				{
+					results += BuildDeleteSqlCode(d, tbl, db, schema);
+				}
+			}
+
+
+			return results;
+		}
+
 		public static bool BuildInsertSqlCode(ASPxDataInsertingEventArgs e, string tbl, string db)
 		{
 			return BuildInsertSqlCode(e.NewValues, tbl, db, "dbo");
@@ -338,8 +371,11 @@ namespace uwac
 
 		#endregion
 
-
 		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)
+		{
+			return BuildDeleteSqlCode(e, tbl, db, "dbo");
+		}
+		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db, string schema)
 		{
 
 			var pkval = "";
@@ -356,7 +392,7 @@ namespace uwac
 			if (pkfld != "" && Convert.ToInt32(pkval) > 0)
 			{
 
-				result = BuildDeleteSqlCode(tbl, db, pkfld, Convert.ToInt32(pkval), "");
+				result = BuildDeleteSqlCode(tbl, db, pkfld, Convert.ToInt32(pkval), "", schema);
 
 			}
 			else 
@@ -369,6 +405,35 @@ namespace uwac
 			return result;
 		}
 
+		public static string BuildDeleteSqlCode(ASPxDataDeleteValues e, string tbl, string db, string schema)
+		{
+
+			var pkval = "";
+			var pkfld = "";
+
+			foreach (DictionaryEntry key in e.Keys)
+			{
+				pkfld = (key.Key == null) ? null : key.Key.ToString();
+				pkval = (key.Value == null) ? null : key.Value.ToString();
+
+			}
+			string result = "";
+
+			if (pkfld != "" && Convert.ToInt32(pkval) > 0)
+			{
+
+				result = BuildDeleteSqlCode(tbl, db, pkfld, Convert.ToInt32(pkval), "", schema);
+
+			}
+			else
+			{
+				result = "Not Implemented.";
+			}
+
+			return result;
+		}
+
+
 
 		public static string BuildDeleteSqlCode(string tbl, string db, string subquery)
 		{
@@ -376,15 +441,19 @@ namespace uwac
 		}
 		public static string BuildDeleteSqlCode(string tbl, string db, string fldname, int fldvalue)
 		{
-			return BuildDeleteSqlCode(tbl, db, fldname, fldvalue, "");
+			return BuildDeleteSqlCode(tbl, db, fldname, fldvalue, "", "dbo");
+		}
+		public static string BuildDeleteSqlCode(string tbl, string db, string fldname, int fldvalue, string schema)
+		{
+			return BuildDeleteSqlCode(tbl, db, fldname, fldvalue, "", schema);
 		}
 
 
-		public static string BuildDeleteSqlCode(string tbl, string db, string fldname, int fldvalue, string subquery)
+		public static string BuildDeleteSqlCode(string tbl, string db, string fldname, int fldvalue, string subquery, string schema)
 		{
 
 			SQL_utils sql = new SQL_utils(db);
-
+			string result = "";
 
 			string where_clause = "";
 			if(subquery != "" && fldname == "" && fldvalue == -1)
@@ -400,7 +469,7 @@ namespace uwac
 
 			try
 			{
-				string sql_selectcode = String.Format("select * from {0} where {1} for xml raw, elements", tbl, where_clause);
+				string sql_selectcode = String.Format("select * from {0}.{1} where {2} for xml raw, elements", schema, tbl, where_clause);
 				//string contents = sql.StringScalar_from_SQLstring(log_code1);
 
 				//string log_code2 = String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) select '{0}','{1}',{2},({3}),getdate(),cast(SESSION_CONTEXT(N'netid') as varchar)"
@@ -409,15 +478,22 @@ namespace uwac
 				
 
 				string log_code2 = (fldvalue > 0) ?
-					String.Format("insert into AuditDeletes(tblname,pkfld,pkval,contents,deleted,deletedby) select '{0}','{1}',{2},coalesce(({3}),'no records'),getdate(), sec.systemuser()"
-				, tbl, fldname, fldvalue, sql_selectcode) :
-					String.Format("insert into AuditDeletes(tblname,pkfld,pkval,where_clause,contents,deleted,deletedby) select '{0}',null,-1,'{1}',coalesce(({2}),'no records'),getdate(), sec.systemuser()"
-					, tbl, where_clause, sql_selectcode);
+					String.Format("insert into AuditDeletes(schemaname,tblname,pkfld,pkval,contents,deleted,deletedby) select '{0}','{1}','{2}',{3},coalesce(({4}),'no records'),getdate(), sec.systemuser()"
+					, schema, tbl, fldname, fldvalue, sql_selectcode) :
+					String.Format("insert into AuditDeletes(schemaname,tblname,pkfld,pkval,where_clause,contents,deleted,deletedby) select '{0}','{1}',null,-1,'{2}',coalesce(({3}),'no records'),getdate(), sec.systemuser()"
+					, schema, tbl, where_clause, sql_selectcode);
 
-				string del_code = String.Format("Delete from {0} where {1}", tbl, where_clause);
+				string del_code = String.Format("Delete from {0}.{1} where {2}", schema, tbl, where_clause);
 
 
+				//Temp turn it off
 				var sql_output = sql.NonQuery_from_SQLstring_withRollback(String.Format("{0}; {1};", log_code2, del_code));
+
+				result += "/* sql_selectcode */ " + Environment.NewLine + sql_selectcode +
+					Environment.NewLine + "/* log_code2 */" + Environment.NewLine + log_code2 +
+					Environment.NewLine + "/* del_code  */" + Environment.NewLine + del_code +
+					Environment.NewLine + "/* sql_output */" + Environment.NewLine + sql_output;
+
 
 
 			}
@@ -428,7 +504,8 @@ namespace uwac
 
 			sql.Close();
 
-			string result = (fldvalue > 0) ? RecoverDeletedRecord(tbl, db, fldname, fldvalue) : RecoverDeletedRecord(tbl, db, where_clause);
+			////Temp turn it off
+			//string result = (fldvalue > 0) ? RecoverDeletedRecord(tbl, db, fldname, fldvalue) : RecoverDeletedRecord(tbl, db, where_clause);
 
 			return result;
 		}

@@ -27,8 +27,10 @@ namespace uwac
 	{
 
 		private List<DxChart> _charts;
+		private List<string> _vars;
 
 		public List<DxChart> charts { get { return _charts; } set { _charts = value; } }
+		public List<string> vars { get { return _vars; } set { _vars = value; } }
 		public DxChartType charttype { get; set; }
 		public DxChartLayout chartlayout { get; set; }
 		public int maxRow { get; set; }

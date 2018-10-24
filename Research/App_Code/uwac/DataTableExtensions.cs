@@ -596,6 +596,27 @@ namespace uwac
 			return dtStacked;
 		}
 
+
+		public static DataTable AddEmptyColumns(this DataTable dt_data, DataTable dt_empty)
+		{
+			int ncol1 = dt_data.Columns.Count;
+			List<string> existingcols = dt_data.ColumnNames();
+
+			foreach(DataColumn col in dt_empty.Columns)
+			{
+				if(!existingcols.Contains(col.ColumnName))
+				{
+					DataColumn newcol = new DataColumn();
+					newcol.DataType = col.DataType;
+					newcol.ColumnName = col.ColumnName;
+					dt_data.Columns.Add(newcol);
+				}
+			}
+			int ncol2 = dt_data.Columns.Count;
+
+			return dt_data;
+		}
+
 		public static void log(string s)
 		{
 			//if (printDebug)

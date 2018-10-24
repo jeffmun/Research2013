@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="c#" Debug="true" MasterPageFile="~/UWAC.master" CodeFile="MeasureList.aspx.cs" AutoEventWireup="true"
- Inherits="Info_MeasureList" Title="Measure List" %>
+ Inherits="Library_MeasureList" Title="Measure List" %>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 <%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
@@ -68,7 +68,7 @@
 
              <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Measure">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/info/MeasureInfo.aspx?measureID=" + Eval("measureID") %>' Font-Bold="true">
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/Library/Measure.aspx?pk=" + Eval("measureID") %>' Font-Bold="true">
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
@@ -77,7 +77,7 @@
 
             <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Data Dict">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DD" runat="server" Text="Dict" NavigateUrl='<%# "~/Track/Dictionary.aspx?measureID=" + Eval("measureID") %>' Font-Bold="false">
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DD" runat="server" Text="Dict" NavigateUrl='<%# "~/Data/Dictionary.aspx?measureID=" + Eval("measureID") %>' Font-Bold="false">
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>

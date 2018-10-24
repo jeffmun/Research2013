@@ -16,7 +16,7 @@ using System.Drawing;
 using System.Text;
 using uwac;
 
-public partial class Info_MeasureList : BasePage //System.Web.UI.Page
+public partial class Library_MeasureList : BasePage //System.Web.UI.Page
 {
 	//private SqlConnection oConn = new SqlConnection();
 	//private SqlConnection oConnData = new SqlConnection();

@@ -174,47 +174,81 @@
 				}
 			}
 
-			function btnCreateCharts_ClientClick() {
-
-				var varcolorsHIST = cboColorsvarHIST.GetValue();
-				var varpanelHIST = cboPanelvarHIST.GetValue();
-
-				var varxaxisBAR = cboXaxisvarBAR.GetValue();
-				var varcolorsBAR = cboColorsvarBAR.GetValue();
-				var varpanelBAR = cboPanelvarBAR.GetValue();
-
-//				var varxaxisSCAT =tokXaxisvarSCAT.GetValue();
-//				var varyaxisSCAT =tokYaxisvarSCAT.GetValue();
-				var varcolorsSCAT = cboColorsvarSCAT.GetValue();
-				var varpanelSCAT = cboPanelvarSCAT.GetValue();
-
-				var varxaxisLINE = cboXaxisvarLINE.GetValue();
-				var varcolorsLINE = cboColorsvarLINE.GetValue();
-				var varpanelLINE = cboPanelvarLINE.GetValue();
-
-				var varXTrow = tokXTrow.GetValue();
-				var varXTcol = tokXTcol.GetValue();
-				var varXTpanel = tokXTpanel.GetValue();
-
-				var varsubgroupsPCA = cboSubgroupsvarPCA.GetValue();
 
 
-				var params =                   varcolorsHIST + "," + varpanelHIST +
-					"," + varxaxisBAR + ","  + varcolorsBAR  + "," + varpanelBAR +
-					//"," + varxaxisSCAT + "," + varyaxisSCAT +
-										 "," + varcolorsSCAT + "," + varpanelSCAT +
-					"," + varxaxisLINE + "," + varcolorsLINE + "," + varpanelLINE +
-					"," + varXTrow + "," + varXTcol + "," + varXTpanel + 
-					"," + varsubgroupsPCA  ;
+			function btnSaveOrder_ClientClick() {
+				btnSaveOrder.SetVisible(false);
+
+				btnSaveOrder.SetVisible(true);
 
 				callbackViewData.SetVisible(false);
 				callbackMissing.SetVisible(false);
 				callbackCharts.SetVisible(true);
 				//callbackCrosstabs.SetVisible(true);
 
-				callbackCharts.PerformCallback(params);
+				//callbackCharts.PerformCallback(params);
+				callbackCharts.PerformCallback("SaveNewOrder");
+				callbackOrders.PerformCallback();
 				//callbackCrosstabs.PerformCallback(params);
+			}
 
+
+			function btnCreateCharts_ClientClick() {
+
+				btnSaveOrder.SetVisible(true);
+
+				callbackViewData.SetVisible(false);
+				callbackMissing.SetVisible(false);
+				callbackCharts.SetVisible(true);
+				//callbackCrosstabs.SetVisible(true);
+
+				//callbackCharts.PerformCallback(params);
+				callbackCharts.PerformCallback("NewOrder");
+				callbackOrders.PerformCallback();
+				//callbackCrosstabs.PerformCallback(params);
+			}
+
+
+			function btnCreateChartsALL_ClientClick() {
+				btnSaveOrder.SetVisible(false);
+
+				callbackViewData.SetVisible(false);
+				callbackMissing.SetVisible(false);
+				callbackCharts.SetVisible(true);
+				//callbackCrosstabs.SetVisible(true);
+
+				//callbackCharts.PerformCallback(params);
+				callbackCharts.PerformCallback("DisplayAllOrders");
+				callbackOrders.PerformCallback();
+				//callbackCrosstabs.PerformCallback(params);
+			}
+
+			function btnExportDocx_ClientClick() {
+				btnSaveOrder.SetVisible(false);
+
+				callbackViewData.SetVisible(false);
+				callbackMissing.SetVisible(false);
+				callbackCharts.SetVisible(true);
+				//callbackCrosstabs.SetVisible(true);
+
+				//callbackCharts.PerformCallback(params);
+				callbackCharts.PerformCallback("Docx");
+				callbackOrders.PerformCallback();
+				//callbackCrosstabs.PerformCallback(params);
+			}
+
+
+
+
+			function RemoveOrder(element, key) {
+				callbackOrders.PerformCallback("RemoveOrder|" + key);
+			}
+
+
+
+			var keyValue;
+			function LoadOldOrder(element, key) {
+				callbackCharts.PerformCallback("OldOrder|" + key);
 			}
 
 			function btnFilter_ClientClick() {
@@ -408,8 +442,10 @@
 
 	<dx:ASPxLabel ID="lblProjTitle" runat="server" Font-Size="Large" Font-Bold="true" Visible="false"></dx:ASPxLabel>
 	<br />
+	<%-- CssClass="dxtcFixed" --%>
 	<dx:ASPxPageControl ID="tabSteps" Width="100%" runat="server" ClientInstanceName="tabSteps" 
-		CssClass="dxtcFixed" ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" >
+		 ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true"
+		>
 		<TabPages>
 			<dx:TabPage Name="tabData" Text="Select data & variables" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
 				<ContentCollection>
@@ -620,7 +656,6 @@
 													</GridViewProperties>
 												</dx:ASPxGridLookup>
 
-
 						
 												<dx:ASPxGridLookup ID="gridVarsAge" runat="server" KeyFieldName="varname" NullText="Select age variables..." Width="350px"
 													  GridViewProperties-EnableCallBacks="true" Visible="false" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
@@ -652,11 +687,6 @@
 
 													</GridViewProperties>
 												</dx:ASPxGridLookup>
-
-
-
-						
-
 											</dx:PanelContent>
 										</PanelCollection>
 									</dx:ASPxCallbackPanel>
@@ -673,7 +703,7 @@
 		</dx:TabPage>
 
 	
-		<dx:TabPage Name="tabPlots" Text="Create plots" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
+		<dx:TabPage Name="tabPlots" Text="Create charts" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
 				<ContentCollection>
 					<dx:ContentControl ID="ContentControl9" runat="server">
 							<dx:ASPxCallbackPanel ID="callbackSpecifics" runat="server"  OnCallback="callbackSpecifics_OnCallback" ClientInstanceName="callbackSpecifics">
@@ -689,15 +719,15 @@
 									<tr>
 										<td style="vertical-align: top">
 											
-											<dx:ASPxCheckBoxList ID="chkPlots" ClientInstanceName="chkPlots" runat="server" Caption="Plots" CaptionSettings-Position="Top"  
+											<dx:ASPxCheckBoxList ID="chkPlots" ClientInstanceName="chkPlots" runat="server" Caption="Charts" CaptionSettings-Position="Top"  
 												 RepeatColumns="3" RepeatLayout="Table" RepeatDirection="Vertical" Font-Size="9" Paddings-Padding="2px" AutoPostBack="false" 
 												 Width="320px"  >
 												<ClientSideEvents SelectedIndexChanged="chkPlots_SelectedIndexChanged"   />
 												<Items>
-													<dx:ListEditItem Value="Histogram" Selected="false"  />
-													<dx:ListEditItem Value="Scatterplot" Selected="false" />
 													<dx:ListEditItem Value="Barchart" Selected="false" />
+													<dx:ListEditItem Value="Histogram" Selected="false"  />
 													<dx:ListEditItem Value="Lineplot" Selected="false" />
+													<dx:ListEditItem Value="Scatterplot" Selected="false" />
 													<dx:ListEditItem Value="PCA" Selected="false" />
 													<dx:ListEditItem Value="Crosstabs" Selected="false" />
 													<dx:ListEditItem Value="Set Colors" Selected="false" />
@@ -721,14 +751,22 @@
 									<table>
 										<tr>
 											<td style="padding: 10px">
-							<dx:ASPxButton ID="btnCreateCharts" ClientInstanceName="btnCreateCharts" runat="server" Text="Create Plots"
+							<dx:ASPxButton ID="btnCreateCharts" ClientInstanceName="btnCreateCharts" runat="server" Text="Create Charts"
 								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" >
 								<Image IconID="chart_chart_16x16office2013"></Image>
 								<ClientSideEvents Click="btnCreateCharts_ClientClick" />
 							</dx:ASPxButton>
 
 											</td>
-											<td>
+											<td style="padding: 10px">
+												<dx:ASPxCheckBox ID="chkSaveOrder" ClientInstanceName="chkSaveOrder" runat="server" Text="Save this set of charts"
+													ClientEnabled="true" EnableClientSideAPI="true" Checked="false" Visible="false"  >
+												</dx:ASPxCheckBox>
+												<dx:ASPxButton ID="btnSaveOrder" ClientInstanceName="btnSaveOrder" runat="server" Text="Save this set of charts"
+													ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" ClientVisible="false" >
+													<Image IconID="appearance_savetheme_16x16"></Image>
+													<ClientSideEvents Click="btnSaveOrder_ClientClick" />
+												</dx:ASPxButton>
 
 											</td>
 										</tr>
@@ -745,8 +783,10 @@
 									<asp:Label ID="lblSettings" runat="server" Text="Settings" Font-Bold="true" Font-Size="12pt" ForeColor="Silver"></asp:Label>
 									<br />
 									<%--CssClass="dxtcFixed"--%>
+
+	<%-- ActiveTabIndex="0" --%>
 	<dx:ASPxPageControl ID="tabSettings" runat="server" ClientInstanceName="tabSettings" TabPosition="Left" TabAlign="Left" 
-		 ActiveTabIndex="0" EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" Width="900px" >
+		 EnableHierarchyRecreation="True" EnableClientSideAPI="true" ClientVisible="true" Width="900px" >
 		<TabPages>
 			
 			<dx:TabPage Name="Histogram" Text="Histogram..." TabStyle-HorizontalAlign="Left" ClientVisible="false">
@@ -897,7 +937,7 @@
 											<td style="width: 200px">
 												<dx:ASPxComboBox ID="cboOutputStyleSCAT" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleSCAT" Width="130px" EnableCallbackMode="true" >
 													<Items>
-														<dx:ListEditItem Value="UpperDiag"  Selected="true"/>
+														<dx:ListEditItem Value="Upper" Text="Upper Triangle"  Selected="true"/>
 														<dx:ListEditItem Value="Rows, Left to Right"  />
 														<dx:ListEditItem Value="Cols, Top to Bottom"  />
 													</Items>
@@ -1375,18 +1415,91 @@
 								<ClientSideEvents Click="btnViewMissingID_ClientClick" />
 							</dx:ASPxButton>
 
-							<dx:ASPxButton ID="btnPDF" ClientInstanceName="btnPDF" runat="server" Text="Save to PDF" Visible="true"
-								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px"
-								OnClick="btnPDF_OnClick">
-								<Image IconID="export_exporttopdf_16x16"></Image>
-					<%-- <ClientSideEvents Click="btnViewMissing_ClientClick" />--%>
-							</dx:ASPxButton>
 							<br />
 							<br /><dx:ASPxTextBox ID="txtOutputFilename" runat="server" Caption="Output filename:" Text="output" Visible="false"></dx:ASPxTextBox>
 
 					</dx:ContentControl>
 				</ContentCollection>
 		</dx:TabPage>
+
+
+			<dx:TabPage Name="tabChartSets" Text="Saved Chart Sets" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
+				<ContentCollection>
+					<dx:ContentControl ID="ContentControl_Orders"  runat="server">
+						This section lists the sets of charts that you have run.
+						
+						<%-- OnCustomButtonCallback="gridOrders_CustomButtonCallback" --%>
+						<dx:ASPxCallbackPanel ID="callbackOrders" ClientInstanceName="callbackOrders" runat="server"
+							 OnCallback="callbackOrders_OnCallback">
+							<PanelCollection>
+								<dx:PanelContent ID="panelcontentOrders" runat="server">
+
+									<table>
+									<tr>
+										<td style="vertical-align: top; padding: 10px">
+											<dx:ASPxGridView ID="gridOrders" ClientInstanceName="gridOrders" runat="server" KeyFieldName="order_number" 
+											 AutoGenerateColumns="false" SettingsText-EmptyDataRow="No sets of charts have been created." Enabled="true"
+												 >
+										
+											 <Columns>
+												 <dx:GridViewDataColumn FieldName="order_number" Caption="#" />
+												 <dx:GridViewDataColumn FieldName="worksheet" />
+												 <dx:GridViewDataColumn FieldName="vars" />
+												 <dx:GridViewDataColumn FieldName="charts" />
+												 <dx:GridViewDataColumn Caption="" >
+													<DataItemTemplate>
+														<a href="javascript:void(0);" onclick="LoadOldOrder(this, '<%# Container.KeyValue %>')">Display</a>
+													</DataItemTemplate>
+												</dx:GridViewDataColumn>
+												 <dx:GridViewDataColumn Caption="" >
+													<DataItemTemplate>
+														<a href="javascript:void(0);" onclick="RemoveOrder(this, '<%# Container.KeyValue %>')">Remove</a>
+													</DataItemTemplate>
+												</dx:GridViewDataColumn>
+											</Columns>
+									 
+										</dx:ASPxGridView>
+										</td>
+										<td style="width: 50px"></td>
+										<td style="vertical-align: top; padding: 10px">
+											<dx:ASPxButton ID="btnCreateChartsALL" ClientInstanceName="btnCreateChartsALL" runat="server" 
+												Text="Display All Saved Charts" Wrap="true"  Width="150px"
+												ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" >
+												<Image IconID="chart_column2_32x32"></Image>
+												<ClientSideEvents Click="btnCreateChartsALL_ClientClick" />
+											</dx:ASPxButton>
+										</td>
+										<td style="width: 50px"></td>
+										<td style="vertical-align: top; padding: 10px">
+											<dx:ASPxButton ID="btnExportWord" ClientInstanceName="btnExportWord" runat="server" Width="150px"
+												Text="Export All Saved Charts to Word (.docx)" Wrap="true"
+												ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" 
+												>
+												<Image IconID="export_exporttodocx_32x32"></Image>
+												<ClientSideEvents Click="btnExportDocx_ClientClick" />
+											</dx:ASPxButton>
+											<br/><br/>
+							<dx:ASPxButton ID="btnExportPDF" ClientInstanceName="btnExportPDF" runat="server" Width="150px" Wrap="true"
+								Text="Export All Saved Charts to PDF (.pdf)" Visible="false"
+								ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px"
+								OnClick="btnPDF_OnClick">
+								<Image IconID="export_exporttopdf_32x32"></Image>
+					<%-- <ClientSideEvents Click="btnViewMissing_ClientClick" />--%>
+							</dx:ASPxButton>
+										</td>										
+									</tr>
+									</table>
+
+								</dx:PanelContent>
+							</PanelCollection>
+						</dx:ASPxCallbackPanel>
+						
+						<%--								
+	--%>
+
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
 
 		</TabPages>
 		</dx:ASPxPageControl>
@@ -1464,6 +1577,13 @@
 		</PanelCollection>
 	</dx:ASPxCallbackPanel>
 
+	<%--
+	<dx:ASPxCallbackPanel ID="callbackOldCharts" runat="server"  OnCallback="callbackOldCharts_OnCallback" ClientInstanceName="callbackCharts">
+		<PanelCollection>
+			<dx:PanelContent ID="panelcontent8" runat="server">
+			</dx:PanelContent>
+		</PanelCollection>
+	</dx:ASPxCallbackPanel> --%>
 
 		
 	<dx:ASPxCallbackPanel ID="callbackViewData" runat="server"  OnCallback="callbackViewData_OnCallback" ClientInstanceName="callbackViewData">
