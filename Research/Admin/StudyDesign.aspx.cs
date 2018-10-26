@@ -190,7 +190,7 @@ public partial class Admin_StudyDesign : BasePage
 			e.NewValues["groupID"] = newgroupID;
 		}
 
-		DxGridView.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+		DxDbOps.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 
 		((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 		gv.CancelEdit();
@@ -244,7 +244,7 @@ public partial class Admin_StudyDesign : BasePage
 				}
 			}
 		}
-		DxGridView.BuildUpdateSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+		DxDbOps.BuildUpdateSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 
 		((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 		gv.CancelEdit();
@@ -294,7 +294,7 @@ public partial class Admin_StudyDesign : BasePage
 
 		if (proceed_as_normal)
 		{
-			result = DxGridView.BuildDeleteSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+			result = DxDbOps.BuildDeleteSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 		}
 
 

@@ -71,16 +71,40 @@ namespace uwac
 			}
 		}
 	}
-	
-	public enum DbEntityType
+
+	//public enum DbEntityType2
+	//{
+	//	study = 0,
+	//	subject = 1,
+	//	measure = 2,
+	//	studymeas = 3,
+	//	tbl = 4,
+	//	fld = 5,
+	//	timepoint = 6
+	//}
+
+	public enum DbEntityType  // select * from tblEntityType
 	{
-		study = 0,
-		subject = 1,
-		measure = 2,
-		studymeas = 3,
-		tbl = 4,
-		fld = 5,
-		timepoint = 6
+		group = 0,
+		measure = 1,
+		studymeas = 2,
+		consentformversion = 3,
+		subject = 4,
+		household = 5,
+		study = 6,
+		staffteam = 7,
+		datasharesite = 8,
+		studyaction = 9,
+		studyactiongroup = 10,
+		databaseentity = 11,
+		tutorial = 12,
+		person = 13,
+		subjectconsentform = 14,
+		tbl = 15,
+		fld = 16,
+		timepoint = 17
 	}
+
+
 
 }

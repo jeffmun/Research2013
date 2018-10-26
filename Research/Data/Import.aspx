@@ -22,9 +22,6 @@
 
 	</script>
 
-	<asp:Panel ID="panel" runat="server">
-
-	</asp:Panel>
 
 	<asp:Label ID="lbl1" runat="server" Text="Import Data" Font-Size="Medium" Font-Bold="true"></asp:Label>
 
@@ -75,6 +72,35 @@
 	</table>
 
 
+	<table>
+		<tr>
+			<td style="vertical-align: top; padding: 10px">
+				<dx:ASPxButton ID="btnShowMeta" runat="server" Text="Show REDCap meta data" OnClick="btnShowMeta_OnClick"></dx:ASPxButton>
+			</td>
+			<td style="vertical-align: top; padding: 10px">
+				<asp:PlaceHolder ID="placeholder_cboForms" runat="server"></asp:PlaceHolder>
+<%--				<dx:ASPxComboBox ID="cboForms" runat="server" Caption="Forms:"></dx:ASPxComboBox>--%>
+			</td>
+			<td style="vertical-align: top; padding: 10px">
+				<dx:ASPxButton ID="btnLoadFormData" runat="server" Text="Load Selected Data" OnClick="btnLoadFormData_OnClick" >
+				<%--	<ClientSideEvents Click="function(s,e) {  panel.PerformCallback();}" />--%>
+				</dx:ASPxButton>
+			</td>
+		</tr>
+	</table>
+	<br />
+
+	<asp:PlaceHolder ID="placeholder_gridMeta" runat="server"></asp:PlaceHolder>
+<%--	<dx:ASPxGridView ID="gridREDCap" runat="server" Visible="false" AutoGenerateColumns="true" SettingsPager-AlwaysShowPager="true" EnableViewState="true" Width="95%" ></dx:ASPxGridView>--%>
+
+	<br />
+	<dx:ASPxCallbackPanel ID="panel" ClientInstanceName="panel" runat="server"    >
+		<PanelCollection>
+			<dx:PanelContent ID="panelContent">
+				<%--<dx:ASPxGridView ID="grid" runat="server" ClientInstanceName="grid" AutoGenerateColumns="true"></dx:ASPxGridView>--%>
+			</dx:PanelContent>
+		</PanelCollection>
+	</dx:ASPxCallbackPanel>
 
 
 </asp:Content>

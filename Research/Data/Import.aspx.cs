@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -13,34 +16,66 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 //using RDotNet;
 //using RDotNet.NativeLibrary;
+using RedcapLibrary;
 using uwac;
-using System.Configuration;
-using System.Drawing;
-using System.Diagnostics;
+using uwac_REDCap;
+using DevExpress.Web;
+//using uwac_REDCap;
 
 public partial class Data_Import : BasePage
 {
-	
+
+	REDCap redcap;
+
+
 	protected void Page_Init(object sender, EventArgs e)
 	{
-		//REngine.SetEnvironmentVariables();
-		//if (engine == null)
-		//{
-		//	engine = REngine.GetInstance();
-		//	engine.Initialize();
-		//}
+		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
+		Session["studyID"] = Master.Master_studyID.ToString();
 	}
+
+	protected void Master_Study_Changed(object sender, EventArgs e)
+	{
+		Response.Redirect("Import.aspx");
+	}
+
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
+		Debug.WriteLine(String.Format("Page_Load  IsPostBack:{0}  IsCallback:{1}", IsPostBack, IsCallback));
+
+
 		LoadSubjects();
 		LoadDatatypes();
+
+
+		redcap = new REDCap(Master.Master_studyID);
+
+		ASPxComboBox cbo = redcap.cboFormSelector();
+		if (cbo != null) placeholder_cboForms.Controls.Add(cbo);
+
+
+		//LoadRedcapForms();
 
 		//if (IsPostBack && FileUpload_Doc.PostedFile != null)
 		//{
 		//	btnUploadDoc.Visible = true;
 		//	btnUploadDoc_Cancel.Visible = true;
 		//}
+
+		if (IsCallback)
+		{
+			//if (Session["redcap_metadata"] != null)
+			//{
+			//	gridREDCap.DataSource = (DataTable)Session["redcap_metadata"];
+			//	gridREDCap.DataBind();
+			//}
+		}
+		if (panel.IsCallback)
+		{
+			//LoadFormData();
+		}
+
 	}
 
 
@@ -49,7 +84,8 @@ public partial class Data_Import : BasePage
 	{
 		SQL_utils sql = new SQL_utils("backend");
 
-		string sqlcode = "select subjID, ID from trk.vwMasterStatus_S where studyID=" + Master.Master_studyID.ToString();
+		string sqlcode = String.Format("select 0 subjID, 'Multiple {0} subjects' ID union select subjID, ID from trk.vwMasterStatus_S where studyID={1}"
+			, Master.Master_studyname, Master.Master_studyID.ToString());
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
 		cboSubject.DataSource = dt;
@@ -63,14 +99,25 @@ public partial class Data_Import : BasePage
 	{
 		SQL_utils sql = new SQL_utils("backend");
 
-		string sqlcode = "select studymeasID, studymeasname from tblmeasure a join tblstudymeas b " + 
-			" ON a.measureID=b.measureID where a.measureID in (3842,3843,3844) and studyID = " + Master.Master_studyID.ToString();
+		string sqlcode = "select studymeasID, studymeasname from tblmeasure a join tblstudymeas b ON a.measureID=b.measureID " + Environment.NewLine +
+			" where a.measureID in (select measureID from uwautism_research_data.def.tbl where measureID>0 and importfiletype is not null) " + Environment.NewLine +
+			" and studyID = " + Master.Master_studyID.ToString() + Environment.NewLine +
+			" order by b.timepointID, studymeasname ";
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
 		cboStudymeas.DataSource = dt;
 		cboStudymeas.ValueField = "studymeasID";
 		cboStudymeas.TextField = "studymeasname";
 		cboStudymeas.DataBind();
+
+		if (dt.Rows.Count > 0)
+		{
+			cboStudymeas.NullText = "select measure";
+		}
+		else
+		{
+			cboStudymeas.NullText = "none configured for import";
+		}
 		sql.Close();
 	}
 
@@ -471,7 +518,124 @@ public partial class Data_Import : BasePage
 	}
 
 
+	protected void GetREDCap()
+	{
+
+		//SampleCode sample = new SampleCode();
+		//DataTable dt = sample.GetDataTableFromForm("social_responsiveness_scale");
+
+
+	}
+
+	protected void btnShowMeta_OnClick(object sender, EventArgs e)
+	{
+		//GetRedcapMeta();
+
+		placeholder_gridMeta.Controls.Add(redcap.gridMetaData());
+
+	}
 	
+	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
+	{
+		Debug.WriteLine("btnLoadFormData_OnClick");
+		ASPxComboBox cboRedcapForms = (ASPxComboBox)placeholder_cboForms.FindControlRecursive("cboRedcapForms");
+		string formname = cboRedcapForms.Value.ToString();
+
+		ASPxGridView grid = redcap.gridDataFromForm(formname);
+		if (grid != null)
+		{
+			grid.Caption = redcap.dataheader;
+			placeholder_gridMeta.Controls.Clear();
+			placeholder_gridMeta.Controls.Add(grid);
+		}
+
+	}
+
+
+	protected void LoadFormData()
+	{
+		//Debug.WriteLine(" LoadFormData()");
+		//string strURI = "https://redcap.iths.org/api/";
+		//string strPostToken = "40ACFE0E609AECA842207964B1301275";
+
+		//RedcapLibrary.RedcapAPI api = new RedcapAPI(strURI, strPostToken);
+
+
+
+		//DataTable dt = GetRedcapForm(api, cboForms.Value.ToString());
+		//Debug.WriteLine(String.Format("{0} records in {1}", dt.Rows.Count, cboForms.Value.ToString()));
+
+
+		//grid.AutoGenerateColumns = true;
+		//grid.DataBind();
+
+	}
+
+
+
+	protected void LoadRedcapForms()
+	{
+		//string strURI = "https://redcap.iths.org/api/";
+		//string strPostToken = "40ACFE0E609AECA842207964B1301275";
+
+		//RedcapLibrary.RedcapAPI api = new RedcapAPI(strURI, strPostToken);
+
+		//cboForms.DataSource = api.InstrumentDataTable;
+		//cboForms.TextField = "instrument_label";
+		//cboForms.ValueField = "instrument_name";
+		//cboForms.DataBind();
+	}
+
+
+	protected void GetRedcapMeta()
+	{
+		//string strURI = "https://redcap.iths.org/api/";
+		//string strPostToken = "40ACFE0E609AECA842207964B1301275";
+
+		//RedcapLibrary.RedcapAPI api = new RedcapAPI(strURI, strPostToken);
+
+		//int nrecs = api.MetaDataTable.Rows.Count;
+
+		//Session["redcap_metadata"] = api.MetaDataTable;
+
+		//gridREDCap.DataSource = api.MetaDataTable;
+		//gridREDCap.DataBind();
+		//gridREDCap.Caption = String.Format("# records: {0}", nrecs);
+
+		//gridREDCap.Visible = true;
+		
+
+		//Session["redcap_forms"] = api.InstrumentDataTable;
+
+
+		//DataTable dt = api.GetTableFromCSV("fiu_id", "", "", "", "", "introduction", false, false);
+
+		
+	}
+
+	
+
+
+	//protected DataTable GetRedcapForm(RedcapAPI api, string formname)
+	//{
+	//	string firstfield = api.MetaDataTable.AsEnumerable()
+	//		.Where(f => f.Field<string>("form_name") == formname)
+	//		.Select(f => f.Field<string>("field_name")).First();
+
+	//	DataTable dt = api.GetTableFromCSV(firstfield, "", "", "", "", formname, false, false);
+	//	return dt;
+	//}
+
+
+	//protected string fldlist (DataTable dtmeta, string formname)
+	//{
+	//	List<string> flds = dtmeta.AsEnumerable()
+	//		.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).ToList();
+
+	//	string flds_csv = String.Join(",", flds);
+	//	return flds_csv;
+
+	//}
 
 }
 

@@ -365,7 +365,7 @@ public partial class Tracking_Household2 : BasePage
 	protected void dxgridPeople_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
 
-		DxGridView.BuildUpdateSqlCode(e, "tblPerson",  "backend");
+		DxDbOps.BuildUpdateSqlCode(e, "tblPerson",  "backend");
 
 		ASPxGridView gv = (ASPxGridView)sender;
 		gv.CancelEdit();
@@ -378,7 +378,7 @@ public partial class Tracking_Household2 : BasePage
 
 		e.NewValues.Add("HouseholdID", Request.QueryString["hhID"]);
 
-		bool result = DxGridView.BuildInsertSqlCode(e, "tblPerson", "backend");
+		bool result = DxDbOps.BuildInsertSqlCode(e, "tblPerson", "backend");
 
 		ASPxGridView gv = (ASPxGridView)sender;
 		gv.CancelEdit();
@@ -408,7 +408,7 @@ public partial class Tracking_Household2 : BasePage
 		ASPxGridView gv = (ASPxGridView)sender;
 		e.NewValues.Add("HouseholdID", Request.QueryString["hhID"]);
 		e.NewValues.Add("studyID", Master.Master_studyID.ToString());
-		DxGridView.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+		DxDbOps.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 		gv.CancelEdit();
 		e.Cancel = true;
 	}
@@ -416,7 +416,7 @@ public partial class Tracking_Household2 : BasePage
 	protected void dxgrid_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
-		DxGridView.BuildUpdateSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+		DxDbOps.BuildUpdateSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 		gv.CancelEdit();
 		e.Cancel = true;
 	}
@@ -457,7 +457,7 @@ public partial class Tracking_Household2 : BasePage
 
 		if (proceed_as_normal)
 		{
-			result = DxGridView.BuildDeleteSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+			result = DxDbOps.BuildDeleteSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 		}
 
 		//

@@ -17,7 +17,7 @@ using uwac;
 using uwac.trk;
 
 
-public partial class Track_MeasureLibrary : System.Web.UI.Page
+public partial class Library_MeasureLibrary : System.Web.UI.Page
 {
 	private string ID;
 	private string group_csv;

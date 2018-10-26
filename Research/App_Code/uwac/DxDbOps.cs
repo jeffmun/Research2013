@@ -6,20 +6,22 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Web.UI;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using DevExpress.Web;
 using DevExpress.Web.Data;
 using uwac;
 
 namespace uwac
 {
 	/// <summary>
-	/// Summary description for DxGridView
+	/// Summary description for DxDbOps
 	/// </summary>
-	public static class DxGridView
+	public static class DxDbOps
 	{
-		//public static  DxGridView()
+		//public static  DxDbOps()
 		//{
 		//	//
 		//	// TODO: Add constructor logic here
@@ -79,6 +81,17 @@ namespace uwac
 		{
 			return BuildInsertSqlCode(e.NewValues, tbl, db, schema);
 		}
+
+		public static int InsertSqlCode_ReturnPK(OrderedDictionary NewValues, string tbl, string db, string schema, string pkfld)
+		{
+			bool result = BuildInsertSqlCode(NewValues, tbl, db, schema);
+
+			SQL_utils sql = new SQL_utils(db);
+			int pk = sql.IntScalar_from_SQLstring(String.Format("select max({0}) from {1}.{2}", pkfld, schema, tbl));
+
+			return pk;
+		}
+
 
 		public static bool BuildInsertSqlCode(OrderedDictionary NewValues, string tbl, string db)
 		{
@@ -215,6 +228,7 @@ namespace uwac
 				DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "' and table_schema = '" + schema + "'");
 				sql1.Close();
 
+				List<string> fldnames = flds.AsEnumerable().Select(f => f.Field<string>("column_name")).ToList();
 
 				foreach (DictionaryEntry newentry in NewValues)
 				{
@@ -223,57 +237,62 @@ namespace uwac
 						var newfld = newentry.Key.ToString().ToLower();
 						var oldfld = oldentry.Key.ToString().ToLower();
 
-						if (newentry.Key == oldentry.Key)
+						if (fldnames.Contains(newfld))
 						{
 
-							var newval = (newentry.Value == null) ? null : newentry.Value.ToString();
-							var oldval = (oldentry.Value == null) ? null : oldentry.Value.ToString();
-							string newval_audit;
-							string oldval_audit;
-
-							if (newval != null)
+							if (newentry.Key == oldentry.Key)
 							{
-								newval_audit = (newval.Length > 1000) ? newval.ToString().Substring(0, 1000) : newval;
 
-							}
-							else
-							{
-								newval_audit = newval;
-							}
-							if (oldval != null)
-							{
-								oldval_audit = (oldval.Length > 1000) ? oldval.ToString().Substring(0, 1000) : oldval;
-							}
-							else
-							{
-								oldval_audit = oldval;
-							}
+								var newval = (newentry.Value == null) ? null : newentry.Value.ToString();
+								var oldval = (oldentry.Value == null) ? null : oldentry.Value.ToString();
+								string newval_audit;
+								string oldval_audit;
 
+								if (newval != null)
+								{
+									newval_audit = (newval.Length > 1000) ? newval.ToString().Substring(0, 1000) : newval;
 
-							//if oldval is null - go get the real one
-							if (oldval == null)
-							{
-								SQL_utils sql2 = new SQL_utils(db);
-								string oldval_from_DB = sql2.StringScalar_from_SQLstring(String.Format("select {0} from {1} where cast({2} as varchar) = '{3}'"
-									, oldfld, tbl, pkfld, pkvalue));
-
-								oldval = oldval_from_DB;
-
-								oldval_audit = (oldval_from_DB.Length > 1000) ? oldval_from_DB.ToString().Substring(0, 1000) : oldval_from_DB;
-							}
+								}
+								else
+								{
+									newval_audit = newval;
+								}
+								if (oldval != null)
+								{
+									oldval_audit = (oldval.Length > 1000) ? oldval.ToString().Substring(0, 1000) : oldval;
+								}
+								else
+								{
+									oldval_audit = oldval;
+								}
 
 
-							//new value is not null AND old value is null or empty = update to newval (even if empty string)
-							bool update_to_empty = ((newval == "" || newval != null) && !String.IsNullOrEmpty(oldval)) ? true : false;
-							bool update_to_value = (!String.IsNullOrEmpty(newval)) ? true : false;
+								//if oldval is null - go get the real one
+								if (oldval == null)
+								{
+									SQL_utils sql2 = new SQL_utils(db);
+									string sqlcode = String.Format("select {0} from {1} where cast({2} as varchar) = '{3}'"
+										, oldfld, tbl, pkfld, pkvalue);
+									string oldval_from_DB = sql2.StringScalar_from_SQLstring(sqlcode);
+									sql2.Close();
+									if (oldval_from_DB != null)
+									{
+										oldval = oldval_from_DB;
 
-							if (newval == null) newval = "";
-							if (oldval == null) oldval = "";
+										oldval_audit = (oldval_from_DB.Length > 1000) ? oldval_from_DB.ToString().Substring(0, 1000) : oldval_from_DB;
+									}
+								}
 
 
-							if (true)
-							//if (update_to_empty || update_to_value)
-							{
+								//new value is not null AND old value is null or empty = update to newval (even if empty string)
+								bool update_to_empty = ((newval == "" || newval != null) && !String.IsNullOrEmpty(oldval)) ? true : false;
+								bool update_to_value = (!String.IsNullOrEmpty(newval)) ? true : false;
+
+								if (newval == null) newval = "";
+								if (oldval == null) oldval = "";
+
+
+
 								if (newval != oldval)
 								{
 									string data_type = flds.AsEnumerable()
@@ -284,8 +303,9 @@ namespace uwac
 
 									string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
 
-									string newentry_dblquotes = newentry.Value.ToString().Replace("'", "''");
+									string newentry_dblquotes = (newentry.Value == null) ? "null" : newentry.Value.ToString().Replace("'", "''");
 
+									if (newentry_dblquotes == "null") quote_holder = "";
 
 									string upd = String.Format("{0}={1}{2}{1} ", newentry.Key, quote_holder, newentry_dblquotes);
 
@@ -299,6 +319,7 @@ namespace uwac
 								}
 							}
 						}
+						
 					}
 
 				}
@@ -573,6 +594,55 @@ namespace uwac
 			}
 
 		}
+
+
+
+		public class FormLayoutNewValues : OrderedDictionary
+		{
+			public FormLayoutNewValues(ASPxFormLayout form)
+			{
+				foreach (var item in form.Items)
+				{
+					if (item is LayoutGroupBase)
+					{
+							(item as LayoutGroupBase).ForEach(ProcessNestedControls);
+					}
+					else
+					{
+						AddValues(item as LayoutItem);
+					}
+				}
+			}
+
+			private void ProcessNestedControls(LayoutItemBase item)
+			{
+				if (item is LayoutItem)
+				{
+					LayoutItem c = item as LayoutItem;
+					AddValues(c);
+				}
+			}
+
+			private void AddValues(LayoutItem item)
+			{
+				foreach (Control control in item.Controls)
+				{
+					ASPxEdit editor = control as ASPxEdit;
+					if (editor != null)
+					{
+						string fldname = editor.ClientInstanceName.ToString();
+						if (!String.IsNullOrEmpty(fldname))
+						{
+							this.Add(editor.ClientInstanceName, editor.Value);
+							string info = String.Format("{0}=[{1}]  {2}", editor.ClientInstanceName, editor.Value, editor.NamingContainer);
+							Debug.WriteLine(info);
+						}
+					}
+				}
+
+			}
+		}
+
 
 	}
 }

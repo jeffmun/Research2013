@@ -94,7 +94,7 @@ public partial class Admin_Staff : BasePage
 		e.NewValues.Add("staffinits", staffinits);
 		
 
-		bool result = DxGridView.BuildInsertSqlCode(e, "tblStaff", "backend");
+		bool result = DxDbOps.BuildInsertSqlCode(e, "tblStaff", "backend");
 		gv.CancelEdit();
 		e.Cancel = true;
 	}
@@ -102,7 +102,7 @@ public partial class Admin_Staff : BasePage
 	protected void dxgrid_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
-		DxGridView.BuildUpdateSqlCode(e, "tblStaff", "backend");
+		DxDbOps.BuildUpdateSqlCode(e, "tblStaff", "backend");
 		gv.CancelEdit();
 		e.Cancel = true;
 	}

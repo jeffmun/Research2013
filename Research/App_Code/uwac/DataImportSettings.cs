@@ -58,6 +58,14 @@ namespace uwac
 			else if (this.importfiletype == ImportFiletype.tsv) this.delimiter = '\t';
 		}
 
+		private char AssignTextqualifier(ImportTextqualifier myqualifer)
+		{
+			if (myqualifer == ImportTextqualifier.doublequote) return '\"';
+			else if (myqualifer == ImportTextqualifier.singlequote) return '\'';
+			//else if (myqualifer == ImportTextqualifier.none) this.textqualifier = new char();
+			return new char();
+		}
+
 
 
 		private void PopulateImportSettingsFromDB(string ID, int studymeasID)
@@ -75,10 +83,9 @@ namespace uwac
 			if (trow["skipstartingrows"] == DBNull.Value) skipstartingrows = 0;
 			else skipstartingrows = Convert.ToInt32(trow["skipstartingrows"]) ;
 
-			//Escape the double quote character
-			char textqual = (trow["textqualifier"].ToString() == "\"") ? '\"' : Convert.ToChar(trow["textqualifier"].ToString());
-			textqualifier = textqual;
+			textqualifier = AssignTextqualifier((ImportTextqualifier)Convert.ToInt32(trow["textqualifier"]));
 			importfiletype = (ImportFiletype)Convert.ToInt32(trow["importfiletype"]);
+
 
 			tblpk = Convert.ToInt32(trow["tblpk"]);
 			tblname = trow["tblname"].ToString();
@@ -153,8 +160,17 @@ namespace uwac
 		xlsx = 3,
 		tsv = 4,
 		textlines = 5,
-		actigraph = 6
+		actigraph = 6,
+		REDCap = 7
 	}
+
+	public enum ImportTextqualifier
+	{
+		none = 0,
+		doublequote = 1,
+		singlequote = 2
+	}
+
 
 	public class ChunkMarker
 	{

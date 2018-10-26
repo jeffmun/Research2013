@@ -384,14 +384,14 @@ public partial class Admin_LabGroups : BasePage
 
 				args.NewValues["staffID"] = staffID;
 
-				bool result = DxGridView.BuildInsertSqlCode(args.NewValues, "tbllabgroup_staff", "backend");
+				bool result = DxDbOps.BuildInsertSqlCode(args.NewValues, "tbllabgroup_staff", "backend");
 				results.Add(result);
 
 				if (result) needrefresh = true;
 			}
 			else
 			{
-				bool result = DxGridView.BuildUpdateSqlCode(args, "tbllabgroup_staff", "backend");
+				bool result = DxDbOps.BuildUpdateSqlCode(args, "tbllabgroup_staff", "backend");
 				results.Add(result);
 				if (result) needrefresh = true;
 			}

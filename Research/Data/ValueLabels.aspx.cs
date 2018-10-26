@@ -73,7 +73,7 @@ public partial class Data_ValueLabels : BasePage
 				args.NewValues.Add("fieldvaluesetID", x);
 			}
 		}
-		string results = DxGridView.ProcessBatch(e, "datFieldValueSetItem", "data", "dbo");
+		string results = DxDbOps.ProcessBatch(e, "datFieldValueSetItem", "data", "dbo");
 		e.Handled = true;
 	}
 

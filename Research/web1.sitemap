@@ -53,12 +53,15 @@
       </siteMapNode>
       <siteMapNode url="~/Track/otherID.aspx" title="Other ID's" description="Search and export list of alternate/other ID's" />
     </siteMapNode>
-    <siteMapNode url="" title="Study Info">
-      <siteMapNode url="~/Library/MeasureList.aspx" title="Measure List for this Study" />
-      <siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info" />
-      <siteMapNode url="~/Track/MeasureLibrary.aspx" title="Measure Library" />
+    <siteMapNode url="" title="Library">
+      <siteMapNode url="~/Library/MeasureList.aspx" title="Measures for this Study" />
+      <!--<siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info" />-->
+      <siteMapNode url="~/Library/MeasureLibrary.aspx" title="Measure Library" />
+      <siteMapNode url="~/Library/DocLibrary.aspx" title="Document Library" />
       <siteMapNode url="~/Track/Dictionary.aspx" title="Data Dictionary" />
       <siteMapNode url="~/Admin/NewMeasure.aspx" title="Create New Measure" menuitem="true" />
+    </siteMapNode>
+    <siteMapNode url="" title="Study Design">
       <siteMapNode url="~/Admin/NewStudy.aspx" title="Create New Study" menuitem="true" />
       <siteMapNode url="~/Admin/StudyDesign.aspx" title="Edit Study Design" menuitem="true" />
       <siteMapNode url="~/Admin/StudyDesignViewer.aspx" title="View Study Design" menuitem="true" />
@@ -85,7 +88,7 @@
       <siteMapNode url="~/stats/IntHxCharts.aspx" title="IntHx Data Summary" description="" menuitem="true" />
       <siteMapNode url="~/DataProject/IntHxTxCat.aspx" title="IntHx Tx Types &amp; Categories" description="" menuitem="true" />
       <siteMapNode url="~/Reliability/Rel_Tracking.aspx" title="Reliability tracking" description="" menuitem="true" />
-      <siteMapNode url="~/DataImport/Import.aspx" title="Import Data" description="" menuitem="true" />
+      <siteMapNode url="~/Data/Import.aspx" title="Import Data" description="" menuitem="true" />
     </siteMapNode>
     <siteMapNode url="" title="Admin">
       <siteMapNode url="~/NDAR/GUIDinfo.aspx" title="NDAR GUID Info" menuitem="true" />

@@ -36,14 +36,13 @@
      </script>
 
  
- <br />
- <br />
+      <dx:ASPxLabel ID="ASPxLabel2" runat="server" Font-Size="Medium" Text="Measure Library: " Font-Bold="true"></dx:ASPxLabel>
 <asp:Label ID="lblStudyname_ContentPage" runat="server" Text=" " Font-Size="Large" Font-Bold="true"></asp:Label>
+ <br />
 
 <table>
  <tr>
      <td style="width:500px">
-         <asp:Label ID="lblINTRO_studyname" runat="server" Text="Measure List" Font-Size="Medium" Font-Bold="true" Font-Underline="true"></asp:Label>
      </td>
      <td style="width:200px">
          <dx:ASPxButton ID="btnToggleGrid" runat="server" ClientInstanceName="btnToggleGrid" Text="Hide Measures" ClientSideEvents-Click="ToggleGrid" AutoPostBack="false" ></dx:ASPxButton>
@@ -68,7 +67,7 @@
 
              <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Measure">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/Library/Measure.aspx?pk=" + Eval("measureID") %>' Font-Bold="true">
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/Library/Measure.aspx?mID=" + Eval("measureID") %>' Font-Bold="true">
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
@@ -77,7 +76,7 @@
 
             <dx:GridViewDataHyperLinkColumn FieldName="DE_Link" Caption="Data Dict">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DD" runat="server" Text="Dict" NavigateUrl='<%# "~/Data/Dictionary.aspx?measureID=" + Eval("measureID") %>' Font-Bold="false">
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DD" runat="server" Text="Dict" NavigateUrl='<%# "~/Data/Dictionary.aspx?mID=" + Eval("measureID") %>' Font-Bold="false">
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
@@ -90,12 +89,12 @@
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
 
-            <dx:GridViewDataHyperLinkColumn FieldName="DataForm_Link" Caption="Form Links">
+<%--            <dx:GridViewDataHyperLinkColumn FieldName="DataForm_Link" Caption="Form Links">
                 <DataItemTemplate>
                     <dx:ASPxHyperLink ID="ASPxHyperLink_Form" runat="server" Text="Form" NavigateUrl='<%# Eval("DataForm_Link") %>'>
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
-            </dx:GridViewDataHyperLinkColumn>
+            </dx:GridViewDataHyperLinkColumn>--%>
 
              
             <dx:GridViewDataColumn FieldName="Respondent" />
@@ -108,7 +107,7 @@
 
             <dx:GridViewDataHyperLinkColumn FieldName="Scoring_Proc" Caption="Scoring Proc">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_ScoreProc" runat="server" Text='<%# Eval("Scoring_Proc") %>' NavigateUrl='<%# Eval("ScoreProcLink") %>'>
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_ScoreProc" runat="server" Text='<%# Eval("Scoring_Proc") %>' NavigateUrl='<%#  "~/Data/ScoreProc.aspx?tblpk=" + Eval("tblpk") %>'>
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>

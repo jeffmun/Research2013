@@ -595,7 +595,7 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 			SQL_utils sql = new SQL_utils("backend");
 			
 			try{
-				var del1 = DxGridView.BuildDeleteSqlCode("tblstudymeassubj", "backend", "subjID", subjID);
+				var del1 = DxDbOps.BuildDeleteSqlCode("tblstudymeassubj", "backend", "subjID", subjID);
 
 
 				sql.NonQuery_from_SQLstring("update uwautism_research_backend.dbo.tblstudymeassubj set actionid = null where subjid = " + subjID.ToString());
@@ -606,12 +606,12 @@ public partial class Info_ResetVerified : BasePage //System.Web.UI.Page
 //tblSubjConsent
 //tblstudymeassubj
 
-				var del2 = DxGridView.BuildDeleteSqlCode("tblapptstaff","backend", "actionID in (select actionID from tblaction where subjID = " + subjID.ToString() + ")");
-				var del3 = DxGridView.BuildDeleteSqlCode("tblSubjConsentitem","backend",  "subjconsentid in (select subjconsentid from uwautism_research_backend.dbo.tblSubjConsent where subjid = " + subjID.ToString() + ")");
-				var del4 = DxGridView.BuildDeleteSqlCode("tblSubjConsent", "backend", "subjID", subjID);
-				var del5 = DxGridView.BuildDeleteSqlCode("tblReliabilityTracking", "backend", "subjID", subjID);
-				var del6 = DxGridView.BuildDeleteSqlCode("tblaction", "backend", "subjID", subjID);
-				var del7 = DxGridView.BuildDeleteSqlCode("tblSubject", "backend", "subjID", subjID);
+				var del2 = DxDbOps.BuildDeleteSqlCode("tblapptstaff","backend", "actionID in (select actionID from tblaction where subjID = " + subjID.ToString() + ")");
+				var del3 = DxDbOps.BuildDeleteSqlCode("tblSubjConsentitem","backend",  "subjconsentid in (select subjconsentid from uwautism_research_backend.dbo.tblSubjConsent where subjid = " + subjID.ToString() + ")");
+				var del4 = DxDbOps.BuildDeleteSqlCode("tblSubjConsent", "backend", "subjID", subjID);
+				var del5 = DxDbOps.BuildDeleteSqlCode("tblReliabilityTracking", "backend", "subjID", subjID);
+				var del6 = DxDbOps.BuildDeleteSqlCode("tblaction", "backend", "subjID", subjID);
+				var del7 = DxDbOps.BuildDeleteSqlCode("tblSubject", "backend", "subjID", subjID);
 
 				error_label.Text = "Subject deleted.";
 

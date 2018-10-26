@@ -595,7 +595,8 @@ namespace uwac
 			try
 			{
 				//oCmd.ExecuteNonQuery();
-				string s = (string)oCmd.ExecuteScalar();
+				var x = oCmd.ExecuteScalar();
+				string s = (x == DBNull.Value) ? null : x.ToString();
 				return s;
 			}
 			catch (Exception exc)

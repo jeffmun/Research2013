@@ -18,9 +18,9 @@ public partial class Library_Doc : BasePage
 		{
 			richeditDoc.WorkDirectory = Server.MapPath("~/webdocs/");
 
-			if (Request.QueryString["id"] != null)
+			if (Request.QueryString["dvID"] != null)
 			{
-				int docversID = Convert.ToInt32(Request.QueryString["id"]);
+				int docversID = Convert.ToInt32(Request.QueryString["dvID"]);
 
 				if (docversID > 0)
 				{

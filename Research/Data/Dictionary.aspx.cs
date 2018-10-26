@@ -43,9 +43,9 @@ public partial class Data_Dictionary: BasePage
 
 		if (!IsCallback && !IsPostBack)
 		{
-			 if(Request.QueryString["measureID"] != null)
+			 if(Request.QueryString["mID"] != null)
 			 {
-				int measureID = Convert.ToInt32(Request.QueryString["measureID"]);
+				int measureID = Convert.ToInt32(Request.QueryString["mID"]);
 
 				if (measureID > 0)
 				{
@@ -58,9 +58,9 @@ public partial class Data_Dictionary: BasePage
 		{
 
 			int measureID = 0;
-			if (Request.QueryString["measureID"] != null)
+			if (Request.QueryString["mID"] != null)
 			{
-				measureID = Convert.ToInt32(Request.QueryString["measureID"]);
+				measureID = Convert.ToInt32(Request.QueryString["mID"]);
 			}
 			else 
 			{
@@ -243,7 +243,7 @@ public partial class Data_Dictionary: BasePage
 
 
 		ASPxGridView gv = (ASPxGridView)sender;
-		DxGridView.BuildUpdateSqlCode(e, "fld", "data", "def");
+		DxDbOps.BuildUpdateSqlCode(e, "fld", "data", "def");
 		//((ASPxGridView) sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 		gv.CancelEdit();
 		e.Cancel = true;
@@ -259,7 +259,7 @@ public partial class Data_Dictionary: BasePage
 		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["measureID"]);
 		e.NewValues.Add("tblpk", tblpk);
 
-		DxGridView.BuildInsertSqlCode(e, "fld", "data", "def");
+		DxDbOps.BuildInsertSqlCode(e, "fld", "data", "def");
 		//((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 		gv.CancelEdit();
 		e.Cancel = true;
@@ -278,7 +278,7 @@ public partial class Data_Dictionary: BasePage
 
 
 
-		DxGridView.BuildDeleteSqlCode(e, "fld", "data", "def");
+		DxDbOps.BuildDeleteSqlCode(e, "fld", "data", "def");
 		//((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 		gv.CancelEdit();
 		e.Cancel = true;
@@ -299,7 +299,7 @@ public partial class Data_Dictionary: BasePage
 				args.NewValues.Add("fieldvaluesetID", x);
 			}
 		}
-		string results = DxGridView.ProcessBatch(e, "datFieldValueSetItem", "data", "dbo");
+		string results = DxDbOps.ProcessBatch(e, "datFieldValueSetItem", "data", "dbo");
 		e.Handled = true;
 	}
 
