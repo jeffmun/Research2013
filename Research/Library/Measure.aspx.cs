@@ -18,7 +18,7 @@ using uwac;
 using uwac.trk;
 using System.Collections.Specialized;
 
-public partial class Library_Measure : System.Web.UI.Page
+public partial class Library_Measure : BasePage
 {
 	protected void Page_Load(object sender, EventArgs e)
 	{
@@ -31,11 +31,20 @@ public partial class Library_Measure : System.Web.UI.Page
 			LoadMeasureInfo(measureID);
 
 			LoadDocs(measureID);
+
+		 
+
 		}
 
 	}
 
 
+	
+	protected void btnDict_OnClick(object sender, EventArgs e)
+	{
+		string url = "~/Data/Dictionary.aspx?mID=" + Request.QueryString["mID"];
+		Response.Redirect(url);
+	}
 
 	protected void SaveButton_OnClick(object sender, EventArgs e)
 	{
@@ -64,6 +73,11 @@ public partial class Library_Measure : System.Web.UI.Page
 			, Environment.NewLine, measureID);
 
 		DataTable dt = sql.DataTable_from_SQLstring(code);
+
+		string fldcode = String.Format("select count(*) from uwautism_research_data.def.fld where tblpk = (select tblpk from uwautism_research_data.def.tbl where measureID = {0}) ", measureID);
+		int nflds = sql.IntScalar_from_SQLstring(fldcode);
+		btnDict.Visible = (nflds > 0) ? true : false;
+
 		sql.Close();
 
 		FormLayout.DataSource = dt;

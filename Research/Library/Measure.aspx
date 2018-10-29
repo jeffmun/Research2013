@@ -73,11 +73,18 @@
 						</div>
 
 					</td>
-					<td>
+					<td style="width: 150px;">
 						<div class="buttonContent leftPadding topPadding">
 							<dx:ASPxButton ID="CancelButton" ClientInstanceName="CancelButton" runat="server"
 								Text="Cancel Changes" Width="80px" CssClass="buttonWidth" AutoPostBack="false" ClientEnabled="false">
 								<ClientSideEvents Click="cancelChanges" />
+							</dx:ASPxButton>
+						</div>
+					</td>
+					<td>
+						<div class="buttonContent leftPadding topPadding">
+							<dx:ASPxButton ID="btnDict" ClientInstanceName="CancelButton" runat="server"
+								Text="Data Dictionary" Width="80px" CssClass="buttonWidth" AutoPostBack="true" OnClick="btnDict_OnClick" ClientEnabled="true">
 							</dx:ASPxButton>
 						</div>
 					</td>

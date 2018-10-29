@@ -37,7 +37,7 @@ using System.Xml.Serialization;
 using DevExpress.XtraRichEdit.API.Native;
 
 //public partial class PointSeries : ChartBasePage{
-public partial class DataProject_Chart : System.Web.UI.Page
+public partial class DataProject_Chart : BasePage
 {
 
 	int chartWhist;

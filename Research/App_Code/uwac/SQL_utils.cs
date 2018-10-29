@@ -97,7 +97,7 @@ namespace uwac
 			catch (Exception ex)
 			{
 				string msg = ex.Message;
-				this._errormsg += String.Format("ERROR: ", ex.Message);
+				this._errormsg += String.Format("ERROR: {0}", ex.Message);
 			}
 		}
 
@@ -338,6 +338,16 @@ namespace uwac
 				string x = ex.Message;
 				//QQQ temp
 				DataTable dt2 = new DataTable();
+				DataColumn c1 = new DataColumn("err");
+				DataColumn c2 = new DataColumn("stack");
+				dt2.Columns.Add(c1);
+				dt2.Columns.Add(c2);
+
+				DataRow row = dt2.NewRow();
+				row["err"] = ex.Message;
+				row["stack"] = ex.StackTrace;
+				dt2.Rows.Add(row);
+
 				return dt2;
 				//throw new System.Exception("An Error!2  sSQL={" + sSQL + "} ", ex);
 			}
@@ -792,7 +802,14 @@ namespace uwac
 			}
 		}
 
+
 		public int IntScalar_from_SQLstring(string sSQL)
+		{
+			return IntScalar_from_SQLstring(sSQL, false);
+		}
+
+
+		public int IntScalar_from_SQLstring(string sSQL, bool returnNeg98765IfNull)
 		{
 			SqlCommand oCmd = new SqlCommand();
 
@@ -808,7 +825,14 @@ namespace uwac
 			}
 			catch (Exception exc)
 			{
-				throw new System.Exception("An Error!13 ", exc);
+				if (returnNeg98765IfNull)
+				{
+					return -98765;
+				}
+				else
+				{
+					throw new System.Exception("An Error!13 ", exc);
+				}
 			}
 		}
 

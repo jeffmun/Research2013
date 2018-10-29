@@ -219,26 +219,12 @@ public partial class Data_Dictionary: BasePage
 
 		if((int)fvsID == -1)
 		{
+			//Create new ValueSet and populate with 1 dummy value;
+			bool addDummyItem = true;
+			string valuelabel = "New Value Labels for " + lblMeasName.Text;
 			SQL_utils sql = new SQL_utils("data");
-
-			int max = sql.IntScalar_from_SQLstring("select max(fieldvaluesetID) from datfieldvalueset");
-
-			int newmax = (max > 0) ? max + 1 : 0;
-
-			if (newmax > 0)
-			{
-
-				string code = String.Format("insert into datfieldvalueset (fieldvaluesetID, fieldvaluesetdesc) values({0},'{1}{2}')"
-					, newmax, "New Value Labels for ", lblMeasName.Text);
-				sql.NonQuery_from_SQLstring(code);
-				string code2 = String.Format("insert into datfieldvaluesetitem (fieldvaluesetID, fieldvalue, fieldvaluelabel) values({0},{1},'{2}')"
-					, newmax, "1", "value label");
-				sql.NonQuery_from_SQLstring(code2);
-
-				e.NewValues["fieldvaluesetID"] = newmax;
-			}
+			int newfvsID = DxDbOps.CreateValueSet(sql, valuelabel, addDummyItem, new List<string>());
 			sql.Close();
-
 		}
 
 

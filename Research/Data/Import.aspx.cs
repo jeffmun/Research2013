@@ -52,18 +52,25 @@ public partial class Data_Import : BasePage
 		redcap = new REDCap(Master.Master_studyID);
 
 		ASPxComboBox cbo = redcap.cboFormSelector();
-		if (cbo != null) placeholder_cboForms.Controls.Add(cbo);
+		if (cbo != null)
+		{
+			placeholder_cboForms.Controls.Add(cbo);
+			panelREDCap_controls.Visible = true;
+		}
+		else {
+			panelREDCap_controls.Visible = false;
+		}
 
 
 		//LoadRedcapForms();
 
-		//if (IsPostBack && FileUpload_Doc.PostedFile != null)
-		//{
-		//	btnUploadDoc.Visible = true;
-		//	btnUploadDoc_Cancel.Visible = true;
-		//}
+			//if (IsPostBack && FileUpload_Doc.PostedFile != null)
+			//{
+			//	btnUploadDoc.Visible = true;
+			//	btnUploadDoc_Cancel.Visible = true;
+			//}
 
-		if (IsCallback)
+			if (IsCallback)
 		{
 			//if (Session["redcap_metadata"] != null)
 			//{
@@ -518,21 +525,11 @@ public partial class Data_Import : BasePage
 	}
 
 
-	protected void GetREDCap()
-	{
-
-		//SampleCode sample = new SampleCode();
-		//DataTable dt = sample.GetDataTableFromForm("social_responsiveness_scale");
-
-
-	}
+	
 
 	protected void btnShowMeta_OnClick(object sender, EventArgs e)
 	{
-		//GetRedcapMeta();
-
 		placeholder_gridMeta.Controls.Add(redcap.gridMetaData());
-
 	}
 	
 	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
@@ -552,90 +549,8 @@ public partial class Data_Import : BasePage
 	}
 
 
-	protected void LoadFormData()
-	{
-		//Debug.WriteLine(" LoadFormData()");
-		//string strURI = "https://redcap.iths.org/api/";
-		//string strPostToken = "40ACFE0E609AECA842207964B1301275";
-
-		//RedcapLibrary.RedcapAPI api = new RedcapAPI(strURI, strPostToken);
-
-
-
-		//DataTable dt = GetRedcapForm(api, cboForms.Value.ToString());
-		//Debug.WriteLine(String.Format("{0} records in {1}", dt.Rows.Count, cboForms.Value.ToString()));
-
-
-		//grid.AutoGenerateColumns = true;
-		//grid.DataBind();
-
-	}
-
-
-
-	protected void LoadRedcapForms()
-	{
-		//string strURI = "https://redcap.iths.org/api/";
-		//string strPostToken = "40ACFE0E609AECA842207964B1301275";
-
-		//RedcapLibrary.RedcapAPI api = new RedcapAPI(strURI, strPostToken);
-
-		//cboForms.DataSource = api.InstrumentDataTable;
-		//cboForms.TextField = "instrument_label";
-		//cboForms.ValueField = "instrument_name";
-		//cboForms.DataBind();
-	}
-
-
-	protected void GetRedcapMeta()
-	{
-		//string strURI = "https://redcap.iths.org/api/";
-		//string strPostToken = "40ACFE0E609AECA842207964B1301275";
-
-		//RedcapLibrary.RedcapAPI api = new RedcapAPI(strURI, strPostToken);
-
-		//int nrecs = api.MetaDataTable.Rows.Count;
-
-		//Session["redcap_metadata"] = api.MetaDataTable;
-
-		//gridREDCap.DataSource = api.MetaDataTable;
-		//gridREDCap.DataBind();
-		//gridREDCap.Caption = String.Format("# records: {0}", nrecs);
-
-		//gridREDCap.Visible = true;
-		
-
-		//Session["redcap_forms"] = api.InstrumentDataTable;
-
-
-		//DataTable dt = api.GetTableFromCSV("fiu_id", "", "", "", "", "introduction", false, false);
-
-		
-	}
 
 	
-
-
-	//protected DataTable GetRedcapForm(RedcapAPI api, string formname)
-	//{
-	//	string firstfield = api.MetaDataTable.AsEnumerable()
-	//		.Where(f => f.Field<string>("form_name") == formname)
-	//		.Select(f => f.Field<string>("field_name")).First();
-
-	//	DataTable dt = api.GetTableFromCSV(firstfield, "", "", "", "", formname, false, false);
-	//	return dt;
-	//}
-
-
-	//protected string fldlist (DataTable dtmeta, string formname)
-	//{
-	//	List<string> flds = dtmeta.AsEnumerable()
-	//		.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).ToList();
-
-	//	string flds_csv = String.Join(",", flds);
-	//	return flds_csv;
-
-	//}
 
 }
 

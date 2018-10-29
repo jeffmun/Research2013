@@ -62,6 +62,7 @@ namespace uwac
 			return results;
 		}
 
+		#region INSERT
 		public static bool BuildInsertSqlCode(ASPxDataInsertingEventArgs e, string tbl, string db)
 		{
 			return BuildInsertSqlCode(e.NewValues, tbl, db, "dbo");
@@ -176,7 +177,7 @@ namespace uwac
 			}
 			return result;
 		}
-
+		#endregion
 
 
 		#region UPDATE
@@ -392,6 +393,7 @@ namespace uwac
 
 		#endregion
 
+		#region DELETE
 		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)
 		{
 			return BuildDeleteSqlCode(e, tbl, db, "dbo");
@@ -594,8 +596,132 @@ namespace uwac
 			}
 
 		}
+		#endregion
 
 
+		public static List<string> GetUniqueValues (DataTable dt, string colname)
+		{
+			List<string> vals = dt.AsEnumerable().Select(f => f.Field<string>(colname)).Distinct().ToList();
+			return vals;
+		}
+
+		//public string CreateValueSet (List<string> vals, string valuesetname)
+		//{
+		//	SQL_utils sql = new SQL_utils("data");
+
+		//	string code = String.Format("insert into datFieldValueSet {0}")
+		//}
+
+		//public int ConvertToFieldValue()
+
+		public static int ProcessValueSet(string fldname, string valuesetname, bool createNewSetIfNeeded, List<string> valuelabels)
+		{
+			SQL_utils sql = new SQL_utils("data");
+			string code = String.Format("select fieldvaluesetID from def.fld where fldname = '{0}'", fldname);
+			int fvsID = sql.IntScalar_from_SQLstring(code, true);
+
+			//No set yet, so create one
+			if(fvsID==-98765)
+			{
+				bool addDummyItem = false;
+				fvsID = CreateValueSet(sql, valuesetname, addDummyItem, valuelabels);
+			}
+			
+			if (fvsID > 0)
+			{
+				if (valuelabels.Count > 0)
+				{
+					for (int i = 0; i < valuelabels.Count; i++)
+					{
+						AddValueSetItem(sql, fvsID, null, valuelabels[i]); //Add the label 
+					}
+
+				}
+			}
+
+			return fvsID;
+
+		}
+
+
+		public static int CreateValueSet(SQL_utils sql, string setname, bool addDummyItem, List<string> valuelabels)
+		{
+			int max = sql.IntScalar_from_SQLstring("select max(fieldvaluesetID) from datfieldvalueset");
+
+			int newmax = (max > 0) ? max + 1 : 0;
+
+			if (newmax > 0)
+			{
+				try
+				{
+					string code = String.Format("insert into datfieldvalueset (fieldvaluesetID, fieldvaluesetdesc) values({0},'{1}')"
+						, newmax, setname);
+					sql.NonQuery_from_SQLstring(code);
+					//Add a dummy item
+					if (addDummyItem)
+					{
+						AddValueSetItem(sql, newmax, 1, "first label");
+					}
+
+					//Add the list of labels
+					else if(valuelabels.Count > 0)
+					{
+						for(int i=0; i < valuelabels.Count; i++)
+						{
+							AddValueSetItem(sql, newmax, i+1, valuelabels[i]);
+						}
+						
+					}
+					///Consider: do we need to handle already having a set of values???
+
+					return newmax;
+				}
+				catch (Exception ex)
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		public static bool AddValueSetItem(SQL_utils sql, int fvsID, int? value, string label)
+		{
+			//Check to see if label already added 
+			string code = String.Format("select fieldvaluesetitemID, fieldvalue, fieldvaluelabel from datFieldValueSetItem where fieldvaluesetID={0} and fieldlabel='{1}'", fvsID, label);
+
+			DataTable dt = sql.DataTable_from_SQLstring(code);
+			
+			if(dt.Rows.Count > 0)
+			{ return false; }
+			else 
+			{
+				DataRow row = dt.Rows[0];
+
+				int n = sql.IntScalar_from_SQLstring(code);
+				try
+				{
+
+					//if no value yet assigned for this label get the max + 1
+					int newvalue = (value == null) ?
+						sql.IntScalar_from_SQLstring(String.Format("select max(fieldvalue)  from datFieldValueSetItem where fieldvaluesetID={0}", fvsID)) + 1
+						: Convert.ToInt32(value);
+
+					string code2 = String.Format("insert into datfieldvaluesetitem (fieldvaluesetID, fieldvalue, fieldvaluelabel) values({0},{1},'{2}')"
+								, fvsID, newvalue, label);
+					sql.NonQuery_from_SQLstring(code2);
+					Debug.WriteLine("YES value set item added !!!!! ");
+					return true;
+				}
+				catch(Exception ex)
+				{
+					Debug.WriteLine("NO value set item added  :(");
+					return false;
+				}
+			}
+		}
 
 		public class FormLayoutNewValues : OrderedDictionary
 		{

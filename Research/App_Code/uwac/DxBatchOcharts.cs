@@ -39,6 +39,7 @@ namespace uwac
 
 		public DxBatchOcharts()
 		{
+			maxCol = 1;
 			_charts = new List<DxChart>();
 		}
 	}

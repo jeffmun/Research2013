@@ -180,11 +180,11 @@ namespace uwac
 							LineSeriesView lineSeriesView = new LineSeriesView();
 
 
-							lineSeriesView.Color = myseriescolor;
-
-
 							lineSeriesView.LineMarkerOptions.FillStyle.FillMode = FillMode.Solid;
 							lineSeriesView.LineMarkerOptions.Kind = _markers[s % _markers.Count];
+
+
+
 
 							if (_settings.xaxis_is_date)
 							{

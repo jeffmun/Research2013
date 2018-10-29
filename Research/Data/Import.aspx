@@ -71,7 +71,7 @@
 		</tr>
 	</table>
 
-
+	<asp:Panel ID="panelREDCap_controls" runat="server" Visible="false">
 	<table>
 		<tr>
 			<td style="vertical-align: top; padding: 10px">
@@ -88,6 +88,7 @@
 			</td>
 		</tr>
 	</table>
+		   </asp:Panel>
 	<br />
 
 	<asp:PlaceHolder ID="placeholder_gridMeta" runat="server"></asp:PlaceHolder>
