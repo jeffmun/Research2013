@@ -125,6 +125,62 @@ namespace uwac
 		#endregion
 
 
+
+		public void AddStrip_date(string striplabel, Color color, DateTime t1, DateTime t2)
+		{
+			Strip strip1 = new Strip(striplabel, t1, t2);
+			strip1.Color = color;
+			_xydiagram.AxisX.Strips.Add(strip1);
+
+		}
+
+
+
+
+		public void AddTextAnnotation(string txt, DateTime x, Double y)
+		{
+			AddTextAnnotation(txt, x, y, 12f, 0, Color.Black);
+		}
+		public void AddTextAnnotation(string txt, DateTime x, Double y, float fontsize)
+		{
+			AddTextAnnotation(txt, x, y, fontsize, 0, Color.Black);
+		}
+		public void AddTextAnnotation(string txt, DateTime x, Double y, float fontsize, Color textcolor)
+		{
+			AddTextAnnotation(txt, x, y, fontsize, 0, textcolor);
+		}
+
+
+		public void AddTextAnnotation(string txt, DateTime x, Double y, float fontsize, int angle, Color textcolor)
+		{
+
+			string annotationname = String.Format("a{0}", this.chart.Annotations.Count);
+			TextAnnotation myTextAnnotation = this.chart.Annotations.AddTextAnnotation(annotationname, txt);
+
+			Font font = new Font("Arial", fontsize);
+
+			RelativePosition position = new RelativePosition();
+			myTextAnnotation.ShapePosition = position;
+
+			PaneAnchorPoint anchorPoint = new PaneAnchorPoint();
+			myTextAnnotation.AnchorPoint = anchorPoint;
+
+			position.ConnectorLength = 0;
+			anchorPoint.AxisXCoordinate.AxisValue = x;
+			anchorPoint.AxisYCoordinate.AxisValue = y;
+
+			myTextAnnotation.TextAlignment = StringAlignment.Near;
+			myTextAnnotation.Angle = angle;
+			myTextAnnotation.Font = font;
+			myTextAnnotation.TextColor = textcolor;
+			myTextAnnotation.BackColor = Color.Transparent;
+			myTextAnnotation.ShapeKind = ShapeKind.RoundedRectangle;
+			myTextAnnotation.Border.Color = Color.Transparent;
+			myTextAnnotation.ConnectorStyle = AnnotationConnectorStyle.None;
+
+		}
+
+
 	}
 
 }

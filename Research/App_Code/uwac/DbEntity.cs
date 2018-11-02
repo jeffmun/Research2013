@@ -28,7 +28,15 @@ namespace uwac
 		{
 			entitytype = myentitytype;
 
-			if (myentitytype == DbEntityType.studymeas)
+			if (myentitytype == DbEntityType.study)
+			{
+				db = "backend";
+				schema = "dbo";
+				table_name = "tblstudy";
+				pkfld = "studyID";
+				namefld = "studyname";
+			}
+			else if (myentitytype == DbEntityType.studymeas)
 			{
 				db = "backend";
 				schema = "dbo";

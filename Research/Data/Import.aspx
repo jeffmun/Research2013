@@ -44,8 +44,8 @@
 	 
 				<%--<asp:Label ID="Label52" runat="server" Text="Select file:" Font-Size="X-Small"></asp:Label><br />--%>
 				<%--onchange="this.form.submit()" --%>
-				<asp:FileUpload ID="FileUpload_Doc" runat="server" Font-Size="Small" Width="400px" 
-						onchange="ShowUpload()"   Visible ="false" />
+				<asp:FileUpload ID="FileUpload_Doc" runat="server" Font-Size="Small" Width="400px" onchange="ShowUpload()"  
+					Visible ="false" AllowMultiple="true"  />
 				<br /><br />
 				
 				<%--<asp:Button ID="btnUploadDoc" runat="server" AutoPostBack="true" Text="Upload Document" OnClick="UploadDoc" Visible="false"/>

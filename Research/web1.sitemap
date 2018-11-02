@@ -50,6 +50,9 @@
         <siteMapNode url="" title="ESS" menuitem="true">
           <siteMapNode url="~/Study/ESS/esssubjectinfo.aspx" title="ESS Consort Chart and Subject Info" menuitem="true" />
         </siteMapNode>
+        <siteMapNode url="" title="Sleep Pilot" menuitem="true">
+          <siteMapNode url="~/Reports/SleepSummary.aspx" title="Sleep Data Summary" menuitem="true" />
+        </siteMapNode>
       </siteMapNode>
       <siteMapNode url="~/Track/otherID.aspx" title="Other ID's" description="Search and export list of alternate/other ID's" />
     </siteMapNode>

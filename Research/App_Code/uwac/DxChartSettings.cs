@@ -38,6 +38,9 @@ namespace uwac
 		private int _maxx = -999;
 		private int _miny = -999;
 		private int _maxy = -999;
+		private int _maxRow = 4;
+		private int _maxCol = 2;
+		private int _markersize = 8;
 
 		private string _title;
 		private string _subtitle;
@@ -50,8 +53,9 @@ namespace uwac
 		private List<string> _agevars;
 		private PaneLayoutDirection _panesLayoutDirection = PaneLayoutDirection.Horizontal;
 		private DxChartLayout _chartlayout = DxChartLayout.Horizontal;
-		public int maxRow { get; set; }
-		public int maxCol { get; set; }
+		private ScaleMode _ScaleMode = ScaleMode.Continuous;
+		public int maxRow { get { return _maxRow; } set { _maxRow = value; } }
+		public int maxCol { get { return _maxCol; } set { _maxCol = value; } }
 
 		public DxChartType DxChartType { get { return _charttype; } set { _charttype = value; } }
 		public int W { get { return _W; } set { _W = value; } }
@@ -60,6 +64,8 @@ namespace uwac
 		public int maxx { get { return _maxx; } set { _maxx = value; } }
 		public int miny { get { return _miny; } set { _miny = value; } }
 		public int maxy { get { return _maxy; } set { _maxy = value; } }
+		public int markersize { get { return _markersize; } set { _markersize = value; } }
+
 		public string title { get { return _title; } set { _title = value; } }
 		public string subtitle { get { return _subtitle; } set { _subtitle = value; } }
 		public string xaxisvar { get { return _xaxisvar; } set { _xaxisvar = value; } }
@@ -71,6 +77,9 @@ namespace uwac
 		public List<string> agevars { get { return _agevars; } set { _agevars = value; } }
 		public PaneLayoutDirection panesLayoutDirection { get { return _panesLayoutDirection; } set { _panesLayoutDirection = value; } }
 		public DxChartLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
+		public ScaleMode ScaleMode { get { return _ScaleMode; } set { _ScaleMode = value; } }
+
+
 
 		private List<Color> _colors;
 
@@ -127,7 +136,8 @@ namespace uwac
 		StackedBarchart = 2,
 		Scatterplot = 3,
 		Lineplot = 4,
-		PCA = 5
+		PCA = 5,
+		Actogram = 6
 	}
 
 	public enum DxChartLayout

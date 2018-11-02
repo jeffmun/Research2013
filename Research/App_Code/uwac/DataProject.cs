@@ -228,6 +228,9 @@ namespace uwac.data
 				, _dataproj_pk);
 
 
+			Debug.WriteLine("  --- Subjects --- ");
+			Debug.WriteLine(_sqlcode_subj);
+			Debug.WriteLine("");
 
 
 			//string _sqlcode_subj_IDs = String.Format(" (select id from dp.subj s1 " +
@@ -250,11 +253,11 @@ namespace uwac.data
 			//	, _sqlcode_subj_IDs
 			//	);
 
-				
-				//what we actually need is to get the actual subjID for each timepoint
-				//because they might be in different studies
-				//ADD A NEW TAB THAT IS SubjectTimepts !!!!!!!
-				//TODO !!!!!!
+
+			//what we actually need is to get the actual subjID for each timepoint
+			//because they might be in different studies
+			//ADD A NEW TAB THAT IS SubjectTimepts !!!!!!!
+			//TODO !!!!!!
 
 
 			int NsSubjTp = sql.DataTable_from_SQLstring(string.Format("select * from {0}", _sqlcode_subj)).Rows.Count;
@@ -435,6 +438,15 @@ namespace uwac.data
 			string fldpk_csv = row["fldpk_csv"].ToString().Replace(";", "");
 			string ID_csv = trk.dataops.GetCSV(_ID_list);
 
+
+			Debug.WriteLine("");
+			Debug.WriteLine("");
+			Debug.WriteLine("==========================CreateSqlForMeasure==========================");
+			Debug.WriteLine(measname);
+			Debug.WriteLine("=======================");
+			Debug.WriteLine("");
+
+
 			int N_vars = (String.IsNullOrEmpty(fldpk_csv)) ? 0 : fldpk_csv.Split(',').Length;
 			int Ns1_N = 0;
 			int Ns1_IDs = 0;
@@ -446,9 +458,10 @@ namespace uwac.data
 
 
 			if (N_vars == 0)
-				{
+			{
 				//No Data so don't include
-				msg = String.Format("No variables selected.", measname);
+				msg = String.Format("!!!!!!!! No variables selected for --> ", measname);
+				Debug.WriteLine(msg);
 
 			}
 			else
@@ -476,6 +489,7 @@ namespace uwac.data
 				if ( actigraph_measureIDs.Contains(measureID))
 				{
 					//Wait until next step
+					Debug.WriteLine(" !!!!! Measure is Actigraph - skip for now ");
 				}
 
 				#region  STEP 1 - check for dups in a studymeas.
@@ -487,6 +501,9 @@ namespace uwac.data
 					var dupsIDs = dups.AsEnumerable().Select(f => f.Field<string>("ID")).ToList();
 					dupsIDs_csv = String.Join("','", dupsIDs);
 					remove_dup_IDs = " and a.ID not in ('" + dupsIDs_csv + "') ";
+
+					Debug.WriteLine(" -- STEP 1  Ns2 > 0 - there are dups in this studymeas ");
+					Debug.WriteLine(String.Format(" --     dupsIDs_csv: '{0}'", dupsIDs_csv));
 				}
 				#endregion
 
@@ -516,6 +533,8 @@ namespace uwac.data
 				{
 					//No Data so don't include
 					msg = String.Format("No records for these subjects.", measname);
+
+					Debug.WriteLine(" !!!!!!!!!!  STEP 3 -  Ns1_N == 0   " + msg);
 				}
 
 				//STEP 3b - MULTIPLE, prepare to save this measure as it's own table. 
@@ -524,6 +543,8 @@ namespace uwac.data
 					//Collected Multiple Times
 					_meas_to_skip.Add(measureID.ToString());
 					msg = String.Format("{0} collected multiple times within a timepoint. Placed on separate worksheet.", measname);
+
+					Debug.WriteLine(" !!!!!!!!!!  STEP 3b -  Ns3 > 0   " + msg);
 
 
 					//NEXT get the fieldnames
@@ -683,6 +704,10 @@ namespace uwac.data
 						_measname_dups.Add(measname);
 					}
 
+					Debug.WriteLine("");
+					Debug.WriteLine(tmp_body);
+					Debug.WriteLine("");
+
 					_sqlcode_tbl.Add(tmp_body);
 
 					//Add this table to those to be processed
@@ -733,19 +758,41 @@ namespace uwac.data
 
 
 				//Final SQL code for final integrated "Data"
-				Debug.Print(String.Format("done building sqlcode  {0}", System.DateTime.Now.ToString()));
+				Debug.WriteLine(String.Format("done building sqlcode  {0}", System.DateTime.Now.ToString()));
 				DataTable dt = sql.DataTable_from_SQLstring(sqlcode_final_Data);
-				Debug.Print(String.Format("done retrieving dt  {0}       nrecs={1}", System.DateTime.Now.ToString(), dt.Rows.Count.ToString()));
+				Debug.WriteLine(String.Format("done retrieving dt  {0}       nrecs={1}", System.DateTime.Now.ToString(), dt.Rows.Count.ToString()));
 
 
 
 				//Need to remove fields for the Skipped measures.
-				string meas_to_skip_csv = String.Join(",", _meas_to_skip);
-				DataTable dt_flds_to_drop = sql.DataTable_from_SQLstring(
-					String.Format("select fldname from dp.Var where measureID in ({0})", meas_to_skip_csv));
-				List<string> flds_to_drop = dt_flds_to_drop.AsEnumerable().Select(f => f.Field<string>("fldname")).ToList();
+				List<string> flds_to_drop = new List<string>();
+				if (_meas_to_skip.Count > 0)
+				{
+					string meas_to_skip_csv = String.Join(",", _meas_to_skip);
+					Debug.WriteLine(String.Format("  >> meas_to_skip_csv '{0}'", meas_to_skip_csv));
 
-				_fldname_list_noskips = _fldname_list.Except(flds_to_drop).ToList();
+
+					//string sqlcode_flds_to_drop = String.Format("select fldname from dp.Var where measureID in ({0})", meas_to_skip_csv);
+					string sqlcode_flds_to_drop = String.Format("select varname from dp.Var where measureID in ({0})", meas_to_skip_csv);
+					Debug.WriteLine("  >> sqlcode_flds_to_drop: ");
+					Debug.WriteLine(meas_to_skip_csv);
+					DataTable dt_flds_to_drop = sql.DataTable_from_SQLstring(sqlcode_flds_to_drop);
+
+					if (dt_flds_to_drop != null)
+					{
+						
+						//flds_to_drop = dt_flds_to_drop.AsEnumerable().Select(f => f.Field<string>("fldname")).ToList();
+						flds_to_drop = dt_flds_to_drop.AsEnumerable().Select(f => f.Field<string>("varname")).ToList();
+						_fldname_list_noskips = _fldname_list.Except(flds_to_drop).ToList();
+					}
+				}
+				else
+				{
+					//None to skip
+					_fldname_list_noskips = _fldname_list;
+				}
+
+
 
 
 

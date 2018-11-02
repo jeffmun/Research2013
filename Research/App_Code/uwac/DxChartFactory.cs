@@ -71,6 +71,7 @@ namespace uwac
 			if (order.settingsbar != null)
 			{
 				DxBatchOcharts batch = BuildBarcharts(order.settingsbar);
+				
 				AddBatch(batch, order.settingsbar);
 			}
 
@@ -140,6 +141,7 @@ namespace uwac
 		{
 
 			DxBatchOcharts batch = new DxBatchOcharts();
+			batch.charttype = DxChartType.Lineplot;
 			batch.vars = settings.numvars;
 
 			//NO Panels
@@ -216,6 +218,49 @@ namespace uwac
 
 		}
 
+		public DxBatchOcharts BuildActograms(DxLineplotSettings settings, DataTable dt, string title, Actigraph.ActogramStats mystats)
+		{
+			DxBatchOcharts batch = new DxBatchOcharts();
+			batch.charttype = DxChartType.Lineplot;
+			batch.chartlayout = settings.chartlayout;
+			batch.vars = settings.numvars;
+
+			if (settings.xaxisvar == "variable") //This is just one plot
+			{
+				DxChart chart = new DxLineplot(settings, dt); //, mystats);
+				chart.AddTitles(title);
+				batch.charts.Add(chart);
+			}
+			else
+			{
+				//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
+				if (settings.colorvar != "variable" & settings.panelvar != "variable")
+				{
+					foreach (string v in settings.numvars)
+					{
+						settings.yaxisvar = v;
+						settings.seriesby = "id";
+						DxChart chart = new DxLineplot(settings, dt);
+						chart.AddTitles(String.Format("{0} {1}", v, title));
+						batch.charts.Add(chart);
+
+					}
+
+
+				}
+				// if variable is used as a color
+				else
+				{
+					DxChart chart = new DxLineplot(settings, dt);
+					chart.AddTitles(title);
+					batch.charts.Add(chart);
+				}
+
+			}
+
+			return batch;
+
+		}
 
 		public DxBatchOcharts BuildBarcharts(DxBarchartSettings settings)
 		{
@@ -338,45 +383,117 @@ namespace uwac
 		}
 
 
-		public void MatchYAxes(DxBatchOcharts batch)
-		{
+		//public void SetYAxisRange(DxBatchOcharts batch, DxChartSettings settings)
+		//{
+		//	foreach (DxChart mychart in batch.charts)
+		//	{
+		//		if (mychart.chart != null & mychart.isdiag == false)
+		//		{
+		//			mychart.xydiagram.AxisY.WholeRange.SetMinMaxValues(settings.miny, settings.maxy);
+		//			mychart.xydiagram.AxisY.VisualRange.SetMinMaxValues(settings.miny, settings.maxy);
+		//		}
+		//	}
+		//}
 
-			double miny = 0;
-			double maxy = 0;
 
-			foreach (DxChart mychart in batch.charts)
-			{
-				if (mychart.chart != null & mychart.isdiag == false)
-				{
+		//public void SetXAxisRange_1day(DxBatchOcharts batch)
+		//{
+		//	DateTime minx = Convert.ToDateTime("1900-01-01 12:00:00.000");
+		//	DateTime maxx = Convert.ToDateTime("1900-01-02 11:59:30.000");
+
+		//	foreach (DxChart mychart in batch.charts)
+		//	{
+		//		if (mychart.chart != null & mychart.isdiag == false)
+		//		{
+		//			mychart.xydiagram.AxisX.WholeRange.SetMinMaxValues(minx, maxx);
+		//			mychart.xydiagram.AxisX.VisualRange.SetMinMaxValues(minx, maxx);
+		//		}
+		//	}
+		//}
+
+
+		//public void MatchYAxes(DxBatchOcharts batch)
+		//{
+
+		//	double miny = 0;
+		//	double maxy = 0;
+
+		//	foreach (DxChart mychart in batch.charts)
+		//	{
+		//		if (mychart.chart != null & mychart.isdiag == false)
+		//		{
 
 
 
-					double? tmp_miny_who = (double?)(mychart.xydiagram.AxisY.WholeRange.MinValue);
-					double? tmp_maxy_who = (double?)(mychart.xydiagram.AxisY.WholeRange.MaxValue);
-					double? tmp_miny_vis = (double?)(mychart.xydiagram.AxisY.VisualRange.MinValue);
-					double? tmp_maxy_vis = (double?)(mychart.xydiagram.AxisY.VisualRange.MaxValue);
+		//			double? tmp_miny_who = (double?)(mychart.xydiagram.AxisY.WholeRange.MinValue);
+		//			double? tmp_maxy_who = (double?)(mychart.xydiagram.AxisY.WholeRange.MaxValue);
+		//			double? tmp_miny_vis = (double?)(mychart.xydiagram.AxisY.VisualRange.MinValue);
+		//			double? tmp_maxy_vis = (double?)(mychart.xydiagram.AxisY.VisualRange.MaxValue);
 
-					if(tmp_miny_who != null)
-					{
-						if (miny > tmp_miny_who) miny = (double)tmp_miny_who;
-					}
-					if (tmp_maxy_who != null)
-					{
-						if (maxy < tmp_maxy_who) maxy = (double)tmp_maxy_who;
-					}
-				}
-			}
+		//			if(tmp_miny_who != null)
+		//			{
+		//				if (miny > tmp_miny_who) miny = (double)tmp_miny_who;
+		//			}
+		//			if (tmp_maxy_who != null)
+		//			{
+		//				if (maxy < tmp_maxy_who) maxy = (double)tmp_maxy_who;
+		//			}
+		//		}
+		//	}
 
-			foreach (DxChart mychart in batch.charts)
-			{
-				if (mychart.chart != null & mychart.isdiag==false)
-				{
-					mychart.xydiagram.AxisY.WholeRange.SetMinMaxValues(miny, maxy);
-					mychart.xydiagram.AxisY.VisualRange.SetMinMaxValues(miny, maxy);
-				}
-			}
+		//	foreach (DxChart mychart in batch.charts)
+		//	{
+		//		if (mychart.chart != null & mychart.isdiag==false)
+		//		{
+		//			mychart.xydiagram.AxisY.WholeRange.SetMinMaxValues(miny, maxy);
+		//			mychart.xydiagram.AxisY.VisualRange.SetMinMaxValues(miny, maxy);
+		//		}
+		//	}
 
-		}
+		//}
+
+
+		//public void MatchXAxes_time(DxBatchOcharts batch)
+		//{
+
+		//	//DateTime minx = System.DateTime.Now;
+		//	//DateTime maxx = System.DateTime.Now;
+		//	DateTime? minx = null;
+		//	DateTime? maxx = null;
+
+		//	foreach (DxChart mychart in batch.charts)
+		//	{
+		//		if (mychart.chart != null & mychart.isdiag == false)
+		//		{
+
+		//			DateTime? tmp_minx_who = (DateTime?)(mychart.xydiagram.AxisX.WholeRange.MinValue);
+		//			DateTime? tmp_maxx_who = (DateTime?)(mychart.xydiagram.AxisX.WholeRange.MaxValue);
+		//			DateTime? tmp_minx_vis = (DateTime?)(mychart.xydiagram.AxisX.VisualRange.MinValue);
+		//			DateTime? tmp_maxx_vis = (DateTime?)(mychart.xydiagram.AxisX.VisualRange.MaxValue);
+
+		//			if (tmp_minx_who != null)
+		//			{
+		//				if (minx > tmp_minx_who) minx = (DateTime)tmp_minx_who;
+		//			}
+		//			if (tmp_maxx_who != null)
+		//			{
+		//				if (maxx < tmp_maxx_who) maxx = (DateTime)tmp_maxx_who;
+		//			}
+		//		}
+		//	}
+
+		//	foreach (DxChart mychart in batch.charts)
+		//	{
+		//		if (mychart.chart != null & mychart.isdiag == false)
+		//		{
+		//			mychart.xydiagram.AxisX.WholeRange.SetMinMaxValues(minx, maxx);
+		//			mychart.xydiagram.AxisX.VisualRange.SetMinMaxValues(minx, maxx);
+		//		}
+		//	}
+
+		//}
+
+
 
 
 		public int CountCharts(DxChartType type)

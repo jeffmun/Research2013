@@ -635,12 +635,9 @@ namespace uwac
 					{
 						AddValueSetItem(sql, fvsID, null, valuelabels[i]); //Add the label 
 					}
-
 				}
 			}
-
 			return fvsID;
-
 		}
 
 
@@ -669,11 +666,9 @@ namespace uwac
 						for(int i=0; i < valuelabels.Count; i++)
 						{
 							AddValueSetItem(sql, newmax, i+1, valuelabels[i]);
-						}
-						
+						}			
 					}
 					///Consider: do we need to handle already having a set of values???
-
 					return newmax;
 				}
 				catch (Exception ex)

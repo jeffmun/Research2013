@@ -58,7 +58,6 @@ namespace uwac
 			set { _colorLevels = value; }
 		}
 
-
 		public DxLineplot(DxLineplotSettings settings, DataTable mydt) //, string xvar, string yvar, string titleinput, string colorsby)
 		{
 			_settings = settings;
@@ -159,6 +158,18 @@ namespace uwac
 							string current_colorlevel = dataxy.AsEnumerable().Select(f => f.Field<string>("colorsby")).Min().ToString();
 							List<string> series_colors = dataxy.AsEnumerable().Select(f => f.Field<string>("colorsby")).ToList();
 
+
+							//Switch to alternate geom if needed
+							if(_settings.vars_for_altgeom.Contains(current_colorlevel)) 
+							{
+								_settings.activegeom = _settings.altgeom;
+							}
+							else 
+							{
+								_settings.activegeom = _settings.geom;
+							}
+
+
 							int colorindex = 0;
 
 							//Get the correct color
@@ -177,11 +188,36 @@ namespace uwac
 							SeriesPoint[] seriesPoints = CreateSeriesPoints(dataxy, colorsby, colors_levels, series_colors, colorindex, myseriescolor);
 
 							Series series = new Series();
+
+							SideBySideBarSeriesView barSeriesView = new SideBySideBarSeriesView();
 							LineSeriesView lineSeriesView = new LineSeriesView();
+							PointSeriesView pointSeriesView = new PointSeriesView();
 
+							if (_settings.activegeom == LineplotGeom.Bar)
+							{
+								//barSeriesView = new SideBySideBarSeriesView() ;
+							}
+							else if (_settings.activegeom == LineplotGeom.Line)
+							{
+								//lineSeriesView = new LineSeriesView();
+								lineSeriesView.LineMarkerOptions.FillStyle.FillMode = FillMode.Solid;
+								lineSeriesView.LineMarkerOptions.Kind = _markers[s % _markers.Count];
+							}
+							else 
+							{
+								pointSeriesView.PointMarkerOptions.FillStyle.FillMode = FillMode.Solid;
+								MarkerKind mymarker = new MarkerKind();
 
-							lineSeriesView.LineMarkerOptions.FillStyle.FillMode = FillMode.Solid;
-							lineSeriesView.LineMarkerOptions.Kind = _markers[s % _markers.Count];
+								if (_settings.activegeom == LineplotGeom.Circle) mymarker = MarkerKind.Circle;
+								if (_settings.activegeom == LineplotGeom.Square) mymarker = MarkerKind.Square;
+								if (_settings.activegeom == LineplotGeom.Cross) mymarker = MarkerKind.Cross;
+								if (_settings.activegeom == LineplotGeom.Star) mymarker = MarkerKind.Star;
+								
+								pointSeriesView.PointMarkerOptions.Kind = mymarker;
+								pointSeriesView.PointMarkerOptions.Size = _settings.markersize;
+
+								if (_settings.activegeom == LineplotGeom.Star) pointSeriesView.PointMarkerOptions.StarPointCount = 6;
+							}
 
 
 
@@ -204,8 +240,19 @@ namespace uwac
 							pos.OffsetY = -10;
 							chart.ToolTipOptions.ToolTipPosition = pos;
 
+							if (_settings.activegeom == LineplotGeom.Bar)
+							{
+								series.View = barSeriesView;
+							}
+							else if (_settings.activegeom == LineplotGeom.Line )
+							{
+								series.View = lineSeriesView;
+							}
+							else
+							{
+								series.View = pointSeriesView;
+							}
 
-							series.View = lineSeriesView;
 							series.Points.AddRange(seriesPoints);
 							
 							list_o_series.Add(series);
@@ -240,7 +287,6 @@ namespace uwac
 				chart.BorderOptions.Color = Color.White;
 
 				chart.CustomDrawSeriesPoint += Lineplot_TransparentPoint;
-
 				chart.CustomDrawSeries += Lineplot_TransparentLine;
 
 				//chart.CustomCallback += _dxcharts.Mychart_CustomCallback;
@@ -260,7 +306,7 @@ namespace uwac
 						// Specify its text and marker.
 						item.Text = colors_levels[lev];
 						int coloridx = (_coloroverride >= 0) ? _coloroverride : lev;
-						item.MarkerColor = _settings.colors[coloridx % 15];
+						item.MarkerColor = _settings.colors[coloridx % _settings.colors.Count];
 					}
 				}
 
@@ -395,20 +441,36 @@ namespace uwac
 
 		protected void Lineplot_TransparentLine(object sender, CustomDrawSeriesEventArgs e)
 		{
-			(e.SeriesDrawOptions as LineDrawOptions).Color =
-				e.SeriesDrawOptions.Color = Color.FromArgb(80, e.SeriesDrawOptions.Color);
+			var t = e.Series.View;
+
+			if (t.ToString() == "Line")
+			{
+				(e.SeriesDrawOptions as LineDrawOptions).Color =
+						e.SeriesDrawOptions.Color = Color.FromArgb(80, e.SeriesDrawOptions.Color);
+			}
 		}
+
+		//protected void Lineplot_TransparentBar(object sender, CustomDrawSeriesPointEventArgs e)
+		//{
+
+		//	(e.SeriesDrawOptions as BarDrawOptions).Color =
+		//	e.SeriesDrawOptions.Color = Color.FromArgb(80, e.SeriesDrawOptions.Color);
+		//	(e.SeriesDrawOptions as BarDrawOptions).FillStyle.FillMode = FillMode.Solid;
+		//}
+
 
 		protected void Lineplot_TransparentPoint(object sender, CustomDrawSeriesPointEventArgs e)
 		{
-			//Color c = (e.SeriesPoint.Values[0] > 10) ? _color2 : _color1;
-			//Color c = _color[0];
+			var t = e.Series.View;
 
-			(e.SeriesDrawOptions as PointDrawOptions).Color =
-				e.SeriesDrawOptions.Color = Color.FromArgb(80, e.SeriesDrawOptions.Color);
-			(e.SeriesDrawOptions as PointDrawOptions).Marker.FillStyle.FillMode = FillMode.Solid;
+			if (t.ToString() != "Bar")
+			{
+				(e.SeriesDrawOptions as PointDrawOptions).Color =
+			e.SeriesDrawOptions.Color = Color.FromArgb(80, e.SeriesDrawOptions.Color);
+				(e.SeriesDrawOptions as PointDrawOptions).Marker.FillStyle.FillMode = FillMode.Solid;
 
-			(e.SeriesDrawOptions as PointDrawOptions).Marker.BorderVisible = false;
+				(e.SeriesDrawOptions as PointDrawOptions).Marker.BorderVisible = false;
+			}
 
 			//e.SeriesDrawOptions.Color = Color.FromArgb(50, Color.Yellow);
 
@@ -433,6 +495,17 @@ namespace uwac
 
 	}
 
+	public enum LineplotGeom
+	{
+		Line = 0,
+		Bar = 1,
+		Circle = 2,
+		Square = 3,
+		Cross = 4,
+		Star = 5,
+		Triangle = 6
+	}
+
 	public class DxLineplotSettings : DxChartSettings
 	{
 		private List<string> _xvars;
@@ -442,7 +515,11 @@ namespace uwac
 		private bool _xaxis_is_age = false;
 		private bool _showLegend = true;
 		private bool _matchYAxes = true;
+		private LineplotGeom _geom = LineplotGeom.Line;
+		private LineplotGeom _altgeom = LineplotGeom.Circle;
+		private List<string> _vars_for_altgeom = new List<string>();
 
+		private LineplotGeom _activegeom;
 
 		private string _legend_pos_h;
 		private string _legend_pos_v;
@@ -456,7 +533,11 @@ namespace uwac
 		public string legend_pos_h { get { return _legend_pos_h; } set { _legend_pos_h = value; } }
 		public string legend_pos_v { get { return _legend_pos_v; } set { _legend_pos_v = value; } }
 		public bool matchYAxes { get { return _matchYAxes; } set { _matchYAxes = value; } }
-
+		public LineplotGeom geom { get { return _geom; } set { _geom = value; } }
+		public LineplotGeom altgeom { get { return _altgeom; } set { _altgeom = value; } }
+		public LineplotGeom activegeom { get { return _activegeom; } set { _activegeom = value; } }
+		public List<string> vars_for_altgeom { get { return _vars_for_altgeom; } set { _vars_for_altgeom = value; } }
+		
 
 
 		public DxLineplotSettings()
@@ -466,6 +547,10 @@ namespace uwac
 		public DxLineplotSettings(DxChartSettings settings)
 		{
 			SetChartType(DxChartType.Lineplot);
+		}
+		public DxLineplotSettings(DxChartSettings settings, DxChartType charttype)
+		{
+			SetChartType(charttype);
 		}
 		
 	}

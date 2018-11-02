@@ -70,6 +70,77 @@ namespace uwac
 		}
 
 
+		public static void RescaleColumn(this DataTable dt, string columnName, double newmin, double newmax)
+		{
+			Type theTypeOfTheColumn = dt.Columns[columnName].DataType;
+
+			double oldmin = 0;
+			double oldmax = 0;
+
+			if (theTypeOfTheColumn.Name.ToLower().Contains("int"))
+			{
+				var omin = Convert.ToDouble(dt.AsEnumerable().Select(f => f.Field<int?>(columnName)).Min());
+				var omax = Convert.ToDouble(dt.AsEnumerable().Select(f => f.Field<int?>(columnName)).Max());
+				oldmin = omin;
+				oldmax = omax;
+			}
+			else if (theTypeOfTheColumn.Name.ToLower().Contains("decimal"))
+			{
+				var omin = Convert.ToDouble(dt.AsEnumerable().Select(f => f.Field<decimal?>(columnName)).Min());
+				var omax = Convert.ToDouble(dt.AsEnumerable().Select(f => f.Field<decimal?>(columnName)).Max());
+				oldmin = omin;
+				oldmax = omax;
+			}
+			else if (theTypeOfTheColumn.Name.ToLower().Contains("double"))
+			{
+				var omin = Convert.ToDouble(dt.AsEnumerable().Select(f => f.Field<double?>(columnName)).Min());
+				var omax = Convert.ToDouble(dt.AsEnumerable().Select(f => f.Field<double?>(columnName)).Max());
+				oldmin = omin;
+				oldmax = omax;
+			}
+
+
+
+			//var foominmax = LinqStatistics.EnumerableStats.MinMax(foo);
+
+
+
+
+			using (DataColumn dc = new DataColumn(columnName + "_new", typeof(double)))
+			{
+				// Add the new column which has the new type, and move it to the ordinal of the old column
+				int ordinal = dt.Columns[columnName].Ordinal;
+				dt.Columns.Add(dc);
+				dc.SetOrdinal(ordinal);
+
+				// Get and convert the values of the old column, and insert them into the new
+				foreach (DataRow dr in dt.Rows)
+				{
+					if (dr[columnName] != DBNull.Value)
+					{
+						double orig = Convert.ToDouble(dr[columnName]);
+
+						double pct_orig = orig / (oldmax - oldmin);
+						double newval = (pct_orig * (newmax - newmin)) + newmin;
+						dr[dc.ColumnName] = newval;
+					}
+					else
+					{
+						dr[dc.ColumnName] = DBNull.Value;
+					}
+				}
+				// Remove the old column
+				dt.Columns.Remove(columnName);
+
+				// Give the new column the old column's name
+				dc.ColumnName = columnName;
+			}
+		}
+
+
+
+
+
 		public static List<string> ColumnNames(this DataTable dt)
 		{
 			List<string> colnames = new List<string>();

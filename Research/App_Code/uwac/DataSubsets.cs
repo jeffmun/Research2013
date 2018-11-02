@@ -90,7 +90,7 @@ namespace uwac
 					{
 						string vtype = dt.Columns[groupingvarnames[g]].DataType.ToString().ToLower();
 
-						if (vtype != "string")
+						if (!vtype.Contains( "string"))
 						{
 							dt.ConvertColumnType(groupingvarnames[g], typeof(string));
 						}
