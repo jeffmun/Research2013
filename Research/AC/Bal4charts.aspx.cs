@@ -48,6 +48,8 @@ public partial class AC_Bal4charts : BasePage
 		else
 		{
 
+			List<DxChartOrder> orders = new List<DxChartOrder>();
+
 			foreach (DataRow row in dt_bnums.Rows)
 			{
 				string bname = row["budgetName"].ToString();
@@ -70,8 +72,8 @@ public partial class AC_Bal4charts : BasePage
 
 
 					List<Color> mycolors = new List<Color> { Color.Lime, Color.Red, Color.Green, Color.Purple, Color.Yellow
-			, Color.Cyan , Color.Pink, Color.Peru, Color.Wheat, Color.SkyBlue
-			, Color.SpringGreen, Color.AliceBlue, Color.Orange, Color.DarkOrange, Color.Olive};
+							, Color.Cyan , Color.Pink, Color.Peru, Color.Wheat, Color.SkyBlue
+							, Color.SpringGreen, Color.AliceBlue, Color.Orange, Color.DarkOrange, Color.Olive};
 
 					settings.maxCol = 2;
 					settings.W = 800;
@@ -87,31 +89,40 @@ public partial class AC_Bal4charts : BasePage
 
 
 					DxChartOrder order = new DxChartOrder();
-					order.settingsline = settings;
+					order.list_settings.Add(settings);
+					///orders.Add(order);
 
 					DxChartFactory factory = new DxChartFactory(dt, order);
 
-					foreach (DxBatchOcharts batch in factory.batches)
+
+					foreach (DxChartOrder myorder in factory.orders)
 					{
-						WebChartControl c = batch.charts[0].chart;
+						foreach (DxChartBatch batch in myorder.batches)
+						{
+							WebChartControl c = batch.charts[0].chart;
 
-						DevExpress.XtraCharts.Series s0 = c.Series[0];
-						DevExpress.XtraCharts.Series s1 = c.Series[1];
+							DevExpress.XtraCharts.Series s0 = c.Series[0];
+							DevExpress.XtraCharts.Series s1 = c.Series[1];
 
-						((LineSeriesView)s0.View).LineStyle.DashStyle = DashStyle.DashDotDot;
-						((LineSeriesView)s1.View).LineStyle.DashStyle = DashStyle.Dash;
-
-
+							((LineSeriesView)s0.View).LineStyle.DashStyle = DashStyle.DashDotDot;
+							((LineSeriesView)s1.View).LineStyle.DashStyle = DashStyle.Dash;
 
 
-						System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-						Literal lit = new Literal();
-						lit.Text = String.Format("<b>{0} {1}</b>", bnum, bname);
-						panel.Controls.Add(lit);
-						panel.Controls.Add(t);
+
+
+							System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
+							Literal lit = new Literal();
+							lit.Text = String.Format("<b>{0} {1}</b>", bnum, bname);
+							panel.Controls.Add(lit);
+							panel.Controls.Add(t);
+						}
+
 					}
+
 				}
 			}
+
+
 		}
 
 
