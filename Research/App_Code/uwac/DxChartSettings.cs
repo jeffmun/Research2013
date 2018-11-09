@@ -41,6 +41,7 @@ namespace uwac
 		private int _maxRow = 4;
 		private int _maxCol = 2;
 		private int _markersize = 8;
+		private bool _hideEmptyCharts = true;
 
 		private string _title;
 		private string _subtitle;
@@ -56,8 +57,9 @@ namespace uwac
 		private ScaleMode _ScaleMode = ScaleMode.Continuous;
 		public int maxRow { get { return _maxRow; } set { _maxRow = value; } }
 		public int maxCol { get { return _maxCol; } set { _maxCol = value; } }
+		public bool hideEmptyCharts {  get { return _hideEmptyCharts; } set { _hideEmptyCharts = value; } }
 
-		public DxChartType DxChartType { get { return _charttype; } set { _charttype = value; } }
+		public DxChartType ChartType { get { return _charttype; } set { _charttype = value; } }
 		public int W { get { return _W; } set { _W = value; } }
 		public int H { get { return _H; } set { _H = value; } }
 		public int minx { get { return _minx; } set { _minx = value; } }
@@ -79,7 +81,15 @@ namespace uwac
 		public DxChartLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
 		public ScaleMode ScaleMode { get { return _ScaleMode; } set { _ScaleMode = value; } }
 
-
+		public bool HasVars {
+			get{
+				int n_num = (_numvars == null) ? 0 : _numvars.Count;
+				int n_date = (_datevars == null) ? 0 : _datevars.Count;
+				int n_age = (_agevars == null) ? 0 : _agevars.Count;
+				bool hasvars =  (n_num + n_date + n_age == 0) ? false : true;
+				return hasvars;
+			}
+		}
 
 		private List<Color> _colors;
 
@@ -109,16 +119,48 @@ namespace uwac
 
 		public DxChartSettings()
 		{
+			Initialize();
 		}
 
 		public DxChartSettings(DxChartType dxChartType)
 		{
 			SetChartType(dxChartType);
+			Initialize();
+		}
+
+		public void Initialize()
+		{
+			_numvars = new List<string>();
+			_datevars = new List<string>();
+			_agevars = new List<string>();
+			_colors = DefaultColors();
 		}
 
 		public void SetChartType(DxChartType dxChartType)
 		{
 			_charttype = dxChartType;
+			_colors = DefaultColors();
+		}
+
+		protected List<Color> DefaultColors()
+		{
+			List<Color> mycolors = new List<Color>();
+
+			mycolors.Add(Color.Red);
+			mycolors.Add(Color.Green);
+			mycolors.Add(Color.Blue);
+			mycolors.Add(Color.Yellow);
+
+
+			mycolors.Add((Color)ColorTranslator.FromHtml("#377eb8"));
+			mycolors.Add((Color)ColorTranslator.FromHtml("#e41a1c"));
+			mycolors.Add((Color)ColorTranslator.FromHtml("#4daf4a"));
+			mycolors.Add((Color)ColorTranslator.FromHtml("#984ea3"));
+			mycolors.Add((Color)ColorTranslator.FromHtml("#626567"));
+
+
+			return mycolors;
+
 		}
 	}
 

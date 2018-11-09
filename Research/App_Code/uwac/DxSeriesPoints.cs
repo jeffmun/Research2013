@@ -27,6 +27,7 @@ namespace uwac
 	/// </summary>
 	public class DxSeriesPoints 
 	{
+		private DataTable _dataxy;
 		private string _xvarname;
 		private string _yvarname;
 		private string _colorvarname;
@@ -56,35 +57,37 @@ namespace uwac
 		//}
 		public DxSeriesPoints(DataTable dataxy, string xvarname, string yvarname, string colorvarname, List<Color> colors, List<string> color_levels)
 		{
+			_dataxy = dataxy;
 			_xvarname = xvarname;
 			_yvarname = yvarname;
 			_colorvarname = colorvarname;
 			_color_levels = color_levels;
 			_colors = colors;
-			CreateDxSeriesPoints(dataxy);
+			CreateDxSeriesPoints();
 		}
 
 		public DxSeriesPoints(DataTable dataxy, string xvarname, string yvarname, List<Color> colors, int colorindex)
 		{
+			_dataxy = dataxy;
 			_xvarname = xvarname;
 			_yvarname = yvarname;
 			_colorvarname = "none";
 			_colors = colors;
-			CreateDxSeriesPoints(dataxy);
+			CreateDxSeriesPoints();
 		}
 
-		public void CreateDxSeriesPoints(DataTable dataxy)
+		public void CreateDxSeriesPoints()
 		{
-			SeriesPoint[] points = new SeriesPoint[dataxy.Rows.Count];
+			SeriesPoint[] points = new SeriesPoint[_dataxy.Rows.Count];
 			
 			//scat
-			for (int i = 0; i < dataxy.Rows.Count; i++)
+			for (int i = 0; i < _dataxy.Rows.Count; i++)
 			{
 
-				Type t = dataxy.Columns[_xvarname].DataType;
+				Type t = _dataxy.Columns[_xvarname].DataType;
 
-				var x = dataxy.Rows[i][_xvarname];
-				var y = new double?[] { dataxy.Rows[i].Field<double?>(_yvarname) };
+				var x = _dataxy.Rows[i][_xvarname];
+				var y = new double?[] { _dataxy.Rows[i].Field<double?>(_yvarname) };
 
 				if(y[0] == null)
 				{
@@ -94,32 +97,48 @@ namespace uwac
 				}
 
 
-				List<string> colnames = dataxy.ColumnNames();
+				//List<string> colnames = _dataxy.ColumnNames();
 
 
-				if (colnames.Contains("id"))
-				{
-					//points[i] = new SeriesPoint(dataxy.Rows[i].Field<double>(_xvarname), new double[] { dataxy.Rows[i].Field<double>(_yvarname) });
-					string id = dataxy.Rows[i].Field<string>("id");
-					//seriesPoints[i].Tag = id;
-					points[i].ToolTipHint = String.Format("id: {0}", id);
-				}
+				//if (colnames.Contains("id"))
+				//{
+				//	//points[i] = new SeriesPoint(dataxy.Rows[i].Field<double>(_xvarname), new double[] { dataxy.Rows[i].Field<double>(_yvarname) });
+				//	string id = _dataxy.Rows[i].Field<string>("id");
+				//	//seriesPoints[i].Tag = id;
+				//	points[i].ToolTipHint = String.Format("id: {0}", id);
+				//}
 
-				//Assign color individually for each point
-				if (_colorvarname != "none")
-				{
-					string pointcolorlevel = dataxy.Rows[i].Field<string>(_colorvarname);
-					for (int c = 0; c < _color_levels.Count; c++)
-					{
-						if (pointcolorlevel == _color_levels[c]) _colorindex = c;
-					}
-				}
-				
-				points[i].Color = _colors[_colorindex];
+				////Assign color individually for each point
+				//if (_colorvarname != "none")
+				//{
+				//	string pointcolorlevel = _dataxy.Rows[i].Field<string>(_colorvarname);
+				//	for (int c = 0; c < _color_levels.Count; c++)
+				//	{
+				//		if (pointcolorlevel == _color_levels[c]) _colorindex = c;
+				//	}
+				//}
+
+				points[i].ToolTipHint = AssignTooltip(i);
+				points[i].Color = ColorChooser(i);
 			}
 
 			_seriesPoints = points;
 
+		}
+
+		public string AssignTooltip(int i)
+		{
+			List<string> colnames = _dataxy.ColumnNames();
+			string tip = "";
+
+			if (colnames.Contains("id"))
+			{
+				//points[i] = new SeriesPoint(dataxy.Rows[i].Field<double>(_xvarname), new double[] { dataxy.Rows[i].Field<double>(_yvarname) });
+				string id = _dataxy.Rows[i].Field<string>("id");
+				//seriesPoints[i].Tag = id;
+				tip = String.Format("id: {0}", id);
+			}
+			return tip;
 		}
 
 		public void AssignPointColor(SeriesPoint p, int idx)
@@ -127,6 +146,26 @@ namespace uwac
 			p.Color = _colors[idx];
 		}
 
+
+
+		public Color ColorChooser(int i)
+		{
+			//Assign color individually for each point
+			if (_colorvarname != "none")
+			{
+				string pointcolorlevel = _dataxy.Rows[i].Field<string>(_colorvarname);
+				for (int c = 0; c < _color_levels.Count; c++)
+				{
+					if (pointcolorlevel == _color_levels[c]) _colorindex = c;
+				}
+			}
+
+			int _idx = _colorindex % _colors.Count;
+
+
+			return _colors[_idx];
+
+		}
 
 	}
 

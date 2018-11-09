@@ -33,7 +33,6 @@ namespace uwac
 		private List<MarkerKind> _markers;
 		private double _slope;
 		private double _intercept;
-		private int _n;
 		private int _coloroverride;
 		private List<string> _colorLevels;
 
@@ -47,11 +46,7 @@ namespace uwac
 			get { return _intercept; }
 			set { _intercept = value; }
 		}
-		public int n
-		{
-			get { return _n; }
-			set { _n = value; }
-		}
+
 		public List<string> colorLevels
 		{
 			get { return _colorLevels; }
@@ -150,9 +145,9 @@ namespace uwac
 						dataxy.DefaultView.Sort = "x ASC";
 						dataxy.DefaultView.ApplyDefaultSort = true;
 
-						_n = dataxy.Rows.Count;
+						n = dataxy.Rows.Count;
 
-						if (_n > 0)
+						if (n > 0)
 						{
 
 							string current_colorlevel = dataxy.AsEnumerable().Select(f => f.Field<string>("colorsby")).Min().ToString();
@@ -186,6 +181,8 @@ namespace uwac
 
 
 							SeriesPoint[] seriesPoints = CreateSeriesPoints(dataxy, colorsby, colors_levels, series_colors, colorindex, myseriescolor);
+							//TOFIX SeriesPoint[] seriesPoints = new DxSeriesPoints(dataxy, "x", "y", colorsby, colors_levels, series_colors, colorindex, myseriescolor);
+
 
 							Series series = new Series();
 

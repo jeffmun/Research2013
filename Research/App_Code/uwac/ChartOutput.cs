@@ -21,7 +21,7 @@ namespace uwac
 		//	//
 		//}
 
-		public static Table LayoutBatch(DxBatchOcharts batch)
+		public static Table LayoutBatch(DxChartBatch batch)
 		{
 			Table t = new Table();
 			if (batch.chartlayout == DxChartLayout.Horizontal) t = HorizontalTable(batch);
@@ -124,7 +124,7 @@ namespace uwac
 		}
 
 
-		public static Table UpperTable(DxBatchOcharts batch)
+		public static Table UpperTable(DxChartBatch batch)
 		{
 			Table t = new Table();
 
@@ -170,7 +170,7 @@ namespace uwac
 			return t;
 		}
 
-		public static Table UpperDiagTable(DxBatchOcharts batch)
+		public static Table UpperDiagTable(DxChartBatch batch)
 		{
 			Table t = new Table();
 
@@ -197,6 +197,7 @@ namespace uwac
 					TableCell c = new TableCell();
 					if (cols >= rows)
 					{
+
 						PlaceChartInCell(batch.charts[counter], c, batch.charts[counter].W, batch.charts[counter].H, 1.0);
 						counter++;
 					}
@@ -264,7 +265,7 @@ namespace uwac
 
 
 
-		public static Table HorizontalTable(DxBatchOcharts batch)
+		public static Table HorizontalTable(DxChartBatch batch)
 		{
 			Table t = new Table();
 
@@ -283,10 +284,16 @@ namespace uwac
 						int newW = Convert.ToInt32(batch.charts[counter].W);
 						int newH = Convert.ToInt32(batch.charts[counter].H);
 
-						if (batch.charts[counter].chart == null )
+						DxChart thisdxchart = batch.charts[counter];
+						if (thisdxchart.chart == null ) // | thisdxchart.chart.Series.Count == 0)
 						{
-							//do nothing, the missing chart and emptymsg is not displayed
-							addcell = false;
+							addcell = !batch.settings.hideEmptyCharts;
+							//if we want to hideEmptyCharts (=T, that is Not Show It) then we don't want to add the cell.
+							//if we don't want to hideEmptyCharts (=F, that is Show It) then we do want to add the cell.
+							string thisdxchart_info = String.Format("# series={0}   # vars={1}   emptymsg={2} "
+								, thisdxchart.chart.Series.Count, batch.settings.numvars.Count ,thisdxchart.emptymsg);
+
+							PlaceTextInCell(c, thisdxchart_info);
 						}
 						else
 						{
@@ -400,7 +407,7 @@ namespace uwac
 		}
 
 
-		public static Table VerticalTable(DxBatchOcharts batch)
+		public static Table VerticalTable(DxChartBatch batch)
 		{
 			Table t = new Table();
 
@@ -557,22 +564,25 @@ namespace uwac
 		{
 			if (mychart.chart != null)
 			{
-				mychart.chart.Width = width;
-				mychart.chart.Height = height;
+				if (!mychart.isempty)
+				{
+					mychart.chart.Width = width;
+					mychart.chart.Height = height;
 
-				string chartname = String.Format("chart{0}", Guid.NewGuid()); //System.DateTime.Now.Ticks);
-				mychart.chart.ClientInstanceName = chartname;
-				mychart.chart.ID = chartname;
+					string chartname = String.Format("chart{0}", Guid.NewGuid()); //System.DateTime.Now.Ticks);
+					mychart.chart.ClientInstanceName = chartname;
+					mychart.chart.ID = chartname;
 
-				//Render the Checkbox here for when selecting specific charts to save.
-				//container.Controls.Add(mychart.chk);
-				container.Controls.Add(mychart.chart);
-			}
-			else
-			{
-				Label lbl = new Label();
-				lbl.Text = (String.IsNullOrEmpty(mychart.emptymsg)) ? "empty chart" : mychart.emptymsg.Replace(Environment.NewLine, "<br/>");
-				container.Controls.Add(lbl);
+					//Render the Checkbox here for when selecting specific charts to save.
+					//container.Controls.Add(mychart.chk);
+					container.Controls.Add(mychart.chart);
+				}
+				else
+				{
+					Label lbl = new Label();
+					lbl.Text = (String.IsNullOrEmpty(mychart.emptymsg)) ? "empty chart" : mychart.emptymsg.Replace(Environment.NewLine, "<br/>");
+					container.Controls.Add(lbl);
+				}
 			}
 		}
 

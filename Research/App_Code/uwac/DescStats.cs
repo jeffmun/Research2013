@@ -25,6 +25,7 @@ namespace uwac
 	{
 		private List<string> _numericvars;
 		private List<string> _groupingvars;
+		public string emptystats { get; set; }
 		private DescStatsTable _dt;
 
 		public DataTable dt
@@ -48,10 +49,9 @@ namespace uwac
 				_dt.Rows.Add(datarow);
 			}
 
-			//Add a column for the constant
-			DataColumn col = new DataColumn("All", typeof(string));
-			col.DefaultValue = "All records";
-			_dt.Columns.Add(col);
+			AddConstantCol();
+
+			RemoveEmptyRows();
 		}
 
 		public DescStats(DataTable dt, List<string> numericvars, List<string> groupingvars)
@@ -83,6 +83,10 @@ namespace uwac
 
 
 			}
+
+			AddConstantCol();
+
+			RemoveEmptyRows();
 		}
 
 		public DataRow GetRowOfStats(DataTable dt, string v)
@@ -104,7 +108,7 @@ namespace uwac
 				var item = datarow.ItemArray[c];
 				string itemname = _dt.Columns[c].ColumnName;
 
-				if (itemname == "Variable") { datarow[itemname] = v; }
+				if (itemname == "variable") { datarow[itemname] = v; }
 				else
 				{
 					double? statval = statSet.GetStat(itemname);
@@ -117,7 +121,47 @@ namespace uwac
 			return datarow;
 		}
 
+		public void AddConstantCol()
+		{
+			//Add a column for the constant
+			DataColumn col = new DataColumn("All", typeof(string));
+			col.DefaultValue = "All records";
+			_dt.Columns.Add(col);
+		}
 
+
+
+		public void RemoveEmptyRows()
+		{
+			List<DataRow> rows_to_remove = new List<DataRow>();
+			string empty = "";
+			for(int i=0; i < _dt.Rows.Count; i++)
+			{
+				DataRow row = _dt.Rows[i];
+				if (String.IsNullOrEmpty(row["N"].ToString()))
+				{
+					string tmp = String.Format("{0}: ", row["variable"]);
+					
+					for(int gvidx=0; gvidx < _groupingvars.Count; gvidx++)
+					{
+						string grpvar = _groupingvars[gvidx];
+						tmp += String.Format("{0}={1},"
+							, grpvar
+							, row[grpvar]);
+					}
+					empty += tmp + " has no records<br/>";
+					rows_to_remove.Add(row);
+					
+				}
+			}
+
+			foreach(DataRow r in rows_to_remove)
+			{
+				_dt.Rows.Remove(r);
+			}
+
+			emptystats = empty;
+		}
 
 		public class DescStatsTable : DataTable
 		{
@@ -136,7 +180,7 @@ namespace uwac
 			}
 			public void AddStatsCols() 
 			{
-				this.Columns.Add("Variable", Nullable.GetUnderlyingType(typeof(string)) ?? typeof(string));
+				this.Columns.Add("variable", Nullable.GetUnderlyingType(typeof(string)) ?? typeof(string));
 				this.Columns.Add("N", Nullable.GetUnderlyingType(typeof(double)) ?? typeof(double));
 				this.Columns.Add("M", Nullable.GetUnderlyingType(typeof(double)) ?? typeof(double));
 				this.Columns.Add("SD", Nullable.GetUnderlyingType(typeof(double)) ?? typeof(double));

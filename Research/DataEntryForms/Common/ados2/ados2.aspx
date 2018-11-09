@@ -38,19 +38,22 @@ CodeFile="ados2.aspx.cs" Inherits="DataEntryForms_Common_ados2_ados2" Debug="tru
 
 <asp:Panel ID="scores"  runat="server" Visible= "false">
 <h3>ADOS2 Scoring Summary</h3>
-<def:datafieldcontrol runat="server" id="ados2_algvers" DatabaseField="ados2_algvers" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="250px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="ados2_sa" DatabaseField="ados2_sa" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="ados2_rrb" DatabaseField="ados2_rrb" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="ados2_tot" DatabaseField="ados2_tot" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_algvers" DatabaseField="ados2_algvers" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="400px" FieldTextBoxWidth="250px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_sa" DatabaseField="ados2_sa" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_rrb" DatabaseField="ados2_rrb" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_tot" DatabaseField="ados2_tot" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
 
 <asp:Panel  runat="server" ID="scores_T"   Visible= "false" >
 <def:datafieldcontrol runat="server" id="ados2_concern" DatabaseField="ados2_concern" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
 </asp:Panel>
 
 <asp:Panel  runat="server"  ID="scores_123"    Visible= "false">
-<def:datafieldcontrol runat="server" id="ados2_class" DatabaseField="ados2_class" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="ados2_compar" DatabaseField="ados2_compar" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-<def:datafieldcontrol runat="server" id="ados2_compar_lev" DatabaseField="ados2_compar_lev" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="100px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_class" DatabaseField="ados2_class" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+<br />
+<def:datafieldcontrol runat="server" id="ados2_compar" DatabaseField="ados2_compar" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="550px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_compar_lev" DatabaseField="ados2_compar_lev" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="550px" FieldTextBoxWidth="100px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_sa_css" DatabaseField="ados2_sa_css" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="550px" FieldTextBoxWidth="100px"></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="ados2_rrb_css" DatabaseField="ados2_rrb_css" IsEntryField="false" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="550px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
 </asp:Panel>
 
 <br/>

@@ -81,7 +81,7 @@ public partial class Data_Dictionary: BasePage
 	protected void gridlkupMeas_ValueChanged(object sender, EventArgs e)
 	{
 		int measureID = Convert.ToInt32(gridlkupMeas.Value);
-		Response.Redirect("Dictionary.aspx?measureID=" + measureID.ToString());
+		Response.Redirect("Dictionary.aspx?mID=" + measureID.ToString());
 		
 	}
 
@@ -136,14 +136,25 @@ public partial class Data_Dictionary: BasePage
 
 		DataTable dt = sql.DataTable_from_SQLstring(code);
 
-		string name = sql.StringScalar_from_SQLstring(String.Format("select fieldvaluesetdesc from datfieldvalueset where fieldvaluesetID = {0}", fvsID));
-		
-		gridVallabels.Caption = String.Format("#{0}<br/>{1}", fvsID, name);
 
-		gridVallabels.DataSource = dt;
-		gridVallabels.DataBind();
+		if (dt.Rows.Count == 0)
+		{
+			//gridVallabels.ClientVisible = false;
+			//btnCreateNewValueSet.ClientVisible = true;
+			
+		}
+		else
+		{
+			//gridVallabels.ClientVisible = true;
+			//btnCreateNewValueSet.ClientVisible = false;
+			string name = sql.StringScalar_from_SQLstring(String.Format("select fieldvaluesetdesc from datfieldvalueset where fieldvaluesetID = {0}", fvsID));
 
+			gridVallabels.Caption = String.Format("#{0}<br/>{1}", fvsID, name);
 
+			gridVallabels.DataSource = dt;
+			gridVallabels.DataBind();
+
+		}
 		sql.Close();
 	}
 
@@ -168,7 +179,9 @@ public partial class Data_Dictionary: BasePage
 			int fvsID;
 			bool success = Int32.TryParse(fvsID_text, out fvsID);
 
-			e.Cell.Attributes.Add("onclick", "EditVallabels(" + fvsID.ToString() + ");");
+			int fldpk = Convert.ToInt32(e.KeyValue);
+
+			e.Cell.Attributes.Add("onclick", "EditVallabels(" + fldpk.ToString() + "," + fvsID.ToString() + ");");
 		}
 	}
 
@@ -216,18 +229,7 @@ public partial class Data_Dictionary: BasePage
 	{
 		//Check for a new fieldvaluesetID (when it is equal to -1)
 		var fvsID = e.NewValues["fieldvaluesetID"];
-
-		if((int)fvsID == -1)
-		{
-			//Create new ValueSet and populate with 1 dummy value;
-			bool addDummyItem = true;
-			string valuelabel = "New Value Labels for " + lblMeasName.Text;
-			SQL_utils sql = new SQL_utils("data");
-			int newfvsID = DxDbOps.CreateValueSet(sql, valuelabel, addDummyItem, new List<string>());
-			sql.Close();
-		}
-
-
+		
 		ASPxGridView gv = (ASPxGridView)sender;
 		DxDbOps.BuildUpdateSqlCode(e, "fld", "data", "def");
 		//((ASPxGridView) sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
@@ -301,4 +303,23 @@ public partial class Data_Dictionary: BasePage
 
 
 
+
+	protected void btnCreateNewValueSet_Click(object sender, EventArgs e)
+	{
+		string valuesetname = txtNewValueSet.Text;
+		int x = 0;
+
+		//Create new ValueSet and populate with 1 dummy value;
+		bool addDummyItem = true;
+		//string valuelabel = "New Value Labels for " + lblMeasName.Text;
+		SQL_utils sql = new SQL_utils("data");
+		int newfvsID = DxDbOps.CreateValueSet(sql, valuesetname, addDummyItem, new List<string>());
+
+		var fldpk = hidField["fldpk"];
+
+		string code = String.Format("update def.fld set fieldvaluesetID={0} where fldpk={1}", newfvsID, fldpk);
+		sql.NonQuery_from_SQLstring(code);
+
+		sql.Close();
+	}
 }

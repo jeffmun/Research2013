@@ -142,8 +142,8 @@ public class NDAR_DataStructure
 			ds.dataType = GetTokenValue_string(token, "dataType");
 			ds.status = GetTokenValue_string(token, "status");
 			ds.publicStatus = GetTokenValue_string(token, "publicStatus");
-			ds.publishDate = GetTokenValue_int(token, "publishDate");
-			ds.modifiedDate = GetTokenValue_int(token, "modifiedDate");
+			//ds.publishDate = GetTokenValue_int(token, "publishDate");
+			//ds.modifiedDate = GetTokenValue_int(token, "modifiedDate");
 			ds.dataElements = new List<NDAR_DataElement>();
 
 			JArray deTokens = (JArray)token.SelectToken("dataElements");

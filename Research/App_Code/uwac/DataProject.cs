@@ -467,9 +467,26 @@ namespace uwac.data
 			else
 			{
 				//Check the N's for the selected studymeas
+				//string check_Ns1 = String.Format(" select count(*) N, count(distinct(dbo.fnGetTimePoint_text_from_StudymeasID(studymeasID))) N_TimePts " +
+				//" , count(distinct(id)) N_IDs  " +
+				//" from {0} where verified in (0,1) and studymeasID in ({1}) and ID in ({2} )", tblname, studymeasID_csv, ID_csv);
+
 				string check_Ns1 = String.Format(" select count(*) N, count(distinct(dbo.fnGetTimePoint_text_from_StudymeasID(studymeasID))) N_TimePts " +
-				" , count(distinct(id)) N_IDs  " +
-				" from {0} where verified in (0,1) and studymeasID in ({1}) and ID in ({2} )", tblname, studymeasID_csv, ID_csv);
+				" , count(distinct(id)) N_IDs  " + Environment.NewLine +
+				" from {0}  " + Environment.NewLine +
+				" where verified in (0,1) and studymeasID in ({1})  " + Environment.NewLine +
+				" and dbo.fnGETPersonID_from_ID_smID(ID, studymeasID) in " + Environment.NewLine +
+				" (select personID from dp.Subj s  join uwautism_research_backend..tblsubject s2 ON s.subjID = s2.subjID where subjset_PK =" + Environment.NewLine +
+				" 	(select subjset_pk from dp.DataProject where dataproj_pk = {2}))"
+				, tblname, studymeasID_csv, _dataproj_pk);
+				
+
+
+				Debug.WriteLine("   ----- Check the N's ");
+				Debug.WriteLine("");
+				Debug.WriteLine(check_Ns1);
+				Debug.WriteLine("");
+
 				DataTable Ns1 = sql.DataTable_from_SQLstring(check_Ns1);
 				Ns1_N = Ns1.Rows[0].Field<int>("N");
 				Ns1_TimePts = Ns1.Rows[0].Field<int>("N_TimePts");

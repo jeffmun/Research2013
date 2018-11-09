@@ -24,7 +24,7 @@ namespace uwac
 	/// Summary description for DxBatchOcharts
 	/// A batch is created for each instance of DxChartSettings in a DxChartOrder
 	/// </summary>
-	public class DxBatchOcharts
+	public class DxChartBatch
 	{
 
 		private DxChartSettings _settings;
@@ -39,14 +39,14 @@ namespace uwac
 		public int maxCol { get; set; }
 		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
 
-		public DxBatchOcharts()
+		public DxChartBatch()
 		{
 			_vars = new List<string>();
 			maxCol = 1;
 			_charts = new List<DxChart>();
 		}
 
-		public DxBatchOcharts(DxChartType mycharttype, DxChartSettings mysettings)
+		public DxChartBatch(DxChartType mycharttype, DxChartSettings mysettings)
 		{
 			_vars = new List<string>();
 			maxCol = 1;
@@ -56,7 +56,7 @@ namespace uwac
 		}
 
 
-		public DxBatchOcharts( DxHistogramSettings mysettings, DataTable dt)
+		public DxChartBatch(DxHistogramSettings mysettings, DataTable dt)
 		{
 			_settings = (DxChartSettings)mysettings;
 			charttype = DxChartType.Histogram;
@@ -104,8 +104,8 @@ namespace uwac
 
 		}
 
-	
-		public DxBatchOcharts(DxLineplotSettings mysettings, DataTable dt, string title)
+
+		public DxChartBatch(DxLineplotSettings mysettings, DataTable dt, string title)
 		{
 			_settings = (DxChartSettings)mysettings;
 
@@ -146,7 +146,7 @@ namespace uwac
 			}
 		}
 
-		public DxBatchOcharts(DxActogramSettings mysettings, DataTable dt, string title, Actigraph.ActogramStats mystats)
+		public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title, Actigraph.ActogramStats mystats)
 		{
 			_settings = (DxChartSettings)mysettings;
 
@@ -189,7 +189,7 @@ namespace uwac
 
 		}
 
-		public DxBatchOcharts(DxBarchartSettings mysettings, DataTable dt)
+		public DxChartBatch(DxBarchartSettings mysettings, DataTable dt)
 		{
 			_settings = (DxChartSettings)mysettings;
 
@@ -228,7 +228,7 @@ namespace uwac
 			}
 		}
 
-		public DxBatchOcharts(DxScatterplotSettings mysettings, DataTable dt)
+		public DxChartBatch(DxScatterplotSettings mysettings, DataTable dt)
 		{
 			_settings = (DxChartSettings)mysettings;
 
@@ -236,7 +236,7 @@ namespace uwac
 			chartlayout = mysettings.chartlayout;
 
 			List<string> tempvars = new List<string>();
-			tempvars.AddRange( mysettings.numvars);
+			tempvars.AddRange(mysettings.numvars);
 			if (mysettings.agevars.Count > 0) tempvars.AddRange(mysettings.agevars);
 
 			//pairwise
@@ -250,7 +250,7 @@ namespace uwac
 			{
 
 				for (int i = 0; i < tempvars.Count; i++)
-					//for (int i = 0; i < settings.numvars.Count; i++)
+				//for (int i = 0; i < settings.numvars.Count; i++)
 				{
 					string x = tempvars[i];
 					for (int j = i; j < tempvars.Count; j++)
@@ -263,7 +263,7 @@ namespace uwac
 						if (x == y & mysettings.showhist)
 						{
 							DxHistogramSettings local_settingshist = new DxHistogramSettings(mysettings);
-							
+
 
 							local_settingshist.xaxisvar = x;
 							if (mysettings.colorvar != "none")
@@ -295,7 +295,7 @@ namespace uwac
 			{
 
 			}
-			
+
 		}
 
 

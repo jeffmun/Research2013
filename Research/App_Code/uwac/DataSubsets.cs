@@ -65,6 +65,15 @@ namespace uwac
 			List<string> allvars = new List<string>();
 			allvars.AddRange(varnames);
 			allvars.AddRange(groupingvarnames);
+
+			allvars.RemoveAll(string.IsNullOrWhiteSpace);
+
+
+			for (int i = 0; i < allvars.Count;  i++)
+			{
+				allvars[i] = allvars[i].ToLower();
+			}
+
 			DataTable dt = SelectColumns(dt_input, allvars);
 
 			_subsets = CreateSubsets(dt, varnames, groupingvarnames);

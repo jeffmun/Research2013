@@ -397,6 +397,13 @@ namespace uwac
 		}
 		public DxHistogramSettings(DxChartSettings settings)
 		{
+			W = settings.W;
+			H = settings.H;
+			numvars = settings.numvars;
+			agevars = settings.agevars;
+			if (settings.agevars.Count > 0) numvars.AddRange(settings.agevars);
+			colors = settings.colors;
+
 			SetChartType(DxChartType.Histogram);
 		}
 

@@ -36,13 +36,22 @@
     }
 
 
-    function EditVallabels(x) {
+    function EditVallabels(fldpk, x) {
         var myHidden = document.getElementById('<%= hidField2.ClientID %>');
         myHidden.Value = x;
         hidField.Set("fieldvaluesetID", x);
+        hidField.Set("fldpk", fldpk);
         gridVallabels.PerformCallback(x);
 
-        popVallabels.Show();
+        if (x > 0)
+        {
+            popVallabels.Show();
+        }
+        else
+        {
+            popNewVallabels.Show();
+        }
+
 
     }
 
@@ -146,7 +155,8 @@
                     <dx:GridViewDataColumn FieldName="missval" Caption="Missing<br/>Values" Width="50px"></dx:GridViewDataColumn>
                     <dx:GridViewDataColumn FieldName="fieldvaluesetID" Caption="fvsID" Visible="false"  CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
                     
-                    <dx:GridViewDataTextColumn FieldName="valuelabels" Caption="Value Labels</br><i>(click to edit)</i>" PropertiesTextEdit-EncodeHtml="false" CellStyle-ForeColor="Gray" Width="150px"></dx:GridViewDataTextColumn>
+                    <dx:GridViewDataTextColumn FieldName="valuelabels" Caption="Value Labels</br><i>(click to edit)</i>"
+                        PropertiesTextEdit-EncodeHtml="false" CellStyle-ForeColor="Gray" Width="150px"></dx:GridViewDataTextColumn>
                     
                     <dx:GridViewDataColumn FieldName="fld_status" Caption="Status" Visible="true" ></dx:GridViewDataColumn>
                     
@@ -199,7 +209,6 @@
                                         <Template>
                                              <dx:ASPxTextBox ID="txtfieldvaluesetID" runat="server" Text='<%# Bind("fieldvaluesetID") %>' Width="50px">
                                         </dx:ASPxTextBox>
-                                            <dx:ASPxLabel ID="lblNewInfo" runat="server" Text="Enter -1 to create a new set of value labels." Font-Italic="true"></dx:ASPxLabel>
 
                                         </Template>
                                     </dx:GridViewColumnLayoutItem>
@@ -251,7 +260,7 @@
 
                                 <dx:ASPxGridView ID="gridVallabels" ClientInstanceName="gridVallabels" runat="server" KeyFieldName="pk" Width="600px"
                                     SettingsDataSecurity-AllowEdit="true"  SettingsDataSecurity-AllowDelete="true" SettingsDataSecurity-AllowInsert="true"
-                                    OnBatchUpdate="gridVallabels_BatchUpdate" OnCustomCallback="gridVallabels_CustomCallback" 
+                                    OnBatchUpdate="gridVallabels_BatchUpdate" OnCustomCallback="gridVallabels_CustomCallback" ClientVisible="true" 
                                     >
                                     <SettingsEditing Mode="Batch" BatchEditSettings-StartEditAction="Click" />
                                     <ClientSideEvents BeginCallback="OnBeginCallbackGridVarlabels" EndCallback="OnEndCallbackGridVarlabels" />
@@ -272,6 +281,34 @@
             </dx:PopupControlContentControl>
         </ContentCollection>
     </dx:ASPxPopupControl>
+
+
+     <dx:ASPxPopupControl ID="popNewVallabels" runat="server" Width="320" CloseAction="CloseButton" CloseOnEscape="true" Modal="True"
+        PopupHorizontalAlign="WindowCenter" PopupVerticalAlign="WindowCenter" ClientInstanceName="popNewVallabels" 
+        HeaderText="Edit Value Labels" AllowDragging="True" PopupAnimationType="None" EnableViewState="False" AutoUpdatePosition="true">
+        
+        <ContentCollection>
+            <dx:PopupControlContentControl runat="server">
+                <dx:ASPxPanel ID="ASPxPanel1" runat="server" DefaultButton="btOK">
+                    <PanelCollection>
+                        <dx:PanelContent runat="server">
+                        
+                            <dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Value labels: " Font-Bold="true" Font-Size="Small"></dx:ASPxLabel>
+                            <br />
+
+                                <dx:ASPxTextBox ID="txtNewValueSet" ClientInstanceName="txtNewValueSet" runat="server" Text="Enter name of new value set"></dx:ASPxTextBox>
+                            <br />
+                                <dx:ASPxButton ID="btnCreateNewValueSet" ClientInstanceName="btnCreateNewValueSet" runat="server" Text="Create new value set" ClientVisible="true"
+                                    OnClick="btnCreateNewValueSet_Click"></dx:ASPxButton>
+
+
+                        </dx:PanelContent>
+                    </PanelCollection>
+                </dx:ASPxPanel>
+            </dx:PopupControlContentControl>
+        </ContentCollection>
+    </dx:ASPxPopupControl>
+
 
 
 
@@ -296,7 +333,7 @@
     </asp:SqlDataSource>
 
     <asp:SqlDataSource ID="sql750" runat="server" SelectCommandType="Text"  
-        SelectCommand="select * from datfieldvaluesetitem where fieldvaluesetID=@fieldvaluesetID"
+        SelectCommand="select * from datfieldvaluesetitem where fieldvaluesetID=@fieldvaluesetID order by fieldvalue"
         ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
         <SelectParameters>
             <asp:ControlParameter ControlID="hidField2" Name="fieldvaluesetID" PropertyName="Value" />

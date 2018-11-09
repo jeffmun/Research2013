@@ -33,11 +33,19 @@ namespace uwac
 		private WebChartControl _chart;
 		private XYDiagram _xydiagram;
 		private string _emptymsg;
+		private string _infomsg;
 		private ASPxCheckBox _chk;
+		private int _n;
 		public string guid { get; set; }
 		public int W { get; set; }
 		public int H { get; set; }
 		public bool isdiag { get; set; }
+		public bool isempty { get; set; }
+		public int n
+		{
+			get { return _n; }
+			set { _n = value; }
+		}
 
 		public WebChartControl chart { get { return _chart; } set { _chart = value; } }
 		public XYDiagram xydiagram {  get { return _xydiagram; } set { _xydiagram = value; } }
@@ -46,12 +54,15 @@ namespace uwac
 			get { return _chk; }
 		}
 		public string emptymsg { get { return _emptymsg; } set { _emptymsg = value; } }
+		public string infomsg { get { return _infomsg; } set { _infomsg = value; } }
+
 
 		public DxChart()
 		{
 			Guid newguid = Guid.NewGuid();
 			guid = newguid.ToString();
 			isdiag = false;
+			isempty = false;
 			_chart = new WebChartControl();
 			_xydiagram = new XYDiagram();
 			_chart.Diagram = _xydiagram;
@@ -62,6 +73,7 @@ namespace uwac
 			_xydiagram.AxisX.GridLines.MinorVisible = true;
 			_xydiagram.AxisY.GridLines.MinorVisible = true;
 		}
+
 
 		public void AddPanes(int numpanes, PaneLayoutDirection layoutdirection)
 		{

@@ -158,25 +158,25 @@ public partial class Reports_SleepSummary : BasePage
 		{
 			if (batch.charttype == DxChartType.Lineplot)
 			{
-				factory.SetXAxisRange_1day(batch);
-				factory.SetYAxisRange(batch, s);
+				//factory.SetXAxisRange_1day(batch);
+				//factory.SetYAxisRange(batch, s);
 
 				
-				foreach (DxChart ch in batch.charts)
-				{
-					XYDiagram xy = ch.xydiagram;
-					xy.AxisX.DateTimeScaleOptions.MeasureUnit = DateTimeMeasureUnit.Hour;
-					xy.AxisX.DateTimeScaleOptions.GridAlignment = DateTimeGridAlignment.Hour;
-					xy.AxisX.Label.TextPattern = "{A:t}";
+				//foreach (DxChart ch in batch.charts)
+				//{
+				//	XYDiagram xy = ch.xydiagram;
+				//	xy.AxisX.DateTimeScaleOptions.MeasureUnit = DateTimeMeasureUnit.Hour;
+				//	xy.AxisX.DateTimeScaleOptions.GridAlignment = DateTimeGridAlignment.Hour;
+				//	xy.AxisX.Label.TextPattern = "{A:t}";
 
-					DataRow row = ds.Tables[1].Rows[counter];
+				//	DataRow row = ds.Tables[1].Rows[counter];
 
-					Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
+				//	Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
 
-					ch.AnnotateActogram(stats);
+				//	ch.AnnotateActogram(stats);
 
-					counter++;
-				}
+				//	counter++;
+				//}
 			}
 			else
 			{
@@ -197,41 +197,39 @@ public partial class Reports_SleepSummary : BasePage
 		gridDaily.Visible = true;
 
 
-		DxChartOrder order2 = LinePlot_BedTimes();
-		DxChartFactory fatory2 = new DxChartFactory(ds.Tables["stats"], order2);
+		//DxChartOrder order2 = LinePlot_BedTimes();
+		//DxChartFactory fatory2 = new DxChartFactory(ds.Tables["stats"], order2);
 
 
 	}
 
 
-	protected
+	
+
+	//protected DxChartOrder LinePlot_BedTimes()
+	//{
 
 
+	//	DxLineplotSettings s = new DxLineplotSettings();
+	//	s.W = 1200;
+	//	s.H = 300;
+	//	s.seriesby = "id";
+	//	s.xaxisvar = "report_date";
+	//	s.xaxis_is_date = true;
+	//	s.numvars = new List<string>() { "rest_starttime", "rest_endtime", "sleep_starttime", "sleep_endtime" };
+	//	s.colorvar = "variable";
+	//	s.colors = new List<Color>() { Color.Green, Color.Blue };
+	//	s.legend_pos_h = "RightOutside";
+	//	s.legend_pos_v = "Top";
+	//	s.maxCol = 1;
+	//	s.geom = LineplotGeom.Line;
+	//	s.altgeom = LineplotGeom.Square;
+	//	s.vars_for_altgeom = new List<string> { "rest_starttime", "rest_endtime" };
+	//	s.markersize = 8;
 
-	protected DxChartOrder LinePlot_BedTimes()
-	{
-
-
-		DxLineplotSettings s = new DxLineplotSettings();
-		s.W = 1200;
-		s.H = 300;
-		s.seriesby = "id";
-		s.xaxisvar = "report_date";
-		s.xaxis_is_date = true;
-		s.numvars = new List<string>() { "rest_starttime", "rest_endtime", "sleep_starttime", "sleep_endtime" };
-		s.colorvar = "variable";
-		s.colors = new List<Color>() { Color.Green, Color.Blue };
-		s.legend_pos_h = "RightOutside";
-		s.legend_pos_v = "Top";
-		s.maxCol = 1;
-		s.geom = LineplotGeom.Line;
-		s.altgeom = LineplotGeom.Square;
-		s.vars_for_altgeom = new List<string> { "rest_starttime", "rest_endtime" };
-		s.markersize = 8;
-
-		DxChartOrder order = new DxChartOrder() { settingsline = s };
-		return order;
-	}
+	//	DxChartOrder order = new DxChartOrder() { settingsline = s };
+	//	return order;
+	//}
 
 
 

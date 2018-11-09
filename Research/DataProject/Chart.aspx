@@ -951,7 +951,7 @@
 									<table>
 										<tr>
 											<td>
-												<dx:ASPxCheckBox ID="chkHist" runat="server" ClientInstanceName="chkHist" Text="Show histograms?"></dx:ASPxCheckBox>
+												<dx:ASPxCheckBox ID="chkHist" runat="server" ClientInstanceName="chkHist" Text="Show histograms?" Visible="false"></dx:ASPxCheckBox>
 											</td>
 											<td>
 												<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
@@ -1164,7 +1164,7 @@
 												<br />
 												<dx:ASPxCheckBox ID="chkLineShowLegend" runat="server" Text="Show Legend?" Checked="True"></dx:ASPxCheckBox>
 											<br />
-												<dx:ASPxCheckBox ID="chkLineHideBlank" runat="server" Text="Hide blank plots?" Checked="False"></dx:ASPxCheckBox>
+												<dx:ASPxCheckBox ID="chkLineHideBlank" runat="server" Text="Hide blank plots?" Checked="True"></dx:ASPxCheckBox>
 										</td>
 										<td>
 											Legend position:

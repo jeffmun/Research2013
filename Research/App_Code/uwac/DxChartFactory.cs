@@ -19,6 +19,8 @@ using MathNet.Numerics.Statistics;
 using uwac;
 using uwac.trk;
 using System.Text;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace uwac
 {
@@ -29,26 +31,34 @@ namespace uwac
 	[Serializable]
 	public class DxChartFactory
 	{
-		private DxChartOrders _orders;
-		private List<DxBatchOcharts> _batches;
+		//private DxChartOrders _orders;
+		private List<DxChartOrder> _orders;
+		public List<DxChartOrder> orders { get { return _orders; } set { _orders = value; } }
+
+		//private List<DxBatchOcharts> _batches;
+		//public List<DxBatchOcharts> batches { get { return _batches; } set { _batches = value; } }
+
 		private DataTable _dt;
 
+		public int numHist { get { return CountCharts(DxChartType.Histogram); } }
+		public int numBar { get { return CountCharts(DxChartType.Barchart); } }
+		public int numScat { get { return CountCharts(DxChartType.Scatterplot); } }
+		public int numLine { get { return CountCharts(DxChartType.Lineplot); } }
 
-		public DxChartOrders orders { get { return _orders; } set { _orders = value; } }
-		public List<DxBatchOcharts> batches { get { return _batches; } set { _batches = value; } }
+
 
 		public DataTable dt { get { return _dt; } set { _dt = value; } }
 
 		public DxChartFactory(DataTable dt, DxChartOrder order)
 		{
-			_batches = new List<DxBatchOcharts>();
-			_orders = new DxChartOrders() { order };
+			//_batches = new List<DxBatchOcharts>();
+			_orders = new List<DxChartOrder> { order };
 			_dt = dt;
 			ProcessOrders();
 		}
-		public DxChartFactory(DataTable dt, DxChartOrders orders)
+		public DxChartFactory(DataTable dt, List<DxChartOrder> orders)
 		{
-			_batches = new List<DxBatchOcharts> ();
+			//_batches = new List<DxBatchOcharts> ();
 			_orders = orders;
 			_dt = dt;
 			ProcessOrders();
@@ -58,314 +68,99 @@ namespace uwac
 			foreach(DxChartOrder order in orders)
 			{
 				ProcessOrder(order);
-			}
-		}
-			public void ProcessOrder(DxChartOrder order)
-		{
 
-			if (order.settingshist != null)
-			{
-				DxBatchOcharts batch = BuildHistograms(order.settingshist);
-				AddBatch(batch, order.settingshist);
-			}
-			if (order.settingsbar != null)
-			{
-				DxBatchOcharts batch = BuildBarcharts(order.settingsbar);
-				
-				AddBatch(batch, order.settingsbar);
-			}
+				//if (order.HasVars())
+				//{
+				//	ProcessOrder(order);
+				//}
+				//else{
+				//	Debug.WriteLine(" !!!!!!!!!!!! This order has no Vars !!!!!!!!!! ");
+				//}
 
-			if (order.settingsline != null)
-			{
-				DxBatchOcharts batch = BuildLineplots(order.settingsline);
-				AddBatch(batch, order.settingsline);
-			}
-
-			if (order.settingsscat != null)
-			{
-				DxBatchOcharts batch = BuildScatterplots(order.settingsscat);
-				AddBatch(batch, order.settingsscat);
 			}
 		}
 
-		public DxBatchOcharts BuildHistograms(DxHistogramSettings settings)
+
+		public void ProcessOrder(DxChartOrder order)
 		{
-			DxBatchOcharts batch = new DxBatchOcharts();
-			batch.charttype = DxChartType.Histogram;
-			batch.chartlayout = settings.chartlayout;
-			batch.vars = settings.numvars;
+			//Each order will result in a list of batches
+			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
+			List<DxChartBatch> batchlist = new List<DxChartBatch>();
 
-			settings.numvars.Remove("id");
-
-
-			if (settings.panelvar == "none")
+			foreach (DxChartSettings settings in order.list_settings)
 			{
-				foreach(string v in settings.numvars)
+				if (settings.ChartType == DxChartType.Histogram)
 				{
-					settings.xaxisvar = v;
-					DxChart chart = new DxHistogram(settings, dt, v, 0);
-					batch.charts.Add(chart);
+					DxHistogramSettings mysettings = (DxHistogramSettings)settings;
+					DxChartBatch batch = new DxChartBatch(mysettings, dt);
+					PrepareBatch(batch, settings);
+					batchlist.Add(batch);
 				}
-			}
-			else  //Yes panels
-			{
-				List<string> varnames = new List<string>();
-				varnames.AddRange(settings.numvars);
-				varnames.Add(settings.xaxisvar);
-				varnames.Add(settings.colorvar);
-				varnames.RemoveAll(item => item == "variable");
-				varnames.RemoveAll(item => item == "none");
-
-
-				DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
-
-				foreach (DataSubset subset in subsets.subsets)
+				else if (settings.ChartType == DxChartType.Barchart)
 				{
-					foreach (string v in settings.numvars)
+					DxBarchartSettings mysettings = (DxBarchartSettings)settings;
+					DxChartBatch batch = new DxChartBatch(mysettings, dt);
+					PrepareBatch(batch, settings);
+					batchlist.Add(batch);
+				}
+				else if (settings.ChartType == DxChartType.Scatterplot)
+				{
+					DxScatterplotSettings mysettings = (DxScatterplotSettings)settings;
+					DxChartBatch batch = new DxChartBatch(mysettings, dt);
+					PrepareBatch(batch, settings);
+					batchlist.Add(batch);
+				}
+				else if (settings.ChartType == DxChartType.Lineplot)
+				{
+					DxLineplotSettings mysettings = (DxLineplotSettings)settings;
+
+					//NO Panels
+					if (mysettings.panelvar == "none" | mysettings.panelvar == "variable")
 					{
-						settings.xaxisvar = v;
-						DxChart chart = new DxHistogram(settings, subset.dt, v, 0);
-						chart.AddTitles(subset.Cols_and_Vals_ToString());
-						batch.charts.Add(chart);
+						DxChartBatch batch1 = new DxChartBatch(mysettings, dt, " ");
+						PrepareBatch(batch1, settings);
+						batchlist.Add(batch1);
 					}
-
-				}
-
-			}
-
-			return batch;
-
-		}
-
-		public DxBatchOcharts BuildLineplots(DxLineplotSettings settings)
-		{
-
-			DxBatchOcharts batch = new DxBatchOcharts();
-			batch.charttype = DxChartType.Lineplot;
-			batch.vars = settings.numvars;
-
-			//NO Panels
-			if (settings.panelvar == "none" | settings.panelvar == "variable")
-			{
-				batch = BuildLineplots(settings, dt, " ");
-			}
-			else 
-			{
-				List<string> varnames = new List<string>() { "id" };
-				varnames.AddRange(settings.numvars);
-				varnames.Add(settings.xaxisvar);
-				varnames.Add(settings.colorvar);
-				varnames.RemoveAll(item => item == "variable");
-				varnames.RemoveAll(item => item == "none");
-
-				
-				DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
-
-				foreach (DataSubset subset in subsets.subsets)
-				{
-					DxBatchOcharts subbatch = BuildLineplots(settings, subset.dt, subset.Cols_and_Vals_ToString());
-
-					foreach(DxChart sub in subbatch.charts)
+					else
 					{
-						batch.charts.Add(sub);
-					}
-				}
-
-			}
-
-			return batch;
-		}
-
-		public DxBatchOcharts BuildLineplots(DxLineplotSettings settings, DataTable dt, string title)
-		{
-			DxBatchOcharts batch = new DxBatchOcharts();
-			batch.charttype = DxChartType.Lineplot;
-			batch.chartlayout = settings.chartlayout;
-			batch.vars = settings.numvars;
-
-			if (settings.xaxisvar == "variable") //This is just one plot
-			{
-				DxChart chart = new DxLineplot(settings, dt);
-				chart.AddTitles(title);
-				batch.charts.Add(chart);
-			}
-			else
-			{
-				//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
-				if (settings.colorvar != "variable" & settings.panelvar != "variable")
-				{
-					foreach (string v in settings.numvars)
-					{
-						settings.yaxisvar = v;
-						settings.seriesby = "id";
-						DxChart chart = new DxLineplot(settings, dt);
-						chart.AddTitles(String.Format("{0} {1}",v,title));
-						batch.charts.Add(chart);
-
-					}
-				}
-				// if variable is used as a color
-				else 
-				{
-					DxChart chart = new DxLineplot(settings, dt);
-					chart.AddTitles(title);
-					batch.charts.Add(chart);
-				}
-
-			}
-
-			return batch;
-
-		}
-
-		public DxBatchOcharts BuildActograms(DxLineplotSettings settings, DataTable dt, string title, Actigraph.ActogramStats mystats)
-		{
-			DxBatchOcharts batch = new DxBatchOcharts();
-			batch.charttype = DxChartType.Lineplot;
-			batch.chartlayout = settings.chartlayout;
-			batch.vars = settings.numvars;
-
-			if (settings.xaxisvar == "variable") //This is just one plot
-			{
-				DxChart chart = new DxLineplot(settings, dt); //, mystats);
-				chart.AddTitles(title);
-				batch.charts.Add(chart);
-			}
-			else
-			{
-				//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
-				if (settings.colorvar != "variable" & settings.panelvar != "variable")
-				{
-					foreach (string v in settings.numvars)
-					{
-						settings.yaxisvar = v;
-						settings.seriesby = "id";
-						DxChart chart = new DxLineplot(settings, dt);
-						chart.AddTitles(String.Format("{0} {1}", v, title));
-						batch.charts.Add(chart);
-
-					}
+						List<string> varnames = new List<string>() { "id" };
+						varnames.AddRange(mysettings.numvars);
+						varnames.Add(mysettings.xaxisvar);
+						varnames.Add(mysettings.colorvar);
+						varnames.RemoveAll(item => item == "variable");
+						varnames.RemoveAll(item => item == "none");
 
 
-				}
-				// if variable is used as a color
-				else
-				{
-					DxChart chart = new DxLineplot(settings, dt);
-					chart.AddTitles(title);
-					batch.charts.Add(chart);
-				}
+						DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
 
-			}
+						DxChartBatch batch2 = new DxChartBatch(DxChartType.Lineplot, mysettings);
 
-			return batch;
-
-		}
-
-		public DxBatchOcharts BuildBarcharts(DxBarchartSettings settings)
-		{
-			DxBatchOcharts batch = new DxBatchOcharts();
-			batch.charttype = DxChartType.Barchart;
-			batch.chartlayout = settings.chartlayout;
-			batch.vars = settings.numvars;
-
-			settings.numvars.Remove("id");
-
-
-			if (settings.panelvar == "none")
-			{
-				DxChart chart = new DxBarchart(settings, dt);
-				batch.charts.Add(chart);
-			}
-			else
-			{
-				List<string> varnames = new List<string>();
-				varnames.AddRange(settings.numvars);
-				varnames.Add(settings.xaxisvar);
-				varnames.Add(settings.colorvar);
-				varnames.RemoveAll(item => item == "variable");
-				varnames.RemoveAll(item => item == "none");
-
-
-				DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
-
-				foreach (DataSubset subset in subsets.subsets)
-				{
-					DxChart chart = new DxBarchart(settings, subset.dt);
-					chart.AddTitles(subset.Cols_and_Vals_ToString());
-					batch.charts.Add(chart);
-				}
-
-			}
-
-			return batch;
-
-		}
-
-		public DxBatchOcharts BuildScatterplots(DxScatterplotSettings settings)
-		{
-			DxBatchOcharts batch = new DxBatchOcharts();
-			batch.charttype = DxChartType.Scatterplot;
-			batch.chartlayout = settings.chartlayout;
-			batch.vars = settings.numvars;
-
-
-			//pairwise
-			settings.numvars.Remove("id");
-
-
-			bool issquare = true;
-
-			if (issquare)
-			{
-				for (int i = 0; i < settings.numvars.Count; i++)
-				{
-					string x = settings.numvars[i];
-					for (int j = i ; j < settings.numvars.Count; j++)
-					//for (int i = counter; i < settings.numvars.Count; i++)
-					{
-						string y = settings.numvars[j];
-						settings.xaxisvar = y; // x;  //test swap
-						settings.yaxisvar = x; // y;
-
-						if(x==y & settings.showhist)
+						foreach (DataSubset subset in subsets.subsets)
 						{
-							DxHistogramSettings local_settingshist = new DxHistogramSettings(settings);
-							local_settingshist.xaxisvar = x;
-							if (settings.colorvar != "none")
+							DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());
+
+							foreach (DxChart sub in subbatch.charts)
 							{
-								local_settingshist.colorvar = settings.colorvar;
+								batch2.charts.Add(sub);
 							}
-							local_settingshist.shownormalcurve = true;
-							local_settingshist.numbins = 15;
-							local_settingshist.colors = settings.colors;
-							local_settingshist.title = x;
+						}
+						PrepareBatch(batch2, mysettings);
+						batchlist.Add(batch2);
 
-							DxChart chart = new DxHistogram(local_settingshist, dt, x, 0);
-							chart.isdiag = true;
-							batch.charts.Add(chart);
-						}
-						else if (x != y)
-						{
-							DxChart chart = new DxScatterplot(settings, dt);
-							batch.charts.Add(chart);
-						}
-						else
-						{
-							//Consider adding a histogram here?
-						}
 					}
+
 				}
-			}
-			else  //NOT square - TODO
-			{
 
 			}
 
-			return batch;
+			order.batches.AddRange(batchlist);
+
+			//The invoice serves as a table of contents for what was actually created
+			order.PrepareInvoice();
+
 		}
 
-		public void AddBatch(DxBatchOcharts batch, DxChartSettings settings)
+		public void PrepareBatch(DxChartBatch batch, DxChartSettings settings)
 		{
 			if (batch.charts.Count > 0)
 			{
@@ -377,10 +172,353 @@ namespace uwac
 					chart.W = settings.W;
 					chart.H = settings.H;
 				}
-				_batches.Add(batch);
 			}
 
 		}
+
+
+		public int CountCharts(DxChartType type)
+		{
+			int n = 0;
+			foreach (DxChartOrder order in orders)
+			{
+				foreach (DxChartBatch batch in order.batches)
+				{
+					if (batch.charttype == type)
+					{
+						n += batch.charts.Count;
+					}
+				}
+			}
+			return n;
+		}
+
+
+		public void ChartsToDisk(string path)
+		{
+			Debug.WriteLine("----- ChartsToDisk !!!!! -----");
+
+			foreach (DxChartOrder order in orders)
+			{
+				foreach (DxChartBatch batch in order.batches)
+				{
+					foreach (DxChart chart in batch.charts)
+					{
+						try
+						{
+							//chartfiles.Add(chart.guid);
+							//string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
+							//chart.chart.SaveToFile(xmlfile);
+							chart.W = Convert.ToInt32(chart.W / 4);
+							chart.H = Convert.ToInt32(chart.H / 2);
+
+							chart.chart.ExportToImage(String.Format("{0}{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
+						}
+						catch (Exception ex) { }
+					}
+				}
+			}
+		}
+
+
+		public void DeleteChartsOnDisk(string path)
+		{
+			Debug.WriteLine("----- DeleteChartsOnDisk  !!!!! -----");
+
+			foreach (DxChartOrder order in orders)
+			{
+				foreach (DxChartBatch batch in order.batches)
+				{
+					foreach (DxChart chart in batch.charts)
+					{
+						try
+						{
+							File.Delete(String.Format("{0}{1}.{2}", path, chart.guid, "png"));
+						}
+						catch (Exception ex) { }
+					}
+				}
+			}
+		}
+
+
+
+		//public DxBatchOcharts BuildHistograms(DxHistogramSettings settings)
+		//{
+		//	DxBatchOcharts batch = new DxBatchOcharts();
+		//	batch.charttype = DxChartType.Histogram;
+		//	batch.chartlayout = settings.chartlayout;
+		//	batch.vars = settings.numvars;
+
+		//	settings.numvars.Remove("id");
+
+
+		//	if (settings.panelvar == "none")
+		//	{
+		//		foreach(string v in settings.numvars)
+		//		{
+		//			settings.xaxisvar = v;
+		//			DxChart chart = new DxHistogram(settings, dt, v, 0);
+		//			batch.charts.Add(chart);
+		//		}
+		//	}
+		//	else  //Yes panels
+		//	{
+		//		List<string> varnames = new List<string>();
+		//		varnames.AddRange(settings.numvars);
+		//		varnames.Add(settings.xaxisvar);
+		//		varnames.Add(settings.colorvar);
+		//		varnames.RemoveAll(item => item == "variable");
+		//		varnames.RemoveAll(item => item == "none");
+
+
+		//		DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
+
+		//		foreach (DataSubset subset in subsets.subsets)
+		//		{
+		//			foreach (string v in settings.numvars)
+		//			{
+		//				settings.xaxisvar = v;
+		//				DxChart chart = new DxHistogram(settings, subset.dt, v, 0);
+		//				chart.AddTitles(subset.Cols_and_Vals_ToString());
+		//				batch.charts.Add(chart);
+		//			}
+
+		//		}
+
+		//	}
+
+		//	return batch;
+
+		//}
+
+		//public DxBatchOcharts BuildLineplots(DxLineplotSettings settings)
+		//{
+
+		//	DxBatchOcharts batch = new DxBatchOcharts();
+		//	batch.charttype = DxChartType.Lineplot;
+		//	batch.vars = settings.numvars;
+
+		//	//NO Panels
+		//	if (settings.panelvar == "none" | settings.panelvar == "variable")
+		//	{
+		//		batch = BuildLineplots(settings, dt, " ");
+		//	}
+		//	else 
+		//	{
+		//		List<string> varnames = new List<string>() { "id" };
+		//		varnames.AddRange(settings.numvars);
+		//		varnames.Add(settings.xaxisvar);
+		//		varnames.Add(settings.colorvar);
+		//		varnames.RemoveAll(item => item == "variable");
+		//		varnames.RemoveAll(item => item == "none");
+
+
+		//		DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
+
+		//		foreach (DataSubset subset in subsets.subsets)
+		//		{
+		//			DxBatchOcharts subbatch = BuildLineplots(settings, subset.dt, subset.Cols_and_Vals_ToString());
+
+		//			foreach(DxChart sub in subbatch.charts)
+		//			{
+		//				batch.charts.Add(sub);
+		//			}
+		//		}
+
+		//	}
+
+		//	return batch;
+		//}
+
+		//public DxBatchOcharts BuildLineplots(DxLineplotSettings settings, DataTable dt, string title)
+		//{
+		//	DxBatchOcharts batch = new DxBatchOcharts();
+		//	batch.charttype = DxChartType.Lineplot;
+		//	batch.chartlayout = settings.chartlayout;
+		//	batch.vars = settings.numvars;
+
+		//	if (settings.xaxisvar == "variable") //This is just one plot
+		//	{
+		//		DxChart chart = new DxLineplot(settings, dt);
+		//		chart.AddTitles(title);
+		//		batch.charts.Add(chart);
+		//	}
+		//	else
+		//	{
+		//		//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
+		//		if (settings.colorvar != "variable" & settings.panelvar != "variable")
+		//		{
+		//			foreach (string v in settings.numvars)
+		//			{
+		//				settings.yaxisvar = v;
+		//				settings.seriesby = "id";
+		//				DxChart chart = new DxLineplot(settings, dt);
+		//				chart.AddTitles(String.Format("{0} {1}",v,title));
+		//				batch.charts.Add(chart);
+
+		//			}
+		//		}
+		//		// if variable is used as a color
+		//		else 
+		//		{
+		//			DxChart chart = new DxLineplot(settings, dt);
+		//			chart.AddTitles(title);
+		//			batch.charts.Add(chart);
+		//		}
+
+		//	}
+
+		//	return batch;
+
+		//}
+
+		//public DxBatchOcharts BuildActograms(DxLineplotSettings settings, DataTable dt, string title, Actigraph.ActogramStats mystats)
+		//{
+		//	DxBatchOcharts batch = new DxBatchOcharts();
+		//	batch.charttype = DxChartType.Actogram;
+		//	batch.chartlayout = settings.chartlayout;
+		//	batch.vars = settings.numvars;
+
+		//	if (settings.xaxisvar == "variable") //This is just one plot
+		//	{
+		//		DxChart chart = new DxActogram(settings, dt, mystats); //, mystats);
+		//		chart.AddTitles(title);
+		//		batch.charts.Add(chart);
+		//	}
+		//	else
+		//	{
+		//		//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
+		//		if (settings.colorvar != "variable" & settings.panelvar != "variable")
+		//		{
+		//			foreach (string v in settings.numvars)
+		//			{
+		//				settings.yaxisvar = v;
+		//				settings.seriesby = "id";
+		//				DxChart chart = new DxActogram(settings, dt, mystats);
+		//				chart.AddTitles(String.Format("{0} {1}", v, title));
+		//				batch.charts.Add(chart);
+
+		//			}
+
+
+		//		}
+		//		// if variable is used as a color
+		//		else
+		//		{
+		//			DxChart chart = new DxActogram(settings, dt, mystats);
+		//			chart.AddTitles(title);
+		//			batch.charts.Add(chart);
+		//		}
+
+		//	}
+
+		//	return batch;
+
+		//}
+
+		//public DxBatchOcharts BuildBarcharts(DxBarchartSettings settings)
+		//{
+		//	DxBatchOcharts batch = new DxBatchOcharts();
+		//	batch.charttype = DxChartType.Barchart;
+		//	batch.chartlayout = settings.chartlayout;
+		//	batch.vars = settings.numvars;
+
+		//	settings.numvars.Remove("id");
+
+
+		//	if (settings.panelvar == "none")
+		//	{
+		//		DxChart chart = new DxBarchart(settings, dt);
+		//		batch.charts.Add(chart);
+		//	}
+		//	else
+		//	{
+		//		List<string> varnames = new List<string>();
+		//		varnames.AddRange(settings.numvars);
+		//		varnames.Add(settings.xaxisvar);
+		//		varnames.Add(settings.colorvar);
+		//		varnames.RemoveAll(item => item == "variable");
+		//		varnames.RemoveAll(item => item == "none");
+
+
+		//		DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
+
+		//		foreach (DataSubset subset in subsets.subsets)
+		//		{
+		//			DxChart chart = new DxBarchart(settings, subset.dt);
+		//			chart.AddTitles(subset.Cols_and_Vals_ToString());
+		//			batch.charts.Add(chart);
+		//		}
+
+		//	}
+
+		//	return batch;
+
+		//}
+
+		//public DxBatchOcharts BuildScatterplots(DxScatterplotSettings settings)
+		//{
+		//	DxBatchOcharts batch = new DxBatchOcharts();
+		//	batch.charttype = DxChartType.Scatterplot;
+		//	batch.chartlayout = settings.chartlayout;
+		//	batch.vars = settings.numvars;
+
+
+		//	//pairwise
+		//	settings.numvars.Remove("id");
+
+
+		//	bool issquare = true;
+
+		//	if (issquare)
+		//	{
+		//		for (int i = 0; i < settings.numvars.Count; i++)
+		//		{
+		//			string x = settings.numvars[i];
+		//			for (int j = i ; j < settings.numvars.Count; j++)
+		//			//for (int i = counter; i < settings.numvars.Count; i++)
+		//			{
+		//				string y = settings.numvars[j];
+		//				settings.xaxisvar = y; // x;  //test swap
+		//				settings.yaxisvar = x; // y;
+
+		//				if(x==y & settings.showhist)
+		//				{
+		//					DxHistogramSettings local_settingshist = new DxHistogramSettings(settings);
+		//					local_settingshist.xaxisvar = x;
+		//					if (settings.colorvar != "none")
+		//					{
+		//						local_settingshist.colorvar = settings.colorvar;
+		//					}
+		//					local_settingshist.shownormalcurve = true;
+		//					local_settingshist.numbins = 15;
+		//					local_settingshist.colors = settings.colors;
+		//					local_settingshist.title = x;
+
+		//					DxChart chart = new DxHistogram(local_settingshist, dt, x, 0);
+		//					chart.isdiag = true;
+		//					batch.charts.Add(chart);
+		//				}
+		//				else if (x != y)
+		//				{
+		//					DxChart chart = new DxScatterplot(settings, dt);
+		//					batch.charts.Add(chart);
+		//				}
+		//				else
+		//				{
+		//					//Consider adding a histogram here?
+		//				}
+		//			}
+		//		}
+		//	}
+		//	else  //NOT square - TODO
+		//	{
+
+		//	}
+
+		//	return batch;
+		//}
 
 
 		//public void SetYAxisRange(DxBatchOcharts batch, DxChartSettings settings)
@@ -494,20 +632,8 @@ namespace uwac
 		//}
 
 
-
-
-		public int CountCharts(DxChartType type)
-		{
-			int n = 0;
-			foreach (DxBatchOcharts batch in _batches)
-			{
-				if (batch.charttype == type)
-				{
-					n = batch.charts.Count;
-				}
-			}
-			return n;
-		}
-
 	}
+
+
+
 }

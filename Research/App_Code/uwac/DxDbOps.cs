@@ -685,35 +685,46 @@ namespace uwac
 		public static bool AddValueSetItem(SQL_utils sql, int fvsID, int? value, string label)
 		{
 			//Check to see if label already added 
-			string code = String.Format("select fieldvaluesetitemID, fieldvalue, fieldvaluelabel from datFieldValueSetItem where fieldvaluesetID={0} and fieldlabel='{1}'", fvsID, label);
+			string code = String.Format("select pk, fieldvalue, fieldvaluelabel from datFieldValueSetItem where fieldvaluesetID={0} and fieldvaluelabel='{1}'", fvsID, label);
 
 			DataTable dt = sql.DataTable_from_SQLstring(code);
-			
-			if(dt.Rows.Count > 0)
-			{ return false; }
-			else 
+
+			if (dt == null)
 			{
-				DataRow row = dt.Rows[0];
-
-				int n = sql.IntScalar_from_SQLstring(code);
-				try
-				{
-
-					//if no value yet assigned for this label get the max + 1
-					int newvalue = (value == null) ?
-						sql.IntScalar_from_SQLstring(String.Format("select max(fieldvalue)  from datFieldValueSetItem where fieldvaluesetID={0}", fvsID)) + 1
-						: Convert.ToInt32(value);
-
-					string code2 = String.Format("insert into datfieldvaluesetitem (fieldvaluesetID, fieldvalue, fieldvaluelabel) values({0},{1},'{2}')"
-								, fvsID, newvalue, label);
-					sql.NonQuery_from_SQLstring(code2);
-					Debug.WriteLine("YES value set item added !!!!! ");
-					return true;
+				//no match
+				return false;	
+			}
+			else
+			{
+				if (dt.Rows.Count > 0)
+				{ 
+					//yes there is a match, so do nothing
+					return false; 
 				}
-				catch(Exception ex)
+				else
 				{
-					Debug.WriteLine("NO value set item added  :(");
-					return false;
+					//DataRow row = dt.Rows[0];
+
+					//int n = sql.IntScalar_from_SQLstring(code);
+					try
+					{
+
+						//if no value yet assigned for this label get the max + 1
+						int newvalue = (value == null) ?
+							sql.IntScalar_from_SQLstring(String.Format("select max(fieldvalue)  from datFieldValueSetItem where fieldvaluesetID={0}", fvsID)) + 1
+							: Convert.ToInt32(value);
+
+						string code2 = String.Format("insert into datfieldvaluesetitem (fieldvaluesetID, fieldvalue, fieldvaluelabel) values({0},{1},'{2}')"
+									, fvsID, newvalue, label);
+						sql.NonQuery_from_SQLstring(code2);
+						Debug.WriteLine("YES value set item added !!!!! ");
+						return true;
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine("NO value set item added  :(");
+						return false;
+					}
 				}
 			}
 		}
