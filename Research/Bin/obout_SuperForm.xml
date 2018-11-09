@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>obout_SuperForm</name>
+    </assembly>
+    <members>
+        <member name="P:Obout.SuperForm.DropDownListField.DataSourceID">
+            <summary>
+            Gets or sets a value indicating the ID of the data source control that will be used as the data source for the underlying OboutDropDownList control.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.DropDownListField.DataTextField">
+            <summary>
+            Gets or sets a value indicating the field of the data source that provides the text content for the list items.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.DropDownListField.DataValueField">
+            <summary>
+            Gets or sets a value indicating the field of the data source that provides the value for the list items.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.DropDownListField.DisplayField">
+            <summary>
+            Gets or sets a value indicating the field from the data source that will be used to display data in view mode.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.FieldSet.ColumnSpan">
+            <summary>
+            Gets or sets the number of field sets in the field set row that the current field set will span.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.FieldSet.CssClass">
+            <summary>
+            Gets or sets a value specifying the CSS class to render on the client for the field set.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.FieldSet.ID">
+            <summary>
+            Gets or sets a value indicating the unique identifier of the field set.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.FieldSet.Title">
+            <summary>
+            Gets or sets a value indicating the title of the field set.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnAdding">
+            <summary>
+            Client-side function that is executed before the add action is performed.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnCancelingAdd">
+            <summary>
+            Client-side function that is executed when the Cancel button is clicked in Insert mode.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnCancelingEdit">
+            <summary>
+            Client-side function that is executed when the Cancel button is clicked in Edit mode.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnDeleting">
+            <summary>
+            Client-side function that is executed before the delete action is performed.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnEditing">
+            <summary>
+            Client-side function that is executed before the delete edit is performed.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnInserting">
+            <summary>
+            Client-side function that is executed before the insert action is performed.
+            </summary>
+        </member>
+        <member name="P:Obout.SuperForm.ClientSideEvents.OnUpdating">
+            <summary>
+            Client-side function that is executed before the update action is performed.
+            </summary>
+        </member>
+    </members>
+</doc>

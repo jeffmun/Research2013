@@ -1,0 +1,434 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>obout_Splitter2_Net</name>
+    </assembly>
+    <members>
+        <member name="F:OboutInc.Splitter2.Constants.myVersion">
+            Version information
+            
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.HeightDefault">
+            <summary>
+            Default height of the panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.HeightMin">
+            <summary>
+            Minimum height of the panel. The other panel takes up remaining width.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.HeightMax">
+            <summary>
+            Maximum height of the panel. The other panel takes up remaining width.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.Header">
+            <summary>
+            Splitter Panel Header
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.Content">
+            <summary>
+            Splitter Panel Content
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.Footer">
+            <summary>
+            Splitter Panel Footer
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitterPanel.IsHeightDefaultSet">
+            <summary>
+            returns false if the splitter property "HeightDefault" is set
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanel.WidthDefault">
+            <summary>
+            Default width of the panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanel.WidthMin">
+            <summary>
+            Minimum width of the panel. The other panel takes up remaining width.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanel.WidthMax">
+            <summary>
+            Maximum width of the panel. The other panel takes up remaining width.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanel.Header">
+            <summary>
+            Splitter Panel Header
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanel.Content">
+            <summary>
+            Splitter Panel Content
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanel.Footer">
+            <summary>
+            Splitter Panel Footer
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.TopPanel">
+            <summary>
+            Splitter top panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.BottomPanel">
+            <summary>
+            Splitter bottom panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.Height">
+            <summary>
+            Height of the whole splitter.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.WidthAfter">
+            <summary>
+            Width of the space after splitter.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CookieDays">
+            <summary>
+            Number of days to keep splitter position in cookie.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSPanel">
+            <summary>
+            CSS class name for panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSTopPanel">
+            <summary>
+            CSS class name for top panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSTopPanelHeader">
+            <summary>
+            CSS class name for top panel header.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSTopPanelContent">
+            <summary>
+            CSS class name for top panel content.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSTopPanelFooter">
+            <summary>
+            CSS class name for top panel footer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSBottomPanel">
+            <summary>
+            CSS class name for bottom panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSBottomPanelHeader">
+            <summary>
+            CSS class name for bottom panel header.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSBottomPanelContent">
+            <summary>
+            CSS class name for bottom panel content.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSBottomPanelFooter">
+            <summary>
+            CSS class name for bottom panel footer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSDivider">
+            <summary>
+            CSS class name for divider.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSResizeBar">
+            <summary>
+            CSS class name for resize bar.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSCollapseTop">
+            <summary>
+            CSS class name for top collapse image.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSCollapseBottom">
+            <summary>
+            CSS class name for bottom collapse image.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CSSPath">
+            <summary>
+            Full path to CSS file.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.StyleFolder">
+            <summary>
+            Path to folder with splitter style.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.IsResizable">
+            <summary>
+            When true, the splitter is resizable
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.PanelResizable">
+            <summary>
+            Specify which panel should be resized when the window is resizing.  Accepted values are top, bottom
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.LiveResize">
+            <summary>
+            When true, the panels will be able to resize on splitter separator moving
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.HideBeforeLoad">
+            <summary>
+            Specify which panels to hide before splitter is initialized.  Accepted values are none, both, top, bottom.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.RememberScrollPosition">
+            <summary>
+            When true, the splitter panels are keeping their scroll position after postback.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.SynchronizeScroll">
+            <summary>
+            When true, the top content scroll is synchronized with the bottom content scroll
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CollapsePanel">
+            <summary>
+            Specify wich panel to collapse.  Accepted values are none, top, bottom.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CollapseTopTooltip">
+            <summary>
+            The collapsing top image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.CollapseBottomTooltip">
+            <summary>
+            The collapsing bottom image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.ExpandTopTooltip">
+            <summary>
+            The expanding top image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.ExpandBottomTooltip">
+            <summary>
+            The expanding bottom image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.OnSplitterResize">
+            <summary>
+            The name of the client event for the splitter resize.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.OnSplitterInitEnd">
+            <summary>
+            The name of the client event for the splitter init end.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.HorizontalSplitter.OnSplitterCollapseExpand">
+            <summary>
+            The name of the client event for the splitter collapse/expand event.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanelComponent.Height">
+            <summary>
+            Splitter Panel Component Height - default 100
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.SplitterPanelComponent.Url">
+            <summary>
+            Page to load into component of the panel on page load.
+            </summary>
+        </member>
+        <member name="M:OboutInc.Splitter2.ScriptManagerHelper.GetOboutAJAXType(System.Type)">
+            <summary>
+            return OboutInc.oboutAJAXPage type
+            </summary>
+            <param name="_object"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.LeftPanel">
+            <summary>
+            Splitter left panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.RightPanel">
+            <summary>
+            Splitter right panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.Width">
+            <summary>
+            Width of the whole splitter.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.FooterHeight">
+            <summary>
+            Height of the footer below splitter.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CookieDays">
+            <summary>
+            Number of days to keep splitter position in cookie.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSPanel">
+            <summary>
+            CSS class name for panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSLeftPanel">
+            <summary>
+            CSS class name for left panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSLeftPanelHeader">
+            <summary>
+            CSS class name for left panel header.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSLeftPanelContent">
+            <summary>
+            CSS class name for left panel content.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSLeftPanelFooter">
+            <summary>
+            CSS class name for left panel content.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSRightPanel">
+            <summary>
+            CSS class name for right panel.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSRightPanelHeader">
+            <summary>
+            CSS class name for right panel header.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSRightPanelContent">
+            <summary>
+            CSS class name for right panel content.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSRightPanelFooter">
+            <summary>
+            CSS class name for right panel footer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSDivider">
+            <summary>
+            CSS class name for divider.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSResizeBar">
+            <summary>
+            CSS class name for resize bar.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSCollapseLeft">
+            <summary>
+            CSS class name for left collapse image.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSCollapseRight">
+            <summary>
+            CSS class name for right collapse image.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CSSPath">
+            <summary>
+            Full path to CSS file.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.StyleFolder">
+            <summary>
+            Path to folder with splitter style.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.IsResizable">
+            <summary>
+            When true, the splitter is resizable
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.LiveResize">
+            <summary>
+            When true, the panels will be able to resize on splitter separator moving
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.PanelResizable">
+            <summary>
+            Specify which panel should be resized when the window is resizing.  Accepted values are left, right
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.HideBeforeLoad">
+            <summary>
+            Specify which panels to hide before splitter is initialized.  Accepted values are none, both, left, right.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.RememberScrollPosition">
+            <summary>
+            When true, the splitter panels are keeping their scroll position after postback.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.SynchronizeScroll">
+            <summary>
+            When true, the left content scroll is synchronized with the right content scroll
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CollapsePanel">
+            <summary>
+            Specify wich panel to collapse.  Accepted values are none, left, right.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CollapseLeftTooltip">
+            <summary>
+            The collapsing left image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.CollapseRightTooltip">
+            <summary>
+            The collapsing right image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.ExpandLeftTooltip">
+            <summary>
+            The expanding left image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.ExpandRightTooltip">
+            <summary>
+            The expanding right image tooltip
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.OnSplitterResize">
+            <summary>
+            The name of the client event for the splitter resize.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.OnSplitterInitEnd">
+            <summary>
+            The name of the client event for the splitter init end.
+            </summary>
+        </member>
+        <member name="P:OboutInc.Splitter2.Splitter.OnSplitterCollapseExpand">
+            <summary>
+            The name of the client event for the splitter collapse/expand event.
+            </summary>
+        </member>
+    </members>
+</doc>

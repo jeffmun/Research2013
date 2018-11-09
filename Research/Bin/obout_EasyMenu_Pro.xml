@@ -1,0 +1,675 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>obout_EasyMenu_Pro</name>
+    </assembly>
+    <members>
+        <member name="T:OboutInc.EasyMenu_Pro.EasyMenusCollection">
+            <summary>
+            A collection containing all instances of EasyMenus.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.MenuSeparator">
+            <summary>
+            A menu items separator.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.ItemBase">
+            <summary>
+            Base class for all Menu components.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.ItemBase.InnerHtml">
+            <summary>
+            Text or any client side code to display.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuSeparator.InnerHtml">
+            <summary>
+            Text or any client side code to display.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuSeparator.AutoHideMenu">
+            <summary>
+            Specifies if the menu should hide upon clicking this item or not.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuSeparator.Icon">
+            <summary>
+            Icon to display near the menu component.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuSeparator.AllowsIcon">
+            <summary>
+            Specifies if the menu component should include a icon if the menu specifies so.
+            </summary>
+        </member>
+        <member name="F:OboutInc.EasyMenu_Pro.MenuItemData._dataText">
+            <summary>
+            Database properties
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.MenuItemData.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="id">id of menu item</param>
+            <param name="innerText">text of menu item</param>
+            <param name="url">url of menu item</param>
+            <param name="parentId">Parent id of item</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.MenuItemData.CreatSubMenuFromDB(OboutInc.EasyMenu_Pro.MenuItemCollectionData,OboutInc.EasyMenu_Pro.MenuDataItemProperties)">
+            <summary>
+            Created Menus from collection of menu items
+            </summary>
+            <param name="menuItemList"></param>
+            <param name="subMenuProperty"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItemData.DataTextField">
+            <summary>
+            Text field in datasource
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItemData.DataUrlField">
+            <summary>
+            Url field in datasource
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItemData.DataUrlTargetField">
+            <summary>
+            Url Target field in datasource
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItemData.DataParentIdField">
+            <summary>
+            ParentId field in datasource
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItemData.DataIdField">
+            <summary>
+            Id field in datasource
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.MenuItemBaseCollection">
+            <summary>
+            A collection for all menu components.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.EasyMenu">
+            <summary>
+            A menu that can contain items and separators
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.serializeComponentsCSSClassesCollection">
+            <summary>
+            Serialises the menuComponentsCSSClasses collection
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.deserializeComponentsCSSClassesCollection">
+            <summary>
+            Deserialises the menuComponentsCSSClasses collection
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.#ctor">
+            <summary>
+            Creates a new instance of EasyMenu
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.AddMenuItem(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Add item to render.
+            </summary>
+            <param name="id">Unique ID for this item</param>
+            <param name="innerHtml">Text or any client side code to display</param>
+            <param name="url">Url to navigate to when user clicks on this item</param>
+            <param name="urlTarget">Target where to load the url</param>
+            <param name="onClientClick">Client side code to execute when user clicks on this item</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.AddMenuItemAt(System.Int32,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Add item to render at a specified index
+            </summary>
+            <param name="index">Index where to add the item</param>
+            <param name="id">Unique ID for this item</param>
+            <param name="innerHtml">Text or any client side code to display</param>
+            <param name="url">Url to navigate to when user clicks on this item</param>
+            <param name="urlTarget">Target where to load the url</param>
+            <param name="onClientClick">Client side code to execute when user clicks on this item</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.AddSeparator(System.String,System.String)">
+            <summary>
+            Adds a separator to the menu
+            </summary>
+            <param name="id">Unique ID for this item</param>
+            <param name="innerHtml">Text or any client side code to display</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.AddSeparatorAt(System.Int32,System.String,System.String)">
+            <summary>
+            Adds a separator to the menu at a specified index
+            </summary>
+            <param name="index">Index where to add the separator</param>
+            <param name="id">Unique ID for this item</param>
+            <param name="innerHtml">Text or any client side code to display</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.AddItem(OboutInc.EasyMenu_Pro.ItemBase)">
+            <summary>
+            Add item to render
+            </summary>
+            <param name="item">The item to add to the components collection</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.AddItemAt(System.Int32,OboutInc.EasyMenu_Pro.ItemBase)">
+            <summary>
+            Add item to render at a specified index
+            </summary>
+            <param name="index">Index where to add the item</param>
+            <param name="item">The item to add to the components collection</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.RemoveItem(OboutInc.EasyMenu_Pro.ItemBase)">
+            <summary>
+            Remove Item
+            </summary>
+            <param name="item">The item to remove from the components collection</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.RemoveItemByID(System.String)">
+            <summary>
+            Remove Item by menu item id
+            </summary>
+            <param name="ID">The item ID to remove from the components collection</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.RemoveItemAt(System.Int32)">
+            <summary>
+            Remove Item at specified index
+            </summary>
+            <param name="index">The index at which to remove the item</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.PerformSelect">
+            <summary>
+            Retrieves data from the associated data source.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.OnDataSourceViewSelectCallback(System.Collections.IEnumerable)">
+            <summary>
+            OnDataSourceView Select Callback
+            </summary>
+            <param name="retrievedData"></param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.PerformDataBinding(System.Collections.IEnumerable)">
+            <summary>
+            When overridden in a derived class, binds data from the data source to the control.
+            </summary>
+            <param name="retrievedData"></param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.CreateDataMenus(OboutInc.EasyMenu_Pro.MenuItemCollectionData)">
+            <summary>
+            Creates menu items bound to database
+            </summary>
+            <param name="menuItems"></param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.FindControlRecursive(System.Web.UI.Control,System.String)">
+            <summary>
+            Finds a Control recursively. Note finds the first match and exists
+            </summary>
+            <param name="ContainerCtl"></param>
+            <param name="IdToFind"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.CreateChildControls(System.Collections.IEnumerable,System.Boolean)">
+            <summary>
+            in databound mode
+            </summary>
+            <param name="dataSource">dataSource</param>
+            <param name="dataBinding">is dataBinding?</param>
+            <returns></returns>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.OnPreRender(System.EventArgs)">
+            <summary>
+            OnPreRender
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.Render(System.Web.UI.HtmlTextWriter)">
+            <summary>
+            Renders the controls to the page
+            </summary>
+            <param name="writer">The writer to which the control renders itself</param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.LoadViewState(System.Object)">
+            <summary>
+            LoadViewState
+            </summary>
+            <param name="savedState"></param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.EasyMenu.SaveViewState">
+            <summary>
+            SaveViewState
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.CSSClassesCollection">
+            <summary>
+            A collection containing all EasyMenu components' css classes.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.Components">
+            <summary>
+            A collection containing all Easy menu components.
+            <remarks>
+            Each parent and child is of type MenuComponent.
+            </remarks>MenuComponentsCollection
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.CSSMenu">
+            <summary>
+            CSS class name for parent.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.CSSMenuItemContainer">
+            <summary>
+            CSS class name for parent.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.OffsetHorizontal">
+            <summary>
+            Horizontal menu offset relative to the mouse pointer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.OffsetVertical">
+            <summary>
+            Vertical menu offset relative to the mouse pointer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.securedPageUrl">
+            <summary>
+            Sets the URL for a secure blank page to use when site uses SSL and default method doesn't work
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.ZIndex">
+            <summary>
+            z-index css property for the menu.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.AttachTo">
+            <summary>
+            Control ID to which the menu is to attach itself.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.UseIcons">
+            <summary>
+            Specifies whether the menu should use icons.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.IconsPosition">
+            <summary>
+            Specifies whether the menu should use icons.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.StyleFolder">
+            <summary>
+            Path to CSS file with menu classes.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.IconsFolder">
+            <summary>
+            Path to Icons Folder with menu classes.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.EventsScriptPath">
+            <summary>
+            Path to EasyMenu events javascript file.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.SelectedItemId">
+            <summary>
+            Path to EasyMenu javascript file.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.Align">
+            <summary>
+            EasyMenu's DisplayStyle.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.Position">
+            <summary>
+            EasyMenu's Postion.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.AlignMenuCorner">
+            <summary>
+            EasyMenu's DisplayStyle.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.AlignElementCorner">
+            <summary>
+            EasyMenu's DisplayStyle.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.EventList">
+            <summary>
+            Sets the Events that menu calls when working at client side
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.ShowEvent">
+            <summary>
+            Event on which EasyMenu is shown.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.Width">
+            <summary>
+            EasyMenu's width.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.SelectTreeNode">
+            <summary>
+            If menu is attached to a treenode then select it.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DropdownIncrement">
+            <summary>
+            EasyMenu's DropdownIncrement.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DropInterval">
+            <summary>
+            EasyMenu's DropSpeed.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.KeepOpen">
+            <summary>
+            EasyMenu's KeepOpen.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.RepeatColumns">
+            <summary>
+            Number of Columns when menu is multi column
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DataTextField">
+            <summary>
+            Text Field in database table
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DataUrlField">
+            <summary>
+            Url field in datasource
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DataUrlTargetField">
+            <summary>
+            Url target field in datasource
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DataParentIdField">
+            <summary>
+            Parent Id field in data source
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.DataIdField">
+            <summary>
+            Id field in data source
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.SubMenuPlaceHolderID">
+            <summary>
+            Submenu place holder is using to render databound contents
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.stateObject">
+            <summary>
+            used in "LoadViewState" and "SaveViewState"
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.ItemsCollectionData">
+            <summary>
+             Menu items in each menu
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.CommonSubMenuProperties">
+            <summary>
+            Common SubMenu Properties - Used in databound mode - to set style of each menu item
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.ShowItemDecription">
+            <summary>
+            Show Item Decription - description can be set for each menu item - not implemeted yet
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.EqualDivision">
+            <summary>
+            Whether the width of the Horizontal menu will be divided equally among the items.
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.ExpandStyle">
+            <summary>
+            EasyMenu Expand/Collapse Animation.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.EasyMenu.UniqueRenderdMenuID">
+            <summary>
+            Generates Unique menu it for client side use - not in use now
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.Designer.EasyMenuItemsEditor">
+            <summary> 
+            Collection editor.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.Designer.EasyMenuItemsEditor.#ctor(System.Type)">
+            <summary> 
+            Collection editor constructor.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.Designer.EasyMenuItemsEditor.CreateNewItemTypes">
+            <summary> 
+            Retrieves an array of object types that the editor can create.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.Designer.MenuComponentsCSSClassesCollectionEditor">
+            <summary> 
+            Collection editor.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.Designer.MenuComponentsCSSClassesCollectionEditor.#ctor(System.Type)">
+            <summary> 
+            Collection editor constructor.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.Designer.MenuComponentsCSSClassesCollectionEditor.CreateNewItemTypes">
+            <summary> 
+            Retrieves an array of object types that the editor can create.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.Designer.EasyMenuDesigner">
+            <summary> 
+            Extends design-time behavior.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.Designer.EasyMenuDesigner.GetDesignTimeHtml">
+            <summary> 
+            Generates design-time HTML for control.
+            </summary>
+        </member>
+        <member name="F:OboutInc.EasyMenu_Pro.Constants.version_year">
+            Version information
+            
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.ClickEventHandler">
+            <summary>
+            Declare delegate - ClickEventHandler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.MenuItem">
+            <summary>
+            An active item of the menu.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.MenuItem.#ctor">
+            <summary>
+            Constructors
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.InnerHtml">
+            <summary>
+            Text or any client side code to display.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.ItemDescription">
+            <summary>
+            Text or any client side code to display.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.Url">
+            <summary>
+            URL to open to when user clicks.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.UrlTarget">
+            <summary>
+            URL target frame name.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.OnClientClick">
+            <summary>
+            Client side code to run when user clicks.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.AutoHideMenu">
+            <summary>
+            Specifies if the menu should hide upon clicking this item or not.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.Disabled">
+            <summary>
+            Specifies if the menu should hide upon clicking this item or not.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.Icon">
+            <summary>
+            Icon to display near the menu component.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.AllowsIcon">
+            <summary>
+            Specifies if the menu component should include a icon if the menu specifies so.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuItem.HasSubmenu">
+            <summary>
+            Specifies if the item has any submenu attached.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.CSSClasses">
+            <summary>
+            Summary description for MenuComponentCSSClasses.
+            </summary>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.CSSClasses.#ctor(System.Type)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="menuComponentType"></param>
+        </member>
+        <member name="M:OboutInc.EasyMenu_Pro.CSSClasses.Render(System.Web.UI.HtmlTextWriter)">
+            <summary>
+            Adds menu style to js object
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.MenuItemCollectionData">
+            <summary>
+            A collection for all menu components when bind from DB.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.StyleFolder">
+            <summary>
+            Path to CSS file with menu classes.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.OffsetHorizontal">
+            <summary>
+            Horizontal menu offset relative to the mouse pointer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.OffsetVertical">
+            <summary>
+            Vertical menu offset relative to the mouse pointer.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.ZIndex">
+            <summary>
+            z-index css property for the menu.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.UseIcons">
+            <summary>
+            Specifies whether the menu should use icons.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.IconsPosition">
+            <summary>
+            Specifies whether the menu should use icons.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.Align">
+            <summary>
+            EasyMenu's DisplayStyle.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.AlignMenuCorner">
+            <summary>
+            EasyMenu's DisplayStyle.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.AlignElementCorner">
+            <summary>
+            EasyMenu's DisplayStyle.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.Position">
+            <summary>
+            EasyMenu's Postion.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.ShowEvent">
+            <summary>
+            Event on which EasyMenu is shown.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.Width">
+            <summary>
+            EasyMenu's width.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.DropdownIncrement">
+            <summary>
+            EasyMenu's DropdownIncrement.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.DropInterval">
+            <summary>
+            EasyMenu's DropSpeed.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.KeepOpen">
+            <summary>
+            EasyMenu's KeepOpen.
+            </summary>
+        </member>
+        <member name="P:OboutInc.EasyMenu_Pro.MenuDataItemProperties.RepeatColumns">
+            <summary>
+            EasyMenu's KeepOpen.
+            </summary>
+        </member>
+        <member name="T:OboutInc.EasyMenu_Pro.CSSClassesCollection">
+            <summary>
+            A collection for all menu components.
+            </summary>
+        </member>
+    </members>
+</doc>
