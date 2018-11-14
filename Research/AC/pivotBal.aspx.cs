@@ -13,11 +13,11 @@ using NReco.PivotData.Output;
 using NReco.PivotData.File;
 using uwac;
 using System.Drawing;
-using DotNet.Highcharts;
-using DotNet.Highcharts.Options;
-using DotNet.Highcharts.Helpers;
-using DotNet.Highcharts.Enums;
-using GoogleChartsNGraphsControls;
+//using DotNet.Highcharts;
+//using DotNet.Highcharts.Options;
+//using DotNet.Highcharts.Helpers;
+//using DotNet.Highcharts.Enums;
+//using GoogleChartsNGraphsControls;
 
 public partial class pivotBal : System.Web.UI.Page
 {
