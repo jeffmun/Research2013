@@ -179,7 +179,7 @@
 			function btnSaveOrder_ClientClick() {
 				btnSaveOrder.SetVisible(false);
 
-				btnSaveOrder.SetVisible(true);
+				//btnSaveOrder.SetVisible(true);
 
 				callbackViewData.SetVisible(false);
 				callbackMissing.SetVisible(false);
@@ -248,6 +248,7 @@
 
 			var keyValue;
 			function LoadOldOrder(element, key) {
+				callbackCharts.SetVisible(true);
 				callbackCharts.PerformCallback("OldOrder|" + key);
 			}
 

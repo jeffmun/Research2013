@@ -29,7 +29,7 @@ namespace uwac
 	#region Histogram
 
 
-
+	[Serializable]
 	public class DxHistogram : DxChart
 	{
 		private DxHistogramSettings _settings;

@@ -29,9 +29,11 @@ namespace uwac
 
 		private DxChartSettings _settings;
 		private List<DxChart> _charts = new List<DxChart>();
+		private List<DataTable> _datatables = new List<DataTable>();
 		private List<string> _vars;
 
 		public List<DxChart> charts { get { return _charts; } set { _charts = value; } }
+		public List<DataTable> datatables { get { return _datatables; } set { _datatables = value; } }
 		public List<string> vars { get { return _vars; } set { _vars = value; } }
 		public DxChartType charttype { get; set; }
 		public DxChartLayout chartlayout { get; set; }
@@ -39,18 +41,23 @@ namespace uwac
 		public int maxCol { get; set; }
 		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
 
-		public DxChartBatch()
+		public void Initialize()
 		{
 			_vars = new List<string>();
-			maxCol = 1;
+			_datatables = new List<DataTable>();
 			_charts = new List<DxChart>();
+			maxCol = 1;
+
+		}
+
+		public DxChartBatch()
+		{
+			Initialize();
 		}
 
 		public DxChartBatch(DxChartType mycharttype, DxChartSettings mysettings)
 		{
-			_vars = new List<string>();
-			maxCol = 1;
-			_charts = new List<DxChart>();
+			Initialize();
 			charttype = mycharttype;
 			_settings = mysettings;
 		}
@@ -58,6 +65,7 @@ namespace uwac
 
 		public DxChartBatch(DxHistogramSettings mysettings, DataTable dt)
 		{
+			Initialize();
 			_settings = (DxChartSettings)mysettings;
 			charttype = DxChartType.Histogram;
 			chartlayout = mysettings.chartlayout;
@@ -107,6 +115,8 @@ namespace uwac
 
 		public DxChartBatch(DxLineplotSettings mysettings, DataTable dt, string title)
 		{
+			Initialize();
+
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Lineplot;
@@ -148,6 +158,8 @@ namespace uwac
 
 		public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title, Actigraph.ActogramStats mystats)
 		{
+			Initialize();
+
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Actogram;
@@ -191,6 +203,8 @@ namespace uwac
 
 		public DxChartBatch(DxBarchartSettings mysettings, DataTable dt)
 		{
+			Initialize();
+
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Barchart;
@@ -203,8 +217,9 @@ namespace uwac
 
 			if (mysettings.panelvar == "none")
 			{
-				DxChart chart = new DxBarchart(mysettings, dt);
+				DxBarchart chart = new DxBarchart(mysettings, dt);
 				charts.Add(chart);
+				_datatables.Add(chart.statstable.dt);
 			}
 			else
 			{
@@ -220,9 +235,13 @@ namespace uwac
 
 				foreach (DataSubset subset in subsets.subsets)
 				{
-					DxChart chart = new DxBarchart(mysettings, subset.dt);
+					DxBarchart chart = new DxBarchart(mysettings, subset.dt);
+
+					//DxChart chart = new DxBarchart(mysettings, subset.dt);
 					chart.AddTitles(subset.Cols_and_Vals_ToString());
 					charts.Add(chart);
+
+					_datatables.Add(chart.statstable.dt);
 				}
 
 			}
@@ -230,6 +249,8 @@ namespace uwac
 
 		public DxChartBatch(DxScatterplotSettings mysettings, DataTable dt)
 		{
+			Initialize();
+
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Scatterplot;

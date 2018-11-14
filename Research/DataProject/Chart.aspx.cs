@@ -54,7 +54,7 @@ public partial class DataProject_Chart : BasePage
 	string projTitle;
 	//DxCharts dxchart;
 	List<Color> colors;
-	List<DxChartOrder> orders;
+	//List<DxChartOrder> orders;
 	DPData dpdata;
 	string selectedsheet;
 	bool printDebug = true;
@@ -101,7 +101,7 @@ public partial class DataProject_Chart : BasePage
 	protected void PageLoad_Initial()
 	{
 		log(String.Format("Page_Load NOT PostBack - {0}", IsPostBack));
-		orders = new List<DxChartOrder>();
+		List<DxChartOrder> orders = new List<DxChartOrder>();
 		Session["orders"] = orders;
 
 		panel.ContentTemplateContainer.Controls.Clear();
@@ -256,10 +256,11 @@ public partial class DataProject_Chart : BasePage
 		}
 
 
-		if (Session["orders"] != null)
-		{
-			orders = (List<DxChartOrder>)Session["orders"];
-		}
+		////needed?
+		//if (Session["orders"] != null)
+		//{
+		//	orders = (List<DxChartOrder>)Session["orders"];
+		//}
 	}
 
 	protected void ProcessQueryStringParams()
@@ -280,6 +281,13 @@ public partial class DataProject_Chart : BasePage
 				Session["projTitle"] = projTitle;
 				lblProjTitle.Visible = true;
 				lblProjTitle.Text = String.Format("#{0} {1}", dataproj_pk, projTitle);
+
+				int studyID = sql.IntScalar_from_SQLstring(String.Format("select studyID from dp.DataProject where dataproj_pk={0}", dataproj_pk));
+
+				if(studyID != Master.Master_studyID)
+				{
+					Master.Master_studyID = studyID;
+				}
 
 				sql.Close();
 
@@ -482,7 +490,7 @@ public partial class DataProject_Chart : BasePage
 		}
 		if (Session["orders"] != null)
 		{
-			orders = (List<DxChartOrder>)Session["orders"];
+			List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
 			if (orders.Count > 0)
 			{
 				//callbackCharts.Controls.Clear();
@@ -1011,6 +1019,22 @@ public partial class DataProject_Chart : BasePage
 			gvSelectedVars.DataBind();
 
 
+			var x = from f in dt.AsEnumerable()
+					select new
+					{
+						Measure = f.Field<string>("measname"),
+						Variable = f.Field<string>("varname"),
+						Label = f.Field<string>("FieldLabel"),
+						DataType = f.Field<string>("DataType"),
+						VarType = f.Field<string>("vartype")
+
+					};
+
+			DataTable dtvars = x.CustomCopyToDataTable();
+
+
+			Session["selectedvars"] = dtvars;
+
 
 			gvSelectedVars.Visible = true;
 			lblVarLabels.Visible = true;
@@ -1445,9 +1469,9 @@ public partial class DataProject_Chart : BasePage
 
 	protected void callbackCharts_OnCallback(object source, CallbackEventArgsBase e)
 	{
-		log(String.Format(">>> callbackCharts_OnCallback {0}", e.Parameter.ToString()));
-		//CreateCharts();
-		bool isNewOrder = true; bool isNotNewOrder = false;
+		log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackCharts_OnCallback {0}", e.Parameter.ToString()));
+
+		List<DxChartOrder> existingorders = (List<DxChartOrder>)Session["orders"];
 
 		var p = e.Parameter;
 		
@@ -1459,26 +1483,78 @@ public partial class DataProject_Chart : BasePage
 		{
 			List<string> ps = p.Split('|').ToList();
 
-			DxChartOrder order = orders[Convert.ToInt32(ps[1])-1];
-			CreateCharts(order, isNotNewOrder);
+			int idx = Convert.ToInt32(ps[1]) - 1;
+
+			DxChartOrder oldorder = existingorders[idx];
+			List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder>() { oldorder });
+			DeliverChartsToPage(completedoldorders);
+
+			//if (oldorder.isOrderFilled)
+			//{
+			//	DeliverChartsToPage(oldorder);
+			//}
+			//else
+			//{
+			//	List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder>() { oldorder });
+			//	DeliverChartsToPage(completedoldorders);
+			//	existingorders[idx] = completedoldorders[0];
+			//	Session["orders"] = existingorders;
+			//}
+
+
 		}
 		else if (p == "NewOrder")
 		{
-			DxChartOrder order = GatherOrder();
-			CreateCharts(order);
+			DxChartOrder neworder = GatherOrder();
+			List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworder });
+			DeliverChartsToPage(completedneworders);
 		}
 		else if (p == "SaveNewOrder")
 		{
-			DxChartOrder order = GatherOrder();
-			CreateCharts(order, true);
+			DxChartOrder neworder = GatherOrder();
+			List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworder});
+			DeliverChartsToPage(completedneworders);
+			existingorders.Add(completedneworders[0]); //Just add the first as only 1 order was placed
+			Session["orders"] = existingorders;
+
+
+			//need to return the orders and save to session variable
+
+			//if (saveOrder)
+			//{
+			//	//myorders[0].UpdateCounts(factory);
+			//	List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
+			//	orders.Add(myorders[0]);
+			//	Session["orders"] = orders;
+			//}
+
 		}
 		else if (p.StartsWith("DisplayAllOrders"))
 		{
-			CreateCharts(orders);
+			List<DxChartOrder> completedorders = PlaceOrders(existingorders);
+			DeliverChartsToPage(completedorders);
+			//Session["orders"] = completedorders;
+
+
 		}
 		else if (p == "Docx")
 		{
-			CreateCharts(orders, "docx");
+			string path = @"c:\_temp\factory\";
+
+			DxChartFactory factory = new DxChartFactory(dpdata.dt, existingorders);
+			DeliverChartsToPage(factory);
+			DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
+			
+
+
+
+			//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+			//CreateCharts(orders, "docx");
+			//if (exportfiletype == "docx")
+			//{
+			//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+			//}
+
 		}
 	}
 
@@ -1486,6 +1562,7 @@ public partial class DataProject_Chart : BasePage
 
 	protected void gridOrders_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
 	{
+		log(">>>>>>>>>>>>>>>>>>>>>>>> gridOrders_CustomButtonCallback ");
 		if (e.ButtonID == "OldOrder")
 		{
 			//display this order
@@ -1499,7 +1576,9 @@ public partial class DataProject_Chart : BasePage
 
 	protected void callbackOrders_OnCallback(object source, CallbackEventArgsBase e)
 	{
+		log(">>>>>>>>>>>>>>>>>>>>>>>> callbackOrders_OnCallback  ");
 		var p = e.Parameter;
+		List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
 
 		if (p.StartsWith("RemoveOrder"))
 		{
@@ -1535,58 +1614,127 @@ public partial class DataProject_Chart : BasePage
 	}
 
 
-
-
-	protected void CreateCharts(DxChartOrder myorder)
+	protected List<DxChartOrder> PlaceOrders(List<DxChartOrder> myorders)
 	{
-		List<DxChartOrder> myorders = new List<DxChartOrder>() { myorder };
-		CreateCharts(myorders, false, "");
-	}
-	protected void CreateCharts(DxChartOrder myorder, bool saveOrder)
-	{
-		List<DxChartOrder> myorders = new List<DxChartOrder>() { myorder };
-		CreateCharts(myorders, saveOrder, "");
-	}
-
-	protected void CreateCharts(List<DxChartOrder> myorders)
-	{
-		CreateCharts(myorders, false, "");
-	}
-	protected void CreateCharts(List<DxChartOrder> myorders, string exportfiletype)
-	{
-		CreateCharts(myorders, false, exportfiletype);
-	}
-
-	protected void CreateCharts(List<DxChartOrder> myorders, bool saveOrder, string exportfiletype)
-	{
-		log("----- CreateCharts -----");
-
+		log("-------------------- PlaceOrders --------------------");
 
 		DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
 
+		//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
 
-		if(saveOrder)
-		{
-			//myorders[0].UpdateCounts(factory);
-			orders.Add(myorders[0]);
-			Session["orders"] = orders;
-		}
+		return factory.orders;
 
-		DeliverChartsToPage(factory);
 
-		if (exportfiletype == "docx")
-		{
-			DxDoc doc = new DxDoc(factory, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
-			//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-		}
+		////Check if orders are filled
+		//bool needToFillOrders = true;
 
-		SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
+		//foreach (DxChartOrder order in myorders)
+		//{
+		//	if (order.isOrderFilled) needToFillOrders = false;
+		//}
+
+
+		////if (saveOrder)
+		////{
+		////	//myorders[0].UpdateCounts(factory);
+		////	List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
+		////	orders.Add(myorders[0]);
+		////	Session["orders"] = orders;
+		////}
+
+		//if (needToFillOrders)
+		//{
+		//	DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
+		//	//DeliverChartsToPage(factory);
+		//	return factory.orders;
+
+		//}
+		//else
+		//{
+		//	return myorders;
+		//	//DeliverChartsToPage(myorders);
+		//}
+
+
+		//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
 	}
+
+
+	//protected void CreateCharts(DxChartOrder myorder)
+	//{
+	//	List<DxChartOrder> myorders = new List<DxChartOrder>() { myorder };
+	//	CreateCharts(myorders, false, "");
+	//}
+	//protected void CreateCharts(DxChartOrder myorder, bool saveOrder)
+	//{
+	//	List<DxChartOrder> myorders = new List<DxChartOrder>() { myorder };
+	//	CreateCharts(myorders, saveOrder, "");
+
+	//	if (saveOrder)
+	//	{
+	//		//myorders[0].UpdateCounts(factory);
+	//		List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
+	//		orders.Add(myorders[0]);
+	//		Session["orders"] = orders;
+	//	}
+
+	//}
+
+	//protected void CreateCharts(List<DxChartOrder> myorders)
+	//{
+	//	CreateCharts(myorders, false, "");
+	//}
+	//protected void CreateCharts(List<DxChartOrder> myorders, string exportfiletype)
+	//{
+	//	CreateCharts(myorders, false, exportfiletype);
+	//}
+
+	//protected void CreateCharts(List<DxChartOrder> myorders, string exportfiletype)
+	//{
+	//	log("-------------------- CreateCharts --------------------");
+
+	//	//Check if orders are filled
+	//	bool needToFillOrders = true;
+
+	//	foreach(DxChartOrder order in myorders)
+	//	{
+	//		if (order.isOrderFilled  ) needToFillOrders = false;
+	//	}
+
+
+	//	//if (saveOrder)
+	//	//{
+	//	//	//myorders[0].UpdateCounts(factory);
+	//	//	List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
+	//	//	orders.Add(myorders[0]);
+	//	//	Session["orders"] = orders;
+	//	//}
+
+	//	if (needToFillOrders)
+	//	{
+	//		DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
+	//		DeliverChartsToPage(factory);
+
+	//		if (exportfiletype == "docx")
+	//		{
+	//			DxDoc doc = new DxDoc(factory, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+	//		}
+	//	}
+	//	else
+	//	{
+	//		DeliverChartsToPage(myorders);
+	//	}
+
+
+	//	//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
+	//}
 
 
 
 	protected DxChartOrder GatherOrder()
 	{
+
+
 		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
 		DxChartOrder order = new DxChartOrder();
 
@@ -1614,6 +1762,12 @@ public partial class DataProject_Chart : BasePage
 			if (mysettings.HasVars) order.list_settings.Add(mysettings);
 		}
 
+		if (txtFilter.Text != "")
+		{
+			order.filter = txtFilter.Text;
+		}
+
+			order.dt = (DataTable)Session["selectedvars"];
 
 		return order;
 	}
@@ -1742,14 +1896,34 @@ public partial class DataProject_Chart : BasePage
 
 	protected void DeliverChartsToPage(DxChartFactory factory) 
 	{
+		DeliverChartsToPage(factory.orders);
+	}
+
+	protected void DeliverChartsToPage(DxChartOrder order)
+	{
+		DeliverChartsToPage(new List<DxChartOrder> { order });
+	}
+
+	protected void DeliverChartsToPage(List<DxChartOrder> orders)
+	{
 		callbackCharts.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
 
-		foreach (DxChartOrder order in factory.orders)
+		foreach (DxChartOrder order in orders)
 		{
+			Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
 			foreach (DxChartBatch batch in order.batches)
 			{
+				Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.charts.Count));
 				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
 				callbackCharts.Controls.Add(t);
+
+
+				if (batch.datatables.Count > 0)
+				{
+					System.Web.UI.WebControls.Table t2 = ChartOutput.LayoutBatch(batch, "datatable");
+					callbackCharts.Controls.Add(t2);
+				}
+
 			}
 		}
 	}

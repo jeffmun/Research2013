@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DevExpress.Web;
 using uwac;
 
 namespace uwac
@@ -31,6 +33,22 @@ namespace uwac
 
 			return t;
 		}
+
+		public static Table LayoutBatch(DxChartBatch batch, string obj)
+		{
+			if (obj == "datatable")
+			{
+				Table t = new Table();
+				if (batch.chartlayout == DxChartLayout.Horizontal) t = HorizontalTable(batch, obj);
+				//else if (batch.chartlayout == DxChartLayout.Vertical) t = VerticalTable(batch);
+				//else if (batch.chartlayout == DxChartLayout.Upper) return UpperTable(batch);
+				//else if (batch.chartlayout == DxChartLayout.UpperDiag) return UpperDiagTable(batch);
+
+				return t;
+			}
+			else return null;
+		}
+
 
 
 		#region UpperDiag
@@ -265,7 +283,14 @@ namespace uwac
 
 
 
+
 		public static Table HorizontalTable(DxChartBatch batch)
+		{
+
+			return HorizontalTable(batch, "chart");
+		}
+
+		public static Table HorizontalTable(DxChartBatch batch, string obj)
 		{
 			Table t = new Table();
 
@@ -285,21 +310,28 @@ namespace uwac
 						int newH = Convert.ToInt32(batch.charts[counter].H);
 
 						DxChart thisdxchart = batch.charts[counter];
-						if (thisdxchart.chart == null ) // | thisdxchart.chart.Series.Count == 0)
+						if (thisdxchart.chart == null) // | thisdxchart.chart.Series.Count == 0)
 						{
 							addcell = !batch.settings.hideEmptyCharts;
 							//if we want to hideEmptyCharts (=T, that is Not Show It) then we don't want to add the cell.
 							//if we don't want to hideEmptyCharts (=F, that is Show It) then we do want to add the cell.
 							string thisdxchart_info = String.Format("# series={0}   # vars={1}   emptymsg={2} "
-								, thisdxchart.chart.Series.Count, batch.settings.numvars.Count ,thisdxchart.emptymsg);
+								, thisdxchart.chart.Series.Count, batch.settings.numvars.Count, thisdxchart.emptymsg);
 
 							PlaceTextInCell(c, thisdxchart_info);
 						}
 						else
 						{
-							PlaceChartInCell(batch.charts[counter], c, newW, newH);
+							if (obj == "chart")
+							{
+								PlaceChartInCell(batch.charts[counter], c, newW, newH);
+							}
+							else if (obj == "datatable")
+							{
+								PlaceTableInCell(batch.datatables[counter], c );
+							}
+							counter++;
 						}
-						counter++;
 					}
 					if (addcell) r.Cells.Add(c);
 				}
@@ -535,6 +567,23 @@ namespace uwac
 			lbl.ForeColor = color;
 			container.Controls.Add(lbl);
 		}
+
+		#region PlaceTableInCell
+
+		public static void PlaceTableInCell(DataTable dt, TableCell container)
+		{
+			ASPxGridView gv = new ASPxGridView();
+			gv.AutoGenerateColumns = true;
+			gv.SettingsPager.PageSize = 50;
+			gv.DataSource = dt;
+			gv.DataBind();
+
+			container.Controls.Add(gv);
+		}
+
+
+
+		#endregion
 
 
 		#region PlaceChartInCell

@@ -23,6 +23,7 @@
       <siteMapNode url="~/Track/Actions.aspx" title="Actions" description="*New page as of Sept 2017" />
       <siteMapNode url="~/Track/Measures.aspx" title="Measures" description="*New page as of Sept 2017" />
       <siteMapNode url="~/Track/Subject.aspx" title="View Single Subject" description="*New page as of Sept 2017" />
+      <siteMapNode url="~/Track/SubjectMatrix.aspx" title="View Subject Matrix" description="View Matrix of Persons and Subjects across multiple studies" />
       <siteMapNode url="" title="Specific Studies">
         <siteMapNode url="" title="AVH" menuitem="true">
           <siteMapNode url="~/Study/AVH/ProcessData.aspx" title="Process Data" menuitem="true" />

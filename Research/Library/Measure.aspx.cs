@@ -202,6 +202,7 @@ public partial class Library_Measure : BasePage
 			lblDocUploadInfo.ForeColor = Color.DarkRed;
 		}
 
+		LoadDocs(measureID);
 	}
 
 

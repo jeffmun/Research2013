@@ -54,24 +54,15 @@ public partial class _test_testchart : BasePage
 	{
 		panel.Controls.Clear();
 
-		double[][] samples =
-{
-			 new double[] {  6,  8,  4,  5,  3,  4 }, // records for the first group
-		     new double[] {  8, 12,  9, 11,  6,  8 }, // records for the second group
-		     new double[] { 13,  9, 11,  8,  7, 12 }, // records for the third group
-		 };
+	
 
-		double[] foo = new double[] { 130, 90, 110, 80, 70, 120};
-
-		//samples.Add(foo);
-
-		Anova();
+		AnovaTest();
 
 		BarTest();
 	}
 
 
-	protected void Anova()
+	protected void AnovaTest()
 	{
 		string[] vars = new string[] { "species", "petalwidth" };
 
@@ -96,68 +87,7 @@ public partial class _test_testchart : BasePage
 		PlaceAnovaTable(anova4, "petalwidth", "species",4);
 
 
-
-
-
-		//// Create a new data projection (column) filter
-		//var filter = new Codification(dt, new string[] { "species", "group" });
-		//// Apply the filter and get the result
-		//DataTable result = filter.Apply(dt, new string[] { "species", "petalwidth" });
-
-		//string[] names1;
-		//string[] names2;
-
-		//double[,] mat1 = result.ToMatrix(out names1).Transpose();
-		//double[][] mat2 = result.ToJagged(out names2).Transpose();
-
-
-		////double[][] foo = Matrix.ToJagged(dt);
-
-
-		////OneWayAnova anova1 = new OneWayAnova(mat1[,3], );
-
-		//string[] ivlevels = dt.AsEnumerable().Select(f => f.Field<string>("species")).Distinct().ToArray();
-
-		//double[] x2 = mat1.GetColumn(2);
-		//double[] x3 = mat1.GetColumn(3);
-		//double[] x4 = mat1.GetColumn(4);
-		//double[] x5 = mat1.GetColumn(5);
-		//int[] y = mat1.GetColumn(0).ToInt32();
-
-
-		//double[] y0 = dt.AsEnumerable().Where(f => f.Field<string>("species") == ivlevels[0]).Select(f => f.Field<double>("petalwidth")).ToArray();
-		//double[] y1 = dt.AsEnumerable().Where(f => f.Field<string>("species") == ivlevels[1]).Select(f => f.Field<double>("petalwidth")).ToArray();
-		//double[] y2 = dt.AsEnumerable().Where(f => f.Field<string>("species") == ivlevels[2]).Select(f => f.Field<double>("petalwidth")).ToArray();
-
-		//double[][] newy = new double[][]
-		//{
-		//	y0, y1, y2
-		//};
-
-
-
-
-		//// To do it, he runs an ANOVA test:
-		//OneWayAnova anova2 = new OneWayAnova(x2, y);
-		//OneWayAnova anova3 = new OneWayAnova(x3, y);
-		//OneWayAnova anova4 = new OneWayAnova(x4, y);
-		//OneWayAnova anova5 = new OneWayAnova(x5, y);
-
-
-		//PlaceAnovaTable(anova2);
-		//PlaceAnovaTable(anova3);
-		//PlaceAnovaTable(anova4);
-		//PlaceAnovaTable(anova5);
-
-
-		//string[] inputColumnNames;
-
-		////double[][] sourceMatrix = dt.ToJagged(vars, out inputColumnNames);
-		//double[][] sourceMatrix = dt.ToJagged(vars);
-
-		//double[,] matrix = dt.ToMatrix(vars);
-
-
+			   
 	}
 
 
@@ -203,7 +133,7 @@ public partial class _test_testchart : BasePage
 		var t = anova.Table;
 
 		ASPxGridView gv = new ASPxGridView();
-		gv.SettingsText.Title = String.Format("ANOVA: <b>{0}</b> by {1}",dv, iv);
+		gv.SettingsText.Title = String.Format("One-way ANOVA: <b>{0}</b> by {1}",dv, iv);
 		gv.Settings.ShowTitlePanel = true;
 
 		gv.DataSource = anova.Table;
@@ -241,24 +171,27 @@ public partial class _test_testchart : BasePage
 
 	protected void BarTest()
 	{
-
 		DataTable dt = AccordUtils.Iris();
+		List<DxChartOrder> orders = new List<DxChartOrder>();
+
+		DxBarchartSettings b1 = test_bar("species", "variable");
+		DxBarchartSettings b2 = test_bar("variable", "species");
+		DxBarchartSettings b3 = test_bar("group", "variable");
+		DxBarchartSettings b4 = test_bar("variable", "group");
+		DxBarchartSettings b5 = test_bar("variable", "group");
+
+		orders.Add(new DxChartOrder(b1, b1.numvars));
+		orders.Add(new DxChartOrder(b2, b2.numvars));
+		orders.Add(new DxChartOrder(b3, b3.numvars));
+		orders.Add(new DxChartOrder(b4, b4.numvars));
+
+		orders.Add(new DxChartOrder(b5, b5.numvars));
 
 
-
-		DxChartOrders orders = new DxChartOrders();
-
-		orders.Add(new DxChartOrder() { settingsbar = test_bar("species", "variable"), vars = test_bar("species", "variable").numvars });
-		orders.Add(new DxChartOrder() { settingsbar = test_bar("variable", "species"), vars = test_bar( "variable", "species").numvars });
-		orders.Add(new DxChartOrder() { settingsbar = test_bar("group", "variable"), vars = test_bar("group", "variable").numvars });
-		orders.Add(new DxChartOrder() { settingsbar = test_bar("variable", "group"), vars = test_bar("variable", "group").numvars });
-
-		orders.Add(new DxChartOrder() { settingsbar = test_bar("species", "group", "petalwidth"), vars = test_bar("species", "group", "petalwidth").numvars });
-
-		orders[3].settingsbar.H = 200;
-		orders[3].settingsbar.W = 600;
-		orders[4].settingsbar.H = 200;
-		orders[4].settingsbar.W = 600;
+		orders[3].list_settings[0].H = 200;
+		orders[3].list_settings[0].W = 600;
+		orders[4].list_settings[0].H = 200;
+		orders[4].list_settings[0].W = 600;
 
 
 		foreach (DxChartOrder order in orders)
@@ -272,10 +205,13 @@ public partial class _test_testchart : BasePage
 	{
 		DxChartFactory factory = new DxChartFactory(dt, order);
 
-		foreach (DxBatchOcharts batch in factory.batches)
+		foreach (DxChartOrder myorder in factory.orders)
 		{
-			System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-			panel.Controls.Add(t);
+			foreach (DxChartBatch batch in myorder.batches)
+			{
+				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
+				panel.Controls.Add(t);
+			}
 		}
 
 	}
@@ -283,21 +219,21 @@ public partial class _test_testchart : BasePage
 
 
 
-	protected DxBarchartSettings test_bar(string xaxis, string colorvar, string value)
+	public DxBarchartSettings test_bar(string xaxis, string colorvar, string value)
 	{
 		return test_bar(xaxis, colorvar, new List<string> { value } );
 	}
 
-	protected DxBarchartSettings test_bar(string xaxis, string colorvar)
+	public DxBarchartSettings test_bar(string xaxis, string colorvar)
 	{
 		List<string> vars = new List<string> { "sepallength", "sepalwidth", "petallength", "petalwidth" };
 		return test_bar( xaxis, colorvar, vars);
 	}
 
-	protected DxBarchartSettings test_bar(string xaxis, string colorvar, List<string> vars)
+	public DxBarchartSettings test_bar(string xaxis, string colorvar, List<string> vars)
 	{
 
-		DxBarchartSettings s = new DxBarchartSettings();
+	DxBarchartSettings s = new DxBarchartSettings();
 		s.colors = Actigraph.colors;
 		s.numvars = vars;
 		s.xaxisvar = xaxis;

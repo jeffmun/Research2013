@@ -31,14 +31,19 @@ namespace uwac
 	[Serializable]
 	public class DxChartOrder
 	{
+		private DataTable _dt;
+		private string _filter;
 		private List<string> _vars;
 		public List<string> vars { get { return _vars; } set { _vars = value; } }
 		public string worksheet { get; set; }
-		public int numHist { get; set; }
-		public int numBar { get; set; }
-		public int numScat { get; set; }
-		public int numLine { get; set; }
+		public bool isOrderFilled { get; set; }
+		//public int numHist { get; set; }
+		//public int numBar { get; set; }
+		//public int numScat { get; set; }
+		//public int numLine { get; set; }
 
+		public DataTable dt { get; set; }
+		public string filter { get; set; }
 
 		private List<DxChartBatch> _batches;
 		public List<DxChartBatch> batches { get { return _batches; } set { _batches = value; } }
@@ -57,73 +62,62 @@ namespace uwac
 
 		public DxChartOrder()
 		{
-			_batches = new List<DxChartBatch>();
 			_list_settings = new List<DxChartSettings>();
 			_vars = new List<string>();
+			Initialize();
 		}
 		public DxChartOrder(List<string> vars)
 		{
-			_batches = new List<DxChartBatch>();
 			_list_settings = new List<DxChartSettings>();
+			_vars = vars; 
+			Initialize();
+		}
+		public DxChartOrder(DxChartSettings settings, List<string> vars)
+		{
+			_list_settings = new List<DxChartSettings>() { settings };
 			_vars = vars;
+			Initialize();
+		}
+
+		public void Initialize()
+		{
+			_batches = new List<DxChartBatch>();
+			isOrderFilled = false;
 		}
 
 		public void PrepareInvoice()
 		{
 			_invoice = new DxInvoice(_batches);
+
+			if (_invoice.processedvars.Count > 0 
+			& (_invoice.numHist + _invoice.numBar + _invoice.numLine + _invoice.numScat) > 0) isOrderFilled = true;
+
 		}
+		
 
-		//public void PopulateVars()
-		//{
+		public string InvoiceToString()
+		{
+			if (_invoice != null)
+			{
 
-		//	if (settingshist != null) _vars.AddRange(settingshist.numvars.Except(_vars));
-		//	if (settingsbar != null) _vars.AddRange(settingsbar.numvars.Except(_vars));
-		//	if (settingsscat != null) _vars.AddRange(settingsscat.numvars.Except(_vars));
-		//	if (settingsline != null) _vars.AddRange(settingsline.numvars.Except(_vars));
+				string charts = String.Format("{0}{1}{2}{3}"
+					, (_invoice.numHist > 0) ? String.Format("Hist({0})", _invoice.numHist) : ""
+					, (_invoice.numBar > 0) ? String.Format(" Bar({0})", _invoice.numBar) : ""
+					, (_invoice.numLine > 0) ? String.Format(" Line({0})", _invoice.numLine) : ""
+					, (_invoice.numScat > 0) ? String.Format(" Scat({0})", _invoice.numScat) : ""
+					);
 
-		//	try
-		//	{
-		//		if (settingshist != null) _vars.AddRange(settingshist.agevars.Except(_vars));
-		//	}
-		//	catch (Exception ex) { }
-		//	try
-		//	{
-		//		if (settingsbar != null) _vars.AddRange(settingsbar.agevars.Except(_vars));
-		//	}
-		//	catch (Exception ex) { }
-		//	try
-		//	{
-		//		if (settingsscat != null) _vars.AddRange(settingsscat.agevars.Except(_vars));
-		//	}
-		//	catch (Exception ex) { }
-		//	try
-		//	{
-		//		if (settingsline != null) _vars.AddRange(settingsline.agevars.Except(_vars));
-		//	}
-		//	catch (Exception ex) { }
+				string myvars = (_invoice.processedvars != null) ? String.Join(",", _invoice.processedvars) : "NONE(?)";
 
+				string filterinfo = (String.IsNullOrEmpty(this.filter)) ? "" : String.Format("Filter: {0}", this.filter);
+				string invoiceinfo = String.Format("Worksheet: {0}    Charts: {1}    {2}", this.worksheet, charts, filterinfo);
 
-		//}
-
-
-
-		//public bool DetermineHasVars()
-		//{
-		//	//if (settingsbar != null )
-		//	//{ if(settingsbar.numvars.Count )}
-		//	//bool bar  = (settingsbar == null) ? false : settingsbar.HasVars;
-		//	//bool hist = (settingshist == null) ? false : settingshist.HasVars;
-		//	//bool scat = (settingsscat == null) ? false : settingsscat.HasVars;
-		//	//bool line = (settingsline == null) ? false : settingsline.HasVars;
-
-		//	//bool hasvars = (bar | scat | hist | line |
-		//	//	settingsactogram != null) ? true : false;
-
-		//	//bool orderhasvars = settingsscat.HasVars;
-		//	bool orderhasvars = true;
-
-		//	return orderhasvars;
-		//}
+				return invoiceinfo;
+			}
+			else{
+				return "Invoice is null.";
+			}
+		}
 
 	}
 
@@ -143,6 +137,7 @@ namespace uwac
 		public int numBar { get { return _numBar; } set { _numBar = value; } }
 		public int numScat { get { return _numScat; } set { _numScat = value; } }
 		public int numLine { get { return _numLine; } set { _numLine = value; } }
+		
 
 		public DxInvoice(List<DxChartBatch> batchlist)
 		{
@@ -165,8 +160,8 @@ namespace uwac
 			}
 
 			_processedvars = _processedvars.Distinct().ToList();
-		}
 
+		}
 	}
 
 

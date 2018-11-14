@@ -120,11 +120,67 @@ public partial class Data_Dictionary: BasePage
 		gridDict.DataSource = dt;
 		gridDict.DataBind();
 
-		
+
+
+		string tblname = sql.StringScalar_from_SQLstring("select tblname from def.tbl where measureID=" + Request.QueryString["mID"]);
+		int nflds = sql.IntScalar_from_SQLstring("select count(*) from information_schema.columns where table_name='" + tblname + "'");
+
+		bool showCreateTableButton = false;
+		if (nflds > 0)
+		{
+			int nrecs = sql.IntScalar_from_SQLstring("select count(*) from " + tblname);
+
+			showCreateTableButton = (nrecs > 0) ? false : true;
+		} 
+		else{
+			showCreateTableButton = true;
+		}
+
+
+		btnCreateTable.Visible = showCreateTableButton;
+
+
 		sql.Close();
 	}
 
+	protected void CreateTable()
+	{
 
+		SQL_utils sql = new SQL_utils("data");
+
+
+		string tblname = sql.StringScalar_from_SQLstring("select tblname from def.tbl where measureID=" + Request.QueryString["mID"]);
+
+		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["mID"]);
+
+		if(tblpk > 0)
+		{
+			try
+			{
+				sql.NonQuery_from_SQLstring("grant alter to webuser;");
+				sql.NonQuery_from_SQLstring("drop table " + tblname );
+				sql.NonQuery_from_SQLstring("revoke alter to webuser;");
+			}
+			catch (Exception ex) { }
+
+			try
+			{
+				sql.NonQuery_from_SQLstring("grant alter to webuser;");
+				//sql.NonQuery_from_SQLstring("grant create table to webuser;");
+				sql.NonQuery_from_SQLstring(String.Format("exec  def.spUTIL_create_table_from_metadata {0}, 1", tblpk));
+				//sql.NonQuery_from_SQLstring("revoke create table to webuser;");
+				sql.NonQuery_from_SQLstring("revoke alter to webuser;");
+			}
+			catch (Exception ex) { }
+
+			int mID = Convert.ToInt32(Request.QueryString["mID"]);
+
+			BindDict(mID);
+
+		}
+
+		sql.Close();
+	}
 
 	protected void BindVallabels(int fvsID)
 	{
@@ -212,13 +268,20 @@ public partial class Data_Dictionary: BasePage
 	{
 		if (e.VisibleIndex == -1) return;
 
-		string status = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fld_status").ToString();
-		string fieldvaluesetID = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fieldvaluesetID").ToString();
+		var dict = (sender as ASPxGridView);
 
-		if (e.ButtonType == ColumnCommandButtonType.Delete)
+		try
 		{
-			e.Visible = (status == "NOT IN SQL Table") ? true : false;
+			string status = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fld_status").ToString();
+			string fieldvaluesetID = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fieldvaluesetID").ToString();
+
+			if (e.ButtonType == ColumnCommandButtonType.Delete)
+			{
+				e.Visible = (status == "NOT IN SQL Table") ? true : false;
+			}
 		}
+		catch(Exception ex)
+		{ }
 
 
 
@@ -244,7 +307,7 @@ public partial class Data_Dictionary: BasePage
 		ASPxGridView gv = (ASPxGridView)sender;
 
 		SQL_utils sql = new SQL_utils("data");
-		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["measureID"]);
+		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["mID"]);
 		e.NewValues.Add("tblpk", tblpk);
 
 		DxDbOps.BuildInsertSqlCode(e, "fld", "data", "def");
@@ -262,7 +325,7 @@ public partial class Data_Dictionary: BasePage
 		ASPxGridView gv = (ASPxGridView)sender;
 
 		SQL_utils sql = new SQL_utils("data");
-		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["measureID"]);
+		int tblpk = sql.IntScalar_from_SQLstring("select tblpk from def.tbl where measureID=" + Request.QueryString["mID"]);
 
 
 
@@ -302,6 +365,17 @@ public partial class Data_Dictionary: BasePage
 
 
 
+	protected void btnMeasInfo_OnClick(object sender, EventArgs e)
+	{
+		string url = "~/Library/Measure.aspx?mID=" + Request.QueryString["mID"];
+		Response.Redirect(url);
+	}
+
+
+	protected void btnCreateTable_OnClick(object sender, EventArgs e)
+	{
+		CreateTable();
+	}
 
 
 	protected void btnCreateNewValueSet_Click(object sender, EventArgs e)

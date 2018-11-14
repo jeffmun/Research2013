@@ -1,7 +1,9 @@
-﻿using DevExpress.Pdf;
+﻿using DevExpress.Office.Utils;
+using DevExpress.Pdf;
 using DevExpress.XtraRichEdit.API.Native;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -15,6 +17,11 @@ using uwac;
 /// </summary>
 public class DxDoc
 {
+	private string _path;
+	private string _projtitle;
+	private string _datafile;
+	private string _filename;
+
 	private string _creator_netid; // { get; set; }
 	public bool printDebug { get; set; }
 
@@ -31,7 +38,18 @@ public class DxDoc
 		_creator_netid = netid;
 		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
 	}
+	public DxDoc(DxChartFactory factory, string path, string filename, string projtitle, string datafile, string netid)
+	{
+		_creator_netid = netid;
+		_path = path;
+		_projtitle = projtitle;
+		_datafile = datafile;
+		_filename = filename;
 
+		MakeDocx(factory);
+
+	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	}
 
 	protected void DocxHeader(DevExpress.XtraRichEdit.API.Native.Document doc, string s1, string s2)
 	{
@@ -61,7 +79,7 @@ public class DxDoc
 
 	}
 
-	protected void MakeDocx(DxChartFactory factory, string path, string projtitle, string datafile)
+	protected void MakeDocx(DxChartFactory factory) //, string path, string projtitle, string datafile)
 	{
 		log(" ====== MakeDocx ======");
 		//const float imageLocationX = 40;
@@ -69,35 +87,62 @@ public class DxDoc
 		//int counter = 0;
 		//string path = @"C:\_temp\factory\";
 
-		factory.ChartsToDisk(path);
+		factory.ChartsToDisk(_path, .1, .1);
 
-		string fileName = String.Format(@"{0}{1}", path, "Test.docx");
+		string fileName = String.Format(@"{0}{1}", _path, _filename);
 
 
 		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
 		{
 
 			DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+			doc.Unit = DevExpress.Office.DocumentUnit.Inch;
+			doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+			doc.Sections[0].Margins.Left = 0.5f;
+			doc.Sections[0].Margins.Right = 0.5f;
+			doc.Sections[0].Margins.Top = 0.5f;
+			doc.Sections[0].Margins.Bottom = 0.5f;
 
-			DocxHeader(doc, projtitle, datafile);
+
+			DocxHeader(doc, _projtitle, _datafile);
 
 			DocumentPosition pos = doc.Range.Start;
 			//New Section
 
 			foreach (DxChartOrder order in factory.orders)
 			{
+				doc.Paragraphs.Append(); 
+
+				if(order.dt != null)
+				{
+					AppendDataTable(doc, order.dt);
+					doc.Paragraphs.Append();
+				}
+				doc.AppendSingleLineText(order.InvoiceToString());
+				doc.Paragraphs.Append();
+
+
 				foreach (DxChartBatch batch in order.batches)
 				{
-					foreach (DxChart chart in batch.charts)
-					{
-						string chartfile = String.Format(@"{0}{1}.png", path, chart.guid);
-						log(chartfile);
-						//MemoryStream s = new MemoryStream();
-						//chart.chart.ExportToImage(s, System.Drawing.Imaging.ImageFormat.Png);
-						doc.Images.Insert(pos, DocumentImageSource.FromFile(chartfile));
+					//foreach (DxChart chart in batch.charts)
+					//{
+					//	string chartfile = String.Format(@"{0}{1}.png", _path, chart.guid);
+					//	log(chartfile);
+					//	//MemoryStream s = new MemoryStream();
+					//	//chart.chart.ExportToImage(s, System.Drawing.Imaging.ImageFormat.Png);
 
-					}
+					//	doc.Images.Insert(pos, DocumentImageSource.FromFile(chartfile));
+
+					//	doc.Images[doc.Images.Count - 1].ScaleX = 0.5f;
+					//	doc.Images[doc.Images.Count - 1].ScaleY = 0.5f;
+
+					//}
+					AppendCharts(pos, batch, doc);
+					doc.Paragraphs.Append();
 				}
+
+
+				doc.InsertSection(doc.Range.End);
 			}
 
 
@@ -125,6 +170,181 @@ public class DxDoc
 
 
 	}
+
+
+	private void AppendCharts(DocumentPosition pos, DxChartBatch batch, Document doc)
+	{
+		float scaleX = 0.5f - (batch.maxCol * .03f);
+
+		AppendCharts(pos, batch, doc, scaleX, scaleX);
+
+	}
+		private void AppendCharts(DocumentPosition pos, DxChartBatch batch, Document doc, float scaleX, float scaleY)
+	{
+
+		bool addHeaderRow = true;
+		if (batch.chartlayout == DxChartLayout.Upper)
+		{
+
+			int numrows = (addHeaderRow) ? batch.maxRow + 1 : batch.maxRow;
+
+
+			doc.BeginUpdate();
+			Table t = doc.Tables.Create(doc.Range.End, numrows, batch.maxCol, AutoFitBehaviorType.AutoFitToContents);
+
+			t.Borders.Top.LineColor = Color.White;
+			t.Borders.Bottom.LineColor = Color.White;
+			t.Borders.Left.LineColor = Color.White;
+			t.Borders.Right.LineColor = Color.White;
+
+			t.Borders.InsideHorizontalBorder.LineStyle = TableBorderLineStyle.None;
+			t.Borders.InsideVerticalBorder.LineStyle = TableBorderLineStyle.None;
+
+			if (addHeaderRow)
+			{
+				for(int h=0; h < batch.maxCol; h++)
+				{
+					if(h>0) doc.InsertText(t[0, h].Range.Start, batch.vars[h]);
+					if(h>0) doc.InsertText(t[h, 0].Range.Start, batch.vars[h-1]);
+
+					t.Cell(h, 0).VerticalAlignment = TableCellVerticalAlignment.Center;
+				}
+
+			}
+
+			//t.Rows.Add(CreateHeaderRow(batch.vars, ncols));
+			int counter = 0;
+			for (int r = 0; r < batch.maxRow; r++)
+			{
+				for (int c = r; c < batch.maxCol; c++)
+				{
+					if (c > r)
+					{
+
+						int bumprow = (addHeaderRow) ? 1 : 0;
+
+						int idx = GetDiagIndex(r, c, batch.maxRow);
+
+
+
+						string chartfile = String.Format(@"{0}{1}.png", _path, batch.charts[counter].guid);
+						counter++;
+
+						TableCell cell = t.Cell(r + bumprow, c);
+						doc.Images.Insert(cell.Range.Start, DocumentImageSource.FromFile(chartfile));
+
+						doc.Images[doc.Images.Count - 1].ScaleX = scaleX;
+						doc.Images[doc.Images.Count - 1].ScaleY = scaleY;
+					}
+
+				}
+			}
+
+			
+
+			doc.EndUpdate();
+
+		}
+		else
+		{
+			foreach (DxChart chart in batch.charts)
+			{
+				string chartfile = String.Format(@"{0}{1}.png", _path, chart.guid);
+				log(chartfile);
+				//MemoryStream s = new MemoryStream();
+				//chart.chart.ExportToImage(s, System.Drawing.Imaging.ImageFormat.Png);
+
+				doc.Images.Insert(pos, DocumentImageSource.FromFile(chartfile));
+
+				doc.Images[doc.Images.Count - 1].ScaleX = 0.5f;
+				doc.Images[doc.Images.Count - 1].ScaleY = 0.5f;
+
+			}
+		}
+
+
+
+	}
+
+
+	public int GetDiagIndex(int r, int c, int n)
+	{
+		//k = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1
+		int idx = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1;
+		return idx;
+
+
+
+
+	}
+
+
+	private void AppendDataTable(Document document, DataTable dataTable)
+	{
+		int dataTableRows = dataTable.Rows.Count;
+		int dataTableColumns = dataTable.Columns.Count;
+		List<string> columnsToDisplay = new List<string>();
+
+		for (int i = 0; i < dataTableColumns; i++)
+		{
+			string name = dataTable.Columns[i].ColumnName;
+
+			// Skip PrimaryKey columns
+			if (!name.ToUpper().EndsWith("ID"))
+				columnsToDisplay.Add(name);
+		}
+
+		document.BeginUpdate();
+
+		Table table = document.Tables.Create(document.Range.End, dataTableRows + 1, columnsToDisplay.Count, AutoFitBehaviorType.AutoFitToContents);
+
+		//table.Borders.InsideHorizontalBorder.LineColor = Color.DarkBlue;
+		//table.Borders.InsideVerticalBorder.LineColor = Color.DarkBlue;
+		//table.Borders.InsideHorizontalBorder.LineThickness = 0.5f;
+		//table.Borders.InsideHorizontalBorder.LineStyle = TableBorderLineStyle.Single;
+		//table.Borders.InsideVerticalBorder.LineThickness = 0.5f;
+		//table.Borders.InsideVerticalBorder.LineStyle = TableBorderLineStyle.Single;
+
+		//table.LeftPadding = Units.InchesToDocumentsF(0.01f);
+
+		//table.FirstRow.Height = Units.InchesToDocumentsF(0.5f);
+		//table.FirstRow.HeightType = HeightType.Exact;
+
+		ParagraphProperties pp = document.BeginUpdateParagraphs(table.FirstRow.Range);
+		pp.Alignment = ParagraphAlignment.Left;
+		document.EndUpdateParagraphs(pp);
+
+		CharacterProperties cp = document.BeginUpdateCharacters(table.FirstRow.Range);
+		//cp.FontName = "Courier New";
+		cp.Bold = true;
+		cp.ForeColor = Color.DarkGreen;
+		document.EndUpdateCharacters(cp);
+
+		//for (int i = 0; i < table.FirstRow.Cells.Count; i++)
+		//{
+		//	table.FirstRow.Cells[i].HeightType = HeightType.Auto;
+		//	table.FirstRow.Cells[i].VerticalAlignment = TableCellVerticalAlignment.Top;
+			//table.FirstRow.Cells[i].BackgroundColor = Color.DarkBlue;
+			//table.FirstRow.Cells[i].VerticalAlignment = TableCellVerticalAlignment.Center;
+		//}
+
+		// Fill table header with column names
+		for (int i = 0; i < columnsToDisplay.Count; i++)
+		{
+			document.InsertText(table[0, i].Range.Start, columnsToDisplay[i]);
+		}
+
+		// Fill table body with data
+		table.ForEachCell(delegate (TableCell cell, int rowIndex, int cellIndex) {
+			if (rowIndex > 0)
+			{
+				document.InsertText(cell.Range.Start, dataTable.Rows[rowIndex - 1][columnsToDisplay[cellIndex]].ToString());
+			}
+		});
+		document.EndUpdate();
+	}
+
+
 
 
 	protected float DocxAddPageHeader(PdfGraphics g, int pagenumber, string projtitle, string datafile, string selecteddata)

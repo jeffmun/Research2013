@@ -83,6 +83,10 @@ namespace uwac
 
 		public void ProcessOrder(DxChartOrder order)
 		{
+			//Clear any existing batches.
+			//It doesn't seem like a WebChartControl can perist in a Session var, so I just recreate them when asked for.
+			if (order.batches.Count > 0) order.batches.Clear();   
+
 			//Each order will result in a list of batches
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
 			List<DxChartBatch> batchlist = new List<DxChartBatch>();
@@ -193,8 +197,14 @@ namespace uwac
 			return n;
 		}
 
-
 		public void ChartsToDisk(string path)
+		{
+			double scaleW = .25f;
+			double scaleH = .25f;
+			ChartsToDisk(path, scaleW, scaleH);
+		}
+
+		public void ChartsToDisk(string path, double scaleW, double scaleH)
 		{
 			Debug.WriteLine("----- ChartsToDisk !!!!! -----");
 
@@ -209,8 +219,8 @@ namespace uwac
 							//chartfiles.Add(chart.guid);
 							//string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
 							//chart.chart.SaveToFile(xmlfile);
-							chart.W = Convert.ToInt32(chart.W / 4);
-							chart.H = Convert.ToInt32(chart.H / 2);
+							chart.W = Convert.ToInt32(chart.W * scaleW);
+							chart.H = Convert.ToInt32(chart.H * scaleH);
 
 							chart.chart.ExportToImage(String.Format("{0}{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
 						}

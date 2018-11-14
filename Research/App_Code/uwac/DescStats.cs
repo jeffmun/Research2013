@@ -87,6 +87,18 @@ namespace uwac
 			AddConstantCol();
 
 			RemoveEmptyRows();
+
+			Sort(_groupingvars);
+		}
+
+
+
+		public void Sort( List<string> colnames)
+		{
+			string sort_text = String.Join(",", colnames);
+
+			dt.DefaultView.Sort = sort_text;
+
 		}
 
 		public DataRow GetRowOfStats(DataTable dt, string v)

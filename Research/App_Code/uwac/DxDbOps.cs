@@ -133,8 +133,16 @@ namespace uwac
 
 						string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
 
-						insert_flds.Add(String.Format("{0}", newentry.Key));
-						insert_vals.Add(String.Format("{0}{1}{0}", quote_holder, newentry.Value));
+						string key = newentry.Key.ToString();
+						string val = newentry.Value.ToString();
+
+						if((data_type=="int" | data_type == "smallint" | data_type == "bigint" | data_type == "float" | data_type == "decimal" ) & val=="")
+						{
+							val = "NULL";
+						}
+
+						insert_flds.Add(String.Format("{0}", key));
+						insert_vals.Add(String.Format("{0}{1}{0}", quote_holder, val));
 
 					}
 				}
