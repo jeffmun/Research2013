@@ -13,6 +13,7 @@ using NReco.PivotData.Output;
 using NReco.PivotData.File;
 using uwac;
 using System.Drawing;
+using GoogleChartsNGraphsControls;
 //using DotNet.Highcharts;
 //using DotNet.Highcharts.Options;
 //using DotNet.Highcharts.Helpers;
@@ -549,49 +550,49 @@ public partial class pivotBal : System.Web.UI.Page
 			}
 		}
 
-		DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
+		//DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
 
-		 .InitChart(new Chart { Width = 900, Height = 500 })
+		// .InitChart(new Chart { Width = 900, Height = 500 })
 		
 
-			.SetXAxis(new XAxis
-			{
-				Categories = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" },
+		//	.SetXAxis(new XAxis
+		//	{
+		//		Categories = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" },
 
-			}
-			)
+		//	}
+		//	)
 
-			.SetYAxis(new YAxis
-			{
-				EndOnTick = false
-			})
+		//	.SetYAxis(new YAxis
+		//	{
+		//		EndOnTick = false
+		//	})
 
-			.SetTitle(new Title
-			{
-				Text = ""
-			})
+		//	.SetTitle(new Title
+		//	{
+		//		Text = ""
+		//	})
 
 		   
 
-			 .SetSeries(new[]
-				{
-					new Series { Name = dt.Columns[2].ColumnName, Data = new Data( datapoints[2]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } },
-					new Series { Name = dt.Columns[3].ColumnName, Data = new Data( datapoints[3]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.ShortDash } },
-					new Series { Name = dt.Columns[4].ColumnName, Data = new Data( datapoints[4]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.LongDash } },
-					new Series { Name = dt.Columns[5].ColumnName, Data = new Data( datapoints[5]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = true , Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Solid} },
-					new Series { Name = dt.Columns[6].ColumnName, Data = new Data( datapoints[6]) , Color = Color.FromName("red")  , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } },
-					new Series { Name = dt.Columns[7].ColumnName, Data = new Data( datapoints[7]) , Color = Color.FromName("red")  , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.ShortDash } },
-					new Series { Name = dt.Columns[8].ColumnName, Data = new Data( datapoints[8]) , Color = Color.FromName("red")  , PlotOptionsLine = new PlotOptionsLine {Visible = true , Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Solid} },
-					new Series { Name = dt.Columns[9].ColumnName, Data = new Data( datapoints[9]) , Color = Color.FromName("blue") , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } },
-					new Series { Name = dt.Columns[10].ColumnName, Data = new Data(datapoints[10]), Color = Color.FromName("blue") , PlotOptionsLine = new PlotOptionsLine {Visible = true , Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Solid} }
-					//new Series { Name = dt.Columns[11].ColumnName, Data = new Data(datapoints[11]), Color = Color.FromName("blue") , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } }
-				}
+		//	 .SetSeries(new[]
+		//		{
+		//			new Series { Name = dt.Columns[2].ColumnName, Data = new Data( datapoints[2]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } },
+		//			new Series { Name = dt.Columns[3].ColumnName, Data = new Data( datapoints[3]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.ShortDash } },
+		//			new Series { Name = dt.Columns[4].ColumnName, Data = new Data( datapoints[4]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.LongDash } },
+		//			new Series { Name = dt.Columns[5].ColumnName, Data = new Data( datapoints[5]) , Color = Color.FromName("green"), PlotOptionsLine = new PlotOptionsLine {Visible = true , Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Solid} },
+		//			new Series { Name = dt.Columns[6].ColumnName, Data = new Data( datapoints[6]) , Color = Color.FromName("red")  , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } },
+		//			new Series { Name = dt.Columns[7].ColumnName, Data = new Data( datapoints[7]) , Color = Color.FromName("red")  , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.ShortDash } },
+		//			new Series { Name = dt.Columns[8].ColumnName, Data = new Data( datapoints[8]) , Color = Color.FromName("red")  , PlotOptionsLine = new PlotOptionsLine {Visible = true , Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Solid} },
+		//			new Series { Name = dt.Columns[9].ColumnName, Data = new Data( datapoints[9]) , Color = Color.FromName("blue") , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } },
+		//			new Series { Name = dt.Columns[10].ColumnName, Data = new Data(datapoints[10]), Color = Color.FromName("blue") , PlotOptionsLine = new PlotOptionsLine {Visible = true , Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Solid} }
+		//			//new Series { Name = dt.Columns[11].ColumnName, Data = new Data(datapoints[11]), Color = Color.FromName("blue") , PlotOptionsLine = new PlotOptionsLine {Visible = false, Marker = new PlotOptionsLineMarker{ Enabled = false }, DashStyle=DashStyles.Dash } }
+		//		}
 
-				);
+		//		);
 
 
 
-		ltrChart.Text = chart.ToHtmlString();
+		//ltrChart.Text = chart.ToHtmlString();
 	}
 
 	protected void makehighchart()
@@ -602,23 +603,23 @@ public partial class pivotBal : System.Web.UI.Page
 		object[] BerlinData = { 3.9, 4.2, 5.7, 8.5, 13.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8 };
 
 
-		DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
-			.SetXAxis(new XAxis
-			{
-				Categories = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
-			})
+		//DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
+		//	.SetXAxis(new XAxis
+		//	{
+		//		Categories = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
+		//	})
 
-			 .SetSeries(new[]
-				{
-					new Series { Name = "Berlin", Data = new Data(BerlinData) },
-					new Series { Name = "London", Data = new Data(londonData) } 
-					//object[] londonData = { 3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8 };
-				}
-				);
+		//	 .SetSeries(new[]
+		//		{
+		//			new Series { Name = "Berlin", Data = new Data(BerlinData) },
+		//			new Series { Name = "London", Data = new Data(londonData) } 
+		//			//object[] londonData = { 3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8 };
+		//		}
+		//		);
 
 
 
-		ltrChart.Text = chart.ToHtmlString();
+		//ltrChart.Text = chart.ToHtmlString();
 	}
 
 	protected void showDataTable(DataTable dt)

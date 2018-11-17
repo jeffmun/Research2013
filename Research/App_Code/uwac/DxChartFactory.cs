@@ -114,6 +114,37 @@ namespace uwac
 					PrepareBatch(batch, settings);
 					batchlist.Add(batch);
 				}
+				else if (settings.ChartType == DxChartType.Actogram )
+				{
+					DxActogramSettings mysettings = (DxActogramSettings)settings;
+					mysettings.ChartType = DxChartType.Actogram;
+
+					List<string> varnames = new List<string>() { "id" };
+					varnames.AddRange(mysettings.numvars);
+					varnames.Add(mysettings.xaxisvar);
+					varnames.Add(mysettings.colorvar);
+					varnames.RemoveAll(item => item == "variable");
+					varnames.RemoveAll(item => item == "none");
+
+
+					DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
+
+					DxChartBatch batch2 = new DxChartBatch(DxChartType.Actogram, mysettings);
+
+					foreach (DataSubset subset in subsets.subsets)
+					{
+						DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());
+
+						foreach (DxChart sub in subbatch.charts)
+						{
+							batch2.charts.Add(sub);
+						}
+					}
+					PrepareBatch(batch2, mysettings);
+					batchlist.Add(batch2);
+
+
+				}
 				else if (settings.ChartType == DxChartType.Lineplot)
 				{
 					DxLineplotSettings mysettings = (DxLineplotSettings)settings;

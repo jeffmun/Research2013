@@ -56,6 +56,8 @@ namespace uwac
 		public string emptymsg { get { return _emptymsg; } set { _emptymsg = value; } }
 		public string infomsg { get { return _infomsg; } set { _infomsg = value; } }
 
+		public List<string> _colorLevels { get; set; }
+
 
 		public DxChart()
 		{
@@ -80,9 +82,14 @@ namespace uwac
 			//Panes
 			for (int i = 0; i < numpanes; i++)
 			{
-				_xydiagram.Panes.Add(new XYDiagramPane(String.Format("pane{0}", i)));
+				XYDiagramPane pane = new XYDiagramPane(String.Format("pane{0}", i));
+				pane.Title.Text = String.Format("foo {0}", i);
+				pane.Title.Alignment = StringAlignment.Near;
+				pane.Title.Visibility = DefaultBoolean.True;
+
+				_xydiagram.Panes.Add(pane);
 			}
-			_xydiagram.PaneLayoutDirection = layoutdirection;
+			_xydiagram.PaneLayout.Direction = layoutdirection;
 		}
 
 
@@ -193,6 +200,53 @@ namespace uwac
 		}
 
 
+
+		public Table ManualColorLegend(List<Color> colors)
+		{
+			Table legend = new Table();
+			for (int i = 0; i < this._colorLevels.Count; i++)
+			{
+				string s = this._colorLevels[i];
+				System.Web.UI.WebControls.TableRow tr = new System.Web.UI.WebControls.TableRow();
+				TableCell td1 = new TableCell();
+				TableCell td2 = new TableCell();
+				td1.BackColor = colors[i];
+				td1.Width = 15;
+				td1.Style.Add("padding", "4px");
+				td2.Style.Add("padding", "4px");
+				td2.Text = s;
+				td1.BorderColor = Color.White;
+				td2.BorderColor = Color.White;
+				td1.BorderWidth = 2;
+				td2.BorderWidth = 2;
+				tr.Cells.Add(td1);
+				tr.Cells.Add(td2);
+				legend.Rows.Add(tr);
+			}
+			return legend;
+		}
+
+
+
+	}
+
+
+	public class DxMarkerKinds :  List<MarkerKind>
+	{
+		//List<MarkerKind> _markers = new List<MarkerKind>();
+
+		public DxMarkerKinds()
+		{
+			this.Add(MarkerKind.Circle);
+			this.Add(MarkerKind.Square);
+			this.Add(MarkerKind.Triangle);
+			this.Add(MarkerKind.Cross);
+			this.Add(MarkerKind.Diamond);
+			this.Add(MarkerKind.Star);
+			this.Add(MarkerKind.Pentagon);
+			this.Add(MarkerKind.InvertedTriangle);
+
+		}
 	}
 
 }

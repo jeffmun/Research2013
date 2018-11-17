@@ -111,7 +111,7 @@ public partial class Reports_SleepSummary : BasePage
 
 
 
-		DxLineplotSettings s = new DxLineplotSettings();
+		DxActogramSettings s = new DxActogramSettings();
 		s.W = 1200;
 		s.H = 300;
 		s.seriesby = "id";
@@ -130,15 +130,17 @@ public partial class Reports_SleepSummary : BasePage
 		s.altgeom = LineplotGeom.Star;
 		s.vars_for_altgeom = new List<string> { "white_light" };
 		s.markersize = 8;
-
+		
+	
 
 		DxHistogramSettings hist = new DxHistogramSettings((DxChartSettings)s);
 		hist.numvars = new List<string>() { "activity", "white_light" };
 		hist.W = 400; hist.H = 200;
 		hist.colors = Actigraph.colors;
 
-		DxChartOrder order = new DxChartOrder() { settingsline = s, settingshist = hist };
-
+		DxChartOrder order = new DxChartOrder();
+		order.list_settings.Add(s);
+		order.list_settings.Add(hist);
 
 		
 		DataTable stats1 = utilStats.DataTable_DescStats(ds.Tables["epoch"], true);
@@ -154,41 +156,44 @@ public partial class Reports_SleepSummary : BasePage
 
 		int counter = 0;
 
-		foreach (DxBatchOcharts batch in factory.batches)
+		foreach (DxChartOrder myorder in factory.orders)
 		{
-			if (batch.charttype == DxChartType.Lineplot)
+			foreach (DxChartBatch batch in myorder.batches)
 			{
-				//factory.SetXAxisRange_1day(batch);
-				//factory.SetYAxisRange(batch, s);
-
-				
-				//foreach (DxChart ch in batch.charts)
-				//{
-				//	XYDiagram xy = ch.xydiagram;
-				//	xy.AxisX.DateTimeScaleOptions.MeasureUnit = DateTimeMeasureUnit.Hour;
-				//	xy.AxisX.DateTimeScaleOptions.GridAlignment = DateTimeGridAlignment.Hour;
-				//	xy.AxisX.Label.TextPattern = "{A:t}";
-
-				//	DataRow row = ds.Tables[1].Rows[counter];
-
-				//	Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
-
-				//	ch.AnnotateActogram(stats);
-
-				//	counter++;
-				//}
-			}
-			else
-			{
-				foreach (DxChart ch in batch.charts)
+				if (batch.charttype == DxChartType.Actogram)
 				{
-					XYDiagram xy = ch.xydiagram;
-					xy.AxisX.Label.TextPattern = "{A:n}";
+					batch.SetXAxisRange_1day();
+					batch.SetYAxisRange();
+
+
+					foreach (DxActogram ch in batch.charts)
+					{
+						XYDiagram xy = ch.xydiagram;
+						xy.AxisX.DateTimeScaleOptions.MeasureUnit = DateTimeMeasureUnit.Hour;
+						xy.AxisX.DateTimeScaleOptions.GridAlignment = DateTimeGridAlignment.Hour;
+						xy.AxisX.Label.TextPattern = "{A:t}";
+
+						DataRow row = ds.Tables[1].Rows[counter];
+
+						Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
+
+						ch.AnnotateActogram(stats);
+
+						counter++;
+					}
 				}
-			}
+				else
+				{
+					foreach (DxChart ch in batch.charts)
+					{
+						XYDiagram xy = ch.xydiagram;
+						xy.AxisX.Label.TextPattern = "{A:n}";
+					}
+				}
 
 				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-			panel.Controls.Add(t);
+				panel.Controls.Add(t);
+			}
 		}
 
 

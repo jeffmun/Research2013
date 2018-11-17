@@ -360,9 +360,9 @@ public partial class DataProject_Chart : BasePage
 		PopulateDropdownItems(cboPanelvarHIST, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
 
 
-		PopulateDropdownItems(cboXaxisvarBAR, new List<string> { "variable", "group", "sex" }, false, addtimept);
+		PopulateDropdownItems(cboXaxisvarBAR, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
 		PopulateDropdownItems(cboColorsvarBAR, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
-		PopulateDropdownItems(cboPanelvarBAR, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+		PopulateDropdownItems(cboPanelvarBAR, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
 
 		//PopulateTokenboxItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
 		//PopulateTokenboxItems(cboYaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
@@ -1872,6 +1872,16 @@ public partial class DataProject_Chart : BasePage
 		settings.colors = GetColors();
 		settings.colorvar = cboColorsvarSCAT.Value.ToString();
 		settings.panelvar = cboPanelvarSCAT.Value.ToString();
+
+		settings.widemode = (DxWideMode)Convert.ToInt32(cboWideMode.Value.ToString());
+
+		if(settings.widemode == DxWideMode.OnlyAutoCorrAcrossTimept | settings.widemode == DxWideMode.OnlyWithinTimept)
+		{
+			if (settings.colorvar == "timept" | settings.panelvar == "timept") 
+			{
+				settings.repeatedmeasVarname = "timept";
+			}
+		}
 
 
 		if (chkJitter.Checked)

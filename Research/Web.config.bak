@@ -1,223 +1,242 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
-	<configSections>
-		<sectionGroup name="devExpress">
-			<section name="themes" type="DevExpress.Web.ThemesConfigurationSection, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-			<section name="compression" type="DevExpress.Web.CompressionConfigurationSection, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-			<section name="settings" type="DevExpress.Web.SettingsConfigurationSection, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-			<section name="errors" type="DevExpress.Web.ErrorsConfigurationSection, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-			<section name="resources" type="DevExpress.Web.ResourcesConfigurationSection, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-		</sectionGroup>
-	</configSections>
-	<appSettings>
-		<add key="EmailCredentialUserName" value="autsys" />
-		<add key="EmailCredentialPassword" value="veepS.h5v" />
-		<!--<add key="SQL_REPORT_SERVER_URL" value="https://autism.washington.edu/SQLReportServer?" />
-		<add key="SQL_REPORT_MANAGER_URL" value="https://autism.washington.edu/SQLReports/" />-->
-		<add key="DOCUMENT_LOCATION" value="\\autism-ws03\E$\inetpub\wwwroot\researchgit\webdocs\" />
-		<add key="ONLINE_ACCESS_REQUEST_EMAIL" value="jeffmun@u.washington.edu" />
-		<!--<add key="sqlDataConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=v0130p.host.s.uw.edu;persist security info=False;initial catalog=uwautism_research_data"/>
-		<add key="sqlBackendConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=v0130p.host.s.uw.edu;persist security info=False;initial catalog=uwautism_research_backend"/>-->
-		<add key="sqlDataConnection.ConnectionString" value="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_data;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
-		<add key="sqlBackendConnection.ConnectionString" value="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+  <configSections>
+    <sectionGroup name="devExpress">
+      <section name="themes" type="DevExpress.Web.ThemesConfigurationSection, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="compression" type="DevExpress.Web.CompressionConfigurationSection, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="settings" type="DevExpress.Web.SettingsConfigurationSection, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="errors" type="DevExpress.Web.ErrorsConfigurationSection, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="resources" type="DevExpress.Web.ResourcesConfigurationSection, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+    </sectionGroup>
+  </configSections>
+  <appSettings>
+    <add key="EmailCredentialUserName" value="autsys" />
+    <add key="EmailCredentialPassword" value="veepS.h5v" />
+    <!--<add key="SQL_REPORT_SERVER_URL" value="https://autism.washington.edu/SQLReportServer?" />
+    <add key="SQL_REPORT_MANAGER_URL" value="https://autism.washington.edu/SQLReports/" />-->
+    <add key="DataUploadPath" value="~/APP_DATA/DataUploads/" />
+    <add key="DOCUMENT_LOCATION" value="\\autism-ws03\E$\inetpub\wwwroot\researchgit\webdocs\" />
+    <add key="ONLINE_ACCESS_REQUEST_EMAIL" value="jeffmun@u.washington.edu" />
+    <!--<add key="sqlDataConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=v0130p.host.s.uw.edu;persist security info=False;initial catalog=uwautism_research_data"/>
+    <add key="sqlBackendConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=v0130p.host.s.uw.edu;persist security info=False;initial catalog=uwautism_research_backend"/>-->
+    <add key="sqlDataConnection.ConnectionString" value="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_data;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+    <add key="sqlBackendConnection.ConnectionString" value="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+    <!--<add key="sqlDataConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-WS03\SQLWS03;persist security info=False;initial catalog=uwautism_research_data" />
+    <add key="sqlBackendConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-WS03\SQLWS03;persist security info=False;initial catalog=uwautism_research_backend" />-->
+    <!--<add key="sqlDataConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-SQL;persist security info=False;initial catalog=uwautism_research_data" />
+    <add key="sqlBackendConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-SQL;persist security info=False;initial catalog=uwautism_research_backend" />-->
+    <add key="WEB_ROOT" value="https://uwac.autism.washington.edu/research/" />
+    <add key="GeneEventsFolderPath" value="~/APP_DATA/GeneEvents/" />
+    <add key="ChartImageHandler" value="storage=file;timeout=20;" />
+    <add key="MasterTitle" value="UW Autism Center Research Database 2018" />
+    <add key="MasterSubtitle" value="**LOCAL DEV**" />
+    <add key="LDAPpath" value="LDAP://autism.washington.edu/DC=autism,DC=washington,DC=edu" />
+    <add key="LDAPdomain" value="AUTISM\" />
+    <add key="TrackingFolder" value="Track" />
+    <add key="SiteFolder" value="local" />
+    <add key="sitemap_filename" value="web1.sitemap" />
+  </appSettings>
+  <connectionStrings>
+    <!--<add name="TRACKING_CONN_STRING" connectionString="INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;" />
+    <add name="DATA_CONN_STRING" connectionString="INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_data;" />
+    <add name="NDAR_CONN_STRING" connectionString="INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=NDAR;" />-->
+    <!--<add name="waitlistConnectionString" connectionString="Data Source=AUTISM-WS03\SQLWS03;Initial Catalog=waitlist;Integrated Security=True" providerName="System.Data.SqlClient" /> -->
+    <!--POINT TO V0130 for local development-->
+    <add name="TRACKING_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+    <add name="DATA_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_data;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+    <!--<add name="TRACKING_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient"/>
+    <add name="DATA_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_data;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient"/>-->
+    <add name="NDAR_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=NDAR;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+    <add name="waitlistConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=waitlist;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+    <add name="reviewScheduleConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=review_schedule;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+    <add name="mobileDeviceConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=mobile_devices;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+    <add name="FinMart_ConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=FinMart;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+    <add name="VTRACKING_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+  </connectionStrings>
+  <system.net>
+    <mailSettings>
+      <smtp deliveryMethod="Network">
+        <network host="smtp.washington.edu" port="587" />
+      </smtp>
+    </mailSettings>
+  </system.net>
+  <!--
+    For a description of web.config changes see http://go.microsoft.com/fwlink/?LinkId=235367.
 
-		<!--<add key="sqlDataConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-WS03\SQLWS03;persist security info=False;initial catalog=uwautism_research_data" />
-		<add key="sqlBackendConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-WS03\SQLWS03;persist security info=False;initial catalog=uwautism_research_backend" />-->
-		<!--<add key="sqlDataConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-SQL;persist security info=False;initial catalog=uwautism_research_data" />
-		<add key="sqlBackendConnection.ConnectionString" value="packet size=4096;integrated security=SSPI;data source=AUTISM-SQL;persist security info=False;initial catalog=uwautism_research_backend" />-->
-		<add key="WEB_ROOT" value="https://uwac.autism.washington.edu/research/" />
-		<add key="GeneEventsFolderPath" value="~/APP_DATA/GeneEvents/" />
-		<add key="ChartImageHandler" value="storage=file;timeout=20;" />
-		<add key="MasterTitle" value="UW Autism Center Research Database 2018" />
-		<add key="MasterSubtitle" value="**LOCAL DEV**" />
-		<add key="LDAPpath" value="LDAP://autism.washington.edu/DC=autism,DC=washington,DC=edu" />
-		<add key="LDAPdomain" value="AUTISM\" />
-		<add key="TrackingFolder" value="Track" />
-		<add key="SiteFolder" value="local" />
-		<add key="sitemap_filename" value="web1.sitemap" />
-	</appSettings>
-	<connectionStrings>
-		<!--<add name="TRACKING_CONN_STRING" connectionString="INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;" />
-		<add name="DATA_CONN_STRING" connectionString="INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_data;" />
-		<add name="NDAR_CONN_STRING" connectionString="INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-SQL;PERSIST SECURITY INFO=False;INITIAL CATALOG=NDAR;" />-->
-		<!--<add name="waitlistConnectionString" connectionString="Data Source=AUTISM-WS03\SQLWS03;Initial Catalog=waitlist;Integrated Security=True" providerName="System.Data.SqlClient" /> -->
-		<!--POINT TO V0130 for local development-->
-		<add name="TRACKING_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
-		<add name="DATA_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_data;User Id=webuser;Password=Polka!234;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
+    The following attributes can be set on the <httpRuntime> tag.
+      <system.Web>
+        <httpRuntime targetFramework="4.5.2" />
+      </system.Web>
+  -->
+  <system.web>
+    <!-- requestValidationMode="2.0" was added to temporarily save SVG code in a hidden field for rendering to PDF-->
+    <!--<httpRuntime maxRequestLength="1048576" requestValidationMode="2.0"/>-->
+    <httpRuntime maxRequestLength="104857600" />
+    <pages controlRenderingCompatibilityVersion="3.5">
+      <controls>
+        <!--<add tagPrefix="asp" namespace="System.Web.UI" assembly="System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>-->
+        <add tagPrefix="highcharts" namespace="Highcharts.UI" assembly="Highcharts" />
+        <add tagPrefix="obout" namespace="Obout.Grid" assembly="obout_Grid_NET" />
+        <add tagPrefix="obout" namespace="Obout.Interface" assembly="obout_Interface" />
+      </controls>
+    </pages>
+    <httpHandlers>
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="DX.ashx" validate="false" />
+      <add type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" validate="false" />
+    </httpHandlers>
+    <!--commented out JM DEC2015-->
+    <!--<remove verb="*" path="*.asmx" />
+      <add verb="*" path="*.asmx" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      <add verb="*" path="*_AppService.axd" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      <add verb="GET,HEAD" path="ScriptResource.axd" type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" validate="false" />-->
+    <!--
+  This configures the HttpHandler option (HighchartsExport.axd). With this
+  option you can delete the HighchartsExport.aspx page. This section is not 
+  required if you prefer the .aspx page and don't want to use the HttpHandler.
+  
+  You can specify any name for the handler in path="..."  
 
-		<!--<add name="TRACKING_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient"/>
-		<add name="DATA_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_data;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient"/>-->
-		<add name="NDAR_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=NDAR;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
-		<add name="waitlistConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=waitlist;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
-		<add name="reviewScheduleConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=review_schedule;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
-		<add name="mobileDeviceConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=mobile_devices;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
-		<add name="FinMart_ConnectionString" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=FinMart;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
-		<add name="VTRACKING_CONN_STRING" connectionString="Data Source=v0130p.host.s.uw.edu;Initial Catalog=uwautism_research_backend;Integrated Security=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" providerName="System.Data.SqlClient" />
-	</connectionStrings>
-	<system.net>
-		<mailSettings>
-			<smtp deliveryMethod="Network">
-				<network host="smtp.washington.edu" port="587" />
-			</smtp>
-		</mailSettings>
-	</system.net>
-	<system.web>
-		<!-- requestValidationMode="2.0" was added to temporarily save SVG code in a hidden field for rendering to PDF-->
-		<!--<httpRuntime maxRequestLength="1048576" requestValidationMode="2.0"/>-->
-		<httpRuntime maxRequestLength="1048576" />
-		<pages controlRenderingCompatibilityVersion="3.5">
-			<controls>
-				<!--<add tagPrefix="asp" namespace="System.Web.UI" assembly="System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>-->
-				<add tagPrefix="highcharts" namespace="Highcharts.UI" assembly="Highcharts" />
-				<add tagPrefix="obout" namespace="Obout.Grid" assembly="obout_Grid_NET" />
-				<add tagPrefix="obout" namespace="Obout.Interface" assembly="obout_Interface" />
-			</controls>
-		</pages>
-		<httpHandlers>
-			<add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="DX.ashx" validate="false" />
-			<add type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" validate="false" />
-		</httpHandlers>
-		<!--commented out JM DEC2015-->
-		<!--<remove verb="*" path="*.asmx" />
-			<add verb="*" path="*.asmx" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-			<add verb="*" path="*_AppService.axd" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-			<add verb="GET,HEAD" path="ScriptResource.axd" type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" validate="false" />-->
-		<!--
-	This configures the HttpHandler option (HighchartsExport.axd). With this
-	option you can delete the HighchartsExport.aspx page. This section is not 
-	required if you prefer the .aspx page and don't want to use the HttpHandler.
-	
-	You can specify any name for the handler in path="..."  
-
-	ASP.NET HttpHandler option:
-	
-	Advantages:
-	- No page (.aspx) file needed.
-	- An HttpHandler exists in all site subdirectories and child web applications 
-		so there is no need to send an explicit URL path to Highcharts JS.
-		
-		NOTE for .NET version 4.0:
-		The entire web site must use requestValidationMode="2.0" in order for
-		the handler to work in every subdirectory. Alternatively, request
-		validation can be specified for only one (or more) specific paths by
-		using the <location> element (see below).
-	-->
-		<!--<add verb="POST" path="HighchartsExport.axd" type="Tek4.Highcharts.Exporting.HttpHandler, Tek4.Highcharts.Exporting"/>-->
-		<!--</httpHandlers>-->
-		<httpModules>
-			<add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
-		</httpModules>
-		<!--    Set compilation debug="true" to insert debugging symbols into the compiled page. Because this 
-						affects performance, set this value to true only during development. -->
-		<compilation debug="true" strict="false" explicit="true" targetFramework="4.0" batch="false">
-			<assemblies>
-				<add assembly="DevExpress.Charts.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Data.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.DataAccess.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<!--<add assembly="DevExpress.Drawing.v17.2, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
-				<add assembly="DevExpress.Office.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Pdf.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.PivotGrid.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Printing.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.RichEdit.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<!--<add assembly="DevExpress.Sparkline.v17.2.Core, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
-				<add assembly="DevExpress.SpellChecker.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Spreadsheet.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Utils.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxHtmlEditor.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxRichEdit.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxScheduler.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxSpellChecker.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxSpreadsheet.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<!--<add assembly="DevExpress.Web.ASPxThemes.v17.2, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
-				<add assembly="DevExpress.Web.ASPxTreeList.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.Bootstrap.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.Resources.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<!--<add assembly="DevExpress.Xpo.v17.2, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
-				<add assembly="DevExpress.XtraCharts.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraCharts.v17.2.Web, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraPrinting.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraScheduler.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-				<add assembly="System.Data.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-				<add assembly="System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
-				<add assembly="System.DirectoryServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
-				<add assembly="System.DirectoryServices.AccountManagement, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-				<add assembly="System.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
-				<add assembly="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
-				<add assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
-				<add assembly="System.Web.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-				<add assembly="System.Web.Extensions.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
-				<add assembly="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-				<add assembly="System.Web.RegularExpressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
-				<add assembly="System.Management, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
-				<!--<add assembly="DevExpress.XtraReports.v17.2.Web, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraReports.v17.2, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraGauges.v17.2.Core, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />-->
-				<add assembly="DevExpress.Charts.v17.2.Core, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.CodeConverter.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.CodeParser.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Data.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.DataAccess.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxSpreadsheet.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Web.ASPxThemes.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-				<add assembly="DevExpress.XtraPdfViewer.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.Pdf.v17.2.Drawing, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraReports.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraReports.v17.2.Extensions, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.XtraReports.v17.2.Web, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-				<add assembly="DevExpress.RichEdit.v17.2.Export, Version=17.2.5.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
-				<add assembly="DevExpress.Sparkline.v17.2.Core, Version=17.2.5.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
-				<add assembly="DevExpress.XtraGauges.v17.2.Core, Version=17.2.5.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
-				<add assembly="DevExpress.Xpf.Printing.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" /></assemblies>
-		</compilation>
-		<authentication mode="Windows" />
-		<identity impersonate="true" />
-		<customErrors mode="Off" />
-	</system.web>
-	<system.webServer>
-		<validation validateIntegratedModeConfiguration="false" />
-		<handlers>
-			<add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" name="ASPxHttpHandlerModule" path="DX.ashx" preCondition="integratedMode" />
-			<add name="ChartImg" verb="*" path="ChartImg.axd" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-			<add name="ASPxUploadProgressHandler" preCondition="integratedMode" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-		</handlers>
-		<modules>
-			<add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
-		</modules>
-	</system.webServer>
-	<devExpress>
-		<themes enableThemesAssembly="true" styleSheetTheme="" theme="Moderno" customThemeAssemblies="" baseColor="Green" font="10px" />
-		<compression enableHtmlCompression="false" enableCallbackCompression="true" enableResourceCompression="true" enableResourceMerging="true" />
-		<settings accessibilityCompliant="false" doctypeMode="Html5" rightToLeft="false" checkReferencesToExternalScripts="false" protectControlState="false" ieCompatibilityVersion="edge" bootstrapMode="Bootstrap3" />
-		<errors callbackErrorRedirectUrl="" />
-		<resources>
-			<add type="ThirdParty" />
-			<add type="DevExtreme" />
-		</resources>
-	</devExpress>
-	<runtime>
-		<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
-			<dependentAssembly>
-				<assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" culture="neutral" />
-				<bindingRedirect oldVersion="0.0.0.0-9.0.0.0" newVersion="9.0.0.0" />
-			</dependentAssembly>
-			<dependentAssembly>
-				<assemblyIdentity name="EPPlus" publicKeyToken="ea159fdaa78159a1" culture="neutral" />
-				<bindingRedirect oldVersion="0.0.0.0-4.1.0.0" newVersion="4.1.0.0" />
-			</dependentAssembly>
-			<dependentAssembly>
-				<assemblyIdentity name="NReco.PivotData" publicKeyToken="9ad162d4af1a824f" culture="neutral" />
-				<bindingRedirect oldVersion="0.0.0.0-1.3.3.0" newVersion="1.3.3.0" />
-			</dependentAssembly>
-			<!--<dependentAssembly>
-				<assemblyIdentity name="itextsharp" publicKeyToken="8354ae6d2174ddca" culture="neutral" />
-				<bindingRedirect oldVersion="0.0.0.0-5.5.10.0" newVersion="5.5.10.0" />
-			</dependentAssembly>-->
-		</assemblyBinding>
-	</runtime>
+  ASP.NET HttpHandler option:
+  
+  Advantages:
+  - No page (.aspx) file needed.
+  - An HttpHandler exists in all site subdirectories and child web applications 
+    so there is no need to send an explicit URL path to Highcharts JS.
+    
+    NOTE for .NET version 4.0:
+    The entire web site must use requestValidationMode="2.0" in order for
+    the handler to work in every subdirectory. Alternatively, request
+    validation can be specified for only one (or more) specific paths by
+    using the <location> element (see below).
+  -->
+    <!--<add verb="POST" path="HighchartsExport.axd" type="Tek4.Highcharts.Exporting.HttpHandler, Tek4.Highcharts.Exporting"/>-->
+    <!--</httpHandlers>-->
+    <httpModules>
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
+    </httpModules>
+    <!--    Set compilation debug="true" to insert debugging symbols into the compiled page. Because this 
+            affects performance, set this value to true only during development. -->
+    <compilation debug="true" strict="false" explicit="true" targetFramework="4.5.2" batch="false">
+      <assemblies>
+        <add assembly="DevExpress.Charts.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.CodeConverter.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.CodeParser.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Data.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.DataAccess.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Docs.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <!--<add assembly="DevExpress.Drawing.v18.1, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
+        <add assembly="DevExpress.Office.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Pdf.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Pdf.v18.1.Drawing, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.PivotGrid.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Printing.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.RichEdit.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.RichEdit.v18.1.Export, Version=18.1.6.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Sparkline.v18.1.Core, Version=18.1.6.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.SpellChecker.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Spreadsheet.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Utils.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxThemes.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Web.ASPxHtmlEditor.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxRichEdit.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxScheduler.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxSpellChecker.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxSpreadsheet.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxTreeList.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.Bootstrap.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.Resources.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <!--<add assembly="DevExpress.Xpo.v18.1, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
+        <add assembly="DevExpress.Xpf.Printing.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraCharts.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraCharts.v18.1.Web, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraGauges.v18.1.Core, Version=18.1.6.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.XtraPdfViewer.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraPrinting.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v18.1.Extensions, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v18.1.Web, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v18.1.Web.WebForms, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraScheduler.v18.1.Core, Version=18.1.6.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Data.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.DirectoryServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.DirectoryServices.AccountManagement, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add assembly="System.Web.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Web.Extensions.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add assembly="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Web.RegularExpressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.Management, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <!--<add assembly="Microsoft.R.Host.Client, Version=1.1.30719.1703, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />-->
+        <add assembly="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add assembly="System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.IO.Compression, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.ComponentModel.Composition, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+      </assemblies>
+    </compilation>
+    <authentication mode="Windows" />
+    <identity impersonate="true" />
+    <customErrors mode="Off" />
+  </system.web>
+  <system.webServer>
+    <validation validateIntegratedModeConfiguration="false" />
+    <handlers>
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" name="ASPxHttpHandlerModule" path="DX.ashx" preCondition="integratedMode" />
+      <add name="ChartImg" verb="*" path="ChartImg.axd" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      <add name="ASPxUploadProgressHandler" preCondition="integratedMode" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    </handlers>
+    <modules>
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
+    </modules>
+    <security>
+      <requestFiltering>
+        <requestLimits maxAllowedContentLength="104857600" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+  <devExpress>
+    <themes enableThemesAssembly="true" styleSheetTheme="" theme="Moderno" customThemeAssemblies="" baseColor="Green" font="10px" />
+    <compression enableHtmlCompression="false" enableCallbackCompression="true" enableResourceCompression="true" enableResourceMerging="true" />
+    <settings accessibilityCompliant="false" doctypeMode="Html5" rightToLeft="false" checkReferencesToExternalScripts="false" protectControlState="false" ieCompatibilityVersion="edge" bootstrapMode="Bootstrap3" />
+    <errors callbackErrorRedirectUrl="" />
+    <resources>
+      <add type="ThirdParty" />
+      <add type="DevExtreme" />
+    </resources>
+  </devExpress>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-11.0.0.0" newVersion="11.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="EPPlus" publicKeyToken="ea159fdaa78159a1" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.5.2.1" newVersion="4.5.2.1" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="NReco.PivotData" publicKeyToken="9ad162d4af1a824f" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-1.3.3.0" newVersion="1.3.3.0" />
+      </dependentAssembly>
+      <!--<dependentAssembly>
+        <assemblyIdentity name="itextsharp" publicKeyToken="8354ae6d2174ddca" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.5.10.0" newVersion="5.5.10.0" />
+      </dependentAssembly>-->
+      <dependentAssembly>
+        <assemblyIdentity name="FSharp.Core" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.4.3.0" newVersion="4.4.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Accord" publicKeyToken="fa1a88e29555ccf7" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.8.0.0" newVersion="3.8.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
 </configuration>

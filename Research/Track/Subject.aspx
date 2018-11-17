@@ -2,7 +2,7 @@
  Inherits="Track_Subject" Title="Subject Info"      %>   <%--Theme="Skin1" EnableEventValidation="true"--%>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">

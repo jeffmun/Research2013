@@ -39,6 +39,7 @@ namespace uwac
 		private double _spearman;
 		private int _n;
 
+
 		public double pearson
 		{
 			get { return _pearson; }
@@ -63,27 +64,55 @@ namespace uwac
 
 			CreateScatterplot(mydt);
 		}
-		public DxScatterplot(DataTable mydt, string xvar, string yvar, string titleinput, Color mycolor, string colorsby)
+
+		public DxScatterplot(DxScatterplotSettings settings, DataTable mydt, string prefixX, string prefixY, int coloridx) //, string xvar, string yvar, string titleinput, string colorsby)
 		{
-			_settings.xaxisvar = xvar;
-			_settings.yaxisvar = yvar;
-			_settings.title = titleinput;
-			_settings.colorvar = colorsby;
-			Color col = _settings.color(0);
-			
+			_settings = settings;
+			Color col = _settings.color(coloridx);
+
+			//DataSubsets subsets = new DataSubsets(mydt, _settings.numvars, new List<string> { repeatedmeasVarname });
+			//DataTable dtwide = subsets.FullOuterJoinDataTables();
+
+			CreateScatterplot(mydt);
+
 		}
+
+		//public DxScatterplot(DataTable mydt, string xvar, string yvar, string titleinput, Color mycolor, string colorsby)
+		//{
+		//	_settings.xaxisvar = xvar;
+		//	_settings.yaxisvar = yvar;
+		//	_settings.title = titleinput;
+		//	_settings.colorvar = colorsby;
+		//	Color col = _settings.color(0);
+
+		//}
 
 
 		public void CreateScatterplot(DataTable mydt) //, string xvar, string yvar, string mytitle, Color mycolor, string colorsby)
 		{
 			
-			DataTable dataxy = (_settings.colorvar != "none") ?
-				DataTableExtensions.Data_SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar, _settings.colorvar) :
-				DataTableExtensions.Data_SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar);
+			//DataTable dataxy = (_settings.colorvar != "none") ?
+			//	DataTableExtensions.Data_SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar, _settings.colorvar) :
+			//	DataTableExtensions.Data_SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar);
 
+			List<string> othervars = new List<string>();
+			if (_settings.colorvar != "none") othervars.Add(_settings.colorvar);
+			if (_settings.panelvar != "none") othervars.Add(_settings.panelvar);
+
+			if (_settings.repeatedmeasVarname != null) othervars.Remove(_settings.repeatedmeasVarname);
+
+			DataTable dataxy = DataTableExtensions.SelectColumnXY(mydt, _settings.xaxisvar, _settings.yaxisvar, othervars);
+
+			
 			List<string> color_levels = (_settings.colorvar == "none") ? 
 				null : 
 				dataxy.AsEnumerable().Select(x => x.Field<string>(_settings.colorvar)).Distinct().ToList();
+			List<string> panel_levels = (_settings.panelvar == "none"
+				| _settings.panelvar == _settings.repeatedmeasVarname) ?
+				null :
+				dataxy.AsEnumerable().Select(x => x.Field<string>(_settings.panelvar)).Distinct().ToList();
+
+
 
 			//int colorindex = 0;
 
@@ -112,8 +141,8 @@ namespace uwac
 				double[] y = dataxy.AsEnumerable().Select(o => o.Field<double>(_settings.yaxisvar)).ToArray();
 
 
-				_pearson = Math.Round(uwac.utilStats.Corr(x, y, "pearson"), 3);
-				_spearman = Math.Round(uwac.utilStats.Corr(x, y, "Spearman"), 3);
+				_pearson = Math.Round(uwac.utilStats.Corr(x, y, "pearson"), _settings.digits_corr);
+				_spearman = Math.Round(uwac.utilStats.Corr(x, y, "Spearman"), _settings.digits_corr);
 				//consider adding metanumerics or alglib to get p-values
 				//https://github.com/dcwuser/metanumerics 
 
@@ -230,7 +259,7 @@ namespace uwac
 
 	#endregion
 
-	public class DxScatterplotSettings : DxChartSettings
+	public class DxScatterplotSettings : DxChartSettings, ICloneable
 	{
 		private List<string> _xvars;
 		private List<string> _yvars;
@@ -243,12 +272,19 @@ namespace uwac
 		public double _jitteramtY = 0;
 		public List<string> xvars { get { return _xvars; } set { _xvars = value; } }
 		public List<string> yvars { get { return _yvars; } set { _yvars = value; } }
-
+		public string repeatedmeasVarname { get; set; }
+		public int digits_corr { get; set; }
+		public int digits_pvalue { get; set; }
+		public DxWideMode widemode { get; set; }
 
 		public DxScatterplotSettings() {
+			digits_corr = 2;
+			digits_pvalue = 3;
 			SetChartType(DxChartType.Scatterplot);
 		}
 		public DxScatterplotSettings(DxChartSettings settings) {
+			digits_corr = 2;
+			digits_pvalue = 3;
 			SetChartType(DxChartType.Scatterplot);
 		}
 
@@ -287,7 +323,14 @@ namespace uwac
 			get { return (_jitteramtY == 0 ) ? _jitteramtX : _jitteramtY; }
 			set { _jitteramtY = value; }
 		}
+
+		public object Clone()
+		{
+			return this.MemberwiseClone();
+		}
 	}
+
+
 
 
 }

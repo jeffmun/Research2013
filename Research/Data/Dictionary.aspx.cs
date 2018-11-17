@@ -77,6 +77,8 @@ public partial class Data_Dictionary: BasePage
 	}
 
 
+	#endregion
+
 
 	protected void gridlkupMeas_ValueChanged(object sender, EventArgs e)
 	{
@@ -95,14 +97,16 @@ public partial class Data_Dictionary: BasePage
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
 			", fielddatatype + coalesce('(' + cast(fielddatatypelength as varchar)+')','') datatype, fieldlabel, fieldvaluesetID " + Environment.NewLine +
 			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID) valuelabels " + Environment.NewLine +
-			" , missval, fldextractionmode, importposition, constString  " + Environment.NewLine +
+			" , missval, a.fieldcodeID, fieldcode, fldextractionmode, importposition, constString  " + Environment.NewLine +
 			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status " + Environment.NewLine +
 			" from def.Fld a " + Environment.NewLine +
 			" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
 			" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
+			" LEFT JOIN datFieldCode d ON a.fieldcodeID = d.fieldcodeID " + Environment.NewLine +
 			" where a.tblpk = (select tblpk from def.tbl where measureID = {0}) " + Environment.NewLine +
-			" and fldname not in ('studymeasID','indexnum','created','updated','scoredby','createdby','updatedby','scoredby') " + Environment.NewLine +
-			" order by ord_pos", measureID);
+			" and fldname not in ('studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
+			" and (a.fieldcodeID >= 0 or a.fieldcodeID is null) " + Environment.NewLine +
+			" order by a.ord_pos", measureID);
 
 
 		string measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureID.ToString());
@@ -217,8 +221,6 @@ public partial class Data_Dictionary: BasePage
 
 
 
-	#endregion
-
 
 	
 
@@ -272,15 +274,24 @@ public partial class Data_Dictionary: BasePage
 
 		try
 		{
+			string fieldcode = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fieldcode").ToString();
 			string status = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fld_status").ToString();
 			string fieldvaluesetID = (sender as ASPxGridView).GetRowValues(e.VisibleIndex, "fieldvaluesetID").ToString();
 
 			if (e.ButtonType == ColumnCommandButtonType.Delete)
 			{
-				e.Visible = (status == "NOT IN SQL Table") ? true : false;
+				bool showDeleteBtn = (status == "NOT IN SQL Table") ? true : false;
+				e.Visible = showDeleteBtn;
+			}
+			if (e.ButtonType == ColumnCommandButtonType.Edit)
+			{
+				bool showEditBtn = true;
+				if (fieldcode == "PrimaryKey") showEditBtn = false;
+				if (fieldcode == "ID_number") showEditBtn = false;
+				e.Visible = showEditBtn;
 			}
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{ }
 
 
@@ -290,8 +301,6 @@ public partial class Data_Dictionary: BasePage
 
 	protected void gridDict_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
-		//Check for a new fieldvaluesetID (when it is equal to -1)
-		var fvsID = e.NewValues["fieldvaluesetID"];
 		
 		ASPxGridView gv = (ASPxGridView)sender;
 		DxDbOps.BuildUpdateSqlCode(e, "fld", "data", "def");

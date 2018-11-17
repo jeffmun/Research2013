@@ -1,10 +1,10 @@
 ﻿<%@ Page Language="c#"   Debug="true" MasterPageFile="~/UWAC.master" CodeFile="MeasureLibrary.aspx.cs" AutoEventWireup="true"
- Inherits="Track_MeasureLibrary" Title="Measure Library"      %>   <%--Theme="Skin1" EnableEventValidation="true"--%>
+ Inherits="Library_MeasureLibrary" Title="Measure Library"      %>   <%--Theme="Skin1" EnableEventValidation="true"--%>
 
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
  
@@ -34,25 +34,25 @@
 
 
 
-    <br />
+    
     <dx:ASPxLabel ID="lbl1" runat="server" Text="Measure Library" Font-Size="Medium" Font-Bold="true" Width="600px"></dx:ASPxLabel>
 
-    <asp:HyperLink ID="hyp1" runat="server" Text="Create a New Measure" Font-Bold="true" NavigateUrl="~/Admin/NewMeasure.aspx" ></asp:HyperLink>
     <br />
     
     <br />
     <dx:ASPxGridView ID="gridlkupMeas" ClientInstanceName="gridlkupMeas" runat="server"  DataSourceID="sqlMeas" KeyFieldName="measureID"
-         GridViewProperties-Settings-ShowFilterRow="true" Settings-ShowFilterRow="true"  >
+         GridViewProperties-Settings-ShowFilterRow="true" Settings-ShowFilterRow="true"  Settings-ShowGroupPanel="true" >
         <SettingsPager PageSize="20" Position="TopAndBottom"  >
              <PageSizeItemSettings Visible="true" Items="20,50,100" ShowAllItem="true" />
         </SettingsPager>
+        <SettingsBehavior AllowGroup="true" />
         
         <Columns>
-            <dx:GridViewDataColumn FieldName="measureID" Caption="mID" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="measureID" Caption="mID" CellStyle-ForeColor="Silver" Width="50px"></dx:GridViewDataColumn>
 
             <dx:GridViewDataHyperLinkColumn FieldName="measname" Caption="Measure">
                 <DataItemTemplate>
-                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/info/MeasureInfo.aspx?measureID=" + Eval("measureID") %>' Font-Bold="true">
+                    <dx:ASPxHyperLink ID="ASPxHyperLink_DE" runat="server" Text='<%# Eval("MeasName") %>' NavigateUrl='<%# "~/Library/Measure.aspx?mID=" + Eval("measureID") %>' Font-Bold="true">
                     </dx:ASPxHyperLink>
                 </DataItemTemplate>
             </dx:GridViewDataHyperLinkColumn>
@@ -63,8 +63,8 @@
             <dx:GridViewDataColumn FieldName="measmethod" Caption="Method"></dx:GridViewDataColumn>
             <dx:GridViewDataColumn FieldName="measfocus" Caption="Focus Person"></dx:GridViewDataColumn>
 
-            <dx:GridViewDataColumn FieldName="n_studies" Caption="# studies using"></dx:GridViewDataColumn>
-            <dx:GridViewDataColumn FieldName="HasDataTable" Caption="Has Data Table?"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="n_studies" Caption="# studies using" Width="70px"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="HasDataTable" Caption="Has Data Table?" Width="70px"></dx:GridViewDataColumn>
        </Columns>
     </dx:ASPxGridView>
 

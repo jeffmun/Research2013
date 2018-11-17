@@ -780,8 +780,30 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 
 	#region User Controls
 
-	//SAVE the project
-	protected void btnUpdate_OnClick(object sender, EventArgs e)
+	protected void btnClone_OnClick(object sender, EventArgs e)
+	{
+		Debug.Print("btnClone_OnClick " + System.DateTime.Now.ToString());
+
+		SQL_utils sql = new SQL_utils("data");
+
+		List<SqlParameter> ps = new List<SqlParameter>();
+
+		ps.Add(sql.CreateParam("dataproj_pk", Request.QueryString["pk"], "int"));
+		ps.Add(sql.CreateParam("newdataproj_pk", "0", "int", "output"));
+
+		int newdataproj_pk = sql.NonQuery_from_ProcName("dp.CloneDataProject", ps, "newdataproj_pk");
+		sql.Close();
+
+		if (newdataproj_pk > 0)
+		{
+			Response.Redirect("Edit.aspx?pk=" + newdataproj_pk.ToString());
+		}
+
+	}
+
+
+		//SAVE the project
+		protected void btnUpdate_OnClick(object sender, EventArgs e)
 	{
 		Debug.Print("btnUpdate_OnClick " + System.DateTime.Now.ToString());
 

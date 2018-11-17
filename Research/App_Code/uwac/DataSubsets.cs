@@ -36,6 +36,7 @@ namespace uwac
 	{
 		private List<DataSubset> _subsets;
 		private List<Groupingvar> _groupingvars;
+		private DataTable _dtIDs;
 
 		public List<DataSubset> subsets { get { return _subsets; } }
 		public List<Groupingvar> groupingvars { get { return _groupingvars; } }
@@ -49,6 +50,7 @@ namespace uwac
 
 		public DataSubsets(DataTable dt_input, List<string> varnames, string groupingvar)
 		{
+			GetIDs(dt_input);
 			//just selected vars
 			List<string> allvars = new List<string>();
 			allvars.AddRange(varnames);
@@ -61,6 +63,8 @@ namespace uwac
 
 		public DataSubsets(DataTable dt_input, List<string> varnames, List<string> groupingvarnames)
 		{
+			GetIDs(dt_input);
+
 			//just selected vars
 			List<string> allvars = new List<string>();
 			allvars.AddRange(varnames);
@@ -147,6 +151,25 @@ namespace uwac
 		}
 
 
+		public void GetIDs(DataTable dt)
+		{
+			List<string> IDs = dt.AsEnumerable().Select(f => f.Field<string>("id")).Distinct().ToList();
+
+			DataTable dtIDs = new DataTable();
+			DataColumn col = new DataColumn("id");
+			dtIDs.Columns.Add(col);
+			foreach(string id in IDs)
+			{
+				DataRow row = dtIDs.NewRow();
+				row["id"] = id;
+				dtIDs.Rows.Add(row);
+			}
+
+			_dtIDs = dtIDs;
+
+
+		}
+
 		public DataTable SelectColumns(DataTable dtin, List<string> allvars)
 		{
 
@@ -165,8 +188,71 @@ namespace uwac
 			return dtout;
 		}
 
+
+
+		public DataTable[] DataTableArray(List<string> idvars)
+		{
+			DataTable[] mydatatables = new DataTable[this.subsets.Count + 1];
+
+			mydatatables[0] = _dtIDs;
+
+			//foreach (uwac.DataSubset subset in subsets.subsets)
+			for (int i = 0; i < (this.subsets.Count); i++)
+			{
+				uwac.DataSubset subset = this.subsets[i];
+				string prefix = subset.cols_and_vals[0].Colvalue.ToString();
+
+				foreach (DataColumn col in subset.dt.Columns)
+				{
+					if (!idvars.Contains(col.ColumnName.ToLower()))
+					{
+						string newcolname = String.Format("{0}_{1}", prefix, col.ColumnName.ToString());
+						Debug.WriteLine(newcolname);
+						col.ColumnName = newcolname;
+					}
+				}
+
+				mydatatables[i+1] = subset.dt;
+			}
+
+			return mydatatables;
+		}
+
+
+		public DataTable FullOuterJoinDataTables(List<string> idvars) // supports as many datatables as you need.
+		{
+			DataTable[] datatables = this.DataTableArray(idvars);
+
+			DataTable result = datatables.First().Clone();
+
+			var commonColumns = result.Columns.OfType<DataColumn>();
+
+			foreach (var dt in datatables.Skip(1))
+			{
+				commonColumns = commonColumns.Intersect(dt.Columns.OfType<DataColumn>(), new DataColumnComparer());
+			}
+
+			result.PrimaryKey = commonColumns.ToArray();
+
+			foreach (var dt in datatables)
+			{
+				result.Merge(dt, false, MissingSchemaAction.AddWithKey);
+			}
+
+			return result;
+		}
+
+
+
 	}
 
 
+	/* also create this class */
+	public class DataColumnComparer : IEqualityComparer<DataColumn>
+	{
+		public bool Equals(DataColumn x, DataColumn y) { return x.Caption == y.Caption; }
 
+		public int GetHashCode(DataColumn obj) { return obj.Caption.GetHashCode(); }
+
+	}
 }

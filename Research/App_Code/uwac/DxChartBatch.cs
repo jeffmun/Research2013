@@ -112,6 +112,37 @@ namespace uwac
 
 		}
 
+		public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title)
+		{
+			Initialize();
+
+			_settings = (DxChartSettings)mysettings;
+
+			charttype = DxChartType.Actogram;
+			chartlayout = mysettings.chartlayout;
+			_vars = mysettings.numvars;
+
+			DxChart chart = new DxActogram(mysettings, dt);
+			chart.AddTitles(title);
+			charts.Add(chart);
+
+
+			//if ( mysettings.panelvar != "variable")
+			//{
+			//	foreach (string v in _vars)
+			//	{
+			//		mysettings.yaxisvar = v;
+			//		mysettings.seriesby = "id";
+			//		DxChart chart = new DxActogram(mysettings, dt); //: new DxLineplot(mysettings, dt);
+			//		chart.AddTitles(String.Format("{0} {1}", v, title));
+			//		charts.Add(chart);
+
+			//	}
+			//}
+			
+		}
+
+
 
 		public DxChartBatch(DxLineplotSettings mysettings, DataTable dt, string title)
 		{
@@ -139,7 +170,7 @@ namespace uwac
 					{
 						mysettings.yaxisvar = v;
 						mysettings.seriesby = "id";
-						DxChart chart = new DxLineplot(mysettings, dt);
+						DxChart chart =  new DxLineplot(mysettings, dt);
 						chart.AddTitles(String.Format("{0} {1}", v, title));
 						charts.Add(chart);
 
@@ -156,51 +187,53 @@ namespace uwac
 			}
 		}
 
-		public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title, Actigraph.ActogramStats mystats)
-		{
-			Initialize();
 
-			_settings = (DxChartSettings)mysettings;
+		//public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title, Actigraph.ActogramStats mystats)
+		//{
+		//	Initialize();
 
-			charttype = DxChartType.Actogram;
-			chartlayout = mysettings.chartlayout;
-			vars = mysettings.numvars;
+		//	_settings = (DxChartSettings)mysettings;
 
-			if (mysettings.xaxisvar == "variable") //This is just one plot
-			{
-				DxChart chart = new DxActogram(mysettings, dt, mystats); //, mystats);
-				chart.AddTitles(title);
-				charts.Add(chart);
-			}
-			else
-			{
-				//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
-				if (mysettings.colorvar != "variable" & mysettings.panelvar != "variable")
-				{
-					foreach (string v in settings.numvars)
-					{
-						mysettings.yaxisvar = v;
-						mysettings.seriesby = "id";
-						DxChart chart = new DxActogram(mysettings, dt, mystats);
-						chart.AddTitles(String.Format("{0} {1}", v, title));
-						charts.Add(chart);
+		//	charttype = DxChartType.Actogram;
+		//	chartlayout = mysettings.chartlayout;
+		//	vars = mysettings.numvars;
 
-					}
+		//	if (mysettings.xaxisvar == "variable") //This is just one plot
+		//	{
+		//		DxChart chart = new DxActogram(mysettings, dt, mystats); //, mystats);
+		//		chart.AddTitles(title);
+		//		charts.Add(chart);
+		//	}
+		//	else
+		//	{
+		//		//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
+		//		if (mysettings.colorvar != "variable" & mysettings.panelvar != "variable")
+		//		{
+		//			foreach (string v in settings.numvars)
+		//			{
+		//				mysettings.yaxisvar = v;
+		//				mysettings.seriesby = "id";
+		//				DxChart chart = new DxActogram(mysettings, dt, mystats);
+		//				chart.AddTitles(String.Format("{0} {1}", v, title));
+		//				charts.Add(chart);
+
+		//			}
 
 
-				}
-				// if variable is used as a color
-				else
-				{
-					DxChart chart = new DxActogram(mysettings, dt, mystats);
-					chart.AddTitles(title);
-					charts.Add(chart);
-				}
+		//		}
+		//		// if variable is used as a color
+		//		else
+		//		{
+		//			DxChart chart = new DxActogram(mysettings, dt, mystats);
+		//			chart.AddTitles(title);
+		//			charts.Add(chart);
+		//		}
 
-			}
+		//	}
 
-		}
+		//}
 
+		//need to get stats first!
 		public DxChartBatch(DxBarchartSettings mysettings, DataTable dt)
 		{
 			Initialize();
@@ -223,29 +256,73 @@ namespace uwac
 			}
 			else
 			{
-				List<string> varnames = new List<string>();
-				varnames.AddRange(_vars);
-				varnames.Add(mysettings.xaxisvar);
-				varnames.Add(mysettings.colorvar);
-				varnames.RemoveAll(item => item == "variable");
-				varnames.RemoveAll(item => item == "none");
+				List<string> grpvarnames = new List<string>();
+				grpvarnames.Add(mysettings.xaxisvar);
+				grpvarnames.Add(mysettings.colorvar);
+				grpvarnames.Add(mysettings.panelvar);
+				grpvarnames.RemoveAll(item => item == "variable");
+				grpvarnames.RemoveAll(item => item == "none");
 
 
-				DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
+				DescStats stats = new DescStats(dt, _vars, grpvarnames);
 
-				foreach (DataSubset subset in subsets.subsets)
-				{
-					DxBarchart chart = new DxBarchart(mysettings, subset.dt);
 
-					//DxChart chart = new DxBarchart(mysettings, subset.dt);
-					chart.AddTitles(subset.Cols_and_Vals_ToString());
-					charts.Add(chart);
+				DxBarchart chart = new DxBarchart(mysettings, stats);
 
-					_datatables.Add(chart.statstable.dt);
-				}
+				//chart.AddTitles(subset.Cols_and_Vals_ToString());
+				charts.Add(chart);
+
+				//fix?
+				//_datatables.Add(chart.statstable.dt);
 
 			}
 		}
+
+		//WORKS but not for variable as a panel var
+		//public DxChartBatch(DxBarchartSettings mysettings, DataTable dt)
+		//{
+		//	Initialize();
+
+		//	_settings = (DxChartSettings)mysettings;
+
+		//	charttype = DxChartType.Barchart;
+		//	chartlayout = mysettings.chartlayout;
+		//	_vars = mysettings.numvars;
+		//	if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
+
+		//	mysettings.numvars.Remove("id");
+
+
+		//	if (mysettings.panelvar == "none")
+		//	{
+		//		DxBarchart chart = new DxBarchart(mysettings, dt);
+		//		charts.Add(chart);
+		//		_datatables.Add(chart.statstable.dt);
+		//	}
+		//	else
+		//	{
+		//		List<string> varnames = new List<string>();
+		//		varnames.AddRange(_vars);
+		//		varnames.Add(mysettings.xaxisvar);
+		//		varnames.Add(mysettings.colorvar);
+		//		varnames.RemoveAll(item => item == "variable");
+		//		varnames.RemoveAll(item => item == "none");
+
+		//		DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
+
+		//		foreach (DataSubset subset in subsets.subsets)
+		//		{
+		//			DxBarchart chart = new DxBarchart(mysettings, subset.dt);
+
+		//			//DxChart chart = new DxBarchart(mysettings, subset.dt);
+		//			chart.AddTitles(subset.Cols_and_Vals_ToString());
+		//			charts.Add(chart);
+
+		//			_datatables.Add(chart.statstable.dt);
+		//		}
+
+		//	}
+		//}
 
 		public DxChartBatch(DxScatterplotSettings mysettings, DataTable dt)
 		{
@@ -283,6 +360,7 @@ namespace uwac
 
 						if (x == y & mysettings.showhist)
 						{
+							#region showhist
 							DxHistogramSettings local_settingshist = new DxHistogramSettings(mysettings);
 
 
@@ -299,11 +377,90 @@ namespace uwac
 							DxChart chart = new DxHistogram(local_settingshist, dt, x, 0);
 							chart.isdiag = true;
 							charts.Add(chart);
+							#endregion
 						}
-						else if (x != y)
+						// Straight Scatterplot - no repeated measures to deal with
+						else if (x != y & mysettings.repeatedmeasVarname == null)
 						{
 							DxChart chart = new DxScatterplot(mysettings, dt);
 							charts.Add(chart);
+						}
+						// Repeated measures
+						else if (/*x != y &*/ mysettings.repeatedmeasVarname != null)
+						{
+							List<string> repeatedmeas_levels = dt.AsEnumerable().Select(f => f.Field<string>(mysettings.repeatedmeasVarname)).Distinct().ToList();
+							List<string> idvars = new List<string> { "id" };
+
+							if (mysettings.colorvar != "none") idvars.Add(mysettings.colorvar);
+							if (mysettings.panelvar != "none") idvars.Add(mysettings.panelvar);
+
+							idvars.Remove(mysettings.repeatedmeasVarname);
+
+
+							List<string> keepvars = new List<string>();
+							keepvars.Add(mysettings.repeatedmeasVarname);
+							keepvars.AddRange(mysettings.numvars);
+							keepvars.AddRange(idvars);
+
+
+
+							// Widen the data using the repeated measure value
+							DataSubsets subsets = new DataSubsets(dt, keepvars, new List<string> { mysettings.repeatedmeasVarname });
+							DataTable dtwide = subsets.FullOuterJoinDataTables(idvars);
+
+							// log the original variable names, because we will be adding prefixes to these
+							string origxvar = mysettings.xaxisvar;
+							string origyvar = mysettings.yaxisvar;
+
+							if (x != y)
+							{
+								//If use has selected OnlyAutoCorrAcrossTimept then skip when xvar != yvar
+								if (mysettings.widemode != DxWideMode.OnlyAutoCorrAcrossTimept)
+								{
+									for (int k = 0; k < repeatedmeas_levels.Count; k++)
+									{
+										string newx = String.Format("{0}_{1}", repeatedmeas_levels[k], origxvar);
+										string newy = String.Format("{0}_{1}", repeatedmeas_levels[k], origyvar);
+
+										DxScatterplotSettings tmpsettings = (DxScatterplotSettings)mysettings.Clone();
+										tmpsettings.xaxisvar = newx;
+										tmpsettings.yaxisvar = newy;
+										DxChart chart = new DxScatterplot(tmpsettings, dtwide);
+										charts.Add(chart);
+									}
+								}
+							}
+							else if (x == y)
+							{
+
+								//If use has selected OnlyWithinTimept then skip when xvar == yvar, it is logically impossible 
+								if (mysettings.widemode != DxWideMode.OnlyWithinTimept)
+								{
+									//adjacent
+									for (int k = 0; k < (repeatedmeas_levels.Count - 1); k++)
+									{
+										string newx = String.Format("{0}_{1}", repeatedmeas_levels[k], origxvar);
+										string newy = String.Format("{0}_{1}", repeatedmeas_levels[k + 1], origyvar);
+
+										DxScatterplotSettings tmpsettings = (DxScatterplotSettings)mysettings.Clone();
+										tmpsettings.xaxisvar = newx;
+										tmpsettings.yaxisvar = newy;
+										DxChart chart = new DxScatterplot(tmpsettings, dtwide);
+										charts.Add(chart);
+									}
+
+									//then first and last
+									DxScatterplotSettings tmpsettings2 = (DxScatterplotSettings)mysettings.Clone();
+									tmpsettings2.xaxisvar = String.Format("{0}_{1}", repeatedmeas_levels[0], origxvar);
+									tmpsettings2.yaxisvar = String.Format("{0}_{1}", repeatedmeas_levels[repeatedmeas_levels.Count - 1], origxvar);
+									DxChart chart2 = new DxScatterplot(tmpsettings2, dtwide);
+									charts.Add(chart2);
+								}
+
+							}
+
+
+
 						}
 						else
 						{

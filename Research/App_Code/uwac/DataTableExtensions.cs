@@ -344,6 +344,11 @@ namespace uwac
 			var coltypeX = mydt.Columns[xvar].DataType;
 			var coltypeY = mydt.Columns[yvar].DataType;
 
+
+			Debug.WriteLine(String.Format("xvar {0} {1}", xvar, coltypeX.Name.ToLower()));
+			Debug.WriteLine(String.Format("yvar {0} {1}", yvar, coltypeY.Name.ToLower()));
+
+
 			if (coltypeX.Name.ToLower() == "string")
 			{
 				var qry = mydt.AsEnumerable()
@@ -359,6 +364,26 @@ namespace uwac
 
 				data.Columns["x"].ColumnName = xvar;
 				data.Columns["y"].ColumnName = yvar;
+
+				return data;
+			}
+			else if (coltypeX.Name.ToLower().Contains( "int") & coltypeY.Name.ToLower().Contains("int"))
+			{
+				var qry = mydt.AsEnumerable().Where(f => f.Field<int?>(xvar) != null && f.Field<int?>(yvar) != null)
+				.Select(r => new
+				{
+					id = r.Field<string>("id"),
+					x = r.Field<int>(xvar),
+					y = r.Field<int>(yvar)
+				});
+
+				DataTable data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+				data.ConvertColumnType("x", typeof(double));
+				data.ConvertColumnType("y", typeof(double));
+				data.Columns["x"].ColumnName = xvar;
+				data.Columns["y"].ColumnName = yvar;
+
 
 				return data;
 			}
@@ -442,6 +467,126 @@ namespace uwac
 			return data;
 
 		}
+
+
+		public static DataTable SelectColumnXY(DataTable mydt, string xvar, string yvar)
+		{
+			return SelectColumnXY(mydt, xvar, yvar, new List<string>());
+		}
+
+		public static DataTable SelectColumnXY(DataTable mydt, string xvar, string yvar, List<string> othervarstokeep)
+		{
+			var coltypeX = mydt.Columns[xvar].DataType;
+			var coltypeY = mydt.Columns[yvar].DataType;
+
+			List<string> varproxy = new List<string>();
+			if (othervarstokeep.Count > 0)
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					varproxy.Add((i < othervarstokeep.Count) ? othervarstokeep[i] : othervarstokeep[othervarstokeep.Count - 1]);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					varproxy.Add("id");
+				}
+			}
+
+
+			DataTable data;
+
+			if (coltypeX.Name.ToLower() == "datetime")
+			{
+				var qry = mydt.AsEnumerable().Where(f => f.Field<DateTime?>(xvar) != null && f.Field<double?>(yvar) != null)
+				.Select(r => new
+				{
+					id = r.Field<string>("id"),
+					x = r.Field<DateTime>(xvar),
+					y = r.Field<double>(yvar),
+					v0 = r.Field<string>(varproxy[0]),
+					v1 = r.Field<string>(varproxy[1]),
+					v2 = r.Field<string>(varproxy[2]),
+					v3 = r.Field<string>(varproxy[3]),
+					v4 = r.Field<string>(varproxy[4])
+				});
+
+				data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+			}
+
+			else if (coltypeX.Name.ToLower() == "string")
+			{
+				var qry = mydt.AsEnumerable().Where(f => f.Field<string>(xvar) != null && f.Field<double?>(yvar) != null)
+				.Select(r => new
+				{
+					id = r.Field<string>("id"),
+					x = r.Field<string>(xvar),
+					y = r.Field<double>(yvar),
+					v0 = r.Field<string>(varproxy[0]),
+					v1 = r.Field<string>(varproxy[1]),
+					v2 = r.Field<string>(varproxy[2]),
+					v3 = r.Field<string>(varproxy[3]),
+					v4 = r.Field<string>(varproxy[4])
+
+				});
+
+				data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+			}
+			else if (coltypeX.Name.ToLower() == "double")
+			{
+				var qry = mydt.AsEnumerable()
+					.Where(f => f.Field<double?>(xvar) != null && f.Field<double?>(yvar) != null)
+				.Select(r => new
+				{
+					id = r.Field<string>("id"),
+					x = r.Field<double>(xvar),
+					y = r.Field<double>(yvar),
+					v0 = r.Field<string>(varproxy[0]),
+					v1 = r.Field<string>(varproxy[1]),
+					v2 = r.Field<string>(varproxy[2]),
+					v3 = r.Field<string>(varproxy[3]),
+					v4 = r.Field<string>(varproxy[4])
+				});
+
+				data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+			}
+			else
+			{
+				data = null;
+			}
+
+			if (data != null)
+			{
+				data.Columns["x"].ColumnName = xvar;
+				data.Columns["y"].ColumnName = yvar;
+
+				for (int i = 0; i < 5; i++)
+				{
+					if (i < othervarstokeep.Count)
+					{
+						data.Columns["v" + i.ToString()].ColumnName = varproxy[i];
+					}
+					else
+					{
+						data.Columns.Remove("v" + i.ToString());
+					}
+				}
+
+
+			}
+
+
+
+
+			return data;
+
+		}
+
+
+
 
 
 		//public static List<string> GetLevels(string var)

@@ -34,7 +34,6 @@ namespace uwac
 		private double _slope;
 		private double _intercept;
 		private int _coloroverride;
-		private List<string> _colorLevels;
 
 		public double slope
 		{
@@ -47,17 +46,12 @@ namespace uwac
 			set { _intercept = value; }
 		}
 
-		public List<string> colorLevels
-		{
-			get { return _colorLevels; }
-			set { _colorLevels = value; }
-		}
 
 		public DxLineplot(DxLineplotSettings settings, DataTable mydt) //, string xvar, string yvar, string titleinput, string colorsby)
 		{
 			_settings = settings;
 			Color col = _settings.color(0);
-			LoadMarkerKinds();
+			_markers = new DxMarkerKinds();
 
 
 			//Need to stack the data because variable is within the plot 
@@ -85,6 +79,7 @@ namespace uwac
 
 		}
 
+		
 		public void CreateLineplot(DataTable mydt) 
 		{
 			_coloroverride = -1;
@@ -342,30 +337,30 @@ namespace uwac
 			}
 		}
 
-		public Table ManualColorLegend()
-		{
-			Table legend = new Table();
-			for (int i = 0; i < this.colorLevels.Count; i++)
-			{
-				string s = this.colorLevels[i];
-				System.Web.UI.WebControls.TableRow tr = new System.Web.UI.WebControls.TableRow();
-				TableCell td1 = new TableCell();
-				TableCell td2 = new TableCell();
-				td1.BackColor = _settings.colors[i];
-				td1.Width = 15;
-				td1.Style.Add("padding", "4px");
-				td2.Style.Add("padding", "4px");
-				td2.Text = s;
-				td1.BorderColor = Color.White;
-				td2.BorderColor = Color.White;
-				td1.BorderWidth = 2;
-				td2.BorderWidth = 2;
-				tr.Cells.Add(td1);
-				tr.Cells.Add(td2);
-				legend.Rows.Add(tr);
-			}
-			return legend;
-		}
+		//public Table ManualColorLegend()
+		//{
+		//	Table legend = new Table();
+		//	for (int i = 0; i < this.colorLevels.Count; i++)
+		//	{
+		//		string s = this.colorLevels[i];
+		//		System.Web.UI.WebControls.TableRow tr = new System.Web.UI.WebControls.TableRow();
+		//		TableCell td1 = new TableCell();
+		//		TableCell td2 = new TableCell();
+		//		td1.BackColor = _settings.colors[i];
+		//		td1.Width = 15;
+		//		td1.Style.Add("padding", "4px");
+		//		td2.Style.Add("padding", "4px");
+		//		td2.Text = s;
+		//		td1.BorderColor = Color.White;
+		//		td2.BorderColor = Color.White;
+		//		td1.BorderWidth = 2;
+		//		td2.BorderWidth = 2;
+		//		tr.Cells.Add(td1);
+		//		tr.Cells.Add(td2);
+		//		legend.Rows.Add(tr);
+		//	}
+		//	return legend;
+		//}
 
 		public SeriesPoint[] CreateSeriesPoints(DataTable dataxy, string colorsby, List<string> colors_levels, List<string> series_colors, int colorindex, Color myseriescolor)
 		{
@@ -422,19 +417,7 @@ namespace uwac
 			#endregion
 		}
 
-		private void LoadMarkerKinds()
-		{
-			_markers = new List<MarkerKind>();
-
-			_markers.Add(MarkerKind.Circle);
-			_markers.Add(MarkerKind.Square);
-			_markers.Add(MarkerKind.Triangle);
-			_markers.Add(MarkerKind.Cross);
-			_markers.Add(MarkerKind.Diamond);
-			_markers.Add(MarkerKind.Star);
-			_markers.Add(MarkerKind.Pentagon);
-			_markers.Add(MarkerKind.InvertedTriangle);
-		}
+		
 
 		protected void Lineplot_TransparentLine(object sender, CustomDrawSeriesEventArgs e)
 		{
@@ -512,6 +495,7 @@ namespace uwac
 		private bool _xaxis_is_age = false;
 		private bool _showLegend = true;
 		private bool _matchYAxes = true;
+		private bool _isActogram = false;
 		private LineplotGeom _geom = LineplotGeom.Line;
 		private LineplotGeom _altgeom = LineplotGeom.Circle;
 		private List<string> _vars_for_altgeom = new List<string>();
@@ -530,6 +514,7 @@ namespace uwac
 		public string legend_pos_h { get { return _legend_pos_h; } set { _legend_pos_h = value; } }
 		public string legend_pos_v { get { return _legend_pos_v; } set { _legend_pos_v = value; } }
 		public bool matchYAxes { get { return _matchYAxes; } set { _matchYAxes = value; } }
+		public bool isActogram {  get{ return _isActogram; }  set { _isActogram = value; } }
 		public LineplotGeom geom { get { return _geom; } set { _geom = value; } }
 		public LineplotGeom altgeom { get { return _altgeom; } set { _altgeom = value; } }
 		public LineplotGeom activegeom { get { return _activegeom; } set { _activegeom = value; } }
@@ -541,6 +526,20 @@ namespace uwac
 		{
 			SetChartType(DxChartType.Lineplot);
 		}
+
+		public DxLineplotSettings(bool isActogram)
+		{
+			_isActogram = isActogram;
+			if (_isActogram)
+			{
+				SetChartType(DxChartType.Actogram);
+			}
+			else
+			{
+				SetChartType(DxChartType.Lineplot);
+			}
+		}
+
 		public DxLineplotSettings(DxChartSettings settings)
 		{
 			SetChartType(DxChartType.Lineplot);

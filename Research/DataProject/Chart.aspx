@@ -2,12 +2,12 @@
 	 EnableEventValidation="false" Title="Data Project Charts"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.Web.ASPxSpreadsheet.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSpreadsheet" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraCharts.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraCharts.v18.1.Web, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts.Web" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraPdfViewer.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraPdfViewer" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.ASPxSpreadsheet.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSpreadsheet" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.XtraCharts.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.XtraCharts.v18.2.Web, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts.Web" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.XtraPdfViewer.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraPdfViewer" TagPrefix="dx" %> 
 
 
 
@@ -956,16 +956,23 @@
 											</td>
 											<td>
 												<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
-											</td>
-											<td style="padding: 5px">
 												<dx:ASPxCheckBox ID="chkMovingAvg" runat="server" ClientInstanceName="chkMovingAvg" Text="Show moving avg?">
 													<ClientSideEvents ValueChanged="ShowPtsCount" />
 												</dx:ASPxCheckBox>
 											</td>
-											<td style="padding: 5px; width:200px">
+											<td style="vertical-align: top; padding: 5px; width:110px">
 												<dx:ASPxCheckBox ID="chkJitter" runat="server" ClientInstanceName="chkMovingAvg" Text="Add jitter?">
 													<ClientSideEvents ValueChanged="ShowJitterAmounts" />
 												</dx:ASPxCheckBox>
+											</td>
+											<td style="padding: 5px">
+												<dx:ASPxComboBox ID="cboWideMode" runat="server" Caption="Wide mode:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleSCAT" Width="130px" EnableCallbackMode="true" >
+													<Items>
+														<dx:ListEditItem Value="0" Text="Only Within timept"  Selected="true"/>
+														<dx:ListEditItem Value="1" Text="Auto correlation by timept"  Selected="false"/>
+														<dx:ListEditItem Value="2" Text="Pool across timept"  Selected="false"/>
+													</Items>
+												</dx:ASPxComboBox>
 											</td>
 
 										</tr>

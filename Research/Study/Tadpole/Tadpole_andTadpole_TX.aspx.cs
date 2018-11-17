@@ -13,8 +13,10 @@ using AutismCenterBase.Utilities;
 using System.IO;
 using System.Drawing;
 using System.Text;
+using uwac;
 
-public partial class Study_Tadpole_Tadpole_and_Tadpole_TX : System.Web.UI.Page
+
+public partial class Study_Tadpole_Tadpole_and_Tadpole_TX : BasePage
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();
@@ -140,22 +142,22 @@ public partial class Study_Tadpole_Tadpole_and_Tadpole_TX : System.Web.UI.Page
 
 	protected void GetCurrentDefaultStudyID()
 	{
-		if (debugprint) tblmyinfo.Rows[0].Cells[0].InnerHtml += "-------> GetCurrentDefaultStudyID <br/>";
+		//if (debugprint) tblmyinfo.Rows[0].Cells[0].InnerHtml += "-------> GetCurrentDefaultStudyID <br/>";
 
-		SqlCommand sqlCmd = new System.Data.SqlClient.SqlCommand("exec spSEC_Get_Default_StudyID_for_User", oConn);
-		DataTable dt = new DataTable();
-		SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
-		sqlAdapter.Fill(dt);
+		//SqlCommand sqlCmd = new System.Data.SqlClient.SqlCommand("exec spSEC_Get_Default_StudyID_for_User", oConn);
+		//DataTable dt = new DataTable();
+		//SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
+		//sqlAdapter.Fill(dt);
 
-		foreach (DataRow row in dt.Rows)
-		{
-			_content_studyID = Convert.ToInt16(row["defaultstudyID"]);
-			_content_studyname = Convert.ToString(row["studyname"]);
-		}
+		//foreach (DataRow row in dt.Rows)
+		//{
+		//	_content_studyID = Convert.ToInt16(row["defaultstudyID"]);
+		//	_content_studyname = Convert.ToString(row["studyname"]);
+		//}
 
 
-		lblINTRO_studyname.Text = "Study: ";
-		lblStudyname_ContentPage.Text = _content_studyname;
+		//lblINTRO_studyname.Text = "Study: ";
+		//lblStudyname_ContentPage.Text = _content_studyname;
 	}
 
 

@@ -11,7 +11,7 @@
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor" TagPrefix="obout" %>
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor.ToolbarButton" TagPrefix="obout" %>
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <!DOCTYPE html>
@@ -130,7 +130,7 @@
 			<asp:HyperLink ID="hypDefault" runat="server" NavigateUrl="~/Default.aspx" Target="blank" ForeColor="LightGreen" Text="What's new"></asp:HyperLink> 
 			
 		</td>
-		<td style="background-color:#336699; text-align: left;">
+		<td style="background-color:#336699; text-align: center;">
 
 			<asp:Label ID="lbltheme" runat="server" Text="Select Theme..." ForeColor="Silver" ></asp:Label>
 
@@ -156,6 +156,12 @@
 					<dx:ListEditItem Value="Youthful" />
 				</Items>
 			</dx:ASPxComboBox>
+			<dx:ASPxTrackBar ID="masterColorLevel" ClientInstanceName="masterColorLevel" runat="server"  MinValue="0" MaxValue="100" 
+					ScalePosition="None"  ShowChangeButtons="false" ShowDragHandles="True" 
+				Caption="Color level" CaptionSettings-VerticalAlign="Middle" ForeColor="Silver" 
+					Width="150" Height="20" Step="5"  LargeTickInterval="20"  EnableClientSideAPI="true" Position="50"  >
+													<%--<ClientSideEvents PositionChanged="MasterColorLevelOnChange" />--%>
+												</dx:ASPxTrackBar>
 		</td>
 		<td  style="background-color:#336699; vertical-align: top;">
 <%--			<asp:Button ID="btnManager_Show" runat="server" Visible="false" Text="Show Page Manager" BorderColor="SlateGray" TabIndex="0" BackColor="SteelBlue" Font-Size="8pt" OnClick="btnManager_Show_Click" />

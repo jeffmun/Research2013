@@ -36,6 +36,11 @@ namespace uwac
 		private int _colorindex;
 		private SeriesPoint[] _seriesPoints;
 		public SeriesPoint[] seriesPoints { get { return _seriesPoints; } set { _seriesPoints = value; } }
+		private SeriesPoint[] _seriesPointsSD;
+		public SeriesPoint[] seriesPointsSD { get { return _seriesPointsSD; } set { _seriesPointsSD = value; } }
+
+		public string label { get; set; }
+		public string panename { get; set; }
 
 		//public DxSeriesPoints(DataTable dataxy, Color color)
 		//{
@@ -63,7 +68,8 @@ namespace uwac
 			_colorvarname = colorvarname;
 			_color_levels = color_levels;
 			_colors = colors;
-			CreateDxSeriesPoints();
+			bool addSD = (_yvarname == "M") ? true : false;
+			CreateDxSeriesPoints(addSD);
 		}
 
 		public DxSeriesPoints(DataTable dataxy, string xvarname, string yvarname, List<Color> colors, int colorindex)
@@ -73,13 +79,17 @@ namespace uwac
 			_yvarname = yvarname;
 			_colorvarname = "none";
 			_colors = colors;
-			CreateDxSeriesPoints();
+
+			bool addSD = (_yvarname == "M") ? true : false;
+			CreateDxSeriesPoints(addSD);
 		}
 
-		public void CreateDxSeriesPoints()
+		public void CreateDxSeriesPoints(bool addSD)
 		{
 			SeriesPoint[] points = new SeriesPoint[_dataxy.Rows.Count];
-			
+			SeriesPoint[] pointsSD = new SeriesPoint[_dataxy.Rows.Count];
+
+
 			//scat
 			for (int i = 0; i < _dataxy.Rows.Count; i++)
 			{
@@ -89,11 +99,18 @@ namespace uwac
 				var x = _dataxy.Rows[i][_xvarname];
 				var y = new double?[] { _dataxy.Rows[i].Field<double?>(_yvarname) };
 
-				if(y[0] == null)
+
+				if (y[0] == null)
 				{
 					points[i] = new SeriesPoint(x);
-				} else {
+				} else 
+				{
 					points[i] = new SeriesPoint(x, Convert.ToDouble(y[0]));
+					if (addSD)
+					{
+						var sd = (addSD) ? new double?[] { _dataxy.Rows[i].Field<double?>("SD") } : null;
+						pointsSD[i] = new SeriesPoint(x, Convert.ToDouble(sd[0]));
+					}
 				}
 
 
@@ -123,7 +140,7 @@ namespace uwac
 			}
 
 			_seriesPoints = points;
-
+			_seriesPointsSD = pointsSD;
 		}
 
 		public string AssignTooltip(int i)

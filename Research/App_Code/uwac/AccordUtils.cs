@@ -39,6 +39,7 @@ public class AccordUtils
 
 		dt.Columns.Add(new DataColumn("species"));
 		dt.Columns.Add(new DataColumn("group"));
+		dt.Columns.Add(new DataColumn("category"));
 
 		foreach (string s in varnames)
 		{
@@ -65,10 +66,13 @@ public class AccordUtils
 		}
 
 		Random rand = new Random();
+		Random rand2 = new Random();
 		int max = rand.Next(2, 8);
+		int max2 = rand2.Next(2, 4);
 		foreach (DataRow row in dt.Rows)
 		{
-			row[1] = RandomGroup(rand, max);
+			row[1] = RandomGroup(rand, max, "group");
+			row[2] = RandomGroup(rand2, max2, "cat");
 		}
 
 
@@ -76,11 +80,11 @@ public class AccordUtils
 	}
 
 
-	public static string RandomGroup(Random rand, int max)
+	public static string RandomGroup(Random rand, int max, string prefix)
 	{
 
 		int foo = rand.Next(1, max);
 
-		return String.Format("Group_{0}", foo);
+		return String.Format("{0}_{1}", prefix, foo);
 	}
 }

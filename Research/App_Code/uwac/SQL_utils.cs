@@ -1104,6 +1104,14 @@ namespace uwac
 
 		public int NonQuery_from_ProcName(string sSQL, List<SqlParameter> p, string output_param)
 		{
+			// Example usage:
+			//		alter proc dp.CloneDataProject (@dataproj_pk int, @newdataproj_pk int OUTPUT)   //include an output param in the sproc
+			//
+			//		ps.Add(sql.CreateParam("newdataproj_pk", "0", "int", "output"));   //define the output param in C#
+			//
+			//		int newdataproj_pk = sql.NonQuery_from_ProcName("dp.CloneDataProject", ps, "newdataproj_pk");  //return results to int
+
+
 			SqlCommand oCmd = new SqlCommand();
 
 			oCmd.Connection = oSqlConn;

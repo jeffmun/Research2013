@@ -2,9 +2,9 @@
 	 EnableEventValidation="false" Title="Edit Data Project"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.Web.ASPxHtmlEditor.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxHtmlEditor" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.ASPxHtmlEditor.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxHtmlEditor" TagPrefix="dx" %> 
 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
@@ -202,33 +202,37 @@
 						<td style="vertical-align: top">
 
 						</td>
-						<td style="vertical-align: top; width: 200px">
-				<dx:ASPxButton ID="btnUpdate" runat="server" Text="Update Data Project Settings" OnClick="btnUpdate_OnClick" ClientInstanceName="btnUpdate">
-					<Image IconID="actions_save_16x16devav"></Image>
-				</dx:ASPxButton>
-				<dx:ASPxButton ID="btnNew" runat="server" Text="Save this Data Project"  OnClick="btnUpdate_OnClick">
-					 <Image IconID="actions_save_16x16devav"></Image>
-				</dx:ASPxButton>
+						<td style="vertical-align: top; width: 150px; padding: 5px">
+				            <dx:ASPxButton ID="btnUpdate" runat="server" Text="Update Settings" OnClick="btnUpdate_OnClick" ClientInstanceName="btnUpdate">
+					            <Image IconID="actions_save_16x16devav"></Image>
+				            </dx:ASPxButton>
+				            <dx:ASPxButton ID="btnNew" runat="server" Text="Save this Data Project"  OnClick="btnUpdate_OnClick">
+					             <Image IconID="actions_save_16x16devav"></Image>
+				            </dx:ASPxButton>
 							<dx:ASPxLabel ID="lblERROR" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
-				<br />
+
 						</td>
-						<td style="width: 50px"></td>
-						<td style="vertical-align: top">
+						<td style="vertical-align: top; padding: 5px">
 
 							<dx:ASPxButton ID="btnExploreProject" runat="server" Visible="false" Text="Explore this Data Project"   ClientInstanceName="btnExploreProject" AutoPostBack="true" OnClick="btnExploreProject_OnClick">
 								 <Image IconID="actions_viewsetting_16x16devav"></Image>
 							</dx:ASPxButton>							&nbsp;&nbsp;&nbsp;&nbsp;
-						<td style="width: 50px"></td>
-							<td style="vertical-align: top">
+						<td style="vertical-align: top; padding: 5px">
 								<dx:ASPxButton ID="btnFiles" runat="server" Text="Create & View Data Files" OnClick="btnFiles_OnClick" ClientInstanceName="btnbtnCreate">
 									<Image IconID="save_saveall_16x16office2013"></Image>
 								</dx:ASPxButton>
 						</td>
-						<td style="width: 50px"></td>
-							<td style="vertical-align: top">
+						<td style="vertical-align: top; padding: 5px">
 							<dx:ASPxButton ID="btnProjects" runat="server" Text="Return To All Data Projects"   ClientInstanceName="btnSets" AutoPostBack="False">
 								 <clientsideevents click="function(s, e) {document.location.href = 'Index.aspx';}"></clientsideevents>
 								<Image IconID="actions_changeview_16x16devav"></Image>
+							</dx:ASPxButton>
+						</td>
+						<td style="width: 50px; padding: 5px">
+							<dx:ASPxButton ID="btnClone" runat="server" Text="Clone this Data Project"   ClientInstanceName="btnSets" AutoPostBack="true"
+								 OnClick="btnClone_OnClick">
+								 <clientsideevents click="function(s, e) {document.location.href = 'Index.aspx';}"></clientsideevents>
+								<Image IconID="actions_converttorange_16x16"></Image>
 							</dx:ASPxButton>
 						</td>
 
@@ -735,7 +739,7 @@
 										KeyFieldName="compvarvar_pk"  OnBeforePerformDataSelect="detailGrid_DataSelect" 
 										OnInitNewRow="Compvar_InitNewRow" OnParseValue="Compvar_OnParseValue"
 										OnRowInserting="Compvarvar_OnRowInserting" OnRowUpdating="Compvarvar_OnRowUpdating"  
-									    OnHtmlRowPrepared="Compvarvar_HtmlRowPrepared"
+										OnHtmlRowPrepared="Compvarvar_HtmlRowPrepared"
 										>
 
 										<SettingsDataSecurity AllowInsert="true" AllowDelete="true" AllowEdit="true" />

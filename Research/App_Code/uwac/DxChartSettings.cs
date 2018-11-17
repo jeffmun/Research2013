@@ -192,7 +192,12 @@ namespace uwac
 		LowerDiag = 6
 	}
 
-
+	public enum DxWideMode : int
+	{
+		OnlyWithinTimept = 0,
+		OnlyAutoCorrAcrossTimept = 1,
+		PoolAcrossTimept = 2
+	}
 }
 
 

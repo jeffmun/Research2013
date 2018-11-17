@@ -49,19 +49,209 @@ using Accord.Statistics.Testing;
 //public partial class PointSeries : ChartBasePage{
 public partial class _test_testchart : BasePage
 {
- 
+
 	protected void Page_Load(object sender, EventArgs e)
 	{
 		panel.Controls.Clear();
 
-	
+		DataTable dt = AccordUtils.Iris();
 
-		AnovaTest();
 
-		BarTest();
+		//HistTest();
+		//AnovaTest();
+
+
+		//BarTest2(dt, "species", "variable", "group");
+		//TestDescStats(dt);
+
+		widen();
+
+		//	BarTest2("group", "variable", "species");
+		//BarTest2("variable", "group"  , "species");
+		//BarTest2("variable", "species", "group");
+
 	}
 
 
+	#region DESC STATS
+	protected void TestDescStats(DataTable dt)
+	{
+
+		//Get_DescStats(dt, new List<string> { "sepalwidth" }, new List<string> { "species" });
+		//Get_DescStats(dt, new List<string> { "sepalwidth" }, new List<string> { "species", "group" });
+		Get_DescStats(dt, new List<string> { "sepalwidth", "sepallength", "petallength" }, new List<string> { "species", "group" });
+		//Get_DescStats(dt, new List<string> { "sepalwidth" }, new List<string> { "species", "group", "category" });
+
+	}
+
+
+	protected void Get_DescStats(DataTable dt, List<string> numericvars, List<string> groupingvars)
+	{
+		DescStats stats = new DescStats(dt, numericvars, groupingvars);
+
+
+
+		ASPxGridView gv = new ASPxGridView();
+		gv.SettingsText.Title = String.Format("Desc Stats: <b>{0}</b> by {1}", String.Join(",", numericvars), String.Join(",", groupingvars));
+		gv.Settings.ShowTitlePanel = true;
+
+		gv.SettingsPager.PageSize = 500;
+		gv.DataSource = stats.dt;
+		gv.DataBind();
+
+		panel.Controls.Add(gv);
+
+	}
+	#endregion
+
+
+	#region HIST
+	protected void HistTest()
+	{
+		DataTable dt = AccordUtils.Iris();
+		List<DxChartOrder> orders = new List<DxChartOrder>();
+
+
+		List<string> vars = new List<string> { "sepallength", "sepalwidth" }; //, "petallength", "petalwidth" };
+
+		DxHistogramSettings b1 = test_hist_settings("group", vars);
+
+		orders.Add(new DxChartOrder(b1, b1.numvars));
+
+		foreach (DxChartOrder order in orders)
+		{
+			MakeCharts(dt, order);
+		}
+
+	}
+
+	public DxHistogramSettings test_hist_settings(string colorvar, List<string> vars)
+	{
+
+		DxHistogramSettings s = new DxHistogramSettings();
+		s.colors = new List<Color> { Color.Purple, Color.MediumPurple, Color.Gray, Color.DarkGoldenrod, Color.Gold };
+		s.numvars = vars;
+		s.panesLayoutDirection = PaneLayoutDirection.Vertical;
+		s.H = 800;
+		//s.xaxisvar = xaxis;
+		s.colorvar = colorvar;
+		s.hideEmptyCharts = false;
+		return s;
+	}
+
+
+
+	#endregion
+
+
+	#region  BAR
+	protected void BarTest2(DataTable dt, string s1, string s2, string s3)
+	{
+		List<DxChartOrder> orders = new List<DxChartOrder>();
+
+		DxBarchartSettings b1 = test_bar_settings(s1, s2, s3);
+		b1.W = 1000;
+		b1.H = 200;
+		b1.numvars = new List<string> { "sepalwidth", "sepallength", "petallength" };
+
+		orders.Add(new DxChartOrder(b1, b1.numvars));
+		foreach (DxChartOrder order in orders)
+		{
+			MakeCharts(dt, order);
+		}
+	}
+
+
+	protected void BarTest()
+	{
+		DataTable dt = AccordUtils.Iris();
+		List<DxChartOrder> orders = new List<DxChartOrder>();
+
+		DxBarchartSettings b1 = test_bar_settings("species", "variable", "group");
+		DxBarchartSettings b2 = test_bar_settings("variable", "species");
+		DxBarchartSettings b3 = test_bar_settings("group", "variable");
+		DxBarchartSettings b4 = test_bar_settings("variable", "group");
+		DxBarchartSettings b5 = test_bar_settings("variable", "group");
+
+		orders.Add(new DxChartOrder(b1, b1.numvars));
+		orders.Add(new DxChartOrder(b2, b2.numvars));
+		orders.Add(new DxChartOrder(b3, b3.numvars));
+		orders.Add(new DxChartOrder(b4, b4.numvars));
+
+		orders.Add(new DxChartOrder(b5, b5.numvars));
+
+
+		orders[3].list_settings[0].H = 200;
+		orders[3].list_settings[0].W = 600;
+		orders[4].list_settings[0].H = 200;
+		orders[4].list_settings[0].W = 600;
+
+
+		foreach (DxChartOrder order in orders)
+		{
+			MakeCharts(dt, order);
+		}
+
+	}
+
+
+	public DxBarchartSettings test_bar_settings(string xaxis, string colorvar, string panelvar)
+	{
+		List<string> vars = new List<string> { "sepallength", "sepalwidth", "petallength", "petalwidth" };
+		return test_bar_settings(xaxis, colorvar, panelvar, vars);
+	}
+
+	public DxBarchartSettings test_bar_settings(string xaxis, string colorvar)
+	{
+		List<string> vars = new List<string> { "sepallength", "sepalwidth", "petallength", "petalwidth" };
+		return test_bar_settings(xaxis, colorvar, vars);
+	}
+
+	public DxBarchartSettings test_bar_settings(string xaxis, string colorvar, List<string> vars)
+	{
+
+		DxBarchartSettings s = new DxBarchartSettings();
+		s.colors = Actigraph.colors;
+		s.numvars = vars;
+		s.xaxisvar = xaxis;
+		s.colorvar = colorvar;
+		s.hideEmptyCharts = false;
+		return s;
+	}
+
+	public DxBarchartSettings test_bar_settings(string xaxis, string colorvar, string panelvar, List<string> vars)
+	{
+
+		DxBarchartSettings s = new DxBarchartSettings();
+		s.colors = Actigraph.colors;
+		s.numvars = vars;
+		s.xaxisvar = xaxis;
+		s.colorvar = colorvar;
+		s.panelvar = panelvar;
+		s.hideEmptyCharts = false;
+		return s;
+	}
+
+	#endregion
+
+	protected void MakeCharts(DataTable dt, DxChartOrder order)
+	{
+		DxChartFactory factory = new DxChartFactory(dt, order);
+
+		foreach (DxChartOrder myorder in factory.orders)
+		{
+			foreach (DxChartBatch batch in myorder.batches)
+			{
+				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
+				panel.Controls.Add(t);
+			}
+		}
+
+	}
+
+
+
+	#region Oneway ANOVA
 	protected void AnovaTest()
 	{
 		string[] vars = new string[] { "species", "petalwidth" };
@@ -84,14 +274,11 @@ public partial class _test_testchart : BasePage
 
 
 		OneWayAnova anova4 = new OneWayAnova(getjag(dt, "species", "petalwidth"));
-		PlaceAnovaTable(anova4, "petalwidth", "species",4);
+		PlaceAnovaTable(anova4, "petalwidth", "species", 4);
 
 
-			   
+
 	}
-
-
-
 
 	public double[][] getjag(DataTable dt, string ivname, string dvname)
 	{
@@ -127,21 +314,21 @@ public partial class _test_testchart : BasePage
 		PlaceAnovaTable(anova, dv, iv, 4);
 	}
 
-	
+
 	protected void PlaceAnovaTable(OneWayAnova anova, string dv, string iv, int numdigits)
 	{
 		var t = anova.Table;
 
 		ASPxGridView gv = new ASPxGridView();
-		gv.SettingsText.Title = String.Format("One-way ANOVA: <b>{0}</b> by {1}",dv, iv);
+		gv.SettingsText.Title = String.Format("One-way ANOVA: <b>{0}</b> by {1}", dv, iv);
 		gv.Settings.ShowTitlePanel = true;
 
 		gv.DataSource = anova.Table;
 		gv.DataBind();
-		
+
 
 		List<string> keepAsInt = new List<string> { "DegreesOfFreedom" };
-		foreach(GridViewDataColumn col in gv.Columns)
+		foreach (GridViewDataColumn col in gv.Columns)
 		{
 			string name = col.FieldName;
 
@@ -168,81 +355,55 @@ public partial class _test_testchart : BasePage
 		panel.Controls.Add(gv);
 	}
 
+	#endregion
 
-	protected void BarTest()
+
+	#region WIDEN data
+
+	protected void widen()
 	{
-		DataTable dt = AccordUtils.Iris();
-		List<DxChartOrder> orders = new List<DxChartOrder>();
+		SQL_utils sql = new SQL_utils("data");
 
-		DxBarchartSettings b1 = test_bar("species", "variable");
-		DxBarchartSettings b2 = test_bar("variable", "species");
-		DxBarchartSettings b3 = test_bar("group", "variable");
-		DxBarchartSettings b4 = test_bar("variable", "group");
-		DxBarchartSettings b5 = test_bar("variable", "group");
+		DataTable dt = sql.DataTable_from_SQLstring("select timepoint_text as timept, c.timepoint, b.timepointID, a.studymeasID, id, muagem, mucoiq, mucss, muvragee, mufmagee, murlagee, muelagee from all_mullen_items a " +
+			" join  uwautism_research_backend..tblstudymeas b ON a.studymeasID = b.studymeasID " +
+			" join  uwautism_research_backend..tbltimepoint c ON b.timepointID = c.timepointID " +
+			" where mucss > 0 and a.studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID=1076)");
 
-		orders.Add(new DxChartOrder(b1, b1.numvars));
-		orders.Add(new DxChartOrder(b2, b2.numvars));
-		orders.Add(new DxChartOrder(b3, b3.numvars));
-		orders.Add(new DxChartOrder(b4, b4.numvars));
+		List<string> vars = new List<string> { "id", "muagem", "mucoiq", "mucss", "muvragee", "mufmagee", "murlagee", "muelagee" };
 
-		orders.Add(new DxChartOrder(b5, b5.numvars));
+		DataSubsets subsets = new DataSubsets(dt, vars, new List<string> { "timept" });
 
 
-		orders[3].list_settings[0].H = 200;
-		orders[3].list_settings[0].W = 600;
-		orders[4].list_settings[0].H = 200;
-		orders[4].list_settings[0].W = 600;
+		//DataTable dtwide = subsets.FullOuterJoinDataTables();
+		//ASPxGridView gv = new ASPxGridView();
+		//gv.DataSource = dtwide;
+		//gv.DataBind();
+		//gv.SettingsPager.PageSize = 200;
+		//panel.Controls.Add(gv);
 
 
-		foreach (DxChartOrder order in orders)
-		{
-			MakeCharts(dt, order);
-		}
+		DxScatterplotSettings settings = new DxScatterplotSettings();
+		settings.numvars = new List<string> { "muagem", "muvragee", "murlagee" };
+		settings.colors = Actigraph.colors;
+		settings.repeatedmeasVarname = "timept";
+		settings.chartlayout = DxChartLayout.Horizontal;
+		settings.maxCol = 4;
+		settings.W = 180;
+		settings.H = 200;
+
+
+
+		DxChartOrder order = new DxChartOrder();
+		order.list_settings.Add(settings);
+
+		MakeCharts(dt, order);
+
+		
 
 	}
 
-	protected void MakeCharts(DataTable dt, DxChartOrder order)
-	{
-		DxChartFactory factory = new DxChartFactory(dt, order);
+	#endregion
 
-		foreach (DxChartOrder myorder in factory.orders)
-		{
-			foreach (DxChartBatch batch in myorder.batches)
-			{
-				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-				panel.Controls.Add(t);
-			}
-		}
-
-	}
-
-
-
-
-	public DxBarchartSettings test_bar(string xaxis, string colorvar, string value)
-	{
-		return test_bar(xaxis, colorvar, new List<string> { value } );
-	}
-
-	public DxBarchartSettings test_bar(string xaxis, string colorvar)
-	{
-		List<string> vars = new List<string> { "sepallength", "sepalwidth", "petallength", "petalwidth" };
-		return test_bar( xaxis, colorvar, vars);
-	}
-
-	public DxBarchartSettings test_bar(string xaxis, string colorvar, List<string> vars)
-	{
-
-	DxBarchartSettings s = new DxBarchartSettings();
-		s.colors = Actigraph.colors;
-		s.numvars = vars;
-		s.xaxisvar = xaxis;
-		s.colorvar = colorvar;
-		s.hideEmptyCharts = false;
-		return s;
-	}
-
-
-
+	
 
 }

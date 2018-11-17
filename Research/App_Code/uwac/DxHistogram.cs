@@ -190,10 +190,28 @@ namespace uwac
 
 			string subtitles_merged = String.Join(" ", subtitles);
 
-			this.AddTitles(String.Format("Histogram <b>{0}{1}* by {2} *</b>"
+			//this.AddTitles(String.Format("Histogram <b>{0}{1}* by {2} *</b>"
+			//	, var
+			//	, Environment.NewLine
+			//	, panelvar), subtitles_merged, "", "Count");
+
+
+			string maintitle = String.Format("Histogram <b>{0}{1}* by {2} *</b>"
 				, var
 				, Environment.NewLine
-				, panelvar), subtitles_merged, "", "Count");
+				, panelvar);
+
+			this.AddTitles(maintitle);
+
+			XYDiagramDefaultPane defpane = xydiagram.DefaultPane;
+			defpane.Title.Text =  subtitles[0];
+			defpane.Title.Visibility = DefaultBoolean.True;
+
+			for (int p=0; p < xydiagram.Panes.Count; p++)
+			{
+				XYDiagramPane pane = xydiagram.Panes[p];
+				pane.Title.Text = subtitles[p+1];
+			}
 
 			chart.Width = _settings.W;
 			chart.Height = _settings.H;

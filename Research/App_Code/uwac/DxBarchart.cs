@@ -68,6 +68,15 @@ namespace uwac
 
 			CreateBarchart(mydt);
 		}
+		public DxBarchart(DxChartSettings settings, DescStats mystats) //, string xvar, string yvar, string titleinput, string colorsby)
+		{
+			_settings = settings;
+			//Color col = _settings.color(0);
+
+			CreateBarchart(mystats);
+		}
+
+
 		//public DxBarchart(DataTable mydt, string xvar, string yvar, string titleinput, Color mycolor, string colorsby)
 		//{
 		//	_settings.xaxisvar = xvar;
@@ -85,20 +94,24 @@ namespace uwac
 			List<string> grouping_vars = new List<string>();
 			grouping_vars.Add(_settings.xaxisvar);
 			grouping_vars.Add(_settings.colorvar);
-			//grouping_vars.Add(_settings.panelvar);
+
+			if (_settings.panelvar != null & _settings.panelvar != "variable") grouping_vars.Add(_settings.panelvar);
 
 			grouping_vars.RemoveAll(item => item == "variable");
 			grouping_vars.RemoveAll(item => item == "none");
 
 
-			_statstable = (grouping_vars.Count > 0) 
+			_statstable = (grouping_vars.Count > 0)
 					? new DescStats(mydt, _settings.numvars, grouping_vars)
 					: new DescStats(mydt, _settings.numvars);
+
+			if (_settings.panelvar == "variable") grouping_vars.Add(_settings.panelvar);
+
 
 			CreateBarchart(_statstable);
 
 
-			if (_statstable.dt.Rows.Count==0)
+			if (_statstable.dt.Rows.Count == 0)
 			{
 				this.isempty = true;
 				this.emptymsg = _statstable.emptystats;
@@ -113,7 +126,10 @@ namespace uwac
 		{
 			chart.AxisWholeRangeChanged += LogAxesRangeWhole;
 			//chart.AxisVisualRangeChanged += LogAxesRangeVisual;
-			chart.BoundDataChanged += new BoundDataChangedEventHandler(barchart_BoundDataChanged);
+
+
+
+			//chart.BoundDataChanged += new BoundDataChangedEventHandler(barchart_BoundDataChanged);
 
 
 			string mycolorvar;
@@ -131,57 +147,156 @@ namespace uwac
 
 			List<string> colors_levels = statstable.dt.AsEnumerable().Select(x => x.Field<string>(mycolorvar)).Distinct().ToList();
 			List<string> xaxis_levels = statstable.dt.AsEnumerable().Select(x => x.Field<string>(_settings.xaxisvar)).Distinct().ToList();
+			List<string> panes_levels = new List<string>();
 
-
-
-			chart.DataSource = statstable.dt;
-			chart.SeriesDataMember = (_settings.colorvar == "none") ? "All" : _settings.colorvar; //Colors - dimension in the Legend
-			chart.SeriesTemplate.ArgumentDataMember = _settings.xaxisvar; //X axis dimention
-			chart.SeriesTemplate.ValueDataMembers.AddRange("M"); // _numvars.ToArray());
-
-
-			SideBySideBarSeriesView vw = new SideBySideBarSeriesView();
-
-			vw.Indicators.Add(new DataSourceBasedErrorBars
+			if (_settings.panelvar != "none")
 			{
-				Direction = ErrorBarDirection.Both,
-				Name = "SD",
-				Color = Color.Black,
-				PositiveErrorDataMember = "SD",
-				NegativeErrorDataMember = "SD"
-			});
+				panes_levels = statstable.dt.AsEnumerable().Select(x => x.Field<string>(_settings.panelvar)).Distinct().ToList();
 
-			chart.SeriesTemplate.View = vw;
-
-			//AddPanes(diag, 1);
-			//vw.Pane = diag.Panes[0];
-			//if (i >= 1) vw.Pane = diag.Panes[(i - 1)];  //Panes collection starts at index 0, but first series goes into default pane
-
-			//var miny1 = diag.AxisY.WholeRange.MinValue.ToString() ?? "";
-
-			chart.DataBind();
+				panes_levels.Sort();
+			}
 
 
-			foreach(Series ser in chart.Series)
+			//chart.DataSource = statstable.dt;
+			//chart.SeriesDataMember = (_settings.colorvar == "none") ? "All" : _settings.colorvar; //Colors - dimension in the Legend
+			//chart.SeriesTemplate.ArgumentDataMember = _settings.xaxisvar; //X axis dimention
+			//chart.SeriesTemplate.ValueDataMembers.AddRange("M"); // _numvars.ToArray());
+
+
+			for (int i = 0; i < colors_levels.Count; i++)
+			{
+				string current_color_lev = colors_levels[i];
+			}
+
+			//SeriesPoint[] pts = new DxSeriesPoints(statstable.dt, _settings.xaxisvar, "M", _settings.colors, g);
+
+
+			//SideBySideBarSeriesView vw = new SideBySideBarSeriesView();
+			//vw.Indicators.Add(new DataSourceBasedErrorBars
+			//{
+			//	Direction = ErrorBarDirection.Both,
+			//	Name = "SD",
+			//	Color = Color.Black,
+			//	PositiveErrorDataMember = "SD",
+			//	NegativeErrorDataMember = "SD"
+			//});
+			//chart.SeriesTemplate.View = vw;
+
+
+
+
+
+			foreach (Series ser in chart.Series)
 			{
 				Debug.WriteLine(String.Format("arg data member:[{0}] color data member:[{1}]", ser.ArgumentDataMember, ser.ColorDataMember));
 			}
 
 
-			////////Panes - didn't get working yet
-			//////if(_settings.panelvar != "none")
-			//////{
-			//////	int numgroupingvars = statstable.groupingvars.Count;
-			//////	this.AddPanes(numgroupingvars-1, _settings.panesLayoutDirection);
-			//////}
+			BarchartSeries barseries = new BarchartSeries(statstable.dt, _settings.xaxisvar, _settings.colorvar, _settings.panelvar, _settings.colors, colors_levels);
 
-			////chart.DataBind();
+			//List<DxSeriesPoints> sps = CreateSeries(statstable.dt, _settings.xaxisvar, _settings.colorvar, _settings.panelvar, _settings.colors, colors_levels);
 
-			////foreach (Series series in chart.Series)
-			////{
-			////	var x = series.ValueDataMembers;
-			////	((SideBySideBarSeriesView)series.View).Pane = xydiagram.Panes[0];
-			////}
+			foreach (DxSeriesPoints sp in barseries.list_dxseriespoints)
+			{
+				Series s = new Series();
+				s.Points.AddRange(sp.seriesPoints);
+				SideBySideBarSeriesView vw = new SideBySideBarSeriesView();
+				s.View = vw;
+
+				var thesd = sp.seriesPointsSD[0].Values[0];
+
+				vw.Indicators.Add(new FixedValueErrorBars
+				{
+					Direction = ErrorBarDirection.Both,
+					Name = "SD",
+					Color = Color.Black,
+					PositiveError = thesd ,
+					NegativeError = thesd
+				});
+
+				chart.Series.Add(s);
+			}
+
+			Debug.WriteLine(String.Format("***************************** INIT   # of Panes: {0}", xydiagram.Panes.Count));
+
+			if (panes_levels.Count > 0)
+			{
+				xydiagram.Panes.Clear();
+				Debug.WriteLine(String.Format("***************************** After CLEAR # of Panes: {0}", xydiagram.Panes.Count));
+				foreach (string p in panes_levels)
+				{
+					// Obtain a diagram and clear its collection of panes.
+					XYDiagramPane pane = new XYDiagramPane(p);
+					xydiagram.Panes.Add(pane);
+					pane.Title.Text = p;
+					pane.Title.Visibility = DefaultBoolean.True;
+					xydiagram.PaneLayout.Direction = _settings.panesLayoutDirection; // PaneLayoutDirection.Horizontal;
+					Debug.WriteLine(String.Format("**********************************   # of Panes: {0} {1}", xydiagram.Panes.Count, p));
+
+					// check whether series should be added to this pane.
+					for (int i = 0; i < chart.Series.Count; i++)
+					{
+						// if (sps[i].panename == p)
+						if (barseries.list_dxseriespoints[i].panename == p)
+						{
+							XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
+							view.Pane = xydiagram.Panes[p];
+
+							//view.Indicators.Add(new FixedValueErrorBars
+							//{
+							//	Direction = ErrorBarDirection.Both,
+							//	Name = "SD",
+							//	Color = Color.Black,
+							//	PositiveError = i * .02,
+							//	NegativeError = i * .02
+
+							//});
+
+						}
+					}
+
+					xydiagram.DefaultPane.Visibility = ChartElementVisibility.Hidden;
+					//for (int i = 0; i < chart.Series.Count; i++)
+					//{
+
+					//XYDiagramPane pane = new XYDiagramPane("The Pane's Name");
+					//xydiagram.Panes.Add(pane);
+					//XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
+
+					////view.Indicators.Add(new DataSourceBasedErrorBars
+					////{
+					////	Direction = ErrorBarDirection.Both,
+					////	Name = "SD",
+					////	Color = Color.Black,
+					////	PositiveErrorDataMember = "SD",
+					////	NegativeErrorDataMember = "SD"
+					////});
+
+					//view.Pane = pane;
+
+					//}
+				}
+			}
+			//No Additional Panes
+			else {
+				for (int i = 0; i < chart.Series.Count; i++)
+				{
+					XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
+					view.Pane = xydiagram.DefaultPane;
+					//view.Indicators.Add(new FixedValueErrorBars
+					//{
+					//	Direction = ErrorBarDirection.Both,
+					//	Name = "SD",
+					//	Color = Color.Black,
+					//	PositiveError = i * .02,
+					//	NegativeError = i * .02,
+					//	EndStyle = ErrorBarEndStyle.NoCap
+
+					//});
+				}
+			}
+
+			chart.DataBind();
 
 
 			if (_settings.miny != -999 && _settings.maxy != -999)
@@ -248,7 +363,7 @@ namespace uwac
 		}
 
 
-		protected void barchart_BoundDataChanged(object sender, EventArgs  e)
+		public void barchart_BoundDataChanged(object sender, EventArgs e)
 		{
 			var chart = (WebChartControl)sender;
 
@@ -258,20 +373,129 @@ namespace uwac
 				var x = chart.Series[i];
 				var sname = x.Name;
 
+				Debug.WriteLine(String.Format("sname={0}", sname));
 
 				//Color mycolor = _settings.colors[i % _settings.colors.Count];
-					
+
 				//((SideBySideBarSeriesView)chart.Series[i].View).Color = mycolor;
 				//((SideBySideBarSeriesView)chart.Series[i].View).FillStyle.FillMode = FillMode.Solid;
 			}
 
 			//https://documentation.devexpress.com/WindowsForms/4942/Controls-and-Libraries/Chart-Control/Examples/Chart-Elements/How-to-Display-Automatically-Created-Series-in-Separate-Panes 
 
+
+			if (chart.Series.Count > 0)
+			{
+				// Obtain a diagram and clear its collection of panes.
+				XYDiagram diagram = (XYDiagram)chart.Diagram;
+				diagram.Panes.Clear();
+				// Create a pane for each series.
+				for (int i = 1; i < chart.Series.Count; i++)
+				{
+					XYDiagramPane pane = new XYDiagramPane("The Pane's Name");
+					diagram.Panes.Add(pane);
+					XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
+
+					//view.Indicators.Add(new DataSourceBasedErrorBars
+					//{
+					//	Direction = ErrorBarDirection.Both,
+					//	Name = "SD",
+					//	Color = Color.Black,
+					//	PositiveErrorDataMember = "SD",
+					//	NegativeErrorDataMember = "SD"
+					//});
+
+					view.Pane = pane;
+
+					diagram.PaneLayout.Direction = PaneLayoutDirection.Horizontal;
+				}
+			}
 		}
 
 	}
 
-	public class AxesRange
+	public class BarchartSeries
+	{
+		private List<DxSeriesPoints> _list_dxseriespoints;
+		public List<DxSeriesPoints> list_dxseriespoints {  get{ return _list_dxseriespoints; } set { _list_dxseriespoints = value; } }
+
+		public BarchartSeries(DataTable dt, string xvar, string colorvar, string panelvar, List<Color> colors, List<string> color_levels)
+		{
+			//List<DxSeriesPoints> _list_dxseriespoints = new List<DxSeriesPoints>();
+
+
+			_list_dxseriespoints = CreateSeries(dt, xvar, colorvar, panelvar, colors, color_levels);
+
+
+		}
+
+
+		private List<DxSeriesPoints> CreateSeries(DataTable dt, string xvar, string colorvar, string panelvar, List<Color> colors, List<string> color_levels)
+		{
+			List<string> groupvars = new List<string>();
+			int panename_idx = -1;
+			if (panelvar == "none" & colorvar != "none")
+			{
+				groupvars = new List<string>() { xvar, colorvar };
+				panename_idx = -1;
+			}
+			else if (panelvar != "none" & colorvar == "none")
+			{
+				groupvars = new List<string>() { xvar, panelvar };
+				panename_idx = 1;
+			}
+			else if (panelvar != "none" & colorvar != "none")
+			{
+				groupvars = new List<string>() { xvar, colorvar, panelvar };
+				panename_idx = 2;
+			}
+
+			List<DxSeriesPoints> list_series = new List<DxSeriesPoints>();
+			try
+			{
+
+				// from: http://www.scriptscoop.net/t/7516b362c821/c-c-linq-how-to-build-group-by-clause-dynamically.html
+				IEnumerable<string> columnsToGroupBy = groupvars;
+				var groups = dt.AsEnumerable()
+							.GroupBy(r => new NTuple<object>(from column in columnsToGroupBy select r[column]));
+
+				int n_groups = groups.Count();
+				foreach (var group in groups)
+				{
+					DataTable dtSub = group.CopyToDataTable();
+
+					//List<string> keyvalues = group.Key.Values[0].ToString();
+					List<string> keyvalues = new List<string>();
+					foreach (var s in group.Key.Values)
+					{
+						keyvalues.Add(s.ToString());
+					}
+
+
+					DxSeriesPoints pts = new DxSeriesPoints(dtSub, xvar, "M", colorvar, colors, color_levels);
+
+					pts.label = String.Join(" : ", keyvalues);
+
+					pts.panename = (panename_idx >= 0) ? keyvalues[panename_idx] : "none";
+
+					list_series.Add(pts);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("ERROR! qryGroupBy  Msg:" + ex.Message + "............." + ex.StackTrace.ToString());
+			}
+
+			return list_series;
+		}
+
+	}
+
+
+
+
+public class AxesRange
 	{
 		private double _minx;
 		private double _maxx;
@@ -291,6 +515,8 @@ namespace uwac
 
 
 	#endregion
+	//public delegate void MyEventHandler(object sender, MyEventArgs e);
+
 
 	public class DxBarchartSettings : DxChartSettings
 	{
