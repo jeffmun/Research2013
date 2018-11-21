@@ -110,9 +110,63 @@ namespace uwac
 				else if (settings.ChartType == DxChartType.Scatterplot)
 				{
 					DxScatterplotSettings mysettings = (DxScatterplotSettings)settings;
-					DxChartBatch batch = new DxChartBatch(mysettings, dt);
-					PrepareBatch(batch, settings);
-					batchlist.Add(batch);
+
+					if (mysettings.repeatedmeasVarname == "none")
+					{
+						DxChartBatch batch = new DxChartBatch(mysettings, dt);
+						PrepareBatch(batch, settings);
+						batchlist.Add(batch);
+					}
+					else if (mysettings.repeatedmeasVarname != "none")
+					{
+						List<string> repeatedmeas_levels = dt.AsEnumerable().Select(f => f.Field<string>(mysettings.repeatedmeasVarname)).Distinct().ToList();
+
+						List<string> analysisvars = new List<string>();
+						analysisvars.AddRange(mysettings.numvars);
+						if (mysettings.agevars != null) analysisvars.AddRange(mysettings.agevars);
+
+						int n_rptmeas = repeatedmeas_levels.Count;
+						int n_analysisvars = analysisvars.Count;
+
+						int ncol1 = utilStats.Factorial(n_rptmeas - 1);
+
+						List<string> tmpvars = mysettings.analysisvars();
+						List<string> tmpvarsX = mysettings.analysisvarsX();
+						List<string> tmpvarsY = mysettings.analysisvarsY();
+
+
+						mysettings.xypairtype = XYpairType.SameVar_AcrossLevelsOfRptMeas;
+						mysettings.maxCol = ncol1;
+						mysettings.chartlayout = DxChartLayout.Horizontal;
+						DxChartBatch batch1 = new DxChartBatch(mysettings, dt);
+						PrepareBatch(batch1, (DxChartSettings)mysettings);
+						batch1.batchtitle = "Same Variable ACROSS levels of " + mysettings.repeatedmeasVarname;
+						batchlist.Add(batch1);
+
+						//#2 - treat it as square
+						mysettings.xypairtype = XYpairType.DiffVar_WithinLevelsOfRptMeas;
+						mysettings.numvars = tmpvars;
+						mysettings.xvars = null;
+						mysettings.yvars = null;
+
+						mysettings.chartlayout = DxChartLayout.Vertical;
+						mysettings.maxRow = tmpvars.Count;
+						DxChartBatch batch2 = new DxChartBatch(mysettings, dt);
+						PrepareBatch(batch2, (DxChartSettings)mysettings);
+						batch2.batchtitle = "Different Variables WITHIN levels of " + mysettings.repeatedmeasVarname;
+						batchlist.Add(batch2);
+
+						//#2 - back to original
+						mysettings.xypairtype = XYpairType.DiffVar_AcrossLevelsOfRptMeas;
+						mysettings.numvars = null;
+						mysettings.xvars = tmpvarsX;
+						mysettings.yvars = tmpvarsY;
+						DxChartBatch batch3 = new DxChartBatch(mysettings, dt);
+						PrepareBatch(batch3, (DxChartSettings)mysettings);
+						batch3.batchtitle = "Different Variables ACROSS levels of " + mysettings.repeatedmeasVarname;
+						batchlist.Add(batch3);
+
+					}
 				}
 				else if (settings.ChartType == DxChartType.Actogram )
 				{

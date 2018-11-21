@@ -23,6 +23,9 @@ namespace uwac
 		{
 			using (DataColumn dc = new DataColumn(columnName + "_new", newType))
 			{
+				//Allow NULL values
+				dc.AllowDBNull = true;
+
 				// Add the new column which has the new type, and move it to the ordinal of the old column
 				int ordinal = dt.Columns[columnName].Ordinal;
 				dt.Columns.Add(dc);
@@ -30,8 +33,16 @@ namespace uwac
 
 				// Get and convert the values of the old column, and insert them into the new
 				foreach (DataRow dr in dt.Rows)
-					dr[dc.ColumnName] = Convert.ChangeType(dr[columnName], newType);
-
+				{
+					if(dr[columnName] == DBNull.Value)
+					{
+						dr[dc.ColumnName] = DBNull.Value;
+					}
+					else
+					{
+						dr[dc.ColumnName] = Convert.ChangeType(dr[columnName], newType);
+					}
+				}
 				// Remove the old column
 				dt.Columns.Remove(columnName);
 
@@ -479,108 +490,151 @@ namespace uwac
 			var coltypeX = mydt.Columns[xvar].DataType;
 			var coltypeY = mydt.Columns[yvar].DataType;
 
-			List<string> varproxy = new List<string>();
-			if (othervarstokeep.Count > 0)
+
+			DataTable data = new DataTable(); ;
+
+			if (coltypeX.Name.ToLower().Contains("int")) mydt.ConvertColumnType(xvar, typeof(double));
+			if (coltypeY.Name.ToLower().Contains("int")) mydt.ConvertColumnType(yvar, typeof(double));
+
+			coltypeX = mydt.Columns[xvar].DataType;
+			coltypeY = mydt.Columns[yvar].DataType;
+
+
+			if (othervarstokeep.Count == 0)
 			{
+				if (coltypeX.Name.ToLower() == "datetime")
+				{
+					var qry = mydt.AsEnumerable().Where(f => f.Field<DateTime?>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						id = r.Field<string>("id"),
+						x = r.Field<DateTime>(xvar),
+						y = r.Field<double>(yvar)
+					});
+
+					data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+				}
+
+				else if (coltypeX.Name.ToLower() == "string")
+				{
+					var qry = mydt.AsEnumerable().Where(f => f.Field<string>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						id = r.Field<string>("id"),
+						x = r.Field<string>(xvar),
+						y = r.Field<double>(yvar)
+					});
+
+					data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+				}
+				else if (coltypeX.Name.ToLower() == "double")
+				{
+					var qry = mydt.AsEnumerable()
+						.Where(f => f.Field<double?>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						id = r.Field<string>("id"),
+						x = r.Field<double>(xvar),
+						y = r.Field<double>(yvar)
+					});
+
+					data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+				}
+
+				if (data != null)
+				{
+					data.Columns["x"].ColumnName = xvar;
+					data.Columns["y"].ColumnName = yvar;
+
+				}
+			}
+			else
+			{
+				List<string> varproxy = new List<string>();
 				for (int i = 0; i < 5; i++)
 				{
 					varproxy.Add((i < othervarstokeep.Count) ? othervarstokeep[i] : othervarstokeep[othervarstokeep.Count - 1]);
 				}
-			}
-			else
-			{
-				for (int i = 0; i < 5; i++)
+
+
+				if (coltypeX.Name.ToLower() == "datetime")
 				{
-					varproxy.Add("id");
+					var qry = mydt.AsEnumerable().Where(f => f.Field<DateTime?>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						id = r.Field<string>("id"),
+						x = r.Field<DateTime>(xvar),
+						y = r.Field<double>(yvar),
+						v0 = r.Field<string>(varproxy[0]),
+						v1 = r.Field<string>(varproxy[1]),
+						v2 = r.Field<string>(varproxy[2]),
+						v3 = r.Field<string>(varproxy[3]),
+						v4 = r.Field<string>(varproxy[4])
+					});
+
+					data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+
+				}
+
+				else if (coltypeX.Name.ToLower() == "string")
+				{
+					var qry = mydt.AsEnumerable().Where(f => f.Field<string>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						id = r.Field<string>("id"),
+						x = r.Field<string>(xvar),
+						y = r.Field<double>(yvar),
+						v0 = r.Field<string>(varproxy[0]),
+						v1 = r.Field<string>(varproxy[1]),
+						v2 = r.Field<string>(varproxy[2]),
+						v3 = r.Field<string>(varproxy[3]),
+						v4 = r.Field<string>(varproxy[4])
+
+					});
+
+					data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+				}
+				else if (coltypeX.Name.ToLower() == "double")
+				{
+					var qry = mydt.AsEnumerable()
+						.Where(f => f.Field<double?>(xvar) != null && f.Field<double?>(yvar) != null)
+					.Select(r => new
+					{
+						id = r.Field<string>("id"),
+						x = r.Field<double>(xvar),
+						y = r.Field<double>(yvar),
+						v0 = r.Field<string>(varproxy[0]),
+						v1 = r.Field<string>(varproxy[1]),
+						v2 = r.Field<string>(varproxy[2]),
+						v3 = r.Field<string>(varproxy[3]),
+						v4 = r.Field<string>(varproxy[4])
+					});
+
+					data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+				}
+
+				if (data != null)
+				{
+					data.Columns["x"].ColumnName = xvar;
+					data.Columns["y"].ColumnName = yvar;
+
+					for (int i = 0; i < 5; i++)
+					{
+						if (i < othervarstokeep.Count)
+						{
+							data.Columns["v" + i.ToString()].ColumnName = varproxy[i];
+						}
+						else
+						{
+							data.Columns.Remove("v" + i.ToString());
+						}
+					}
+
 				}
 			}
 
-
-			DataTable data;
-
-			if (coltypeX.Name.ToLower() == "datetime")
-			{
-				var qry = mydt.AsEnumerable().Where(f => f.Field<DateTime?>(xvar) != null && f.Field<double?>(yvar) != null)
-				.Select(r => new
-				{
-					id = r.Field<string>("id"),
-					x = r.Field<DateTime>(xvar),
-					y = r.Field<double>(yvar),
-					v0 = r.Field<string>(varproxy[0]),
-					v1 = r.Field<string>(varproxy[1]),
-					v2 = r.Field<string>(varproxy[2]),
-					v3 = r.Field<string>(varproxy[3]),
-					v4 = r.Field<string>(varproxy[4])
-				});
-
-				data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-
-			}
-
-			else if (coltypeX.Name.ToLower() == "string")
-			{
-				var qry = mydt.AsEnumerable().Where(f => f.Field<string>(xvar) != null && f.Field<double?>(yvar) != null)
-				.Select(r => new
-				{
-					id = r.Field<string>("id"),
-					x = r.Field<string>(xvar),
-					y = r.Field<double>(yvar),
-					v0 = r.Field<string>(varproxy[0]),
-					v1 = r.Field<string>(varproxy[1]),
-					v2 = r.Field<string>(varproxy[2]),
-					v3 = r.Field<string>(varproxy[3]),
-					v4 = r.Field<string>(varproxy[4])
-
-				});
-
-				data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-			}
-			else if (coltypeX.Name.ToLower() == "double")
-			{
-				var qry = mydt.AsEnumerable()
-					.Where(f => f.Field<double?>(xvar) != null && f.Field<double?>(yvar) != null)
-				.Select(r => new
-				{
-					id = r.Field<string>("id"),
-					x = r.Field<double>(xvar),
-					y = r.Field<double>(yvar),
-					v0 = r.Field<string>(varproxy[0]),
-					v1 = r.Field<string>(varproxy[1]),
-					v2 = r.Field<string>(varproxy[2]),
-					v3 = r.Field<string>(varproxy[3]),
-					v4 = r.Field<string>(varproxy[4])
-				});
-
-				data = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
-			}
-			else
-			{
-				data = null;
-			}
-
-			if (data != null)
-			{
-				data.Columns["x"].ColumnName = xvar;
-				data.Columns["y"].ColumnName = yvar;
-
-				for (int i = 0; i < 5; i++)
-				{
-					if (i < othervarstokeep.Count)
-					{
-						data.Columns["v" + i.ToString()].ColumnName = varproxy[i];
-					}
-					else
-					{
-						data.Columns.Remove("v" + i.ToString());
-					}
-				}
-
-
-			}
-
-
-
-
+			
 			return data;
 
 		}
@@ -831,6 +885,17 @@ namespace uwac
 			int ncol2 = dt_data.Columns.Count;
 
 			return dt_data;
+		}
+
+		public static bool ContainsColumnName(this DataTable dt, string colname)
+		{
+			bool containsColname = false;
+
+			foreach(DataColumn col in dt.Columns)
+			{
+				if (col.ColumnName == colname) containsColname = true;
+			}
+			return containsColname;
 		}
 
 		public static void log(string s)

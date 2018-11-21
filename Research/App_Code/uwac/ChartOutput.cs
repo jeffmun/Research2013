@@ -444,40 +444,44 @@ namespace uwac
 			Table t = new Table();
 
 			double dbl_numcol = batch.charts.Count / (batch.maxRow * 1.0);
-			int numcol = Convert.ToInt32(Math.Ceiling(dbl_numcol));
-
-			int counter = 0;
-
-			for (int i = 0; i < batch.maxRow; i++)
+			if (dbl_numcol > 0)
 			{
-				TableRow r = new TableRow();
-				for (int j = 0; j < numcol; j++)
+				int numcol = Convert.ToInt32(Math.Ceiling(dbl_numcol));
+
+				int counter = 0;
+
+				for (int i = 0; i < batch.maxRow; i++)
 				{
-					TableCell c = new TableCell();
-					bool addcell = true;
-					int idx = i + (j * batch.maxRow);
-					if (idx < batch.charts.Count)
+					TableRow r = new TableRow();
+					for (int j = 0; j < numcol; j++)
 					{
-						int newW = Convert.ToInt32(batch.charts[idx].W );
-						int newH = Convert.ToInt32(batch.charts[idx].H );
+						TableCell c = new TableCell();
+						bool addcell = true;
+						int idx = i + (j * batch.maxRow);
+						if (idx < batch.charts.Count)
+						{
+							int newW = Convert.ToInt32(batch.charts[idx].W);
+							int newH = Convert.ToInt32(batch.charts[idx].H);
 
-						if (batch.charts[idx].chart == null )
-						{
-							//do nothing, the missing chart and emptymsg is not displayed
-							addcell = false;
+							if (batch.charts[idx].chart == null)
+							{
+								//do nothing, the missing chart and emptymsg is not displayed
+								addcell = false;
+							}
+							else
+							{
+								PlaceChartInCell(batch.charts[idx], c, newW, newH);
+							}
+							counter++;
 						}
-						else
-						{
-							PlaceChartInCell(batch.charts[idx], c, newW, newH);
-						}
-						counter++;
+						if (addcell) r.Cells.Add(c);
 					}
-					if (addcell) r.Cells.Add(c);
+					t.Rows.Add(r);
 				}
-				t.Rows.Add(r);
-			}
 
-			return t;
+				return t;
+			}
+			else return null;
 		}
 
 

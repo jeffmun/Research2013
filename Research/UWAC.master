@@ -146,7 +146,7 @@
 					<dx:ListEditItem Value="Material" />
 					<dx:ListEditItem Value="MaterialCompact" />
 					<dx:ListEditItem Value="Metropolis" />
-					<dx:ListEditItem Value="MetropolisBlue" />
+<%--					<dx:ListEditItem Value="MetropolisBlue" />--%>
 					<dx:ListEditItem Value="Moderno" Selected="true" />
 					<dx:ListEditItem Value="Office2003Olive" />
 					<dx:ListEditItem Value="Office2010Silver" />

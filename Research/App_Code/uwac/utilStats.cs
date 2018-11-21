@@ -22,6 +22,8 @@ using NReco.PivotData;
 using NReco.PivotData.Output;
 using LinqStatistics;
 using MathNet.Numerics.Statistics;
+using Accord.Statistics.Testing;
+using Accord.Math;
 using uwac;
 
 namespace uwac
@@ -828,7 +830,14 @@ namespace uwac
 			return ds_out;
 		}
 
+		// Function to calculate factorial 
+		public static int Factorial(int n)
+		{
 
+			// single line to find factorial 
+			return (n == 1 || n == 0) ?
+					1 : n * Factorial(n - 1);
+		}
 
 
 		public static DataTable ChangeColumnTypes_to_Double(DataTable dt)
@@ -1829,6 +1838,23 @@ namespace uwac
 			}
 			return correlation ;
 		}
+
+
+		//public static double Corr_pvalue(double r, int n)
+		//{
+		//	double t = r / (Math.Sqrt((1 - (r * r)) / (n - 2)));
+
+		//	HypothesisTest<TDistribution> test = new HypothesisTest();
+		//	var x = HypothesisTest<>
+
+
+
+		//	return p;
+		//}
+
+
+
+
 
 
 		public static double ICC(double[] x, double[] y, int type)

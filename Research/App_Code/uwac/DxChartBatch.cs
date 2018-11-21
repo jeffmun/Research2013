@@ -39,6 +39,7 @@ namespace uwac
 		public DxChartLayout chartlayout { get; set; }
 		public int maxRow { get; set; }
 		public int maxCol { get; set; }
+		public string batchtitle { get; set; }
 		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
 
 		public void Initialize()
@@ -139,7 +140,7 @@ namespace uwac
 
 			//	}
 			//}
-			
+
 		}
 
 
@@ -170,7 +171,7 @@ namespace uwac
 					{
 						mysettings.yaxisvar = v;
 						mysettings.seriesby = "id";
-						DxChart chart =  new DxLineplot(mysettings, dt);
+						DxChart chart = new DxLineplot(mysettings, dt);
 						chart.AddTitles(String.Format("{0} {1}", v, title));
 						charts.Add(chart);
 
@@ -278,51 +279,7 @@ namespace uwac
 			}
 		}
 
-		//WORKS but not for variable as a panel var
-		//public DxChartBatch(DxBarchartSettings mysettings, DataTable dt)
-		//{
-		//	Initialize();
-
-		//	_settings = (DxChartSettings)mysettings;
-
-		//	charttype = DxChartType.Barchart;
-		//	chartlayout = mysettings.chartlayout;
-		//	_vars = mysettings.numvars;
-		//	if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
-
-		//	mysettings.numvars.Remove("id");
-
-
-		//	if (mysettings.panelvar == "none")
-		//	{
-		//		DxBarchart chart = new DxBarchart(mysettings, dt);
-		//		charts.Add(chart);
-		//		_datatables.Add(chart.statstable.dt);
-		//	}
-		//	else
-		//	{
-		//		List<string> varnames = new List<string>();
-		//		varnames.AddRange(_vars);
-		//		varnames.Add(mysettings.xaxisvar);
-		//		varnames.Add(mysettings.colorvar);
-		//		varnames.RemoveAll(item => item == "variable");
-		//		varnames.RemoveAll(item => item == "none");
-
-		//		DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
-
-		//		foreach (DataSubset subset in subsets.subsets)
-		//		{
-		//			DxBarchart chart = new DxBarchart(mysettings, subset.dt);
-
-		//			//DxChart chart = new DxBarchart(mysettings, subset.dt);
-		//			chart.AddTitles(subset.Cols_and_Vals_ToString());
-		//			charts.Add(chart);
-
-		//			_datatables.Add(chart.statstable.dt);
-		//		}
-
-		//	}
-		//}
+	
 
 		public DxChartBatch(DxScatterplotSettings mysettings, DataTable dt)
 		{
@@ -333,145 +290,80 @@ namespace uwac
 			charttype = DxChartType.Scatterplot;
 			chartlayout = mysettings.chartlayout;
 
-			List<string> tempvars = new List<string>();
-			tempvars.AddRange(mysettings.numvars);
-			if (mysettings.agevars.Count > 0) tempvars.AddRange(mysettings.agevars);
+			_vars = mysettings.analysisvars();
+			
 
-			//pairwise
-			tempvars.Remove("id");
-
-			this._vars = tempvars;
-
-			bool issquare = true;
-
-			if (issquare)
+			bool isnoo = true;
+			if (isnoo)
 			{
-
-				for (int i = 0; i < tempvars.Count; i++)
-				//for (int i = 0; i < settings.numvars.Count; i++)
+				// **** NO REPEATED MEASURES ****
+				//Square matrix
+				if (mysettings.repeatedmeasVarname == "none" & mysettings.analysisvarsX() == mysettings.analysisvarsY())
 				{
-					string x = tempvars[i];
-					for (int j = i; j < tempvars.Count; j++)
-					//for (int i = counter; i < settings.numvars.Count; i++)
+					XYpairs pairs = new XYpairs(mysettings.analysisvarsX()); //, mysettings.colors[0]);
+
+					foreach (XYpair pair in pairs.pairs)
 					{
-						string y = tempvars[j];
-						settings.xaxisvar = y; // x;  //test swap
-						settings.yaxisvar = x; // y;
-
-						if (x == y & mysettings.showhist)
-						{
-							#region showhist
-							DxHistogramSettings local_settingshist = new DxHistogramSettings(mysettings);
-
-
-							local_settingshist.xaxisvar = x;
-							if (mysettings.colorvar != "none")
-							{
-								local_settingshist.colorvar = mysettings.colorvar;
-							}
-							local_settingshist.shownormalcurve = true;
-							local_settingshist.numbins = 15;
-							local_settingshist.colors = mysettings.colors;
-							local_settingshist.title = x;
-
-							DxChart chart = new DxHistogram(local_settingshist, dt, x, 0);
-							chart.isdiag = true;
-							charts.Add(chart);
-							#endregion
-						}
-						// Straight Scatterplot - no repeated measures to deal with
-						else if (x != y & mysettings.repeatedmeasVarname == null)
-						{
-							DxChart chart = new DxScatterplot(mysettings, dt);
-							charts.Add(chart);
-						}
-						// Repeated measures
-						else if (/*x != y &*/ mysettings.repeatedmeasVarname != null)
-						{
-							List<string> repeatedmeas_levels = dt.AsEnumerable().Select(f => f.Field<string>(mysettings.repeatedmeasVarname)).Distinct().ToList();
-							List<string> idvars = new List<string> { "id" };
-
-							if (mysettings.colorvar != "none") idvars.Add(mysettings.colorvar);
-							if (mysettings.panelvar != "none") idvars.Add(mysettings.panelvar);
-
-							idvars.Remove(mysettings.repeatedmeasVarname);
-
-
-							List<string> keepvars = new List<string>();
-							keepvars.Add(mysettings.repeatedmeasVarname);
-							keepvars.AddRange(mysettings.numvars);
-							keepvars.AddRange(idvars);
-
-
-
-							// Widen the data using the repeated measure value
-							DataSubsets subsets = new DataSubsets(dt, keepvars, new List<string> { mysettings.repeatedmeasVarname });
-							DataTable dtwide = subsets.FullOuterJoinDataTables(idvars);
-
-							// log the original variable names, because we will be adding prefixes to these
-							string origxvar = mysettings.xaxisvar;
-							string origyvar = mysettings.yaxisvar;
-
-							if (x != y)
-							{
-								//If use has selected OnlyAutoCorrAcrossTimept then skip when xvar != yvar
-								if (mysettings.widemode != DxWideMode.OnlyAutoCorrAcrossTimept)
-								{
-									for (int k = 0; k < repeatedmeas_levels.Count; k++)
-									{
-										string newx = String.Format("{0}_{1}", repeatedmeas_levels[k], origxvar);
-										string newy = String.Format("{0}_{1}", repeatedmeas_levels[k], origyvar);
-
-										DxScatterplotSettings tmpsettings = (DxScatterplotSettings)mysettings.Clone();
-										tmpsettings.xaxisvar = newx;
-										tmpsettings.yaxisvar = newy;
-										DxChart chart = new DxScatterplot(tmpsettings, dtwide);
-										charts.Add(chart);
-									}
-								}
-							}
-							else if (x == y)
-							{
-
-								//If use has selected OnlyWithinTimept then skip when xvar == yvar, it is logically impossible 
-								if (mysettings.widemode != DxWideMode.OnlyWithinTimept)
-								{
-									//adjacent
-									for (int k = 0; k < (repeatedmeas_levels.Count - 1); k++)
-									{
-										string newx = String.Format("{0}_{1}", repeatedmeas_levels[k], origxvar);
-										string newy = String.Format("{0}_{1}", repeatedmeas_levels[k + 1], origyvar);
-
-										DxScatterplotSettings tmpsettings = (DxScatterplotSettings)mysettings.Clone();
-										tmpsettings.xaxisvar = newx;
-										tmpsettings.yaxisvar = newy;
-										DxChart chart = new DxScatterplot(tmpsettings, dtwide);
-										charts.Add(chart);
-									}
-
-									//then first and last
-									DxScatterplotSettings tmpsettings2 = (DxScatterplotSettings)mysettings.Clone();
-									tmpsettings2.xaxisvar = String.Format("{0}_{1}", repeatedmeas_levels[0], origxvar);
-									tmpsettings2.yaxisvar = String.Format("{0}_{1}", repeatedmeas_levels[repeatedmeas_levels.Count - 1], origxvar);
-									DxChart chart2 = new DxScatterplot(tmpsettings2, dtwide);
-									charts.Add(chart2);
-								}
-
-							}
-
-
-
-						}
-						else
-						{
-							//Consider adding a histogram here?
-						}
+						DxChart chart = new DxScatterplot(mysettings, dt, pair);
+						charts.Add(chart);
 					}
 				}
-			}
-			else  //NOT square - TODO
-			{
+				//Rectangle matrix
+				else if (mysettings.repeatedmeasVarname == "none" & mysettings.analysisvarsX() != mysettings.analysisvarsY())
+				{
+					XYpairs pairs = new XYpairs(mysettings.analysisvarsX(), mysettings.analysisvarsY()); //, mysettings.colors[0]);
 
+					if(mysettings.chartlayout == DxChartLayout.Horizontal)
+					{
+						mysettings.chartlayout = DxChartLayout.Vertical;
+						mysettings.maxRow = mysettings.analysisvarsY().Count;
+					}
+					else if (mysettings.chartlayout == DxChartLayout.Vertical)
+					{
+						mysettings.chartlayout = DxChartLayout.Horizontal; 
+						mysettings.maxCol = mysettings.analysisvarsX().Count;
+					}
+
+					foreach (XYpair pair in pairs.pairs)
+					{
+						DxChart chart = new DxScatterplot(mysettings, dt, pair);
+						charts.Add(chart);
+					}
+				}
+				// **** YES REPEATED MEASURES ****
+				else
+				{
+					//List<string> repeatedmeas_levels = mysettings.rptmeasLevels(dt); //.AsEnumerable().Select(f => f.Field<string>(mysettings.repeatedmeasVarname)).Distinct().ToList();
+					//List<string> analysisvars = mysettings.analysisvars();
+					List<string> idvars = new List<string> { "id" };
+
+					if (mysettings.colorvar != "none") idvars.Add(mysettings.colorvar);
+					if (mysettings.panelvar != "none") idvars.Add(mysettings.panelvar);
+
+					idvars.Remove(mysettings.repeatedmeasVarname);
+
+
+
+					List<string> keepvars = new List<string>();
+					keepvars.Add(mysettings.repeatedmeasVarname);
+					keepvars.AddRange(mysettings.analysisvars());
+					keepvars.AddRange(idvars);
+
+					// Widen the data using the repeated measure value
+					DataSubsets subsets = new DataSubsets(dt, keepvars, new List<string> { mysettings.repeatedmeasVarname });
+					DataTable dtwide = subsets.FullOuterJoinDataTables(idvars);
+
+					List<string> colnames = dtwide.ColumnNames();
+
+					XYpairs pairs = new XYpairs(mysettings.analysisvars(), mysettings.rptmeasLevels(dt), mysettings.xypairtype);
+					
+					foreach (XYpair pair in pairs.pairs)
+					{
+						DxChart chart = new DxScatterplot(mysettings, dtwide, pair);
+						charts.Add(chart);
+					}
+
+				}
 			}
 
 		}
@@ -591,72 +483,145 @@ namespace uwac
 		}
 
 
-		//public void CustomFormatting()
-		//{
-		//	//if (charttype == DxChartType.Actogram)
-		//	//{
-		//	//	SetXAxisRange_1day();
-		//	//	SetYAxisRange();
+	}
 
+	public enum XYpairType : int
+	{
+		SameVar_AcrossLevelsOfRptMeas = 0,
+		DiffVar_WithinLevelsOfRptMeas = 1,
+		DiffVar_AcrossLevelsOfRptMeas = 2
+	}
 
-		//	//	foreach (DxChart ch in charts)
-		//	//	{
-		//	//		XYDiagram xy = ch.xydiagram;
-		//	//		xy.AxisX.DateTimeScaleOptions.MeasureUnit = DateTimeMeasureUnit.Hour;
-		//	//		xy.AxisX.DateTimeScaleOptions.GridAlignment = DateTimeGridAlignment.Hour;
-		//	//		xy.AxisX.Label.TextPattern = "{A:t}";
+	public class XYpair
+	{
+		private string _xvar;
+		private string _yvar;
+		private Color _color;
 
-		//	//		DataRow row = ds.Tables[1].Rows[counter];
+		public string xvar { get { return _xvar; } set { _xvar = value; } }
+		public string yvar { get { return _yvar; } set { _yvar = value; } }
 
-		//	//		Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
+		public Color color { get { return _color; } set { _color = value; } }
 
-		//	//		ch.AnnotateActogram(stats);
-
-		//	//		counter++;
-		//	//	}
-		//	//}
-		//}
-
-		//public DxBatchOcharts(DataTable dt, DxLineplotSettings settings, DataTable dt, string title)
-		//{
-
-		//	charttype = DxChartType.Lineplot;
-		//	vars = settings.numvars;
-
-		//	//NO Panels
-		//	if (settings.panelvar == "none" | settings.panelvar == "variable")
-		//	{
-		//		batch = BuildLineplots(settings, dt, " ");
-		//	}
-		//	else
-		//	{
-		//		List<string> varnames = new List<string>() { "id" };
-		//		varnames.AddRange(settings.numvars);
-		//		varnames.Add(settings.xaxisvar);
-		//		varnames.Add(settings.colorvar);
-		//		varnames.RemoveAll(item => item == "variable");
-		//		varnames.RemoveAll(item => item == "none");
-
-
-		//		DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { settings.panelvar });
-
-		//		foreach (DataSubset subset in subsets.subsets)
-		//		{
-		//			DxBatchOcharts subbatch = BuildLineplots(settings, subset.dt, subset.Cols_and_Vals_ToString());
-
-		//			foreach (DxChart sub in subbatch.charts)
-		//			{
-		//				batch.charts.Add(sub);
-		//			}
-		//		}
-
-		//	}
-
-		//	return batch;
-		//}
 
 	}
 
+	public class XYpairs
+	{
+		private List<XYpair> _pairs;
+		public List<XYpair> pairs { get { return _pairs; } set { _pairs = value; } }
 
+		public XYpairs(List<string> vars)
+		{
+			_pairs = new List<XYpair>();
 
+			for (int i = 0; i < vars.Count; i++)
+			{
+				for (int j = i + 1; j < vars.Count; j++)
+				{
+					XYpair pair = new XYpair { xvar = vars[i], yvar = vars[j] };
+					_pairs.Add(pair);
+				}
+
+			}
+		}
+
+		public XYpairs(List<string> vars, Color color)
+		{
+			_pairs = new List<XYpair>();
+
+			for (int i = 0; i < vars.Count; i++)
+			{
+				for (int j = i + 1; j < vars.Count; j++)
+				{
+					XYpair pair = new XYpair { xvar = vars[i], yvar = vars[j], color = color };
+					_pairs.Add(pair);
+				}
+
+			}
+		}
+
+		public XYpairs(List<string> xvars, List<string> yvars)
+		{
+			_pairs = new List<XYpair>();
+
+			for (int i = 0; i < xvars.Count; i++)
+			{
+				for (int j = 0; j < yvars.Count; j++)
+				{
+					if (xvars[i] != yvars[j])
+					{
+						XYpair pair = new XYpair { xvar = xvars[i], yvar = yvars[j] };
+						_pairs.Add(pair);
+					}
+				}
+
+			}
+		}
+
+		public XYpairs(List<string> vars, List<string> rptmeas, XYpairType type)
+		{
+			_pairs = new List<XYpair>();
+			string x = "";
+			string y = "";
+			if (type == XYpairType.DiffVar_WithinLevelsOfRptMeas)
+			{
+				for (int i = 0; i < rptmeas.Count; i++)
+				{
+					for (int j = 0; j < (vars.Count - 1); j++)
+					{
+						for (int k = j + 1; k < vars.Count; k++)
+						{
+							x = String.Format("{0}_{1}", rptmeas[i], vars[j]);
+							y = String.Format("{0}_{1}", rptmeas[i], vars[k]);
+							XYpair pair = new XYpair { xvar = x, yvar = y };
+							_pairs.Add(pair);
+						}
+					}
+				}
+			}
+
+			else if (type == XYpairType.DiffVar_AcrossLevelsOfRptMeas)
+			{
+				for (int i = 0; i < rptmeas.Count; i++)
+				{
+					for (int j = 0; j < rptmeas.Count; j++)
+					{
+						for (int k = 0; k < vars.Count; k++)
+						{
+							for (int l = 0; l < vars.Count; l++)
+							{
+								x = String.Format("{0}_{1}", rptmeas[i], vars[k]);
+								y = String.Format("{0}_{1}", rptmeas[j], vars[l]);
+								if ((i != j) & (k != l))
+								{
+									XYpair pair = new XYpair { xvar = x, yvar = y };
+									_pairs.Add(pair);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			else if (type == XYpairType.SameVar_AcrossLevelsOfRptMeas)
+			{
+				for (int i = 0; i < vars.Count; i++)
+				{
+					for (int j = 0; j < (rptmeas.Count - 1); j++)
+					{
+						for (int k = j + 1; k < rptmeas.Count; k++)
+						{
+							x = String.Format("{0}_{1}", rptmeas[j], vars[i]);
+							y = String.Format("{0}_{1}", rptmeas[k], vars[i]);
+							XYpair pair = new XYpair { xvar = x, yvar = y };
+							_pairs.Add(pair);
+						}
+					}
+				}
+			}
+
+		}
+
+	}
 }

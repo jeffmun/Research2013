@@ -234,21 +234,6 @@ public partial class _test_testchart : BasePage
 
 	#endregion
 
-	protected void MakeCharts(DataTable dt, DxChartOrder order)
-	{
-		DxChartFactory factory = new DxChartFactory(dt, order);
-
-		foreach (DxChartOrder myorder in factory.orders)
-		{
-			foreach (DxChartBatch batch in myorder.batches)
-			{
-				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-				panel.Controls.Add(t);
-			}
-		}
-
-	}
-
 
 
 	#region Oneway ANOVA
@@ -364,7 +349,11 @@ public partial class _test_testchart : BasePage
 	{
 		SQL_utils sql = new SQL_utils("data");
 
-		DataTable dt = sql.DataTable_from_SQLstring("select timepoint_text as timept, c.timepoint, b.timepointID, a.studymeasID, id, muagem, mucoiq, mucss, muvragee, mufmagee, murlagee, muelagee from all_mullen_items a " +
+		DataTable dt = sql.DataTable_from_SQLstring("select timepoint_text as timept, sex, groupname, c.timepoint, b.timepointID, a.studymeasID, a.id, muagem, mucoiq, mucss, muvragee, mufmagee, murlagee, muelagee " + 
+			", (case when muagem > 30 then 'GT30' else 'LT30' end) as gtlt30 " +
+			", (case when muagem > 35 then 'GT35' when muagem > 25 then 'GT25' else ' LT25' end) as cat3 " +
+			" from all_mullen_items a " +
+			" join  (select * from uwautism_research_backend.trk.vwMasterStatus_S where studyID=1076) s ON a.ID = s.ID " +
 			" join  uwautism_research_backend..tblstudymeas b ON a.studymeasID = b.studymeasID " +
 			" join  uwautism_research_backend..tbltimepoint c ON b.timepointID = c.timepointID " +
 			" where mucss > 0 and a.studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID=1076)");
@@ -383,18 +372,43 @@ public partial class _test_testchart : BasePage
 
 
 		DxScatterplotSettings settings = new DxScatterplotSettings();
-		settings.numvars = new List<string> { "muagem", "muvragee", "murlagee" };
-		settings.colors = Actigraph.colors;
-		settings.repeatedmeasVarname = "timept";
+		settings.colors = new List<Color> { Color.Navy, Color.Magenta, Color.Lime, Color.Orange };
 		settings.chartlayout = DxChartLayout.Horizontal;
+		settings.showregline = true;
 		settings.maxCol = 4;
-		settings.W = 180;
-		settings.H = 200;
-
+		settings.W = 300;
+		settings.H = 300;
+		settings.panesLayoutDirection = PaneLayoutDirection.Vertical;
+		settings.colorvar = "sex";
+		settings.panevar = "timept";
+		settings.panelvar = "none";
+		settings.repeatedmeasVarname = "none";
+		//settings.numvars = new List<string> { "muvragee", "murlagee" };
+		settings.manualXandY = true;
+		settings.yvars = new List<string> {  "muagem" };
+		settings.xvars = new List<string> { "muelagee", "murlagee"  };
 
 
 		DxChartOrder order = new DxChartOrder();
 		order.list_settings.Add(settings);
+
+		//DxScatterplotSettings settings2 = (DxScatterplotSettings)settings.Clone();
+		//settings2.colorvar = "groupname";
+		//settings2.panevar = "timept";
+		//settings2.W = 600;
+		//settings2.H = 250;
+		//settings2.reglineAlpha = 0.15;
+		//settings2.panesLayoutDirection = PaneLayoutDirection.Horizontal;
+		//order.list_settings.Add(settings2);
+
+
+		//DxScatterplotSettings settings3 = (DxScatterplotSettings)settings.Clone();
+		//settings3.W = 300;
+		//settings3.H = 600;
+		//settings3.colorsByPane = true;
+		//settings3.panesLayoutDirection = PaneLayoutDirection.Vertical;
+		//order.list_settings.Add(settings3);
+
 
 		MakeCharts(dt, order);
 
@@ -402,8 +416,38 @@ public partial class _test_testchart : BasePage
 
 	}
 
+
+
+	protected void MakeCharts(DataTable dt, DxChartOrder order)
+	{
+		DxChartFactory factory = new DxChartFactory(dt, order);
+
+		foreach (DxChartOrder myorder in factory.orders)
+		{
+			foreach (DxChartBatch batch in myorder.batches)
+			{
+
+				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
+				if (t != null)
+				{
+					Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.charts.Count));
+					Label batchlabel = new Label();
+					batchlabel.Text = batch.batchtitle;
+					batchlabel.Font.Bold = true;
+					batchlabel.Font.Size = 12;
+
+					panel.Controls.Add(batchlabel);
+					panel.Controls.Add(t);
+					panel.Controls.Add(new Literal() { Text = "<br/>" });
+				}
+			}
+		}
+
+	}
+
+
 	#endregion
 
-	
+
 
 }

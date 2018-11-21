@@ -102,7 +102,8 @@ namespace uwac
 		}
 		public void AddTitles( string main, string sub, string x, string y)
 		{
-			AddTitles( main, new List<string>() { sub }, x, y, 10f);
+			if(sub != null) AddTitles( main, new List<string>() { sub }, x, y, 10f);
+			else AddTitles(main, new List<string>() , x, y, 10f);
 		}
 		public void AddTitles(string main, string sub, string x, string y, float fontsize)
 		{
@@ -110,21 +111,39 @@ namespace uwac
 		}
 		public void AddTitles(string main, List<string> sub, string x, string y, float fontsize)
 		{
-			string mainTitle_subtitles = (sub == null) ? "" :  String.Join("; ", sub);
 
 			Font fnt_main = new Font("Arial", fontsize);
 			Font fnt_x = new Font("Arial", fontsize);
 			Font fnt_y = new Font("Arial", fontsize);
-
-			ChartTitle mainTitle = new ChartTitle()
+			ChartTitle mainTitle = new ChartTitle();
+			if (sub != null)
 			{
-				Text = String.Format("{0} {1} {2}", main, Environment.NewLine, mainTitle_subtitles),
-				Dock = ChartTitleDockStyle.Top
-				//Indent = 20
-			};
+				if (sub.Count == 0)
+				{
+					mainTitle = new ChartTitle()
+					{
+						Text = main,
+						Dock = ChartTitleDockStyle.Top
+						//Indent = 20
+					};
+				}
+				else
+				{
+					string mainTitle_subtitles = (sub == null) ? "" : String.Join(Environment.NewLine, sub);
+					mainTitle = new ChartTitle()
+					{
+						Text = String.Format("{0}{1}{2}", main, Environment.NewLine, mainTitle_subtitles),
+						Dock = ChartTitleDockStyle.Top
+						//Indent = 20
+					};
+				}
+			}
 
 			mainTitle.Font = fnt_main;
 			mainTitle.Alignment = StringAlignment.Near;
+			mainTitle.WordWrap = true;
+			mainTitle.MaxLineCount = 8;
+
 			_chart.Titles.Add(mainTitle);
 
 			if (x != null)
@@ -199,7 +218,26 @@ namespace uwac
 
 		}
 
+		public void LegendByColorLevels(List<Color> colors)
+		{
+			LegendByColorLevels(colors, _colorLevels);
+		}
 
+
+		public void LegendByColorLevels(List<Color> colors, List<string> levels)
+		{
+			for (int lev = 0; lev < levels.Count; lev++)
+			{
+				// Create a new custom item.
+				CustomLegendItem item = new CustomLegendItem();
+				chart.Legend.CustomItems.Add(item);
+				// Specify its text and marker.
+				item.Text = levels[lev];
+				int coloridx = lev; //(_coloroverride >= 0) ? _coloroverride : lev;
+				item.MarkerColor = colors[coloridx % colors.Count];
+			}
+
+		}
 
 		public Table ManualColorLegend(List<Color> colors)
 		{

@@ -168,19 +168,25 @@ namespace uwac
 		public Color ColorChooser(int i)
 		{
 			//Assign color individually for each point
-			if (_colorvarname != "none")
+			if (_colorvarname != "none" & _dataxy.ContainsColumnName(_colorvarname))
 			{
 				string pointcolorlevel = _dataxy.Rows[i].Field<string>(_colorvarname);
 				for (int c = 0; c < _color_levels.Count; c++)
 				{
 					if (pointcolorlevel == _color_levels[c]) _colorindex = c;
 				}
+				int _idx = _colorindex % _colors.Count;
+				return _colors[_idx];
+			}
+			else if (_colorvarname == "none" )
+			{
+				return _colors[0];
+			}
+			else
+			{
+				return _colors[i % _colors.Count];
 			}
 
-			int _idx = _colorindex % _colors.Count;
-
-
-			return _colors[_idx];
 
 		}
 
