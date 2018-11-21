@@ -246,6 +246,8 @@ public partial class Tracking_Household2 : BasePage
 		Session["personID"] = (sender as ASPxGridView).GetMasterRowKeyValue();
 	}
 
+
+
 	protected void detailGrid_CustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
 	{
 
@@ -338,27 +340,47 @@ public partial class Tracking_Household2 : BasePage
 
 	}
 
+	protected void dxgridPeople_CommandButtonInitialize(object sender, ASPxGridViewCommandButtonEventArgs e)
+	{
+		//int idx = e.VisibleIndex;
+		//if (e.VisibleIndex == -1) return;
+
+		//Color forecolor = e.Styles.Style.ForeColor;
+		//int colorsum = forecolor.R + forecolor.G + forecolor.B;
+		//if (colorsum == 0)
+		//{
+		//	e.Styles.Style.ForeColor = Color.SlateGray;
+		//}
+	}
+
 	protected void dxgridPeople_OnHtmlRowPrepared(object sender, ASPxGridViewTableRowEventArgs e)
 	{
 		if (e.RowType != GridViewRowType.Data)
 			return;
 		string maincontact = e.GetValue("MainContact").ToString();
-		string color = "Lime";
+		Color bcolor = Color.Lime;
 		if (maincontact == "0")
 		{
-			
-			color = (e.VisibleIndex % 2 == 1) ? "WhiteSmoke" : "White";
+
+			bcolor = (e.VisibleIndex % 2 == 1) ? Color.WhiteSmoke : Color.White;
 		}
 		else
 		{
-			color = "SkyBlue";
+			bcolor = Color.SkyBlue;
 		}
-		Color c = Color.FromName(color);
+		//Color c = Color.FromName(color);
 		//this works
 		//e.Row.BackColor = c;
 
 		//this does not work
-		e.Row.BackColor = c;
+		e.Row.BackColor = bcolor;
+
+		Color forecolor = e.Row.ForeColor;
+
+		if(forecolor.R + forecolor.G + forecolor.B == 0)
+		{
+			e.Row.ForeColor = Color.Black;
+		}
 
 	}
 
@@ -407,10 +429,40 @@ public partial class Tracking_Household2 : BasePage
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
 		e.NewValues.Add("HouseholdID", Request.QueryString["hhID"]);
-		e.NewValues.Add("studyID", Master.Master_studyID.ToString());
-		DxDbOps.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
-		gv.CancelEdit();
-		e.Cancel = true;
+		bool execute = false;
+
+
+		if (Master.Master_studyID > 0)
+		{
+			e.NewValues.Add("studyID", Master.Master_studyID.ToString());
+			execute = true;
+		}
+		else
+		{
+			SQL_utils sql = new SQL_utils("backend");
+			int hh_studyID = sql.IntScalar_from_SQLstring(
+				"select top 1 studyID from trk.vwMasterStatus_S where householdID = " + Request.QueryString["hhID"] + " group by studyID order by count(*)  desc"
+				);
+			if (hh_studyID > 0)
+			{
+				sql.NonQuery_from_SQLstring("update tblStaff set defaultstudyID = " + hh_studyID.ToString() + " where  actdirID = sec.systemuser()");
+				e.NewValues.Add("studyID", hh_studyID.ToString());
+				execute = true;
+			}
+			sql.Close();
+		}
+
+		if (execute)
+		{
+			DxDbOps.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+			gv.CancelEdit();
+			e.Cancel = true;
+		}
+		else
+		{
+			gv.CancelEdit();
+			e.Cancel = true;
+		}
 	}
 
 	protected void dxgrid_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
@@ -470,14 +522,36 @@ public partial class Tracking_Household2 : BasePage
 	protected void dxgridLogContact_OnInitNewRow(object sender, ASPxDataInitNewRowEventArgs e)
 	{
 		e.NewValues["logdate"] = System.DateTime.Now;
+
+		//SQL_utils sql = new SQL_utils("backend");
+		//int default_studyID = sql.IntScalar_from_SQLstring("select coalesce(defaultstudyID,0) from tblstaff where actdirID = sec.systemuser()");
+		//int hh_studyID = sql.IntScalar_from_SQLstring("select top 1 studyID from trk.vwMasterStatus_S where householdID = " + Request.QueryString["hhID"] + " group by studyID order by count(*)  desc");
+		//if (default_studyID == 0 & hh_studyID > 0)
+		//{
+		//	sql.NonQuery_from_SQLstring("update tblStaff set defaultstudyID = " + hh_studyID.ToString() + " where  actdirID = sec.systemuser()");
+		//	Master.GetCurrentDefaultStudyID();
+		//}
+		//sql.Close();
 	}
+
 	protected void dxgridLogInfo_OnInitNewRow(object sender, ASPxDataInitNewRowEventArgs e)
 	{
 		e.NewValues["loginfodate"] = System.DateTime.Now;
+
+		//SQL_utils sql = new SQL_utils("backend");
+		//int default_studyID = sql.IntScalar_from_SQLstring("select coalesce(defaultstudyID,0) from tblstaff where actdirID = sec.systemuser()");
+		//int hh_studyID = sql.IntScalar_from_SQLstring("select top 1 studyID from trk.vwMasterStatus_S where householdID = " + Request.QueryString["hhID"] + " group by studyID order by count(*)  desc");
+
+		//if (default_studyID == 0 & hh_studyID > 0)
+		//{
+		//	sql.NonQuery_from_SQLstring("update tblStaff set defaultstudyID = " + hh_studyID.ToString() + " where  actdirID = sec.systemuser()");
+		//	Master.GetCurrentDefaultStudyID();
+		//}
+
+		//sql.Close();
 	}
 
-
-	protected string GridnameToTable(string grid)
+		protected string GridnameToTable(string grid)
 	{
 		if (grid == "dxgridPhone") return "tblPhonenumber";
 		else if (grid == "dxgridEmail") return "tblEmail";

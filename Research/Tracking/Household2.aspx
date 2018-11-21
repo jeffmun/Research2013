@@ -196,7 +196,9 @@
 					SettingsDataSecurity-AllowEdit="true" SettingsDataSecurity-AllowInsert="true"
 					OnRowValidating="dxgridPeople_RowValidating" 
 					OnHtmlRowPrepared="dxgridPeople_OnHtmlRowPrepared" 
-					OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating"  OnRowDeleting="dxgrid_OnRowDeleting" >
+					OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating"  OnRowDeleting="dxgrid_OnRowDeleting" 
+				   
+					OnCommandButtonInitialize="dxgridPeople_CommandButtonInitialize" >
 					<SettingsEditing Mode="EditFormAndDisplayRow" />
 					<SettingsPager Mode="ShowAllRecords" />
 					<SettingsBehavior ConfirmDelete="true" />
@@ -242,15 +244,16 @@
 							EditFormSettings-Visible="false">
 
 						</dx:GridViewDataTextColumn>
-						<dx:GridViewDataColumn FieldName="MainContact" Caption="MainContact" Visible="false"></dx:GridViewDataColumn>
+						<%--<dx:GridViewDataColumn FieldName="MainContact" Caption="MainContact" Visible="true"></dx:GridViewDataColumn>--%>
+						<dx:GridViewDataCheckColumn FieldName="MainContact" Caption="MainContact" Visible="false" EditFormSettings-ColumnSpan="2" EditFormSettings-Visible="True" />
 
 
 						<dx:GridViewCommandColumn ShowEditButton="true"  ShowNewButtonInHeader="true" ShowDeleteButton="true" />
 
 					</Columns>
-					 <Styles>
-						<AlternatingRow Enabled="true" BackColor="Gray" />
-					</Styles>
+<%--					 <Styles>
+						<AlternatingRow Enabled="false" BackColor="Gray" />
+					</Styles>--%>
 					<Templates>
 						<EditForm>
 							<b><i>Personal Info</i></b>
@@ -292,6 +295,7 @@
 
 							<br />
 							<dx:ASPxMemo ID="ASPxMemo1" runat="server" Caption="Notes" Width="50%" Height="100" Text='<%# Bind("Notes") %>' />
+							<br />
 
 
 							<div style="text-align: right; padding: 12px">
@@ -410,6 +414,7 @@
 						<dx:GridViewDataColumn FieldName="state" Caption="State"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="zip" Caption="Zip"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="country" Caption="Country"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="notes" Caption="Notes"></dx:GridViewDataColumn>
 						<dx:GridViewCommandColumn ShowEditButton="true"  ShowNewButtonInHeader="true"  ShowDeleteButton="true"/>
 
 					</Columns>
@@ -724,7 +729,7 @@
 	
 		<asp:SqlDataSource runat="server" ID="sql__address"  ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
 		SelectCommandType="Text" DeleteCommandType="Text"
-	 SelectCommand="select addressID, address1, address2, city, state, zip, country, householdID from tbladdress where HouseholdID = @hhID" 
+	 SelectCommand="select addressID, address1, address2, city, state, zip, country, householdID, notes from tbladdress where HouseholdID = @hhID" 
 	 DeleteCommand="delete from tbladdress where addressID = @addressID" 
 		>
 		<SelectParameters>
