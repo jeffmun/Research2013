@@ -208,11 +208,17 @@ namespace uwac
 			{
 				string p = panenames[i];
 				string psubtitle = "";
-				foreach(string psub in panesubtitles)
+				if (panesubtitles.Count > panenames.Count)
 				{
-					if (psub.StartsWith(String.Format("{0} : ", p))) psubtitle += String.Format("{0}{1}", psub, Environment.NewLine);
+					foreach (string psub in panesubtitles)
+					{
+						if (psub.StartsWith(String.Format("{0} : ", p))) psubtitle += String.Format("{0}{1}", psub, Environment.NewLine);
+					}
 				}
-
+				else
+				{
+					psubtitle = panesubtitles[i];
+				}
 				// Obtain a diagram and clear its collection of panes.
 				XYDiagramPane pane = new XYDiagramPane(p);
 				xydiagram.Panes.Add(pane);
@@ -254,10 +260,13 @@ namespace uwac
 			pos.OffsetY = -10;
 			chart.ToolTipOptions.ToolTipPosition = pos;
 
-
-			string mainTitleText = String.Format("{0}{1}r={2} N={3}"
-					, _settings.title, Environment.NewLine, corrs.pstars(CorrPValueMode.CorrWithStars), corrs.n);
-
+			string mainTitleText = "";
+			try
+			{
+				mainTitleText = String.Format("{0}{1}{2} (N={3})"
+						, _settings.title, Environment.NewLine, corrs.results(CorrPValueMode.CorrWithStars), corrs.n);
+			}
+			catch(Exception ex){ }
 			//string mainTitleText = ((Math.Abs(corrs.pearson - corrs.spearman)) > .2 ) ?
 			//	String.Format("{0}{1} r={3:.00} s={4:.00} N={2}"
 			//		, _settings.title, Environment.NewLine, corrs.n, corrs.pearson, corrs.spearman)
@@ -432,6 +441,8 @@ namespace uwac
 				panename_idx = 0;
 			}
 
+			groupvars = groupvars.Distinct().ToList();
+
 			List<DxSeriesPoints> list_series = new List<DxSeriesPoints>();
 			try
 			{
@@ -485,7 +496,7 @@ namespace uwac
 			foreach(Corrs corr in _list_corrs)
 			{
 				string label = _list_dxseriespoints[counter].label;
-				string sub = String.Format("{0} r={1} N={2}", label, corr.pstars(CorrPValueMode.CorrWithStars), corr.n);
+				string sub = String.Format("{0}: {1} (N={2})", label, corr.results(CorrPValueMode.CorrWithStars), corr.n);
 				subtitles.Add(sub);
 
 				counter++;
@@ -555,15 +566,36 @@ namespace uwac
 			double spearman_righttail = 1;
 
 			double a1 = alglib.pearsoncorr2(x, y);
-			alglib.correlationtests.pearsoncorrelationsignificance(_pearson, _n, ref pearson_bothtails, ref pearson_lefttail, ref pearson_righttail);
-			alglib.correlationtests.pearsoncorrelationsignificance(_spearman, _n, ref spearman_bothtails, ref spearman_lefttail, ref spearman_righttail);
+			alglib.correlationtests.pearsoncorrelationsignificance(_pearson, _n, ref pearson_bothtails, ref pearson_lefttail, ref pearson_righttail, null);
+			alglib.correlationtests.pearsoncorrelationsignificance(_spearman, _n, ref spearman_bothtails, ref spearman_lefttail, ref spearman_righttail, null);
 
 			_pearson_pvalue = pearson_bothtails;
 			_spearman_pvalue = spearman_bothtails;
 
 		}
 
-		public string pstars(CorrPValueMode mode)
+		public string results(CorrPValueMode mode)
+		{
+			bool OnlyNonparametricIsSig = this.nonparametricEffect();
+
+			if (OnlyNonparametricIsSig)
+			{
+
+				string pstars1 = pstars(CorrPValueMode.CorrWithPValue);
+				string sstars1 = sstars(CorrPValueMode.CorrWithPValue);
+
+				string tmp = String.Format("{0}, {1}", pstars1, sstars1);
+				return tmp;
+			}
+			else
+			{
+				return pstars(mode);
+			}
+
+			
+		}
+
+			public string pstars(CorrPValueMode mode)
 		{
 			string stars = "";
 			if (pearson_pvalue < .001) stars = "***";
@@ -572,8 +604,8 @@ namespace uwac
 
 			string output = "";
 			if (mode == CorrPValueMode.StarsOnly) output = stars;
-			else if (mode == CorrPValueMode.CorrWithStars) output = String.Format("{0:.00}{1}", pearson, stars);
-			else if (mode == CorrPValueMode.CorrWithPValue) output = String.Format("{0:.00}{1:.0000}", pearson, pearson_pvalue);
+			else if (mode == CorrPValueMode.CorrWithStars) output = String.Format("r={0:.00}{1}", pearson, stars);
+			else if (mode == CorrPValueMode.CorrWithPValue) output = String.Format("r={0:.00} p={1:.0000}", pearson, pearson_pvalue);
 			return output;
 		}
 
@@ -586,10 +618,18 @@ namespace uwac
 
 			string output = "";
 			if (mode == CorrPValueMode.StarsOnly) output = stars;
-			else if (mode == CorrPValueMode.CorrWithStars) output = String.Format("{0:.00}{1}", spearman, stars);
-			else if (mode == CorrPValueMode.CorrWithPValue) output = String.Format("{0:.00}{1:.0000}", spearman, spearman_pvalue);
+			else if (mode == CorrPValueMode.CorrWithStars) output = String.Format("rho={0:.00}{1}", spearman, stars);
+			else if (mode == CorrPValueMode.CorrWithPValue) output = String.Format("rho={0:.00} p={1:.0000}", spearman, spearman_pvalue);
 			return output;
 		}
+
+
+		public bool nonparametricEffect()
+		{
+			return (this.pstars(CorrPValueMode.StarsOnly) == "" &
+			this.pstars(CorrPValueMode.StarsOnly) != this.sstars(CorrPValueMode.StarsOnly)) ? true : false;
+		}
+
 	}
 
 	public enum CorrPValueMode : int
@@ -604,7 +644,7 @@ namespace uwac
 		private List<string> _xvars;
 		private List<string> _yvars;
 		private string _repeatedmeasVarname = "none";
-		public bool manualXandY = false;
+		public bool manualXandYvars = false;
 		public bool _useMovAvg = false;
 		public int _movavgNumPts = 15;
 		public bool _showregline = false;
@@ -718,7 +758,7 @@ namespace uwac
 		public List<string> analysisvarsX()
 		{
 			List<string> vars = new List<string>();
-			if (manualXandY & _xvars != null)
+			if (manualXandYvars & _xvars != null)
 			{
 				return _xvars;
 			}
@@ -733,7 +773,7 @@ namespace uwac
 		public List<string> analysisvarsY()
 		{
 			List<string> vars = new List<string>();
-			if (manualXandY & _yvars != null)
+			if (manualXandYvars & _yvars != null)
 			{
 				return _yvars;
 			}

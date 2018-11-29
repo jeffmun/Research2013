@@ -35,7 +35,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 	private string aspxfull;
 	private int colorlevel;
 	private string master_netid;
-
+	private string master_userfullname;
 	private bool testing_login = false;
 
 	#region ...Public Vars...
@@ -108,7 +108,10 @@ public partial class UWAC : System.Web.UI.MasterPage
 	{
 		get { return master_netid; }
 	}
-
+	public string Master_userfullname
+	{
+		get { return master_userfullname;  }
+	}
 
 	public Label MasterERROR
 	{
@@ -199,6 +202,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 
 		string theme = oSQL.StringScalar_from_SQLstring("exec spSEC_Get_Default_theme_for_User");
 
+
 		cboTheme.Text = theme;
 
 	}
@@ -248,6 +252,8 @@ public partial class UWAC : System.Web.UI.MasterPage
 		//lblDomainInUse.Text = ConfigurationManager.AppSettings["LDAPdomain"].ToString(); //oLogin.DomainInUse;
 		Session["netid"] = netid;
 
+		string userfullname = oSQL.StringScalar_from_SQLstring("select firstname + ' ' + lastname from tblstaff where actdirID='" + netid + "'");
+		master_userfullname = userfullname;
 
 		lblDate.Text = System.DateTime.Today.ToLongDateString();
 

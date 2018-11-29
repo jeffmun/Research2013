@@ -19,7 +19,19 @@ namespace uwac
 	/// </summary>
 	public static class DataTableExtensions
 	{
-		public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
+
+		public static bool HasRows(this DataTable dt)
+		{
+			bool hasrows = false;
+
+			if(dt != null)
+			{
+				if (dt.Rows.Count > 0) hasrows = true;
+			}
+			return hasrows;
+		}
+
+			public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
 		{
 			using (DataColumn dc = new DataColumn(columnName + "_new", newType))
 			{

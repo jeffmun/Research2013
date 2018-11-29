@@ -349,7 +349,8 @@ public partial class _test_testchart : BasePage
 	{
 		SQL_utils sql = new SQL_utils("data");
 
-		DataTable dt = sql.DataTable_from_SQLstring("select timepoint_text as timept, sex, groupname, c.timepoint, b.timepointID, a.studymeasID, a.id, muagem, mucoiq, mucss, muvragee, mufmagee, murlagee, muelagee " + 
+		DataTable dt = sql.DataTable_from_SQLstring("select timepoint_text as timept, sex, groupname, c.timepoint, b.timepointID, a.studymeasID, a.id, muagem, mucoiq, mucss, muvragee, mufmagee, murlagee, muelagee " +
+			", muelagee * muelagee muelagee2, mullen_pk " + 
 			", (case when muagem > 30 then 'GT30' else 'LT30' end) as gtlt30 " +
 			", (case when muagem > 35 then 'GT35' when muagem > 25 then 'GT25' else ' LT25' end) as cat3 " +
 			" from all_mullen_items a " +
@@ -358,7 +359,7 @@ public partial class _test_testchart : BasePage
 			" join  uwautism_research_backend..tbltimepoint c ON b.timepointID = c.timepointID " +
 			" where mucss > 0 and a.studymeasID in (select studymeasID from uwautism_research_backend..tblstudymeas where studyID=1076)");
 
-		List<string> vars = new List<string> { "id", "muagem", "mucoiq", "mucss", "muvragee", "mufmagee", "murlagee", "muelagee" };
+		List<string> vars = new List<string> { "id", "mullen_pk", "muagem", "mucoiq", "mucss", "muvragee", "mufmagee", "murlagee", "muelagee", "muelagee2" };
 
 		DataSubsets subsets = new DataSubsets(dt, vars, new List<string> { "timept" });
 
@@ -379,14 +380,14 @@ public partial class _test_testchart : BasePage
 		settings.W = 300;
 		settings.H = 300;
 		settings.panesLayoutDirection = PaneLayoutDirection.Vertical;
-		settings.colorvar = "sex";
-		settings.panevar = "timept";
+		settings.colorvar = "none";
+		settings.panevar = "none";
 		settings.panelvar = "none";
-		settings.repeatedmeasVarname = "none";
-		//settings.numvars = new List<string> { "muvragee", "murlagee" };
-		settings.manualXandY = true;
-		settings.yvars = new List<string> {  "muagem" };
-		settings.xvars = new List<string> { "muelagee", "murlagee"  };
+		settings.repeatedmeasVarname = "timept";
+		settings.numvars = new List<string> { "muvragee", "murlagee", "muelagee" };
+		settings.manualXandYvars = false;
+		//settings.yvars = new List<string> {  "muvragee" };
+		//settings.xvars = new List<string> { "muelagee",  "murlagee"  };
 
 
 		DxChartOrder order = new DxChartOrder();

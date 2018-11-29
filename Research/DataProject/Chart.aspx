@@ -128,6 +128,7 @@
 //				RefreshSelectedVars2(selectedVals, tokXaxisvarSCAT);
 //				RefreshSelectedVars2(selectedVals, tokYaxisvarSCAT);
 				RefreshSelectedVars2(selectedVals, cboColorsvarSCAT);
+				RefreshSelectedVars2(selectedVals, cboPanevarSCAT);
 				RefreshSelectedVars2(selectedVals, cboPanelvarSCAT);
 
 				RefreshSelectedVars2(selectedVals, cboXaxisvarLINE);
@@ -930,6 +931,9 @@
 										<tr>
 											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboColorsvarSCAT" runat="server" Caption="Colors:"  CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarSCAT" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
+											</td>
+											<td style="padding: 5px;">
+												<dx:ASPxComboBox ID="cboPanevarSCAT" runat="server" Caption="Panes:"  CaptionSettings-Position="Top" ClientInstanceName="cboPanevarSCAT" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" ></dx:ASPxComboBox>
 											</td>
 											<td style="padding: 5px;">
 												<dx:ASPxComboBox ID="cboPanelvarSCAT" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarSCAT" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>

@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 using uwac;
 
 /// <summary>
@@ -51,6 +52,35 @@ public class DxDoc
 	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
 	}
 
+
+	public DxDoc(DataTable dt_plots, List<string> htmltables, string path, string filename, string projtitle, string datafile, string netid)
+	{
+		_creator_netid = netid;
+		_path = path;
+		_projtitle = projtitle;
+		_datafile = datafile;
+		_filename = filename;
+
+		MakeDocx(dt_plots, htmltables);
+
+		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	}
+
+	public DxDoc(DataTable dt_plots, DataTable dt_tables, string path, string filename, string projtitle, string datafile, string netid)
+	{
+		_creator_netid = netid;
+		_path = path;
+		_projtitle = projtitle;
+		_datafile = datafile;
+		_filename = filename;
+
+		MakeDocx(dt_plots, dt_tables);
+
+		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	}
+
+
+
 	protected void DocxHeader(DevExpress.XtraRichEdit.API.Native.Document doc, string s1, string s2)
 	{
 		DevExpress.XtraRichEdit.API.Native.Section firstSection = doc.Sections[0];
@@ -79,9 +109,146 @@ public class DxDoc
 
 	}
 
+	protected void MakeDocx(DataTable dt_plotfiles, DataTable dt_output) //, string path, string projtitle, string datafile)
+	{
+		log(" ====== MakeDocx (DataTable dt_plotfiles, DataTable dt_tables) ======");
+
+
+		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
+		{
+
+			DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+			doc.Unit = DevExpress.Office.DocumentUnit.Inch;
+			doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+			doc.Sections[0].Margins.Left = 0.5f;
+			doc.Sections[0].Margins.Right = 0.5f;
+			doc.Sections[0].Margins.Top = 0.5f;
+			doc.Sections[0].Margins.Bottom = 0.5f;
+
+
+			DocxHeader(doc, _projtitle, _datafile);
+
+			DocumentPosition pos = doc.Range.Start;
+			//New Section
+
+			doc.Paragraphs.Append();
+
+			doc.AppendHtmlText("<h3>Plots</h3>");
+			doc.Paragraphs.Append();
+			foreach (DataRow row in dt_plotfiles.Rows)
+			{
+
+				doc.AppendSingleLineText(String.Format("#{0}",row["index"].ToString()));
+				doc.Paragraphs.Append();
+
+				AppendChart(doc, _path, row["filename"].ToString());
+
+				doc.Paragraphs.Append();
+			}
+
+			if (dt_output.HasRows())
+			{
+				doc.AppendHtmlText("<br/><br/><h3>Tables</h3>");
+				doc.Paragraphs.Append();
+				foreach (DataRow row in dt_output.Rows)
+				{
+					doc.AppendSingleLineText(String.Format("#{0}", row["index"].ToString()));
+					doc.Paragraphs.Append();
+
+					doc.AppendHtmlText(row["contents"].ToString());
+
+					doc.Paragraphs.Append();
+				}
+			}
+
+			doc.InsertSection(doc.Range.End);
+
+
+			try
+			{
+				srv.SaveDocument(_filename, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+			}
+			catch(Exception ex)
+			{
+
+			}
+		}
+
+
+
+	}
+
+
+	protected void MakeDocx(DataTable dt_plotfiles, List<string> htmltables) //, string path, string projtitle, string datafile)
+	{
+		log(" ====== MakeDocx (DataTable dt_plotfiles, List<string> htmltables) ======");
+
+
+		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
+		{
+
+			DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+			doc.Unit = DevExpress.Office.DocumentUnit.Inch;
+			doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+			doc.Sections[0].Margins.Left = 0.5f;
+			doc.Sections[0].Margins.Right = 0.5f;
+			doc.Sections[0].Margins.Top = 0.5f;
+			doc.Sections[0].Margins.Bottom = 0.5f;
+
+
+			DocxHeader(doc, _projtitle, _datafile);
+
+			DocumentPosition pos = doc.Range.Start;
+			//New Section
+
+			doc.Paragraphs.Append();
+
+			doc.AppendSingleLineText("The start of it all!");
+			doc.Paragraphs.Append();
+
+
+			foreach (DataRow row in dt_plotfiles.Rows)
+			{
+
+				doc.AppendSingleLineText(String.Format("#{0}", row["index"].ToString()));
+				doc.Paragraphs.Append();
+
+				AppendChart(doc, _path, row["filename"].ToString());
+
+				doc.Paragraphs.Append();
+			}
+
+
+			doc.AppendHtmlText("<br/><br/><h3>Tables</h3>");
+			foreach (string t in htmltables)
+			{
+				doc.AppendHtmlText(t);
+				doc.Paragraphs.Append();
+			}
+
+			doc.InsertSection(doc.Range.End);
+
+
+			try
+			{
+				srv.SaveDocument(_filename, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+			}
+			catch (Exception ex)
+			{
+
+			}
+		}
+
+
+
+	}
+
+
+
+
 	protected void MakeDocx(DxChartFactory factory) //, string path, string projtitle, string datafile)
 	{
-		log(" ====== MakeDocx ======");
+		log(" ====== MakeDocx (DxChartFactory factory) ======");
 		//const float imageLocationX = 40;
 		//const float imageLocationY = 40;
 		//int counter = 0;
@@ -137,6 +304,10 @@ public class DxDoc
 					//	doc.Images[doc.Images.Count - 1].ScaleY = 0.5f;
 
 					//}
+
+					doc.AppendSingleLineText(batch.batchtitle);
+					doc.Paragraphs.Append();
+
 					AppendCharts(pos, batch, doc);
 					doc.Paragraphs.Append();
 				}
@@ -151,24 +322,6 @@ public class DxDoc
 		}
 
 
-		//System.Diagnostics.Process.Start(fileName);
-
-
-		//MemoryStream ms = new MemoryStream();
-		//srv.SaveDocument(ms, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
-		////System.Diagnostics.Process.Start(fileName);
-
-		//ms.Seek(0, SeekOrigin.Begin);
-		//byte[] output = ms.ToArray();
-
-
-		//Response.ContentType = "application/docx";
-		//Response.AddHeader("content-disposition", String.Format("attachment;filename={0}", fileName));
-		//Response.Cache.SetCacheability(HttpCacheability.NoCache);
-		//Response.OutputStream.Write(output, 0, output.Length);
-		//Response.End();
-
-
 	}
 
 
@@ -179,7 +332,7 @@ public class DxDoc
 		AppendCharts(pos, batch, doc, scaleX, scaleX);
 
 	}
-		private void AppendCharts(DocumentPosition pos, DxChartBatch batch, Document doc, float scaleX, float scaleY)
+	private void AppendCharts(DocumentPosition pos, DxChartBatch batch, Document doc, float scaleX, float scaleY)
 	{
 
 		bool addHeaderRow = true;
@@ -190,7 +343,7 @@ public class DxDoc
 
 
 			doc.BeginUpdate();
-			Table t = doc.Tables.Create(doc.Range.End, numrows, batch.maxCol, AutoFitBehaviorType.AutoFitToContents);
+			DevExpress.XtraRichEdit.API.Native.Table t = doc.Tables.Create(doc.Range.End, numrows, batch.maxCol, AutoFitBehaviorType.AutoFitToContents);
 
 			t.Borders.Top.LineColor = Color.White;
 			t.Borders.Bottom.LineColor = Color.White;
@@ -230,7 +383,7 @@ public class DxDoc
 						string chartfile = String.Format(@"{0}{1}.png", _path, batch.charts[counter].guid);
 						counter++;
 
-						TableCell cell = t.Cell(r + bumprow, c);
+						DevExpress.XtraRichEdit.API.Native.TableCell cell = t.Cell(r + bumprow, c);
 						doc.Images.Insert(cell.Range.Start, DocumentImageSource.FromFile(chartfile));
 
 						doc.Images[doc.Images.Count - 1].ScaleX = scaleX;
@@ -267,6 +420,41 @@ public class DxDoc
 	}
 
 
+	public void AppendChart(Document doc, string path, string filename)
+	{
+		float scaleX = 1.0f;
+		float scaleY = 1.0f;
+
+		string chartfile = String.Format("{0}{1}", path, filename);
+
+		try
+		{
+			DocumentPosition pos = doc.Range.End;
+			
+			DocumentImageSource.FromFile(chartfile);
+
+
+			doc.Images.Insert(pos, DocumentImageSource.FromFile(chartfile));
+
+			var size = doc.Images[doc.Images.Count - 1].Size;
+
+
+			if(size.Width > 7.5)
+			{
+				scaleX = 7.5f / size.Width;
+				scaleY = scaleX;
+			}
+
+
+			doc.Images[doc.Images.Count - 1].ScaleX = scaleX;
+			doc.Images[doc.Images.Count - 1].ScaleY = scaleY;
+		}
+		catch(Exception ex) 
+		{ 
+
+		}
+	}
+
 	public int GetDiagIndex(int r, int c, int n)
 	{
 		//k = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1
@@ -296,7 +484,7 @@ public class DxDoc
 
 		document.BeginUpdate();
 
-		Table table = document.Tables.Create(document.Range.End, dataTableRows + 1, columnsToDisplay.Count, AutoFitBehaviorType.AutoFitToContents);
+		DevExpress.XtraRichEdit.API.Native.Table table = document.Tables.Create(document.Range.End, dataTableRows + 1, columnsToDisplay.Count, AutoFitBehaviorType.AutoFitToContents);
 
 		//table.Borders.InsideHorizontalBorder.LineColor = Color.DarkBlue;
 		//table.Borders.InsideVerticalBorder.LineColor = Color.DarkBlue;
@@ -335,7 +523,7 @@ public class DxDoc
 		}
 
 		// Fill table body with data
-		table.ForEachCell(delegate (TableCell cell, int rowIndex, int cellIndex) {
+		table.ForEachCell(delegate (DevExpress.XtraRichEdit.API.Native.TableCell cell, int rowIndex, int cellIndex) {
 			if (rowIndex > 0)
 			{
 				document.InsertText(cell.Range.Start, dataTable.Rows[rowIndex - 1][columnsToDisplay[cellIndex]].ToString());

@@ -158,9 +158,10 @@ namespace uwac
 
 						//#2 - back to original
 						mysettings.xypairtype = XYpairType.DiffVar_AcrossLevelsOfRptMeas;
-						mysettings.numvars = null;
+						mysettings.numvars = tmpvars;
 						mysettings.xvars = tmpvarsX;
 						mysettings.yvars = tmpvarsY;
+						mysettings.manualXandYvars = true;
 						DxChartBatch batch3 = new DxChartBatch(mysettings, dt);
 						PrepareBatch(batch3, (DxChartSettings)mysettings);
 						batch3.batchtitle = "Different Variables ACROSS levels of " + mysettings.repeatedmeasVarname;

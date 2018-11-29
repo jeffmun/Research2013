@@ -83,6 +83,8 @@ public partial class DataProject_Chart : BasePage
 	protected void Page_Load(object sender, EventArgs e)
 	{
 
+		string filename = Request.QueryString["filename"]; 
+
 		if (!IsPostBack)
 		{
 			PageLoad_Initial();
@@ -367,6 +369,7 @@ public partial class DataProject_Chart : BasePage
 		//PopulateTokenboxItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
 		//PopulateTokenboxItems(cboYaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
 		PopulateDropdownItems(cboColorsvarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
+		PopulateDropdownItems(cboPanevarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
 		PopulateDropdownItems(cboPanelvarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
 
 
@@ -385,6 +388,7 @@ public partial class DataProject_Chart : BasePage
 		cboPanelvarBAR.Value = "none";
 
 		cboColorsvarSCAT.Value = "none";
+		cboPanevarSCAT.Value = "none";
 		cboPanelvarSCAT.Value = "none";
 
 		cboXaxisvarLINE.Value = "variable";
@@ -431,6 +435,7 @@ public partial class DataProject_Chart : BasePage
 		PopulateDropdownItems(cboColorsvarBAR, selected_textvars);
 		PopulateDropdownItems(cboPanelvarBAR, selected_textvars);
 		PopulateDropdownItems(cboColorsvarSCAT, selected_textvars);
+		PopulateDropdownItems(cboPanevarSCAT, selected_textvars);
 		PopulateDropdownItems(cboPanelvarSCAT, selected_textvars);
 
 
@@ -1871,17 +1876,19 @@ public partial class DataProject_Chart : BasePage
 		settings.useMovAvg = chkMovingAvg.Checked;
 		settings.colors = GetColors();
 		settings.colorvar = cboColorsvarSCAT.Value.ToString();
+		settings.panevar = cboPanevarSCAT.Value.ToString();
 		settings.panelvar = cboPanelvarSCAT.Value.ToString();
+		settings.repeatedmeasVarname = "timept";
 
-		settings.widemode = (DxWideMode)Convert.ToInt32(cboWideMode.Value.ToString());
+		//settings.widemode = (DxWideMode)Convert.ToInt32(cboWideMode.Value.ToString());
 
-		if(settings.widemode == DxWideMode.OnlyAutoCorrAcrossTimept | settings.widemode == DxWideMode.OnlyWithinTimept)
-		{
-			if (settings.colorvar == "timept" | settings.panelvar == "timept") 
-			{
-				settings.repeatedmeasVarname = "timept";
-			}
-		}
+		//if(settings.widemode == DxWideMode.OnlyAutoCorrAcrossTimept | settings.widemode == DxWideMode.OnlyWithinTimept)
+		//{
+		//	if (settings.colorvar == "timept" | settings.panelvar == "timept") 
+		//	{
+		//		settings.repeatedmeasVarname = "timept";
+		//	}
+		//}
 
 
 		if (chkJitter.Checked)
@@ -1925,7 +1932,20 @@ public partial class DataProject_Chart : BasePage
 			{
 				Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.charts.Count));
 				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-				callbackCharts.Controls.Add(t);
+				
+				if (t != null)
+				{
+					Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.charts.Count));
+					Label batchlabel = new Label();
+					batchlabel.Text = batch.batchtitle;
+					batchlabel.Font.Bold = true;
+					batchlabel.Font.Size = 12;
+
+					callbackCharts.Controls.Add(batchlabel);
+					callbackCharts.Controls.Add(t);
+					callbackCharts.Controls.Add(new Literal() { Text = "<br/>" });
+
+				}
 
 
 				if (batch.datatables.Count > 0)
