@@ -91,7 +91,9 @@ public static class Actigraph
 				string text_to_parse = String.Join(Environment.NewLine,
 					lines.GetRange(markers[i].linenumber_start - 1, (markers[i].linenumber_end - markers[i].linenumber_start)));
 
-				DataTable dt = DataImporter.GetDataTableFromText(text_to_parse, act_settings);
+				//DataTable dt = DataImporter.GetDataTableFromText(text_to_parse, act_settings);
+				DataTable dt = new DataTable();
+
 				results += "</br>" + markers[i].text + " >> Found " + dt.Rows.Count.ToString() + " records. >> ";
 
 				//reset Daynum to begin at 1.  Needed because the actigraph starts a few days earlier before actual data is obtained

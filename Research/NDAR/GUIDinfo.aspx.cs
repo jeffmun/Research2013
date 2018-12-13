@@ -112,13 +112,14 @@ public partial class NDAR_GUIDinfo : BasePage //System.Web.UI.Page
 		//Panel_gv.Controls.Add(lbl);
 		//Panel_gv.Controls.Add(agv);
 
-
-		DataTable dt = sql.DataTable_from_SQLstring(       "select -1 personID, '--select subject for Invalid GUID--' IDlabel " +
-				"union select a.personID, b.ID + '...' + GUID_status as IDlabel " + 
+		string code = "select -1 personID, '--select subject for Invalid GUID--' IDlabel " +
+				"union select a.personID, b.ID + '...' + GUID_status as IDlabel " +
 				"from vwNDAR_GUID_PII a " +
 				"join vwMasterStatus_S b ON a.personID = b.personID " +
 				"where GUID_status not like '1) Has GUID' and GUID_status not like '%Has INV_GUID%' " +
-				"and studyID=" + Master.Master_studyID.ToString() + " order by 2");
+				"and b.sex is not null and studyID=" + Master.Master_studyID.ToString() + " order by 2";
+
+		DataTable dt = sql.DataTable_from_SQLstring(     code);
 
 
 		int nINV_left = sql.IntScalar_from_SQLstring("select count(*) from NDAR..GUID_not_yet_used");

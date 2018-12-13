@@ -70,12 +70,21 @@
 	}
 
    function OnBeginCallbackGridDict(s,e) {
-		command = e.command;
-	}
-		function OnEndCallbackGridDict(s, e) {
+	   command = e.command;
 		if (command == "UPDATEEDIT") {
-			gridDict.Refresh();
+			
 		}
+
+	}
+	function OnEndCallbackGridDict(s, e) {
+		if (command == "UPDATEEDIT") {
+			gridDict.Refresh(); //This refreshes the grid after updating it
+		}
+	}
+
+	function ShowUpload() {
+		btn1.SetVisible(true);
+		btn2.SetVisible(true);
 	}
 
 
@@ -124,6 +133,22 @@
 				</dx:ASPxButton>
 
 			</td>
+			<td style="vertical-align: top; padding: 10px">
+				<asp:Label ID="lblFileUpload" runat="server" Text="Import Data Dictionary from Excel:"></asp:Label><br />
+				<asp:FileUpload ID="FileUpload_Doc" runat="server"  Font-Size="Small" Width="300px" onchange="ShowUpload()" Visible ="true" AllowMultiple="false" />
+				<br />
+
+				<dx:ASPxLabel ID="lblDocUploadInfo" runat="server" Text="" Font-Size="Smaller" EncodeHtml="false"></dx:ASPxLabel>
+
+			</td>
+			<td style="vertical-align: top; padding: 10px">
+				<dx:ASPxButton ID="btn1" ClientInstanceName="btn1" runat="server" AutoPostBack="true" Text="Import Dictionary" OnClick="ImportDict" Native="true" ClientVisible="false"/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<dx:ASPxButton ID="btn2" ClientInstanceName="btn2" runat="server" AutoPostBack="true" Text="Cancel" OnClick="ImportDict_Cancel" Native="true" ForeColor="Red" ClientVisible="false" />
+				<br />
+				<br />
+
+			</td>
 		</tr>
 	</table>
 
@@ -145,9 +170,10 @@
 				<br />
 
 				<dx:ASPxGridView ID="gridDict" ClientInstanceName="gridDict" runat="server" KeyFieldName="fldpk" 
-					Settings-ShowFilterRow="true"  Settings-ShowFilterRowMenu="true" AllowAddingRecords="true" SettingsDataSecurity-AllowDelete="true"
+					Settings-ShowFilterRow="true"  Settings-ShowFilterRowMenu="true" AllowAddingRecords="true" SettingsDataSecurity-AllowEdit="true"
+					SettingsDataSecurity-AllowDelete="true" EnableViewState="true"
 					 OnHtmlRowPrepared="gridDict_HtmlRowPrepared" OnHtmlDataCellPrepared="gridDict_HtmlDataCellPrepared"
-					 OnCommandButtonInitialize="gridDict_CommandButtonInitialize" 
+					 OnCommandButtonInitialize="gridDict_CommandButtonInitialize" OnRowCommand="gridDict_OnRowCommand" OnParseValue="gridDict_OnParseValue" 
 					OnRowInserting="gridDict_OnRowInserting" OnRowUpdating="gridDict_OnRowUpdating" OnRowDeleting="gridDict_OnRowDeleting">
 					<Styles>
 						<AlternatingRow BackColor="WhiteSmoke"></AlternatingRow>
@@ -164,7 +190,7 @@
 							</Items>
 						</dx:GridViewToolbar>
 					</Toolbars>
-					<ClientSideEvents FocusedCellChanging="onFocusedCellChanging"  BeginCallback="OnBeginCallbackGridDict" EndCallback="OnEndCallbackGridDict" />
+					<ClientSideEvents FocusedCellChanging="onFocusedCellChanging"  BeginCallback="OnBeginCallbackGridDict" EndCallback="OnEndCallbackGridDict"/>
 
 				<Columns>
 					<dx:GridViewDataColumn FieldName="fldpk" CellStyle-ForeColor="Silver" Visible="false" ReadOnly="true"></dx:GridViewDataColumn>
@@ -184,11 +210,8 @@
 					<dx:GridViewDataColumn FieldName="fieldcode" Caption="Special code" Visible="true" ></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fld_status" Caption="Status" Visible="true" ></dx:GridViewDataColumn>
 					
-					<dx:GridViewDataComboBoxColumn FieldName="fldextractionmode" Caption="Extraction mode"
-						PropertiesComboBox-ValueField="fieldextractionmode" PropertiesComboBox-TextField="fieldextractionmode_txt" 
-						PropertiesComboBox-DataSourceID="sqlFldExtractionMode">
-
-					</dx:GridViewDataComboBoxColumn>
+					<dx:GridViewDataColumn FieldName="fldextractionmode" Visible="false"></dx:GridViewDataColumn>
+					<dx:GridViewDataColumn FieldName="fieldextractionmode_txt" Caption="Extraction mode"></dx:GridViewDataColumn>
 				   
 					<dx:GridViewDataColumn FieldName="importposition" Caption="Import position" Visible="true" ></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="constString" Caption="constString" Visible="true" ></dx:GridViewDataColumn>
@@ -199,6 +222,7 @@
 				<EditFormLayoutProperties ColCount="2" >
 					<Items>
 						<dx:GridViewColumnLayoutItem ColumnName="fldname" ColumnSpan="1" Width="300px" />
+						<%--Field Settings--%>
 						<dx:GridViewLayoutGroup ColCount="4" ColumnSpan="1" Caption="Field settings"   Width="600px" >
 							<Items>
 
@@ -245,8 +269,8 @@
 
 								<dx:GridViewColumnLayoutItem ColumnName="fldextractionmode" Caption="Extraction Mode" ColumnSpan="1">
 									<Template>
-										<dx:ASPxComboBox ID="cbofldextractionmode" runat="server" Text='<%# Bind("fldextractionmode") %>' Width="225px"
-												 DataSourceID="sqlFldExtractionMode" TextField="fieldextractionmode_txt" ValueField="fieldextractionmode">
+										<dx:ASPxComboBox ID="cbofldextractionmode" runat="server"   Value='<%# Bind("fldextractionmode") %>' ValueType="System.Int32"   Width="225px"
+												 DataSourceID="sqlFldExtractionMode" TextField="mode_txt" ValueField="mode">
 										</dx:ASPxComboBox>
 
 
@@ -261,7 +285,7 @@
 						</dx:GridViewLayoutGroup>
 
 
-						<dx:EditModeCommandLayoutItem Width="100%" HorizontalAlign="Right" />
+						<dx:EditModeCommandLayoutItem Width="100%" HorizontalAlign="Right" ShowUpdateButton="true" ShowCancelButton="true" />
 					</Items>
 				</EditFormLayoutProperties>
 			</dx:ASPxGridView>
@@ -347,7 +371,7 @@
 	
 
 	<asp:SqlDataSource ID="sqlFldExtractionMode" runat="server" SelectCommandType="Text"  
-		SelectCommand="select * from def.FldExtractionMode"
+		SelectCommand="select fieldextractionmode mode, fieldextractionmode_txt mode_txt from def.FldExtractionMode"
 		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
 	</asp:SqlDataSource>
 

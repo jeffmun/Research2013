@@ -20,6 +20,11 @@
 			btn2.SetVisible(true);
 		}
 
+
+		function Continue() {
+
+		}
+
 	</script>
 
 
@@ -37,6 +42,9 @@
 				<dx:ASPxLabel ID="lblNrecs" ClientInstanceName="lblNrecs" runat="server" ></dx:ASPxLabel>
 				<br />
 				<dx:ASPxButton ID="btnDelete" ClientInstanceName="btnDelete" runat="server" AutoPostBack="true" Text="Delete these records" OnClick="DeleteRecs" Native="true" Visible="false"/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<dx:ASPxButton ID="btnContinue" ClientInstanceName="btnContinue" runat="server" AutoPostBack="true" Text="Continue anyway" OnClick="ContinueAnyway" Native="true" Visible="false"/>
+
 
 				
 			</td>
@@ -61,7 +69,7 @@
 			</td>
 
 			<td style="vertical-align: top; padding: 5px">
-				<dx:ASPxButton ID="btn1" ClientInstanceName="btn1" runat="server" AutoPostBack="true" Text="Upload Document" OnClick="UploadDoc" Native="true" ClientVisible="false"/>
+				<dx:ASPxButton ID="btn1" ClientInstanceName="btn1" runat="server" AutoPostBack="true" Text="Import Data" OnClick="UploadDoc" Native="true" ClientVisible="false"/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<dx:ASPxButton ID="btn2" ClientInstanceName="btn2" runat="server" AutoPostBack="true" Text="Cancel" OnClick="UploadDoc_Cancel" Native="true" ForeColor="Red" ClientVisible="false" />
 				<br />

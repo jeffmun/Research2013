@@ -30,9 +30,10 @@
 				<asp:CheckBox ID="chkUWview" runat="server" Checked="true" Text="Only those with UW table" /><br />
 				<asp:CheckBox ID="chkInStudy" runat="server" Checked="true" Text="Only those this study" />
 			</td>
-			<td style="width: 250px">
-					<asp:Button ID="btnSave" runat="server" Text="Re-import NDAR Data Structures" OnClick="btnSave_Click" Enabled="false" />
-
+			<td style="width: 250px; padding:10px">
+					<asp:Button ID="btnSave" runat="server" Text="Re-import NDAR Data Structures" OnClick="btnSave_Click" Enabled="false"  Visible="false"/>
+				<dx:ASPxTextBox ID="txtShortName" runat="server" Caption="NDAR Short Name:" CaptionSettings-Position="Top" Text=""></dx:ASPxTextBox>
+					<asp:Button ID="btnManualImport" runat="server" Text="Import NDAR Data Structure" OnClick="btnManualImport_Click" Enabled="true" />
 			</td>
 			<td>
 				<asp:Label ID="lblInstructions" runat="server" Text="Instructions:" Font-Bold="true" Font-Size="XX-Small"></asp:Label>
@@ -89,10 +90,12 @@
 
 		 <dx:ASPxGridView ID="grid" runat="server"  Width="80%" AutoGenerateColumns="false" SettingsDataSecurity-AllowEdit="true" 
 			  KeyFieldName="shortName"  OnRowUpdating="dxgrid_OnRowUpdating" OnDataBound="grid_DataBound"
-			  OnCustomButtonInitialize="grid_CustomButtonInitialize">
+			  OnCustomButtonInitialize="grid_CustomButtonInitialize"   OnCustomButtonCallback="grid_CustomButtonCallback" 
+			 >
 		
 			 <SettingsPager PageSize="20"></SettingsPager>
 			 <Columns>
+				 
 				 <dx:GridViewDataColumn FieldName="n_flds" Caption="# Flds" EditFormSettings-Visible="false"> </dx:GridViewDataColumn>
 				 <dx:GridViewDataColumn FieldName="n_uwflds" Caption="# UW Flds"  EditFormSettings-Visible="false"></dx:GridViewDataColumn>
 				 

@@ -62,7 +62,7 @@
       <!--<siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info" />-->
       <siteMapNode url="~/Library/MeasureLibrary.aspx" title="Measure Library" />
       <siteMapNode url="~/Library/DocLibrary.aspx" title="Document Library" />
-      <siteMapNode url="~/Track/Dictionary.aspx" title="Data Dictionary" />
+      <siteMapNode url="~/Data/Dictionary.aspx" title="Data Dictionary" />
       <siteMapNode url="~/Admin/NewMeasure.aspx" title="Create New Measure" menuitem="true" />
     </siteMapNode>
     <siteMapNode url="" title="Study Design">

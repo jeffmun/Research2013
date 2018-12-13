@@ -44,7 +44,7 @@ public partial class DataEntryForms_enterdata : System.Web.UI.Page
 		}
 		else
 		{
-			SQL_utils sql = new SQL_utils();
+			SQL_utils sql = new SQL_utils("data");
 
 			//TOFIX: combine into 1 proc 
 

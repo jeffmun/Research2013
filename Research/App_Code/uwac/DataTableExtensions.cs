@@ -20,18 +20,101 @@ namespace uwac
 	public static class DataTableExtensions
 	{
 
+
+		#region Return information about the DataTable
 		public static bool HasRows(this DataTable dt)
 		{
 			bool hasrows = false;
 
-			if(dt != null)
+			if (dt != null)
 			{
 				if (dt.Rows.Count > 0) hasrows = true;
 			}
 			return hasrows;
 		}
 
-			public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
+		public static bool ContainsColumnName(this DataTable dt, string colname)
+		{
+			bool containsColname = false;
+
+			foreach (DataColumn col in dt.Columns)
+			{
+				if (col.ColumnName == colname) containsColname = true;
+			}
+			return containsColname;
+		}
+
+		public static bool ColumnContainsValue(this DataTable dt, string columnName, string targetvalue)
+		{
+			bool colcontainsvalue = false;
+
+			foreach (DataRow row in dt.Rows)
+			{
+				if (row[columnName].ToString().Contains(targetvalue)) colcontainsvalue = true;
+			}
+
+			return colcontainsvalue;
+		}
+
+
+
+		public static List<string> ColumnNames(this DataTable dt)
+		{
+			List<string> colnames = new List<string>();
+
+			foreach (DataColumn col in dt.Columns)
+			{
+				colnames.Add(col.ColumnName);
+			}
+			return colnames;
+		}
+
+		public static DataTable RemoveRowsWithNullID(this DataTable dt)
+		{
+			int n_rows_deleted = 0;
+			Debug.WriteLine(" **** Begin CheckSubjects *****");
+			if (dt.HasRows())
+			{
+				if (dt.ContainsColumnName("id") & dt.ContainsColumnName("studymeasid"))
+				{
+
+					List<DataRow> rowsToDelete = new List<DataRow>();
+
+					foreach (DataRow row in dt.Rows)
+					//for(int i=0; i < dt.Rows.Count; i++)
+					{
+						//DataRow row = dt.Rows[i];
+
+						if (row["id"].ToString() == "" | row["id"] == null | row["id"] == DBNull.Value)
+						{
+							rowsToDelete.Add(row);
+						}
+					}
+					n_rows_deleted = rowsToDelete.Count;
+
+					foreach (DataRow row in rowsToDelete)
+					{
+						dt.Rows.Remove(row);
+					}
+
+					dt.AcceptChanges();
+
+				}
+
+			}
+
+
+			return dt;
+
+		}
+
+
+		#endregion
+
+
+		#region Manipulate the DataTable
+
+		public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
 		{
 			using (DataColumn dc = new DataColumn(columnName + "_new", newType))
 			{
@@ -162,103 +245,75 @@ namespace uwac
 
 
 
-
-
-		public static List<string> ColumnNames(this DataTable dt)
+		//Needed for SPSSsav 
+		public static void AddNeededColumnsBeforeImport(this DataTable dt, DataImportSettings settings)
 		{
-			List<string> colnames = new List<string>();
+			bool hasindexnum = dt.ContainsColumnName("indexnum");
+			bool hasid = dt.ContainsColumnName("id");
+			bool hasstudymeasid = dt.ContainsColumnName("studymeasid");
 
-			foreach (DataColumn col in dt.Columns)
+
+			if (!hasstudymeasid)
 			{
-				colnames.Add(col.ColumnName);
+				DataColumn smID = new DataColumn("studymeasid", typeof(int));
+				smID.DefaultValue = settings.studymeasID;
+				dt.Columns.Add(smID);
 			}
-			return colnames;
-		}
-
-
-		public static void DebugTable(this DataTable table)
-		{
-			Debug.WriteLine("--- DebugTable(" + table.TableName + ") ---");
-			int zeilen = table.Rows.Count;
-			int spalten = table.Columns.Count;
-
-			// Header
-			for (int i = 0; i < table.Columns.Count; i++)
+			if (!hasindexnum)
 			{
-				string s = table.Columns[i].ToString();
-				Debug.Write(String.Format("{0,-20} | ", s));
+				DataColumn idxnum = new DataColumn("indexnum", typeof(int));
+				idxnum.DefaultValue = 0;
+				dt.Columns.Add(idxnum);
 			}
-			Debug.Write(Environment.NewLine);
-			for (int i = 0; i < table.Columns.Count; i++)
-			{
-				Debug.Write("---------------------|-");
-			}
-			Debug.Write(Environment.NewLine);
 
-			// Data
-			for (int i = 0; i < zeilen; i++)
+
+			try
 			{
-				DataRow row = table.Rows[i];
-				//Debug.WriteLine("{0} {1} ", row[0], row[1]);
-				for (int j = 0; j < spalten; j++)
+				// Add columns and populate them
+				foreach (Importfield importfield in settings.fields)
 				{
-					string s = row[j].ToString();
-					if (s.Length > 20) s = s.Substring(0, 17) + "...";
-					Debug.Write(String.Format("{0,-20} | ", s));
+					string newcolname = "";
+					string sourcecolname = "";
+					if (importfield.mode == FieldExtractionMode.useOtherFld)
+					{
+						newcolname = importfield.field;
+						sourcecolname = importfield.constString;
+					}
+					else if (importfield.mode == FieldExtractionMode.isOtherFld)
+					{
+						newcolname = importfield.constString;
+						sourcecolname = importfield.field;
+					}
+					DataColumn sourcecol = dt.Columns[sourcecolname];
+					bool hasotherfld = dt.ContainsColumnName(newcolname);
+
+					if (!hasotherfld & newcolname != "" & sourcecolname != "")
+					{
+						Type type = sourcecol.DataType;
+						DataColumn newcol = new DataColumn(newcolname, type);
+						dt.Columns.Add(newcol);
+						foreach (DataRow row in dt.Rows)
+						{
+							row[newcolname] = row[sourcecolname];
+						}
+					}
+
 				}
-				Debug.Write(Environment.NewLine);
 			}
-			for (int i = 0; i < table.Columns.Count; i++)
+			catch (Exception ex)
 			{
-				Debug.Write("---------------------|-");
+				int x = 0;
 			}
-			Debug.Write(Environment.NewLine);
+
 		}
 
 
-		//// Data
-		//public static DataTable Data_SelectColumns()
-		//{
-		//	log(String.Format(" /// Data_SelectColumns  ///"));
-		//	log(String.Format(" /// Data_SelectColumns  numeric {0} ///", String.Join(",", _numericvars)));
-		//	log(String.Format(" /// Data_SelectColumns  text {0} ///", String.Join(",", _textvars)));
-		//	log(String.Format(" /// Data_SelectColumns  date {0} ///", String.Join(",", _datevars)));
-
-		//	DataTable dtout = _dt.Copy();
-
-		//	foreach (DataColumn dc in _dt.Columns)
-		//	{
-		//		string colname = dc.ColumnName.ToLower();
-		//		List<string> allvars = new List<string>();
-		//		allvars.AddRange(_numericvars);
-		//		allvars.AddRange(_textvars);
-		//		allvars.AddRange(_groupingvars);
-		//		allvars.Add("id");
+		#endregion
 
 
-		//		if (allvars.Contains(colname))
-		//		{
-		//			//keep it
-		//		}
-		//		else
-		//		{
-		//			dtout.Columns.Remove(colname);
-		//		}
-		//	}
-		//	return dtout;
-		//}
 
 
-		//public static DataTable Data_SelectColumns(List<string> vars_to_keep)
-		//{
-		//	return Data_SelectColumns(vars_to_keep, true, false);
-		//}
-
-		//public static DataTable Data_SelectColumns(List<string> vars_to_keep, bool add_id, bool remove_rows_with_null)
-		//{
-		//	return Data_SelectColumns(_dt, vars_to_keep, add_id, remove_rows_with_null);
-		//}
-
+		#region Extract just part of the DataTable
 
 		public static DataTable Data_SelectColumns(DataTable dt, List<string> vars_to_keep, bool add_id, bool remove_rows_with_null)
 		{
@@ -304,11 +359,6 @@ namespace uwac
 			}
 		}
 
-		//public static DataTable Data_SelectColumnX(string xvar)
-		//{
-		//	log(String.Format(" /// Data_SelectColumnX  {0}", xvar));
-		//	return Data_SelectColumnX(_dt, xvar);
-		//}
 
 		public static DataTable Data_SelectColumnX(DataTable dt, string xvar)
 		{
@@ -357,10 +407,6 @@ namespace uwac
 
 		}
 
-		//public static DataTable Data_SelectColumnXY(string xvar, string yvar)
-		//{
-		//	return Data_SelectColumnXY(_dt, xvar, yvar);
-		//}
 
 		public static DataTable Data_SelectColumnXY(DataTable mydt, string xvar, string yvar)
 		{
@@ -426,6 +472,7 @@ namespace uwac
 				return data;
 			}
 		}
+
 
 		public static DataTable Data_SelectColumnXY(DataTable mydt, string xvar, string yvar, string seriesby)
 		{
@@ -653,8 +700,6 @@ namespace uwac
 
 
 
-
-
 		//public static List<string> GetLevels(string var)
 		//{
 		//	List<string> levels = new List<string>();
@@ -779,6 +824,8 @@ namespace uwac
 			}
 		}
 
+		#endregion
+
 
 
 
@@ -802,7 +849,6 @@ namespace uwac
 		}
 
 
-		//public DataTable GetDataTable_for_Variable(IEnumerable<DataRow> rows, string[] fields_to_keep, string var_to_stack)
 		public static DataTable GetDataTable_for_Variable(DataTable dt, string[] fields_to_keep, string var_to_stack)
 		{
 			DataTable retVal = new DataTable();
@@ -899,16 +945,48 @@ namespace uwac
 			return dt_data;
 		}
 
-		public static bool ContainsColumnName(this DataTable dt, string colname)
-		{
-			bool containsColname = false;
 
-			foreach(DataColumn col in dt.Columns)
+
+
+		public static void DebugTable(this DataTable table)
+		{
+			Debug.WriteLine("--- DebugTable(" + table.TableName + ") ---");
+			int zeilen = table.Rows.Count;
+			int spalten = table.Columns.Count;
+
+			// Header
+			for (int i = 0; i < table.Columns.Count; i++)
 			{
-				if (col.ColumnName == colname) containsColname = true;
+				string s = table.Columns[i].ToString();
+				Debug.Write(String.Format("{0,-20} | ", s));
 			}
-			return containsColname;
+			Debug.Write(Environment.NewLine);
+			for (int i = 0; i < table.Columns.Count; i++)
+			{
+				Debug.Write("---------------------|-");
+			}
+			Debug.Write(Environment.NewLine);
+
+			// Data
+			for (int i = 0; i < zeilen; i++)
+			{
+				DataRow row = table.Rows[i];
+				//Debug.WriteLine("{0} {1} ", row[0], row[1]);
+				for (int j = 0; j < spalten; j++)
+				{
+					string s = row[j].ToString();
+					if (s.Length > 20) s = s.Substring(0, 17) + "...";
+					Debug.Write(String.Format("{0,-20} | ", s));
+				}
+				Debug.Write(Environment.NewLine);
+			}
+			for (int i = 0; i < table.Columns.Count; i++)
+			{
+				Debug.Write("---------------------|-");
+			}
+			Debug.Write(Environment.NewLine);
 		}
+
 
 		public static void log(string s)
 		{

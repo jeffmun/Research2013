@@ -27,11 +27,13 @@ public partial class Library_Measure : BasePage
 
 		if(!IsPostBack & Request.QueryString["mID"] != null)
 		{
-			int measureID = Convert.ToInt32(Request.QueryString["mID"]);
-			LoadMeasureInfo(measureID);
+			if (Request.QueryString["mID"] != null)
+			{
+				int measureID = Convert.ToInt32(Request.QueryString["mID"]);
+				LoadMeasureInfo(measureID);
 
-			LoadDocs(measureID);
-
+				LoadDocs(measureID);
+			}
 		 
 
 		}
@@ -69,7 +71,8 @@ public partial class Library_Measure : BasePage
 	protected void LoadMeasureInfo(int measureID)
 	{
 		SQL_utils sql = new SQL_utils("backend");
-		string code = String.Format("select a.*, tblname, tblpk, spname, skipstartingrows, importfiletype, textqualifier from tblmeasure a {0} left join uwautism_research_data.def.tbl b ON a.measureID = b.measureID where a.measureID={1}"
+		string code = String.Format("select a.*, tblname, tblpk, spname, skipstartingrows, importfiletype, textqualifier, firstrowcontainsfldnames from tblmeasure a {0} " + 
+			" left join uwautism_research_data.def.tbl b ON a.measureID = b.measureID where a.measureID={1}"
 			, Environment.NewLine, measureID);
 
 		DataTable dt = sql.DataTable_from_SQLstring(code);

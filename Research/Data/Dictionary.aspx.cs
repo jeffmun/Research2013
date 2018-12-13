@@ -15,7 +15,8 @@ using System.Web.UI.WebControls;
 using System.Web.Services;
 using uwac;
 using uwac.trk;
-
+using System.Web;
+using System.Configuration;
 
 public partial class Data_Dictionary: BasePage
 {
@@ -95,14 +96,15 @@ public partial class Data_Dictionary: BasePage
 		SQL_utils sql = new SQL_utils("data");
 
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
-			", fielddatatype + coalesce('(' + cast(fielddatatypelength as varchar)+')','') datatype, fieldlabel, fieldvaluesetID " + Environment.NewLine +
+			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!') else '' end) datatype, fieldlabel, fieldvaluesetID " + Environment.NewLine +
 			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID) valuelabels " + Environment.NewLine +
-			" , missval, a.fieldcodeID, fieldcode, fldextractionmode, importposition, constString  " + Environment.NewLine +
+			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fieldextractionmode_txt, importposition, constString  " + Environment.NewLine +
 			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status " + Environment.NewLine +
 			" from def.Fld a " + Environment.NewLine +
 			" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
 			" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
 			" LEFT JOIN datFieldCode d ON a.fieldcodeID = d.fieldcodeID " + Environment.NewLine +
+			" LEFT JOIN def.FldExtractionMode e ON a.fldextractionmode = e.fieldextractionmode " + Environment.NewLine +
 			" where a.tblpk = (select tblpk from def.tbl where measureID = {0}) " + Environment.NewLine +
 			" and fldname not in ('studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
 			" and (a.fieldcodeID >= 0 or a.fieldcodeID is null) " + Environment.NewLine +
@@ -130,19 +132,28 @@ public partial class Data_Dictionary: BasePage
 		int nflds = sql.IntScalar_from_SQLstring("select count(*) from information_schema.columns where table_name='" + tblname + "'");
 
 		bool showCreateTableButton = false;
+		bool showImportDict = false;
 		if (nflds > 0)
 		{
 			int nrecs = sql.IntScalar_from_SQLstring("select count(*) from " + tblname);
+			int tblexists = sql.IntScalar_from_SQLstring("select(case when  OBJECT_ID('" + tblname + "') is not null then 1 else 0 end) as x");
 
-			showCreateTableButton = (nrecs > 0) ? false : true;
+			showCreateTableButton = (nrecs > 0) ? false : true;  //Do not show the Create button if there are records.  This allows us to recreate the table when there are zero records in it.
+			showImportDict = (tblexists == 1) ? false : true;  //Show the dict upload if the table does not exist
+
+
 		} 
 		else{
-			showCreateTableButton = true;
+			bool needslength = (dt.ColumnContainsValue("datatype", "NEEDS LENGTH"));
+			showCreateTableButton = !needslength;
 		}
 
 
-		btnCreateTable.Visible = showCreateTableButton;
 
+
+		btnCreateTable.Visible = showCreateTableButton;
+		lblFileUpload.Visible = showImportDict;
+		FileUpload_Doc.Visible = showImportDict;
 
 		sql.Close();
 	}
@@ -162,7 +173,7 @@ public partial class Data_Dictionary: BasePage
 			try
 			{
 				sql.NonQuery_from_SQLstring("grant alter to webuser;");
-				sql.NonQuery_from_SQLstring("drop table " + tblname );
+				sql.NonQuery_from_SQLstring("DROP TABLE IF EXISTS " + tblname );
 				sql.NonQuery_from_SQLstring("revoke alter to webuser;");
 			}
 			catch (Exception ex) { }
@@ -222,7 +233,154 @@ public partial class Data_Dictionary: BasePage
 
 
 
-	
+	protected void ImportDict(object sender, EventArgs e)
+	{
+		int measureID = Convert.ToInt32(Request.QueryString["mID"]);
+
+		if (FileUpload_Doc.HasFile)
+		{
+
+			DateTime startupload = DateTime.Now;
+			string info = String.Format("Begin. {0}<br/>", startupload.ToString());
+
+			for (int f = 0; f < FileUpload_Doc.PostedFiles.Count; f++)
+			{
+				HttpPostedFile httpfile = FileUpload_Doc.PostedFiles[f];
+				Debug.WriteLine(String.Format("{0} {1}", httpfile.FileName, httpfile.ContentLength));
+				string sFileExt = httpfile.FileName.Substring(httpfile.FileName.LastIndexOf(".")).ToLower();
+				string sOrigFileName = httpfile.FileName;
+
+				string sFilePath = ConfigurationManager.AppSettings["DataUploadPath"];
+
+
+				string[] allowedExts = { ".xlsx", ".xls", ".txt", ".csv" };
+
+				//bool isallowed = new bool();
+				//isallowed = false;
+				int matches = 0;
+				for (int i = 0; i < allowedExts.Length; i++)
+				{
+					if (allowedExts[i] == sFileExt) matches++;
+				}
+
+				if (matches >= 1)
+				{
+
+					try
+					{
+						string sFileName = String.Format("Dict_mID{0}{1}"
+							, measureID
+							, sFileExt);
+
+						//string sFileName = String.Format("smID{0}___ID{1}_{2}{3}"
+						//	, cboStudymeas.Value.ToString()
+						//	, cboSubject.Value.ToString()
+						//	, f
+						//	, sFileExt);
+
+						string myfilepath = Server.MapPath(sFilePath) + sFileName;
+						httpfile.SaveAs(myfilepath);
+
+						string results = ProcessDictionary(myfilepath); // "some info"; // ProcessUploadedData(ID, studymeasID, Server.MapPath(sFilePath), sFileName);
+
+						info += String.Format("You have successfully uploaded '{0}'. {1}<br/>"
+							, httpfile.FileName
+							, results);
+
+
+						BindDict(measureID);
+					}
+					catch (Exception oErr)
+					{
+						string err = String.Format("<b>{0}</b><br/><br/>{1}<br/><br/>{2}"
+						, oErr.Message
+						, oErr.InnerException
+						, oErr.StackTrace.Replace(Environment.NewLine, "<br/>"));
+						lblDocUploadInfo.Text = Server.HtmlDecode(err);
+
+						lblDocUploadInfo.ForeColor = Color.Red;
+
+					}
+				}
+				else
+				{ //Not an allowed file type
+
+					lblDocUploadInfo.Text = "Error: This file type is not allowed.";
+					lblDocUploadInfo.ForeColor = Color.Red;
+				}
+			}
+
+			double timeelapsed = Math.Round((DateTime.Now - startupload).TotalSeconds, 2);
+			info += String.Format("<br/> End. {0} total seconds.", timeelapsed);
+
+			lblDocUploadInfo.Text = Server.HtmlDecode(info);
+			lblDocUploadInfo.ForeColor = Color.Green;
+
+		}
+
+		else
+		{
+			lblDocUploadInfo.Text = "You must select a file for upload.";
+			lblDocUploadInfo.ForeColor = Color.Red;
+		}
+		//oConn.Close();
+	}
+
+
+
+	protected void ImportDict_Cancel(object sender, EventArgs e)
+	{
+		//ddl_DocType.SelectedValue = "0";
+		//ddl_DocStatus.SelectedValue = "0";
+		//txtDocTitle.Text = "";
+		//txtDocDesc.Text = "";
+		//lblDocUploadInfo.Text = "";
+
+		//Panel_UploadDocs.Update();
+
+
+		//Panel_UploadDocs.Visible = false;
+
+		//btnShowUploadDocPanel.Visible = true;
+
+	}
+
+
+	protected string ProcessDictionary(string filename)
+	{
+		string insertresults = "";
+		SQL_utils sql = new SQL_utils("data");
+
+		//Check for tblpk
+		int tblpk = sql.IntScalar_from_SQLstring("select coalesce(tblpk,-1) from def.tbl where measureID=" + Request.QueryString["mID"]);
+
+		if(tblpk > 0)
+		{
+			DataSet ds = SpreadsheetGearUtils.GetDataSet(filename, false);
+
+			DataTable dt = ds.Tables[0];
+
+			// Add tblpk
+			DataColumn col = new DataColumn("tblpk", typeof(int));
+			col.DefaultValue = tblpk;
+
+			// Add fldextractionmode - and thus allow this measure to be imported
+			DataColumn col2 = new DataColumn("fldextractionmode", typeof(int));
+			int mode = (int)FieldExtractionMode.matchFldname;
+			col2.DefaultValue = mode;
+
+			dt.Columns.AddRange(new DataColumn[2] { col, col2 });
+
+			insertresults = sql.BulkInsert(dt, "fld", "def");
+
+
+		}
+
+		sql.Close();
+
+		return insertresults;
+	}
+
 
 	protected void gridDict_HtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
 	{
@@ -241,12 +399,25 @@ public partial class Data_Dictionary: BasePage
 
 			e.Cell.Attributes.Add("onclick", "EditVallabels(" + fldpk.ToString() + "," + fvsID.ToString() + ");");
 		}
+
+		if (e.Cell != null & e.DataColumn.FieldName == "datatype")
+		{
+			var fn = e.DataColumn.FieldName;
+			string datatype = e.CellValue.ToString();
+
+			
+			if(datatype.Contains("NEEDS LENGTH"))
+			{
+				e.Cell.ForeColor = Color.Red;
+			}
+
+		}
 	}
+
 
 	protected void gridDict_HtmlRowPrepared(object sender, ASPxGridViewTableRowEventArgs e)
 	{
-		if (e.RowType != GridViewRowType.Data)
-			return;
+		if (e.RowType != GridViewRowType.Data)  return;
 		double ord_pos = Convert.ToDouble(e.GetValue("ord_pos").ToString());
 		string color = "White";
 		if (ord_pos <= 0.90)
@@ -287,7 +458,7 @@ public partial class Data_Dictionary: BasePage
 			{
 				bool showEditBtn = true;
 				if (fieldcode == "PrimaryKey") showEditBtn = false;
-				if (fieldcode == "ID_number") showEditBtn = false;
+				if (fieldcode == "ID_number") showEditBtn = true;
 				e.Visible = showEditBtn;
 			}
 		}
@@ -301,7 +472,7 @@ public partial class Data_Dictionary: BasePage
 
 	protected void gridDict_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
-		
+
 		ASPxGridView gv = (ASPxGridView)sender;
 		DxDbOps.BuildUpdateSqlCode(e, "fld", "data", "def");
 		//((ASPxGridView) sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
@@ -345,6 +516,22 @@ public partial class Data_Dictionary: BasePage
 
 		gridDict.DataBind();
 
+	}
+
+
+	protected void gridDict_OnRowCommand(object sender, EventArgs e)
+	{
+		Debug.WriteLine(" !!!!!! gridDict_OnRowCommand");
+	}
+
+	protected void gridDict_OnParseValue(object sender, ASPxParseValueEventArgs e)
+	{
+		if (e.Value == null)
+		{
+			Debug.Write(" !!! IS NULL !!! ");
+			e.Value = DBNull.Value;
+		}
+		Debug.WriteLine(String.Format("{0} {1}", e.FieldName, e.Value.ToString()));
 	}
 
 

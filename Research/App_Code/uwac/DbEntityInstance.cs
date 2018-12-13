@@ -17,10 +17,26 @@ namespace uwac
 		string instance_name { get; set; }
 		int instance_pkval { get; set; }
 
+
 		public DbEntityInstance(DbEntity myent, int mypkval)
 		{
 			ent = myent;
 			instance_pkval = mypkval;
+		}
+
+		public string Name()
+		{
+			string x = String.Format("select {0} from {1}.{2}.{3} where {4} = {5}"
+			, ent.namefld
+			, ent.fulldb
+			, ent.schema
+			, ent.table_name
+			, ent.pkfld
+			, this.instance_pkval);
+			SQL_utils sql = new SQL_utils(ent.db);
+			string name = sql.StringScalar_from_SQLstring(x);
+			sql.Close();
+			return name;
 		}
 
 		//

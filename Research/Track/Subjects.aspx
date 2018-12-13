@@ -290,6 +290,8 @@
                         <dx:GridViewDataColumn FieldName="zip" Caption="Zip" ReadOnly="true" Width="80px" VisibleIndex="15" Visible="false"></dx:GridViewDataColumn>
                         <dx:GridViewDataColumn FieldName="country" Caption="Country" ReadOnly="true" Width="80px" VisibleIndex="16" Visible="false"></dx:GridViewDataColumn>
                         <dx:GridViewDataColumn FieldName="address_notes" Caption="Address Notes" ReadOnly="true" Width="80px" VisibleIndex="17" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="firstname" Caption="First Name" ReadOnly="true" Width="80px" VisibleIndex="18" Visible="false"></dx:GridViewDataColumn>
+                        <dx:GridViewDataColumn FieldName="lastname" Caption="Last Name" ReadOnly="true" Width="80px" VisibleIndex="19" Visible="false"></dx:GridViewDataColumn>
                         
                     </Columns>
 <%--                    <ClientSideEvents SelectionChanged="gvA_SelectionChanged"  />--%>

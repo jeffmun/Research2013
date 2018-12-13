@@ -84,14 +84,6 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 	}
 
 
-	protected void btnSave_Click(object sender, EventArgs e)
-	{
-		DataTable dt = NDAR.LoadFullDataStructureList("NDAR");
-
-		SaveAllDataStructures(dt);
-	}
-
-
 	protected void SaveAllDataStructures(DataTable dt)
 	{
 		SQL_utils sql = new SQL_utils();
@@ -100,20 +92,14 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 	}
 
 
-	//protected void gvScroll_RowCommand(object sender, GridViewCommandEventArgs e)
+	////protected void gvScroll_RowCommand(object sender, GridViewCommandEventArgs e)
+	//protected void grid_RowCommand(object sender, ASPxGridViewRowCommandEventArgs e)
 	//{
+	//	string cmd_name = e.CommandArgs.CommandName;
+	//	string cmd_arg = e.CommandArgs.CommandArgument.ToString();
 	//	//save DSE here
-	//	if(e.CommandName == "Import flds")
+	//	if (cmd_name == "Import flds")
 	//	{
-	//		NDAR.NDAR_DataStructure ds = NDAR.GetNDARDataStructure(e.CommandArgument.ToString());
-
-	//		DataTable dse = NDAR.NDARDataStructureElements_to_DataTable(ds);
-
-	//		//lblInfo.Text = "nrow = {" + dse.Rows.Count.ToString() + "}";
-
-	//		SQL_utils sql = new SQL_utils();
-	//		SqlParameter p = sql.CreateParam("NDAR_DSE", dse);
-	//		sql.NonQuery_from_ProcName("spNDAR_Insert_DSE", p);
 
 
 	//		//GridView gv_Fields = new GridView();
@@ -125,7 +111,7 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 	//	}
 
 
-	//	LoadDataStructures("localDB");
+	//	//LoadDataStructures("localDB");
 	//}
 
 
@@ -210,6 +196,49 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 		}
 
 	}
+
+
+	protected void grid_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+
+		var ID = e.ButtonID;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+
+		string shortname = grid.GetRowValues(e.VisibleIndex, "shortName").ToString();
+
+		if (!String.IsNullOrEmpty(shortname ))
+		{
+
+			SaveDSToDB(shortname);
+
+		}
+	}
+
+
+	protected void btnSave_Click(object sender, EventArgs e)
+	{
+		DataTable dt = NDAR.LoadFullDataStructureList("NDAR");
+
+		SaveAllDataStructures(dt);
+	}
+
+	protected void btnManualImport_Click(object sender, EventArgs e)
+	{
+
+		string shortname = txtShortName.Text;
+		if (!String.IsNullOrEmpty(shortname))
+		{
+			SaveDSToDB(shortname);
+		}
+	}
+
+	protected void SaveDSToDB(string shortname)
+	{
+		string results = NDAR.SaveToDB(shortname);
+
+	}
+
 
 	protected void dxgrid_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{

@@ -240,6 +240,13 @@
 											</dx:LayoutItemNestedControlContainer>
 										</LayoutItemNestedControlCollection>
 									</dx:LayoutItem>
+									 <dx:LayoutItem Caption="First row fldnames? (0=N,1=Y)" FieldName="firstrowcontainsfldnames">
+										<LayoutItemNestedControlCollection>
+											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
+												<dx:ASPxTextBox ID="ASPxTextBox3" ClientInstanceName="firstrowcontainsfldnames" runat="server"  Font-Bold="true" />
+											</dx:LayoutItemNestedControlContainer>
+										</LayoutItemNestedControlCollection>
+									</dx:LayoutItem>
 									 <dx:LayoutItem Caption="# rows skip" FieldName="skipstartingrows">
 										<LayoutItemNestedControlCollection>
 											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">

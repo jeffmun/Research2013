@@ -1,0 +1,980 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SpssLib</name>
+    </assembly>
+    <members>
+        <member name="F:SpssLib.Constants.BaseEncoding">
+            <summary>
+            The encoding to use for reading and writing the file with stream readers/writers.
+            This is not the actual data or header encoding
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.Common.RoundUp(System.Int32,System.Int32)">
+            <summary>
+            Returns the next multiple of the specified multiple, since the specified number 
+            </summary>
+            <param name="numToRound"></param>
+            <param name="multiple"></param>
+            <returns>The first number divisible by <see cref="!:multiple"/> that's greater or equal to <see cref="!:numToRound"/></returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.CharacterEncodingRecord.GetEncoding(System.String)">
+            <summary>
+            Gets the encoding, by trying to guess it from the string.
+            </summary>
+            <param name="strEncoding">Encoding name as written on the record</param>
+            <returns>The guessed Encoding</returns>
+            <remarks>
+            This method tryies to guess the encoding base on what's written on the record.
+            I will first try to look the encoding with the same name (case insencitive),
+            this should catch Windows-1252, utf-8, etc.
+            PSPP writes CP1252 that's not recognized, so in case of not finding the encoding,
+            it will take all the numbers on the string and try to look it up by code page.
+            </remarks>
+        </member>
+        <member name="T:SpssLib.FileParser.Records.DictionaryTerminationRecord">
+            <summary>
+            Record type to signal the start of the data records
+            it has two bytes the record type and a filler
+            </summary>
+        </member>
+        <member name="P:SpssLib.FileParser.Records.EncodeEnabledRecord.Encoding">
+            <summary>
+            Gets the encoding used for all the header records
+            </summary>
+            <returns>The encoding to use</returns>
+            <remarks>
+            This method tries to load the encoding from the metadata if is not already loaded.
+            While writing the encoding must be properly set on the constructor, and when reading 
+            it must be set after reading the <see cref="T:SpssLib.FileParser.Records.MachineIntegerInfoRecord"/>. Because of that,
+            this method should not be invoked before that record is read.
+            </remarks>
+        </member>
+        <member name="T:SpssLib.FileParser.Records.EncodingExtensions">
+            <summary>
+            Extentions for encoding methods to help with string writing/reading in spss formats
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.GetTrimmed(System.Text.Encoding,System.Byte[])">
+            <summary>
+            Gets a decoded string, with trailing spaces trimmed out
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.GetPadded(System.Text.Encoding,System.String,System.Int32,System.Byte)">
+            <summary>
+            Gets the encoded byte array representation of a string, for a fixed array length and padded
+            with a specific char if needed
+            </summary>
+            <param name="enc">To encode the string</param>
+            <param name="value">String to be encoded into the resulting byte[]</param>
+            <param name="length">The fixed length requested for the returning byte[]</param>
+            <param name="padding">The padding character to use (if the encoded bytes are less than length)</param>
+            <remarks>
+            If the last char to be encoded does not fit entirely on the array, it will bi removed and the space remaninig
+            will be filled with the padding byte.
+            </remarks>
+            <returns>The fixed lenght byte[]</returns> 
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.GetPaddedRounded(System.Text.Encoding,System.String,System.Int32,System.Int32@,System.Int32,System.Byte,System.Int32)">
+            <summary>
+            Gets the encoded byte array representation of a string, for a fixed array length and padded
+            with a specific char if needed
+            </summary>
+            <param name="enc">To encode the string</param>
+            <param name="value">String to be encoded into the resulting byte[]</param>
+            <param name="roundUpBytes">A number of byte to round up to. The resulting array will be a multiple of this</param>
+            <param name="maxLength">The max lenght of the resulting byte[], should be a multiple of <see cref="!:roundUpBytes"/></param>
+            <param name="padding">The padding character to use (if there are remining bytes on the array)</param>
+            <param name="lenght">Used to report back the actual length of the encoded string in bytes, with out the added roundUp bytes</param>
+            <param name="roundUpDelta">
+                For when the round up must be performed for the string and some more characters.
+                When specified, the original eocoded byte length + this  will be the multiple of <see cref="!:roundUpBytes"/>
+            </param>
+            <remarks>
+            If the last char to be encoded does not fit entirely on the array, it will bi removed and the space remaninig
+            will be filled with the padding byte.
+            </remarks>
+            <returns>A byte array who's length is a multiple of <see cref="!:roundUpBytes"/></returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.GetUpToMaxLenght(System.Text.Encoding,System.String,System.Int32,System.Byte[],System.Int32)">
+            <summary>
+            Gets the encoded bytes of a string, up to maxLength bytes
+            </summary>
+            <param name="enc">Encoding to use</param>
+            <param name="value">String to encode</param>
+            <param name="maxLength">Max size of the sequence of bytes to produce</param>
+            <param name="byteArr">The byte array to write into</param>
+            <param name="byteIndex">The index at which to start writting the resulting sequence of bytes</param>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.AsCharArr(System.Text.Encoding,System.String,System.Int32,System.Int32@)">
+            <summary>
+            Gets the string as an array of chars. The reulting array has already been sliced 
+            to the amount of chars that will fit into a byte[] of size <see cref="!:length"/> when 
+            encoded with <see cref="!:enc"/>
+            </summary>
+            <param name="enc">To test the lenght of the encoded characters</param>
+            <param name="value">The string to be encoded</param>
+            <param name="length">
+                The max lenght of bytes, by using <see cref="!:enc"/> <see cref="M:System.Text.Encoding.GetByteCount(System.Char[])"/>
+                whe can check how many of the resulting char[] would fit on an ecoded byte array of this lenght
+            </param>
+            <param name="lastCharIndex">
+                The index of up to which character should be encoded to produce a byte[] of <see cref="!:length"/>
+            </param>
+            <returns>
+                All the chars of value. You should, use the <see cref="!:lastCharIndex"/> to indicate up to wich 
+                character of the returning array to encode.
+            </returns> 
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.AsCharArr(System.Text.Encoding,System.String,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            Gets the string as an array of chars. The reulting array has already been sliced 
+            to the amount of chars that will fit into a byte[] of size <see cref="!:length"/> when 
+            encoded with <see cref="!:enc"/>
+            </summary>
+            <param name="enc">To test the lenght of the encoded characters</param>
+            <param name="value">The string to be encoded</param>
+            <param name="length">
+                The max lenght of bytes, by using <see cref="!:enc"/> <see cref="M:System.Text.Encoding.GetByteCount(System.Char[])"/>
+                whe can check how many of the resulting char[] would fit on an ecoded byte array of this lenght
+            </param>
+            <param name="lastCharIndex">
+                The index of up to which character should be encoded to produce a byte[] of <see cref="!:length"/>
+            </param>
+            <returns>
+                All the chars of value. You should, use the <see cref="!:lastCharIndex"/> to indicate up to wich 
+                character of the returning array to encode.
+            </returns> 
+        </member>
+        <member name="M:SpssLib.FileParser.Records.EncodingExtensions.GetPaddedByteArray(System.Text.Encoding,System.Int32,System.Byte,System.Char[],System.Int32)">
+            <summary>
+            Gets the encoded representation of thte char array.
+            </summary>
+            <param name="enc">To encode the char[]</param>
+            <param name="length">The fixed length of the returning array</param>
+            <param name="padding">
+                The character to fill the remaining bytes of the array 
+                not filled by the character encodings
+            </param>
+            <param name="charArr">The char array to be encoded</param>
+            <param name="lastCharIndex">
+                The last character of the array that should
+                be encoded to fit in the resulting byte[]
+            </param>
+            <exception cref="T:System.ArgumentException">
+                <see cref="!:length"/> is not enough to accommodate the resulting bytes of the encoding of
+                <see cref="!:charArr"/> up to <see cref="!:lastCharIndex"/>
+            </exception>
+            <remarks>
+                The <see cref="!:lastCharIndex"/> must have already been calculating according to 
+                how many chars from <see cref="!:charArr"/> could fit in <see cref="!:length"/> bytes
+                when encoded using <see cref="!:enc"/>
+            </remarks> 
+            <returns>The fixed lenght byte[]</returns> 
+        </member>
+        <member name="P:SpssLib.FileParser.Records.VariableDataInfoRecord`1.Data">
+            <summary>
+            Holds the encoded byte sequence for the long names dictionary string
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.MachineFloatingPointInfoRecord.#ctor">
+            <summary>
+            Constructor for creating an appropiate floating point record for this machine
+            </summary>
+        </member>
+        <member name="P:SpssLib.FileParser.Records.VariableDisplayParameterRecord.VariableCount">
+            <summary>
+            Count number of variables (the number of variable-records with a name,
+            the rest is part of a long string variable), this includes the variables 
+            for VeryLongStrings segments
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableDisplayParameterRecord.#ctor(System.Int32)">
+            <summary>
+            Contructor to write the record
+            </summary>
+            <param name="variableCount">The count of named variables, this includes each VeryLongString segment
+            (but not the variable records per each 8 bytes of additional text)</param>
+        </member>
+        <member name="T:SpssLib.FileParser.Records.VariableRecord">
+            <summary>
+            Represents the record data for a variable, this contains name, type, labels, value type, formatting, missing value type, print format and write format
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.Records.VariableRecord.AppendableChars">
+            <summary>
+            List of characters that can be appended to the end of a repeated short variable
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.#ctor(SpssLib.SpssDataset.Variable,System.Text.Encoding)">
+            <summary>
+            Constructor for loading the reord info before writing the file
+            </summary>
+            <param name="variable">The created variable information</param>
+            <param name="headerEncoding">The encoding used for the header. <see cref="P:SpssLib.FileParser.Records.MachineIntegerInfoRecord.CharacterCode"/></param>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetNeededVariables(SpssLib.SpssDataset.Variable,System.Text.Encoding,System.Collections.Generic.SortedSet{System.Byte[]},System.Int32@,System.Collections.Generic.IDictionary{System.String,System.Int32},System.Collections.Generic.SortedList{System.Byte[],System.Int32})">
+            <summary>
+            Creates all variable records needed for this variable
+            </summary>
+            <param name="variable">The variable matadata to create the new variable</param>
+            <param name="headerEncoding">The encoding to use on the header</param>
+            <param name="previousVariableNames">
+                A list of the variable names that were already 
+                created, to avoid the short name colition
+            </param>
+            <param name="longNameCounter">
+                The counter of variables with name replaced, to create
+                a proper long name that won't collide
+            </param>
+            <param name="longStringVariables"></param>
+            <param name="segmentsNamesList"></param>
+            <returns>
+            		Only one var for numbers or text of lenght 8 or less, or the 
+            		main variable definition, followed by string continuation "dummy"
+            		variables. There should be one for each 8 chars after the first 8.
+             </returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetStringContinuationRecordsCount(System.Int32)">
+            <summary>
+            Gets the amount of dummy variables (string continuation records) needed for a string of 
+            length
+            </summary>
+            <param name="length">The length (in bytes, not chars) for the string</param>
+            <exception cref="T:System.ArgumentException">
+            If the lenght is more than 255 bytes. If the variable needs to hold longer text use
+            <see cref="T:SpssLib.FileParser.Records.VeryLongStringRecord"/>
+            </exception>
+            <returns>Number of string continuation records needed (variables of type -1 and width 8)</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetLongStringSegmentsCount(System.Int32)">
+            <summary>
+            Gives the number of segments for a very long string (<see cref="T:SpssLib.FileParser.Records.VeryLongStringRecord"/>),
+            or just 1 if there's no need for the VLS 
+            </summary>
+            <param name="lenght">The length (in bytes, not chars) for the string</param>
+            <remarks>
+            Up to 255 bytes, theres only one segment, for more there should be one segment 
+            for each 252 bytes of lenght, each segment will have one variable with a name, 
+            the string length and multiple string continuation records.
+            </remarks>
+            <returns>The number of segments for <see cref="!:lenght"/> of bytes</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetLongStringContinuationRecordsCount(System.Int32)">
+            <summary>
+            Gives the total number of variable records that a very long string (<see cref="T:SpssLib.FileParser.Records.VeryLongStringRecord"/>)
+            needs, including the extra variables for each extra segment.
+            </summary>
+            <param name="lenght">The length (in bytes, not chars) for the string</param>
+            <remarks>
+            There's one segment for each 252 of <see cref="!:lenght"/> of bytes.
+            Each segment but the last has a width of 255.
+            The las segment has the suposed remider, as if the previous ones had only 252
+            (but that's not actualy the case). Why?? For the glory of Satan, of course.
+            </remarks> 
+            <returns>Number of VariableRecords needed for <see cref="!:lenght"/> of bytes</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetLongStringBytesCount(System.Int32)">
+            <summary>
+            Gives the total ammount of bytes the variable of <see cref="!:lenght"/> occupies, taking into account the weird 
+            rules that LSV have and an unused byte each 255 bytes (to complete the 8 byte block of the long string variable)
+            </summary>
+            <param name="lenght">The length in bytes of the string</param>
+            <returns>The total ammount of bytes the variable of <see cref="!:lenght"/> occupies</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetFinalSegmentLenght(System.Int32,System.Int32)">
+            <summary>
+            Gets the supposed lenght of the last segment.
+            This works the same for VeryLongStrings or just LongStrings
+            </summary>
+            <param name="lenght">The total length of the string in bytes</param>
+            <param name="segments">The number of VeryLongStrings segments needed (1 for just normal LongStrings)</param>
+            <returns>The length of the reminding segment</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.CheckShortName(SpssLib.FileParser.Records.VariableRecord,System.Collections.Generic.SortedSet{System.Byte[]},System.Int32@)">
+            <summary>
+            Checks if the name that was set (after slicing it to 8 chars and encoding it properly) is not repeated on the names
+            of the variables created before this one. 
+            </summary>
+            <param name="variable"></param>
+            <param name="previousVariableNames"></param>
+            <param name="longNameCounter"></param>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GenerateContinuationSegmentShortName(System.Byte[],System.Collections.Generic.SortedSet{System.Byte[]},System.Collections.Generic.SortedList{System.Byte[],System.Int32})">
+            <summary>
+            Generates a new short name for a VLS continuation variable, checking that the name is not already used.
+            This tries to replicate how SPSS does it, by shrinking the original var name to at most 5 chars and appending 
+            a number to make it unique. The nuber is at most 3 chars, padded to the left with spaces.
+            </summary>
+            <param name="variable">The head variable reacord to get the name from</param>
+            <param name="previousVariableNames">The set of all other used short variable names</param>
+            <param name="segmentsNamesList">The cache to store up to which number has been used for each up to 5 char name</param>
+            <returns>The encoded short name for the VLS continuation segment</returns>
+            <remarks>
+            Apparently, for SPSS to reads VLS continuation segments consistenly, the segments should have the same first 5 characters.
+            If segments have different names that don't match, SPSS could not interpret them as part of the same variable
+            </remarks>
+        </member>
+        <member name="M:SpssLib.FileParser.Records.VariableRecord.GetStringContinuationRecord">
+            <summary>
+            Creates and returns a variable that contains the info to be written as a continuation of a string 
+            variable. 
+            This variable is needed imediatelly after text vatiables of more than 8 chars, and there should 
+            be one for each 8 bytes of text exiding the first 8
+            </summary>
+        </member>
+        <member name="T:SpssLib.FileParser.CompressedRecordWriter">
+            <summary>
+            Provides the functionality to write the compressed values to the underlying writer
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.CompressedRecordWriter._writer">
+            <summary>
+            Underlying stream writer
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.CompressedRecordWriter._bias">
+            <summary>
+            The compression bias (compressed numbers will be stored as value + bias) 
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.CompressedRecordWriter._sysMiss">
+            <summary>
+            The system missing value
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:SpssLib.FileParser.CompressedRecordWriter._blockIndex" -->
+        <member name="F:SpssLib.FileParser.CompressedRecordWriter._uncompressedIndex">
+            <summary>
+            Next index to be written on the uncompressed data buffer.
+            When this reachs a multiple of 8, a new <see cref="F:SpssLib.FileParser.CompressedRecordWriter.UncompressedValue"/> has to be written
+            to the compressed block, and check if the uncompressed buffer has to be flushed.
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.CompressedRecordWriter._uncompressedBuffer">
+            <summary>
+            The buffer to accumulate the uncompressed data. The uncompressed data item is written in a 8 byte block, 
+            and the it can have a max of 8 items (the size of the compressed block)
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.#ctor(System.IO.BinaryWriter,System.Double,System.Double)">
+            <summary>
+            Creates a compressed recodr writer
+            </summary>
+            <param name="writer">The underlying binary writer with the stream</param>
+            <param name="bias">The compression bias</param>
+            <param name="sysMiss">The system missing value</param>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.WriteSysMiss">
+            <summary>
+            Writes a sysmiss value on the stream.
+            This is to be used for null values mostly
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.WriteCompressedCode(System.Byte)">
+            <summary>
+            Writes a byte into the compression block and advances the compression 
+            block next available index
+            </summary>
+            <param name="code">the compression code to write</param>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.WriteNumber(System.Double)">
+            <summary>
+            Writes a numeric value to the file
+            </summary>
+            <param name="d">The numeric value to be written</param>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.WriteCompressedValue(System.Double)">
+            <summary>
+            Writes the double value as the compressed byte into the compressed block
+            </summary>
+            <param name="d">The value to be written</param>
+            <returns>True if the value could be written into the compressed block, False if the value could not be compressed.</returns>
+            <remarks>
+            	In case this method has retured false, a <see cref="F:SpssLib.FileParser.CompressedRecordWriter.UncompressedValue"/> flag was written into the compression block,
+            	and the true value will have to be written into the <see cref="F:SpssLib.FileParser.CompressedRecordWriter._uncompressedBuffer"/>.
+            </remarks>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.WriteNumberToBuffer(System.Byte[])">
+            <summary>
+            Writes an 8 byte value to the buffer.
+            </summary>
+            <param name="bytes">The 8 bytes that represent a double</param>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.StartString">
+            <summary>
+            Checks if the last block is complete.
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.WriteCharBytes(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes bytes that correspond to chars in a string from a buffer.
+            The caller method should keep track of the segments itself and the max length 
+            in bytes that should be written according to the variable info
+            </summary>
+            <param name="bytes">The byte array to copy from</param>
+            <param name="start">The starting position from where to copy</param>
+            <param name="length">Ammount of bytes to write from the buffer</param>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.EndStringVariable(System.Int32,System.Int32)">
+            <summary>
+            Fills the last block with padding spaces and fill the rest of the length of the
+            variables with padding spaces blocks (if needed).
+            </summary>
+            <param name="writtenBytes">Bytes that have already been written</param>
+            <param name="length">Total length of bytes that must be written for the variable</param>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.AreUncompletedUncompressedBlocks">
+            <summary>
+            Gets wether there is an uncompleted block on the uncompressed buffer
+            </summary>
+            <returns>True if there is an uncompleted block on the uncompressed buffer, false otherwise</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.CheckUncompressedBlock">
+            <summary>
+            Throws an exception if there is an uncompleted block on the uncompressed buffer.
+            This method should be called when starting to write a new variable, to detect possible errors
+            (like a string that hasn't been well terminated)
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.FullBlocksCount(System.Int32)">
+            <summary>
+            Gives the count of full uncompressed blocks (8 bytes) depending on the ammount of 
+            uncompressedBytes supposedly written.
+            i.e.: if there have been 17 bytes written to the uncompressed buffer, it means that
+            there are 2 full blocks (and one with only one byte written)
+            </summary>
+            <param name="uncompressedBytes">Count of uncompressed bytes supposedly written</param>
+            <returns>The count of full uncompressed blocks</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.CloseUncompressBufferBlock">
+            <summary>
+            Fills up the last uncompressed block (if there is an uncomplete block)
+            </summary>
+            <returns>
+            The count of chars that have to be written to complete the block (0 if no uncomplete block 
+            is found, otherwise a max of 7)
+            </returns>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.CheckBlock">
+            <summary>
+            Check if the compressed block is full and flush the uncompressed buffer to the writer if so.
+            This method also move any uncomplete block data to the begining and set <see cref="F:SpssLib.FileParser.CompressedRecordWriter._uncompressedIndex"/>
+            correspondingly
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.CompleteBlock">
+            <summary>
+            Completes the compressed block, so the last uncompressed blocks of the file can be written
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.CompressedRecordWriter.EndFile">
+            <summary>
+            Finish writing the file.
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.IRecordWriter.WriteSysMiss">
+            <summary>
+            Writes a sysmiss value on the stream.
+            This is to be used for null values mostly
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.IRecordWriter.WriteNumber(System.Double)">
+            <summary>
+            Writes a numeric value to the file
+            When implemented, it should also check if the last block is complete.
+            </summary>
+            <param name="d">The numeric value to be written</param>
+        </member>
+        <member name="M:SpssLib.FileParser.IRecordWriter.StartString">
+            <summary>
+            This method should be called when starting to write a string variable.
+            When implemented, it should check if the last block is complete.
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.IRecordWriter.WriteCharBytes(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes bytes that correspond to chars in a string from a buffer.
+            The caller method should keep track of the segments itself and the max length 
+            in bytes that should be written according to the variable info
+            </summary>
+            <param name="bytes">The byte array to copy from</param>
+            <param name="start">The starting position from where to copy</param>
+            <param name="length">Ammount of bytes to write from the buffer</param>
+        </member>
+        <member name="M:SpssLib.FileParser.IRecordWriter.EndStringVariable(System.Int32,System.Int32)">
+            <summary>
+            Writes the end of a variable.
+            When implemented, it should fill the last block with padding spaces and fill the rest
+            of the length of the variables with padding spaces blocks (if needed).
+            </summary>
+            <param name="writtenBytes"></param>
+            <param name="length"></param>
+        </member>
+        <member name="M:SpssLib.FileParser.IRecordWriter.EndFile">
+            <summary>
+            Writes an end of file, if needed
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.StringWriter._encoder">
+            <summary>
+            Encoder to get the bytes of string data
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.StringWriter._stringBytesBuffer">
+            <summary>
+            Buffer to hold encoded string bytes
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.StringWriter.CharsBufferSize">
+            <summary>
+            Size in chars for the encoded bytes
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.StringWriter._stringSegmentBuffer">
+            <summary>
+            Buffer to hold up to 255 encoded bytes + 1 space char byte (the bytes for the string segment)
+            This wil be used to direclty write into the uncompressed buffer
+            </summary>
+        </member>
+        <member name="F:SpssLib.FileParser.StringWriter.StringSegmentByteSize">
+            <summary>
+            The max useful byte capacity for a segment
+            </summary>
+        </member>
+        <member name="M:SpssLib.FileParser.SavFileParser.RecordToObjects(System.Byte[][])">
+            <summary>
+            Convert a row of raw data to proper objects. (strings or doubles)
+            </summary>
+            <param name="record">The complete row data, as an array of byte[8] (the block of a single VariableRecord)</param>
+            <returns>The enumeration of objects for this row</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.SavFileParser.ParseDoubleValue(System.Byte[])">
+            <summary>
+            Converts the byte pattern to it's double representation and compares it to 
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SpssLib.FileParser.SavFileParser.GetVariable(System.Int32,System.Int32,SpssLib.FileParser.MetaData,System.Int32,System.Int32)">
+            <summary>
+            Creates a <see cref="T:SpssLib.SpssDataset.Variable"/> object with it's actual informantion
+            </summary>
+            <param name="variableIndex">The actual index of the variable</param>
+            <param name="dictionaryIndex">The index of the varible's <see cref="T:SpssLib.FileParser.Records.VariableRecord"/></param>
+            <param name="metaData">The parsed metada with all needed info from the file</param>
+            <param name="length">The string lenght in bytes (only needed for string vars)</param>
+            <param name="segmentIndex">The variable index, counting also the extra segments of Very Long Strings</param>
+            <returns>The variable with all it's information inside</returns>
+        </member>
+        <member name="M:SpssLib.FileParser.SavFileParser.GetVariablesFromRecords">
+            <summary>
+            Fills the variables collection with just the actual variables (no string continuation records or very long
+            strings extra segments)
+            </summary>
+        </member>
+        <member name="T:SpssLib.DataReader.SpssOptions">
+            <summary>
+            Contains general file metadata, as found in the file header
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.Label">
+            <summary>
+            The file label or title
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.Compressed">
+            <summary>
+            Whether the data on the files is compressed or not. Only numerical whole values can be compressed
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.Bias">
+            <summary>
+            A bias used for the compression of numerical values. By default set to 100.<para/>
+            Only integers between (1 - bias) and (251 - bias) will be compressed into only one byte.
+            If the number has decimals or is not in that range, it will be written as a 8-byte double
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.WeightVariable">
+            <summary>
+            The variable used to weight cases
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.Cases">
+            <summary>
+            Number of cases in file, or -1 if unknown.
+            This lib does not determine the amount of cases when writting. if you know how many records you'll
+            write, you should set this fild with that number, otherwise it will remain -1
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.HeaderEncoding">
+            <summary>
+            The encoding used to read/write the header of the file
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssOptions.DataEncoding">
+            <summary>
+            The encoding used to read/write the cases
+            </summary>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssOptions.#ctor">
+            <summary>
+            Creates a Spss options instance with defaults.
+            Compressed, bias=100 &amp; encodings=UTF8
+            </summary>
+        </member>
+        <member name="T:SpssLib.DataReader.SpssReader">
+            <summary>
+            Reads a spss files variables &amp; data from any stream
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssReader.Variables">
+            <summary>
+            A collection of variables read from teh file 
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssReader.Records">
+            <summary>
+            An enumerable of the cases contained in the file
+            </summary>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssReader.#ctor(System.IO.Stream)">
+            <summary>
+            Creates a reader and read the file header (with variables) from a stream
+            </summary>
+            <param name="fileStream"></param>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssReader.Dispose">
+            <summary>
+            Disposes the inner stream
+            </summary>
+        </member>
+        <member name="T:SpssLib.DataReader.SpssWriter">
+            <summary>
+            Writes a spss data file to a stream
+            </summary>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssWriter.#ctor(System.IO.Stream,System.Collections.Generic.ICollection{SpssLib.SpssDataset.Variable},SpssLib.DataReader.SpssOptions)">
+            <summary>
+            Creates a spss writer
+            </summary>
+            <param name="output">The binary stream to write to</param>
+            <param name="variables">The variable collection to use</param>
+            <param name="options"></param>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssWriter.Options">
+            <summary>
+            The file options used.
+            </summary>
+        </member>
+        <member name="P:SpssLib.DataReader.SpssWriter.Variables">
+            <summary>
+            The variable collection. Once the writting has started, it should not be modified.
+            </summary>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssWriter.CreateRecord">
+            <summary>
+            Creates a record array with the variable count as lenght
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssWriter.CreateRecord(SpssLib.SpssDataset.Record)">
+            <summary>
+            Creates a record array for this file by using a Record object that could belong to another file.
+            It would contain the data from the original, but it would be resized to fit the current data variables.
+            To be able to copy to a new file, you must be careful that the variables from both are in the same order
+            </summary>
+            <param name="record">The record to get the data from.</param>
+            <returns>A copy of the data record, resized for the current dataset</returns>
+            <remarks>
+            This method clones the record's data array and the resizes it to fit the current dataset. Variables should
+            be in the same order for both records. If you are adding records, you might have to shift data to make it fit.
+            If the currentdataset has less variables, the last values left will be lost.
+            </remarks>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssWriter.WriteRecord(System.Object[])">
+            <summary>
+            Writes the record into the stream.
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssWriter.EndFile">
+            <summary>
+            Finishes writting the file. If not used, last compressed values could be not written to the stream
+            </summary>
+        </member>
+        <member name="M:SpssLib.DataReader.SpssWriter.Dispose">
+            <summary>
+            Disposes the write stream
+            </summary>
+        </member>
+        <member name="T:SpssLib.SpssDataset.Alignment">
+            <summary>
+            The alignment of the variable for display purposes
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.Alignment.Left">
+            <summary>
+            Left aligned
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.Alignment.Right">
+            <summary>
+            Right aligned
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.Alignment.Centre">
+            <summary>
+            Center aligned
+            </summary>
+        </member>
+        <member name="T:SpssLib.SpssDataset.DataType">
+            <summary>
+            The SPSS data type
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.DataType.Numeric">
+            <summary>
+            Numeric data. Value should be a double (or null for SYSMISS)
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.DataType.Text">
+            <summary>
+            Text data. Value should be a string
+            </summary>
+        </member>
+        <member name="T:SpssLib.SpssDataset.MeasurementType">
+            <summary>
+            The measurement type of the variable
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MeasurementType.Nominal">
+            <summary>
+            Nominal scale
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MeasurementType.Ordinal">
+            <summary>
+            Ordinal scale
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MeasurementType.Scale">
+            <summary>
+            Continuous scale
+            </summary>
+        </member>
+        <member name="T:SpssLib.SpssDataset.MissingValueType">
+            <summary>
+            The kind of custom missing values for a variable
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MissingValueType.NoMissingValues">
+            <summary>
+            No custom missing values for the variable
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MissingValueType.OneDiscreteMissingValue">
+            <summary>
+            One speciffic custom missing value. The missing value should be specified on the fist item on <see cref="P:SpssLib.SpssDataset.Variable.MissingValues"/>
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MissingValueType.TwoDiscreteMissingValue">
+            <summary>
+            Two speciffic custom missing values. The missing values should be specified on the fist and second items on <see cref="P:SpssLib.SpssDataset.Variable.MissingValues"/>.
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MissingValueType.ThreeDiscreteMissingValue">
+            <summary>
+            Two speciffic custom missing values. The missing values should be specified on the fist, second and third items on <see cref="P:SpssLib.SpssDataset.Variable.MissingValues"/>.
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MissingValueType.Range">
+            <summary>
+            Defines a range to be treated as missing values, from the first item in the on <see cref="P:SpssLib.SpssDataset.Variable.MissingValues"/> to the second value, inclusively. 
+            </summary>
+        </member>
+        <member name="F:SpssLib.SpssDataset.MissingValueType.RangeAndDiscrete">
+            <summary>
+            Identical to Range, but with an additional discrete value specified on the third item of <see cref="P:SpssLib.SpssDataset.Variable.MissingValues"/>
+            </summary>
+        </member>
+        <member name="T:SpssLib.SpssDataset.OutputFormat">
+            <summary>
+            Specifies a write/print format
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.OutputFormat.DecimalPlaces">
+            <summary>
+            Number of decimal places
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.OutputFormat.FieldWidth">
+            <summary>
+            The display width of the filed
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.OutputFormat.FormatType">
+            <summary>
+            The format type
+            </summary>
+        </member>
+        <member name="M:SpssLib.SpssDataset.OutputFormat.#ctor(SpssLib.SpssDataset.FormatType,System.Int32,System.Int32)">
+            <summary>
+            Creates a write/print format specification
+            </summary>
+            <param name="formatType"></param>
+            <param name="fieldWidth"></param>
+            <param name="decimalPlaces"></param>
+        </member>
+        <member name="T:SpssLib.SpssDataset.Record">
+            <summary>
+            Represents a data row or case
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Record.Data">
+            <summary>
+            The data array. It should only contain strings, doubles or nulls.
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Record.Item(System.Int32)">
+            <summary>
+            Contains each value for this case
+            </summary>
+            <param name="index">The 0-based index that corresponds to the variable order</param>
+            <returns>
+            An object that can be either a <see cref="T:System.String"/> or a<see cref="T:System.Double"/>.
+            When a value was read as SYSMISS it will be <c>null</c>
+            </returns>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Record.Item(SpssLib.SpssDataset.Variable)">
+            <summary>
+            Contains each value for this case
+            </summary>
+            <param name="variable">The variable to get the value from</param>
+            <returns>
+            An object that can be either a <see cref="T:System.String"/> or a<see cref="T:System.Double"/>.
+            When a value was read as SYSMISS it will be <c>null</c>
+            </returns>
+        </member>
+        <member name="M:SpssLib.SpssDataset.Record.GetValue(SpssLib.SpssDataset.Variable)">
+            <summary>
+            Gets the proper value of the variable for this record. This method will check the missing values
+            in case there are, and will return null in case the value is one of them.
+            Also, if the format fo this variable is a date, it will be tranformed into a <see cref="T:System.DateTime"/>.
+            </summary>
+            <param name="variable">The variable to get the value from</param>
+            <returns>
+            The value for the variable on this record as object, <c>null</c> 
+            if the value corresponds to one of the custom missing values rules.
+            </returns>
+        </member>
+        <member name="T:SpssLib.SpssDataset.FormatType">
+            <summary>
+            The print/write format for the data.
+            For more info on this see http://www.ibm.com/support/knowledgecenter/SSLVMB_20.0.0/com.ibm.spss.statistics.help/syn_variables_variable_formats.htm
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.MeasurementType">
+            <summary>
+            The measurement type of the variable,  for display purposes
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.Width">
+            <summary>
+            The display with
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.TextWidth">
+            <summary>
+            Length for strings variables. Expressed in bytes, not chars. Actual char count will depend on the 
+            encoding used for the data (equal or less than this).
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.Alignment">
+            <summary>
+            The alignment of the variable for display purposes
+            </summary> 
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.Name">
+            <summary>
+            Name of the variable
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.Label">
+            <summary>
+            The variable label
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.PrintFormat">
+            <summary>
+            Print format settings
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.WriteFormat">
+            <summary>
+            Write format settings
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.Type">
+            <summary>
+            The type of spss data(Numeric/Text)
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.MissingValueType">
+            <summary>
+            Type of custom missing values (besides sysmiss).
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.MissingValues">
+            <summary>
+            Holds the value information to be treated as missing values. Depends on the <see cref="P:SpssLib.SpssDataset.Variable.MissingValueType"/>.<para/>
+            This is a readonly 3 items array. 
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.ValueLabels">
+            <summary>
+            The labels for different values
+            </summary>
+        </member>
+        <member name="P:SpssLib.SpssDataset.Variable.Index">
+            <summary>
+            The 0-based index of the variable
+            </summary>
+        </member>
+        <member name="M:SpssLib.SpssDataset.Variable.#ctor">
+            <summary>
+            Constructs a new Variable object
+            </summary>
+        </member>
+        <member name="M:SpssLib.SpssDataset.Variable.#ctor(System.String)">
+            <summary>
+            Constructs a new Variable object
+            </summary>
+            <param name="name">The variable name</param>
+            <exception cref="T:System.ArgumentNullException">if name is null</exception>
+        </member>
+        <member name="M:SpssLib.SpssDataset.Variable.GetValue(System.Object)">
+            <summary>
+            Gets the proper value of this variable. This method will check the missing values
+            in case there are, and will return null in case the value is one of them.
+            Also, if the format fo this variable is a date, it will be tranformed into a <see cref="T:System.DateTime"/>.
+            </summary>
+            <param name="value">A value that should be of this variable</param>
+            <returns>The value as object</returns>
+        </member>
+        <member name="M:SpssLib.SpssDataset.Variable.IsDate">
+            <summary>
+            Detects whether the current variable is a date, depending on it's write format.
+            Time only formats are not considered as a date.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpssLib.SpssDataset.Variable.GetValueFromDate(System.DateTime)">
+            <summary>
+            Gets the numeric value of a date, acording to the spss file format
+            </summary>
+            <param name="date">The date to transform</param>
+            <returns>Number of seconds from the 14 of October 1582 to <c>date</c></returns>
+        </member>
+    </members>
+</doc>

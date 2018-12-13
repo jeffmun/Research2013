@@ -19,6 +19,7 @@ namespace uwac
 		public int studymeasID { get; set; }
 		public string ID { get; set; }
 		public string markerstring { get; set; }
+		public bool firstRowContainsFieldnames { get; set; }
 
 		public ImportFiletype importfiletype { get; set; }
 		public char delimiter { get; set; }
@@ -70,6 +71,7 @@ namespace uwac
 
 		private void PopulateImportSettingsFromDB(string ID, int studymeasID)
 		{
+			Debug.WriteLine("***PopulateImportSettingsFromDB ***");
 			SQL_utils sql = new SQL_utils("data");
 			
 			DbEntityInstance studymeas = new DbEntityInstance(new DbEntity(DbEntityType.studymeas), studymeasID);
@@ -83,36 +85,47 @@ namespace uwac
 			if (trow["skipstartingrows"] == DBNull.Value) skipstartingrows = 0;
 			else skipstartingrows = Convert.ToInt32(trow["skipstartingrows"]) ;
 
-			textqualifier = AssignTextqualifier((ImportTextqualifier)Convert.ToInt32(trow["textqualifier"]));
+			int textqualifiercode = (trow["skipstartingrows"] == DBNull.Value) ? 0 : Convert.ToInt32(trow["skipstartingrows"]);
+
+			if (trow["firstrowcontainsfldnames"] == DBNull.Value | trow["firstrowcontainsfldnames"].ToString() == "0") firstRowContainsFieldnames = false;
+			else if (trow["firstrowcontainsfldnames"].ToString() == "1") firstRowContainsFieldnames = true;
+
+			textqualifier = AssignTextqualifier((ImportTextqualifier)textqualifiercode);
 			importfiletype = (ImportFiletype)Convert.ToInt32(trow["importfiletype"]);
 
 
 			tblpk = Convert.ToInt32(trow["tblpk"]);
 			tblname = trow["tblname"].ToString();
 
-			string sqlcode = String.Format("select coalesce(max(indexnum),0) from uwautism_research_data..{0} where id='{1}' and studymeasID={2}", tblname, ID, studymeasID);
-			Debug.WriteLine(sqlcode);
-			int next_indexnum = sql.IntScalar_from_SQLstring(sqlcode);
-
+			int next_indexnum = 1;
+			if (!ID.StartsWith("Multiple "))
+			{
+				string sqlcode = String.Format("select coalesce(max(indexnum),0) from uwautism_research_data..{0} where id='{1}' and studymeasID={2}", tblname, ID, studymeasID);
+				Debug.WriteLine(sqlcode);
+				next_indexnum = sql.IntScalar_from_SQLstring(sqlcode);
+			}
 
 			DataTable dt_fld = sql.DataTable_from_SQLstring("select * from def.fld where fldextractionmode is not null and tblpk = " + tblpk.ToString());
 
 			fields.Add(new Importfield { field = "indexnum", mode = FieldExtractionMode.useConstString, constString = next_indexnum.ToString() });
-			fields.Add(new Importfield { field = "ID", mode = FieldExtractionMode.useConstString, constString = ID });
+			//fields.Add(new Importfield { field = "ID", mode = FieldExtractionMode.useConstString, constString = ID });
 			fields.Add(new Importfield { field = "studymeasID", mode = FieldExtractionMode.useConstString, constString = studymeasID.ToString() });
 			fields.Add(new Importfield { field = "verified", mode = FieldExtractionMode.useConstString, constString = "1" });
 
+			Debug.WriteLine("*** == > Begin looping through rows ***");
 
 			foreach (DataRow row in dt_fld.Rows)
 			{
 				string fldname = row["fldname"].ToString();
-				fields.Add(new Importfield {
-				      field = row["fldname"].ToString()
-					, mode = ((FieldExtractionMode)Convert.ToInt32(row["fldextractionmode"])) 
-					, importposition = Convert.ToInt32(row["importposition"])
-					, constString = row["constString"].ToString()
-				});
+				Importfield impfld = new Importfield();
+				impfld.field = row["fldname"].ToString();
+				impfld.mode = ((FieldExtractionMode)Convert.ToInt32(row["fldextractionmode"]));
+				if (row["importposition"] != DBNull.Value) impfld.importposition = Convert.ToInt32(row["importposition"]);
+				if (row["constString"] != DBNull.Value) impfld.constString = row["constString"].ToString();
+
+				fields.Add(impfld);
 			}
+			Debug.WriteLine("*** == > End looping through rows ***");
 
 		}
 
@@ -144,11 +157,14 @@ namespace uwac
 
 	public enum FieldExtractionMode
 	{
-		useImportPosition = 0,
-		useImportPositionWithNext = 1,
-		useConstString = 2,
-		calcDayNum = 3,
-		useMarkerString = 4
+		matchFldname = 0,
+		useImportPosition = 1,
+		useImportPositionWithNext = 2,
+		useConstString = 3,
+		calcDayNum = 4,
+		useMarkerString = 5,
+		isOtherFld = 6,
+		useOtherFld = 7
 	}
 
 
@@ -161,7 +177,8 @@ namespace uwac
 		tsv = 4,
 		textlines = 5,
 		actigraph = 6,
-		REDCap = 7
+		REDCap = 7,
+		SPSSsav = 8
 	}
 
 	public enum ImportTextqualifier

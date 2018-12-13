@@ -27,7 +27,18 @@ namespace uwac.trk
 
 
 		#region Utilities
-		public static void SetColorLevel(int x)
+
+		public static List<string>  Numtypes() {
+			return new List<string> { "number", "int", "smallint", "bigint", "float", "decimal" };
+		 }
+
+		public static List<string> Texttypes() { return new List<string> { "text", "string", "char", "varchar", "nchar" }; }
+
+		public static List<string> Datetypes() { return new List<string> { "date", "datetime", "smalldatetime" }; }
+
+
+
+public static void SetColorLevel(int x)
 		{
 			SQL_utils sql = new SQL_utils("backend");
 			sql.NonQuery_from_SQLstring("exec trk.spUpdate_ColorLevel_for_User " + x.ToString());
@@ -50,11 +61,11 @@ namespace uwac.trk
 			}
 
 			int num = 0;
-			foreach(string s in csv)
+			foreach (string s in csv)
 			{
 				if (s == targetvalue) num++;
 			}
-			
+
 			return num;
 		}
 
@@ -110,7 +121,7 @@ namespace uwac.trk
 
 		public static string GetCSV(List<object> selectedValues, bool useQuote)
 		{
-			string quote="";
+			string quote = "";
 			string csv = null;
 			if (selectedValues.Count > 0)
 			{
@@ -118,7 +129,7 @@ namespace uwac.trk
 				{
 					var x = selectedValues[i].GetType();
 					string comma = (i > 0) ? "," : "";
-					if(useQuote) quote = (x == typeof(Int32) | x == typeof(Int16) | x == typeof(int)) ? "" : "'";
+					if (useQuote) quote = (x == typeof(Int32) | x == typeof(Int16) | x == typeof(int)) ? "" : "'";
 
 					csv += String.Format("{0}{1}{2}{1}", comma, quote, selectedValues[i].ToString());
 				}
@@ -202,10 +213,10 @@ namespace uwac.trk
 
 				sql.Close();
 
-				return  sqlcode + " --Updated!";
+				return sqlcode + " --Updated!";
 			}
-			catch(Exception ex){ 
-				return ex.Message; 
+			catch (Exception ex) {
+				return ex.Message;
 			}
 
 		}
@@ -213,7 +224,8 @@ namespace uwac.trk
 
 
 
-			public static string dxGrid_UpdateData(string pk, List<int> pkvals, OrderedDictionary newvalues, string db, string schema, string tbl)
+
+		public static string dxGrid_UpdateData(string pk, List<int> pkvals, OrderedDictionary newvalues, string db, string schema, string tbl)
 		{
 			SQL_utils sql = new SQL_utils(db);
 

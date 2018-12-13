@@ -1371,11 +1371,21 @@ namespace uwac
 
 
 		#region ...................BULK INSERT...................
-
 		public string BulkInsert(DataTable dt_source, string dest_tbl)
 		{
-			int n_start = IntScalar_from_SQLstring("select count(*) from " + dest_tbl);
+			return BulkInsert(dt_source, dest_tbl, "dbo");
+		}
+		public string BulkInsert(DataTable dt_source, string dest_tbl, string dest_schema)
+		{
+			Debug.WriteLine(" **** Begin BulkInsert *****" + dest_tbl);
+			int n_start = IntScalar_from_SQLstring(String.Format("select count(*) from [{0}].[{1}]" , dest_schema, dest_tbl));
 			string msg="";
+
+			Debug.WriteLine("dt_source # rows: " + dt_source.Rows.Count.ToString());
+
+
+			DataTable dt_dest = DataImporter.EmptyDataTable(dest_tbl, dest_schema);
+
 
 			using (oSqlConn)
 			{
@@ -1385,41 +1395,59 @@ namespace uwac
 					bulkCopy.ColumnMappings.Clear();
 
 					try
-					{ 
-						bulkCopy.BulkCopyTimeout = 150;
+					{
+						Debug.WriteLine(" **** Begin BulkInsert - define mappings *****");
+						bulkCopy.BulkCopyTimeout = 500;
 
-						// column mapping defined
-						dt_source.Columns.Cast<DataColumn>().ToList().ForEach(f =>
+						foreach(DataColumn sourcecol in dt_source.Columns)
 						{
-							SqlBulkCopyColumnMapping bccm = new SqlBulkCopyColumnMapping();
-							bccm.DestinationColumn = f.ColumnName;
-							bccm.SourceColumn = f.ColumnName;
-							bulkCopy.ColumnMappings.Add(bccm);
-						});
-						// column mapping defined
+							
+							if(dt_dest.ContainsColumnName(sourcecol.ColumnName))
+							{
+								SqlBulkCopyColumnMapping bccm = new SqlBulkCopyColumnMapping();
+								bccm.DestinationColumn = sourcecol.ColumnName;
+								bccm.SourceColumn = sourcecol.ColumnName;
+								bulkCopy.ColumnMappings.Add(bccm);
+							}
 
-						bulkCopy.DestinationTableName = dest_tbl;
 
+						}
+
+
+						//// column mapping defined
+						//dt_source.Columns.Cast<DataColumn>().ToList().ForEach(f =>
+						//{
+						//	SqlBulkCopyColumnMapping bccm = new SqlBulkCopyColumnMapping();
+						//	bccm.DestinationColumn = f.ColumnName;
+						//	bccm.SourceColumn = f.ColumnName;
+						//	bulkCopy.ColumnMappings.Add(bccm);
+						//});
+						//// column mapping defined
+
+						bulkCopy.DestinationTableName = String.Format("[{0}].[{1}]", dest_schema, dest_tbl);
+
+						bulkCopy.BatchSize = 2000;
 
 						// Write from the source to the destination.
 						bulkCopy.WriteToServer(dt_source);
 					}
 					catch (Exception ex)
 					{
+						Debug.WriteLine("************************** BulkCopy Error **************************");
 						Debug.WriteLine(ex.Message);
 						Debug.WriteLine(ex.StackTrace.ToString());
-
+						return msg + "<br/>Error. " + ex.Message;
 					}
 				}
 
-				int n_end = IntScalar_from_SQLstring("select count(*) from " + dest_tbl);
+				int n_end = IntScalar_from_SQLstring(String.Format("select count(*) from [{0}].[{1}]", dest_schema, dest_tbl));
 				
 
 				if (n_start == n_end)
-				{ msg = String.Format("No records inserted into [{0}]", dest_tbl); }
+				{ msg += String.Format("No records inserted into [{0}]", dest_tbl); }
 				else
 				{
-					msg = String.Format("{0} records inserted into [{1}].", n_end - n_start, dest_tbl);
+					msg += String.Format("{0} records inserted into [{1}].", n_end - n_start, dest_tbl);
 				}
 			}
 

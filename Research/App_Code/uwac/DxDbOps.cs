@@ -649,6 +649,43 @@ namespace uwac
 		}
 
 
+		public static int CreateValueSet(SQL_utils sql, int mID, uwac.Valueset vset)
+		{
+			int max = sql.IntScalar_from_SQLstring("select max(fieldvaluesetID) from datfieldvalueset");
+			string measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblmeasure where measureID=" + mID.ToString());
+
+			int newmax = (max > 0) ? max + 1 : 0;
+
+			if (newmax > 0)
+			{
+				try
+				{
+					string setname = String.Format("{0} set {1}", measname, vset.localvaluesetid.ToString());
+					string code = String.Format("insert into datfieldvalueset (fieldvaluesetID, fieldvaluesetdesc) values({0},'{1}')"
+						, newmax, setname);
+					sql.NonQuery_from_SQLstring(code);
+
+					foreach(Valuesetitem itm in vset.valitems)
+					{
+						AddValueSetItem(sql, newmax, Convert.ToInt32(itm.value), itm.label);
+
+					}
+
+					return newmax;
+				}
+				catch (Exception ex)
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+
+
 		public static int CreateValueSet(SQL_utils sql, string setname, bool addDummyItem, List<string> valuelabels)
 		{
 			int max = sql.IntScalar_from_SQLstring("select max(fieldvaluesetID) from datfieldvalueset");
