@@ -147,11 +147,14 @@
 			  KeyFieldName="measureID"  >
 		
 			 
-			 <Columns>
+			<Columns>
 				 <dx:GridViewDataColumn FieldName="measureID" Caption="mID"  CellStyle-ForeColor="Silver"> </dx:GridViewDataColumn>
 				 <dx:GridViewDataColumn FieldName="measname" Caption="Measure" > </dx:GridViewDataColumn>
-				 </Columns>
-			 </dx:ASPxGridView>
+				 <dx:GridViewDataHyperLinkColumn FieldName="measureID" Caption="Data Dictionary"
+					 PropertiesHyperLinkEdit-Text="View data dictionary" PropertiesHyperLinkEdit-Target="blank"
+					 PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Data/Dictionary.aspx?mID={0}"></dx:GridViewDataHyperLinkColumn>
+			</Columns>
+			</dx:ASPxGridView>
 
 	</asp:Panel>
 

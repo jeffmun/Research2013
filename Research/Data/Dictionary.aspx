@@ -131,6 +131,10 @@
 				<dx:ASPxButton ID="btnMeasInfo" ClientInstanceName="btnMeasInfo" runat="server"
 								Text="Measure Information" Width="80px" CssClass="buttonWidth" AutoPostBack="true" OnClick="btnMeasInfo_OnClick" ClientEnabled="true">
 				</dx:ASPxButton>
+				<br />
+				<dx:ASPxButton ID="btnSaveNDARDict" ClientInstanceName="btnSaveNDARDict" runat="server"
+								Text="Save NDA Definitions to Excel" Width="100px" CssClass="buttonWidth" AutoPostBack="true" OnClick="btnSaveNDARDict_OnClick" ClientEnabled="true">
+				</dx:ASPxButton>
 
 			</td>
 			<td style="vertical-align: top; padding: 10px">
@@ -210,6 +214,7 @@
 					<dx:GridViewDataColumn FieldName="fieldcode" Caption="Special code" Visible="true" ></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fld_status" Caption="Status" Visible="true" ></dx:GridViewDataColumn>
 					
+					<dx:GridViewDataColumn FieldName="ExcludeFromNDARdict" Caption="Exclude<br/>NDAR"  Width="50px"></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fldextractionmode" Visible="false"></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fieldextractionmode_txt" Caption="Extraction mode"></dx:GridViewDataColumn>
 				   
@@ -264,7 +269,7 @@
 							</dx:GridViewLayoutGroup>
 
 						<%-- Import Settings --%>
-						 <dx:GridViewLayoutGroup ColCount="1" ColumnSpan="1" Caption="Import settings" Width="600px">
+						 <dx:GridViewLayoutGroup ColCount="1" ColumnSpan="1" Caption="Import / Export settings" Width="600px">
 							<Items>
 
 								<dx:GridViewColumnLayoutItem ColumnName="fldextractionmode" Caption="Extraction Mode" ColumnSpan="1">
@@ -277,9 +282,10 @@
 
 									</Template>
 								</dx:GridViewColumnLayoutItem>
-								<dx:GridViewColumnLayoutItem ColumnName="importposition" Caption="Import position"  ColumnSpan="1"/>
-								<dx:GridViewColumnLayoutItem ColumnName="constString" Caption="Text constant"  ColumnSpan="1"/>
-
+								<dx:GridViewColumnLayoutItem ColumnName="importposition" Caption="Import position"  ColumnSpan="1" Width="190px"/>
+								<dx:GridViewColumnLayoutItem ColumnName="constString" Caption="Text constant"  ColumnSpan="1" Width="300px"/>
+								
+								<dx:GridViewColumnLayoutItem ColumnName="ExcludeFromNDARdict" Caption="In NDAR dict? (1=Exclude)" Width="190px"  ColumnSpan="1"/>
 
 							</Items>
 						</dx:GridViewLayoutGroup>

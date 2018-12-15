@@ -30,7 +30,7 @@ namespace uwac
 
 		public DataImportSettings(string input_ID, int input_studymeasID)
 		{
-			rowstoprocess = 100000;  //200;  //for testing set to 200
+			rowstoprocess = 2000; // 100000;  //200;  //for testing set to 200
 			ID = input_ID;
 			studymeasID = input_studymeasID;
 

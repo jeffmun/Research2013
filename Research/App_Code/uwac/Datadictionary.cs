@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,18 +22,16 @@ namespace uwac
 		public string measname { get; set; }
 		public List<Variable> vars { get; set; }
 		public List<Valueset> valsets { get; set; }
+		public DataTable dt_dict { get; set; }
 
 		public Datadictionary()
 		{
-			vars = new List<Variable>();
-			valsets = new List<Valueset>();
+			Initialize();
 		}
 
 		public Datadictionary(string path, string file)
 		{
-			vars = new List<Variable>();
-			valsets = new List<Valueset>();
-
+			Initialize();
 			sourcefilename = file;
 
 			if(sourcefilename.ToLower().EndsWith(".sav") )
@@ -41,7 +40,54 @@ namespace uwac
 			}
 		}
 
+		public Datadictionary(int mymeasureID)
+		{
+			measureid = mymeasureID;
+			Initialize();
 
+			dt_dict = GetDatadictionaryFromDB();
+		}
+
+		public DataTable GetDatadictionaryFromDB()
+		{
+			DataTable dt = new DataTable();
+			if (measureid > 0)
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+
+				string code = String.Format("select * from (select * from vwNDAR_Required_Vars_Definition union select Row_number() over( order by ord_pos) + 5  as Pos, fldname as ElementName " + Environment.NewLine +
+				", (case when fielddatatype in ('decimal', 'float') then 'Float' when fielddatatype like '%char%' then 'String' when fielddatatype like '%int%' then 'Integer' when fielddatatype like '%date%' then 'Date' else 'String' end) DataType" +
+				", fielddatatypelength as  Size, 'Recommended' as Required " + Environment.NewLine +
+				", fieldlabel as ElementDescription " + Environment.NewLine +
+				" , def.fnValueLabels_for_NDARdatadict(fieldvaluesetID) ValueRange " + Environment.NewLine +
+				" , def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'; ') Notes, '' Aliases " + Environment.NewLine +
+				" from def.Fld a " + Environment.NewLine +
+				" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
+				" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
+				" where a.tblpk = (select tblpk from def.tbl where measureID = {0}) " + Environment.NewLine +
+				" and fldname not in ('id','studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
+				" and ord_pos >= 1 " + Environment.NewLine +
+				" and ExcludeFromNDARdict is null " + Environment.NewLine +
+				" and (a.fieldcodeID != 10 or a.fieldcodeID is null) " + Environment.NewLine +
+				" ) x order by Pos", measureid);
+
+				measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+				//measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+
+
+				dt = sql.DataTable_from_SQLstring(code);
+
+			}
+
+			return dt;
+		}
+
+		public void Initialize()
+		{
+			vars = new List<Variable>();
+			valsets = new List<Valueset>();
+		}
 
 
 

@@ -226,6 +226,7 @@ namespace uwac
 					row["required"] = !string.IsNullOrWhiteSpace(de.required) ? (object)de.required : (object)DBNull.Value;
 					row["position"] = !(de.position == null) ? (object)de.position : (object)DBNull.Value;
 					row["valueRange"] = !string.IsNullOrWhiteSpace(de.valueRange) ? (object)de.valueRange : (object)DBNull.Value;
+					row["notes"] = !string.IsNullOrWhiteSpace(de.notes) ? (object)de.notes : (object)DBNull.Value;
 
 					int maxleng = (de.description.Length > 50) ? 50 : de.description.Length;
 
@@ -683,6 +684,15 @@ namespace uwac
 					, ds.shortName, ds.title, ds.dataType, ds.status );
 
 				sql.NonQuery_from_SQLstring(code); 
+			}
+
+			//Check is NDAR_DS exists
+			int n_dse = sql.IntScalar_from_SQLstring(
+				String.Format("select count(*) from NDAR_DSE where shortname='{0}'", shortname));
+
+			if (n_dse > 0)
+			{
+				sql.NonQuery_from_SQLstring(String.Format("delete from NDAR_DSE where shortname='{0}'", shortname));
 			}
 
 			SqlParameter p = sql.CreateParam("NDAR_DSE", dse);

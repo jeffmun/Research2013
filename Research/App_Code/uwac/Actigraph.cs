@@ -91,27 +91,36 @@ public static class Actigraph
 				string text_to_parse = String.Join(Environment.NewLine,
 					lines.GetRange(markers[i].linenumber_start - 1, (markers[i].linenumber_end - markers[i].linenumber_start)));
 
+				DataImporter importer = new DataImporter(id, smID);
+
+
 				//DataTable dt = DataImporter.GetDataTableFromText(text_to_parse, act_settings);
-				DataTable dt = new DataTable();
+				DataTable dt = importer.GetDataTableFromText(text_to_parse, act_settings);
 
 				results += "</br>" + markers[i].text + " >> Found " + dt.Rows.Count.ToString() + " records. >> ";
 
-				//reset Daynum to begin at 1.  Needed because the actigraph starts a few days earlier before actual data is obtained
-				if (resetDaynum & fldDaynum != "")
+				if (dt.HasRows())
 				{
-					int minDaynum = dt.AsEnumerable().Select(f => f.Field<int>(fldDaynum)).Min();
-					foreach (DataRow row in dt.Rows)
+					//reset Daynum to begin at 1.  Needed because the actigraph starts a few days earlier before actual data is obtained
+					if (resetDaynum & fldDaynum != "")
 					{
-						int tmp = Convert.ToInt32(row[fldDaynum]);
-						row[fldDaynum] = tmp + (-1 * (minDaynum - 1));
+						int minDaynum = dt.AsEnumerable().Select(f => f.Field<int>(fldDaynum)).Min();
+						foreach (DataRow row in dt.Rows)
+						{
+							int tmp = Convert.ToInt32(row[fldDaynum]);
+							row[fldDaynum] = tmp + (-1 * (minDaynum - 1));
+						}
 					}
+
+					SQL_utils sql = new SQL_utils("data");
+					results += sql.BulkInsert(dt, act_settings.tblname);
+					sql.Close();
+				}
+				else
+				{
+					results += "</br> No Rows!!";
 				}
 
-
-
-				SQL_utils sql = new SQL_utils("data");
-				results += sql.BulkInsert(dt, act_settings.tblname);
-				sql.Close();
 			}
 		}
 
@@ -171,9 +180,17 @@ public static class Actigraph
 		DataTable dt_actprops = sql.DataTable_from_ProcName("spActigraphProps", ps);
 		sql.Close();
 
-		string act_propvalue = dt_actprops.AsEnumerable().Where(f => f.Field<string>("ap_param") == propname)
-			.Select(f => f.Field<string>("ap_value")).First().ToString();
+		string act_propvalue;
 
+		try
+		{
+			act_propvalue = dt_actprops.AsEnumerable().Where(f => f.Field<string>("ap_param") == propname)
+				.Select(f => f.Field<string>("ap_value")).First().ToString();
+		}
+		catch(Exception ex)
+		{
+			act_propvalue = "Not Found!";
+		}
 		return act_propvalue;
 
 	}
@@ -188,51 +205,62 @@ public static class Actigraph
 
 		string act_timezone = GetActigraphProperty(id, studymeasID, "Time Zone:");
 
-		DateTime startdate = Convert.ToDateTime(GetActigraphProperty(id, studymeasID, "Data Collection Start Date:")).Date;
-		DateTime enddate = Convert.ToDateTime(GetActigraphProperty(id, studymeasID, "Data Collection End Date:")).Date;
+		string txtStartDate = GetActigraphProperty(id, studymeasID, "Data Collection Start Date:");
+		string txtEndDate = GetActigraphProperty(id, studymeasID, "Data Collection End Date:");
 
-		DbEntityInstance ent_studymeasID = new DbEntityInstance(new DbEntity(DbEntityType.studymeas), studymeasID);
 
-		int studyID = ent_studymeasID.PkvalOfRelatedEntity(DbEntityType.study);
-
-		int numdays = (enddate - startdate).Days;
-
-		try
+		if (act_timezone != "Not Found!" & txtStartDate != "Not Found!" & txtEndDate != "Not Found!")
 		{
-			DaylightInfo daylightinfo = new DaylightInfo(startdate, numdays, id, studyID, act_timezone);
+			DateTime startdate = Convert.ToDateTime(txtStartDate).Date;
+			DateTime enddate = Convert.ToDateTime(txtEndDate).Date;
 
-			List<string> insert_sql = new List<string>();
+			DbEntityInstance ent_studymeasID = new DbEntityInstance(new DbEntity(DbEntityType.studymeas), studymeasID);
 
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip", daylightinfo.Zip));
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "ZipDerivedFrom", daylightinfo.ZipDerivedFrom));
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Lat", daylightinfo.Lat));
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Lng", daylightinfo.Lng));
+			int studyID = ent_studymeasID.PkvalOfRelatedEntity(DbEntityType.study);
 
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip_TimeZoneName", daylightinfo.TimeZoneApiResultZip.zoneName));
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip_TimeZoneAbbr", daylightinfo.TimeZoneApiResultZip.abbreviation));
-			insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip_TimeZoneNextAbbr", daylightinfo.TimeZoneApiResultZip.nextAbbreviation));
+			int numdays = (enddate - startdate).Days;
 
-			for (int i = 0; i < daylightinfo.Days.Count; i++)
+			try
 			{
-				DaylightInfo.Daylight day = daylightinfo.Days[i];
+				DaylightInfo daylightinfo = new DaylightInfo(startdate, numdays, id, studyID, act_timezone);
 
-				insert_sql.AddRange(InsertDaylightPropDay( id,  studymeasID,  indexnum,  day));
+				List<string> insert_sql = new List<string>();
+
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip", daylightinfo.Zip));
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "ZipDerivedFrom", daylightinfo.ZipDerivedFrom));
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Lat", daylightinfo.Lat));
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Lng", daylightinfo.Lng));
+
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip_TimeZoneName", daylightinfo.TimeZoneApiResultZip.zoneName));
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip_TimeZoneAbbr", daylightinfo.TimeZoneApiResultZip.abbreviation));
+				insert_sql.Add(InsertDaylightProp(id, studymeasID, indexnum, "Zip_TimeZoneNextAbbr", daylightinfo.TimeZoneApiResultZip.nextAbbreviation));
+
+				for (int i = 0; i < daylightinfo.Days.Count; i++)
+				{
+					DaylightInfo.Daylight day = daylightinfo.Days[i];
+
+					insert_sql.AddRange(InsertDaylightPropDay(id, studymeasID, indexnum, day));
+				}
+
+				foreach (string s in insert_sql)
+				{
+					sql.NonQuery_from_SQLstring(s);
+				}
+				return String.Format("------ DaylightInfo ------ >> Looking up daylight hours: {0} properties inserted", insert_sql.Count);
 			}
 
-			foreach (string s in insert_sql)
+			catch (Exception ex)
 			{
-				sql.NonQuery_from_SQLstring(s);
+				return ex.Message;
 			}
-
-			return String.Format("------ DaylightInfo ------ >> Looking up daylight hours: {0} properties inserted", insert_sql.Count);
 		}
-		catch (Exception ex)
+		else
 		{
-			return ex.Message;
+			return String.Format("------ DaylightInfo ------ >> TimeZone:{0} StartDate:{1} EndDate:{2}", act_timezone, txtStartDate, txtEndDate);
 		}
 
 
-		
+
 	}
 
 	public static string InsertDaylightProp(string id, int studymeasID, int indexnum, string param, object value)

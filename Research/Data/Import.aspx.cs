@@ -20,6 +20,7 @@ using RedcapLibrary;
 using uwac;
 using uwac_REDCap;
 using DevExpress.Web;
+using DevExpress.Web.Data;
 //using uwac_REDCap;
 
 public partial class Data_Import : BasePage
@@ -36,6 +37,8 @@ public partial class Data_Import : BasePage
 
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
+		Session["LinkedImports"] = null;
+		Session["LinkedImportTbls"] = null;
 		Response.Redirect("Import.aspx");
 	}
 
@@ -61,6 +64,7 @@ public partial class Data_Import : BasePage
 			panelREDCap_controls.Visible = false;
 		}
 
+		LoadlinkedTables();
 
 		if (IsCallback)
 		{
@@ -73,11 +77,104 @@ public partial class Data_Import : BasePage
 		if (panel.IsCallback)
 		{
 			//LoadFormData();
+
 		}
 
 	}
 
 
+	#region Linked Import Tables
+	protected void LoadlinkedTables()
+	{
+		if(Session["LinkedImports"] == null)
+		{
+			DataTable dt1 = DataImporter.LinkedImports(Convert.ToInt32(Session["studyID"].ToString()));
+			Session["LinkedImports"] = dt1;
+		}
+		if (Session["LinkedImportTbls"] == null)
+		{
+			DataTable dt2 = DataImporter.LinkedImportTbls(Convert.ToInt32(Session["studyID"].ToString()));
+			Session["LinkedImportTbls"] = dt2;
+		}
+		gridLinkedImport.DataSource = (DataTable)Session["LinkedImports"];
+		gridLinkedImport.DataBind();
+		gridLinkedImportTbl.DataSource = (DataTable)Session["LinkedImportTbls"];
+		gridLinkedImportTbl.DataBind();
+	}
+
+
+	protected void gridLinkedImport_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxDbOps.BuildInsertSqlCode(e, "LinkedImport", "data", "def");
+		gv.CancelEdit();
+		e.Cancel = true;
+		Session["LinkedImports"] = null;
+		Session["LinkedImportTbls"] = null;
+
+		LoadlinkedTables();
+	}
+
+	protected void gridLinkedImport_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxDbOps.BuildUpdateSqlCode(e, "LinkedImport", "data", "def");
+		gv.CancelEdit();
+		e.Cancel = true;
+		Session["LinkedImports"] = null;
+		Session["LinkedImportTbls"] = null;
+
+		LoadlinkedTables();
+	}
+
+
+	protected void gridLinkedImportTbl_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxDbOps.BuildInsertSqlCode(e, "LinkedImportTbl", "data", "def");
+		gv.CancelEdit();
+		e.Cancel = true;
+		Session["LinkedImports"] = null;
+		Session["LinkedImportTbls"] = null;
+
+		LoadlinkedTables();
+	}
+
+	protected void gridLinkedImport_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxDbOps.BuildDeleteSqlCode(e, "LinkedImport", "data", "def");
+		gv.CancelEdit();
+		e.Cancel = true;
+		Session["LinkedImports"] = null;
+		Session["LinkedImportTbls"] = null;
+
+		LoadlinkedTables();
+	}
+
+	protected void gridLinkedImportTbl_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxDbOps.BuildDeleteSqlCode(e, "LinkedImportTbl", "data", "def");
+		gv.CancelEdit();
+		e.Cancel = true;
+		Session["LinkedImports"] = null;
+		Session["LinkedImportTbls"] = null;
+
+		LoadlinkedTables();
+	}
+
+
+	protected void gridLinkedImportTbl_CellEditorInitialize(object sender,
+	DevExpress.Web.ASPxGridViewEditorEventArgs e)
+	{
+		if (e.Column.FieldName == "ltpk")
+		{
+			e.Editor.ReadOnly = false;
+		}
+	}
+
+	#endregion
 
 	protected void LoadSubjects()
 	{
@@ -433,10 +530,14 @@ public partial class Data_Import : BasePage
 	}
 
 
+	#region RED Cap
 	protected void btnShowMeta_OnClick(object sender, EventArgs e)
 	{
 		placeholder_gridMeta.Controls.Add(redcap.gridMetaData());
 	}
+
+	#endregion
+
 
 	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
 	{

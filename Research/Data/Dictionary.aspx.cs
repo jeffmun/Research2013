@@ -89,6 +89,30 @@ public partial class Data_Dictionary: BasePage
 	}
 
 
+	protected void ExportDictionaryForNDAR(int measureID)
+	{
+
+		Datadictionary dict = new Datadictionary(measureID);
+
+		DataTable dt_dict = dict.dt_dict;
+
+		if(dt_dict.HasRows())
+		{
+			string dictfilename = String.Format("{0}_definitions", dict.measname);
+			dt_dict.TableName = dictfilename;
+			SpreadsheetGearUtils.SaveDataTableToExcel(dt_dict, dictfilename);
+		}
+	}
+
+	protected void btnSaveNDARDict_OnClick (object sender, EventArgs e)
+	{
+		int mID = Convert.ToInt32(Request.QueryString["mID"]);
+
+		if (mID > 0)
+		{
+			ExportDictionaryForNDAR(mID);
+		}
+	}
 
 	protected void BindDict(int measureID)
 	{
@@ -97,9 +121,9 @@ public partial class Data_Dictionary: BasePage
 
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
 			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!') else '' end) datatype, fieldlabel, fieldvaluesetID " + Environment.NewLine +
-			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID) valuelabels " + Environment.NewLine +
+			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'<br/>') valuelabels " + Environment.NewLine +
 			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fieldextractionmode_txt, importposition, constString  " + Environment.NewLine +
-			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status " + Environment.NewLine +
+			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status, ExcludeFromNDARdict " + Environment.NewLine +
 			" from def.Fld a " + Environment.NewLine +
 			" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
 			" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
@@ -398,6 +422,12 @@ public partial class Data_Dictionary: BasePage
 			int fldpk = Convert.ToInt32(e.KeyValue);
 
 			e.Cell.Attributes.Add("onclick", "EditVallabels(" + fldpk.ToString() + "," + fvsID.ToString() + ");");
+
+			if(vallabels.Contains("??"))
+			{
+				e.Cell.BackColor = Color.Yellow;
+			}
+
 		}
 
 		if (e.Cell != null & e.DataColumn.FieldName == "datatype")
@@ -412,6 +442,16 @@ public partial class Data_Dictionary: BasePage
 			}
 
 		}
+		if (e.Cell != null & e.DataColumn.FieldName == "ExcludeFromNDARdict")
+		{
+			string exclude = e.CellValue.ToString();
+			if(exclude=="1")
+			{
+				e.Cell.BackColor = Color.LightCoral;
+				e.Cell.ForeColor = Color.DarkRed;
+			}
+		}
+
 	}
 
 

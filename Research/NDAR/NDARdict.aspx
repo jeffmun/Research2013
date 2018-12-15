@@ -125,7 +125,7 @@
                             <asp:BoundField HeaderText="Field" DataField="fldname" />
                             <asp:BoundField HeaderText="DataType" DataField="fielddatatype" />
                             <asp:BoundField HeaderText="Label" DataField="fieldlabel" ItemStyle-Width="350px"/>
-                            <asp:BoundField HeaderText="fldvaluesetID" DataField="fieldvaluesetID" />
+                            <asp:BoundField HeaderText="Value Labels" DataField="valuelabels" />
                             <asp:BoundField HeaderText="validlist" DataField="validlist" />
 
                         </Columns>

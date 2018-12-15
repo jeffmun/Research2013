@@ -192,9 +192,16 @@ namespace uwac
 
 			sql.Close();
 
-			string tblinfo = String.Format("local DataTable with {0} rows.", _imported_dt.Rows.Count);
-			results.Add(tblinfo);
-			
+			if(_imported_dt.HasRows())
+			{
+				string tblinfo = String.Format("local DataTable with {0} rows.", _imported_dt.Rows.Count);
+				results.Add(tblinfo);
+			}
+			else
+			{
+				results.Add("_imported_dt Has No Rows!");	
+			}
+
 		}
 
 
@@ -387,8 +394,9 @@ namespace uwac
 			}
 			else
 			{
+				studymeasIDs = new List<int> { main_studymeasID }; 
 				results.Add(String.Format("No additional linked tables for import found.", studymeasIDs.Count));
-				studymeasIDs = new List<int> { main_studymeasID };
+				
 			}
 
 		}
@@ -537,10 +545,10 @@ namespace uwac
 		}
 
 
-
-		public DataTable  GetDataTableFromText(string text, DataImportSettings settings)
+		public DataTable GetDataTableFromText(string text)
 		{
 			DataTable dt = EmptyDataTable(settings.tblname);
+			bool has_id = dt.ColumnNames().Contains("id");
 
 			using (GenericParser parser = new GenericParser())
 			{
@@ -580,7 +588,7 @@ namespace uwac
 						DataRow row = PopulateRow(dt, parser, settings, basedate);
 						if (row == null)
 						{
-							results.Add("ERROR. GetDataTableFromCSVFile: No Row! counter = " + counter.ToString());
+							results.Add("ERROR. GetDataTableFromText: No Row! counter = " + counter.ToString());
 						}
 						else
 						{
@@ -588,11 +596,118 @@ namespace uwac
 							{
 								basedate = Convert.ToDateTime(parser[basedate_importpos]);
 							}
-							if (row != null) dt.Rows.Add(row);
-							if (counter % 100 == 0) Debug.WriteLine(counter);
+							if (row != null)
+							{
+								if(has_id)
+								{
+									string row_id = row["id"].ToString();
+									if(String.IsNullOrEmpty(row_id))
+									{
+										row["id"] = settings.ID;
+									}
+								}
+								dt.Rows.Add(row);
+								if (counter % 100 == 0) Debug.WriteLine(counter);
+							}
 							counter++;
 						}
 					}
+				}
+
+			}
+
+			return dt;
+		}
+
+
+
+
+		public DataTable  GetDataTableFromText(string text, DataImportSettings settings)
+		{
+			DataTable dt = EmptyDataTable(settings.tblname);
+
+			bool has_id = dt.ColumnNames().Contains("id");
+
+			using (GenericParser parser = new GenericParser())
+			{
+				parser.SetDataSource(new StringReader(text));
+
+				parser.ColumnDelimiter = settings.delimiter;   //= "\t".ToCharArray();
+				parser.FirstRowHasHeader = settings.firstRowContainsFieldnames;
+				parser.SkipStartingDataRows = settings.skipstartingrows;
+				parser.MaxBufferSize = 4096;
+				parser.MaxRows = settings.rowstoprocess;
+				parser.TextQualifier = settings.textqualifier;
+
+				int counter = 0;
+				DateTime? basedate = null;
+
+				bool usebasedate = false;
+				int basedate_importpos = 0;
+				foreach (Importfield fld in settings.fields)
+				{
+					if (fld.mode == FieldExtractionMode.calcDayNum)
+					{
+						usebasedate = true;
+						basedate_importpos = fld.importposition;
+					}
+				}
+
+				int error_counter = 0;
+
+				while (parser.Read()) //& counter < 100)
+				{
+					if (error_counter > 10)
+					{
+						parser.Close();
+					}
+					else
+					{
+
+						//CONDITIONS IN WHICH WE NEED TO TO SKIP THE ROW
+						bool isSummaryRow = CheckForSummaryRow(parser, 0, settings.measureID);
+
+						if (!isSummaryRow)
+						{
+							//Debug.WriteLine(counter);
+							DataRow row = PopulateRow(dt, parser, settings, basedate);
+							if (row == null)
+							{
+								error_counter++;
+								results.Add("ERROR. GetDataTableFromText: No Row! counter = " + counter.ToString());
+							}
+							else
+							{
+								try
+								{
+									if (usebasedate & basedate == null)
+									{
+										basedate = Convert.ToDateTime(parser[basedate_importpos]);
+									}
+									if (row != null)
+									{
+										if (has_id)
+										{
+											string row_id = row["id"].ToString();
+											if (String.IsNullOrEmpty(row_id))
+											{
+												row["id"] = settings.ID;
+											}
+										}
+										dt.Rows.Add(row);
+									}
+
+								}
+								catch (Exception ex)
+								{
+									error_counter++;
+								}
+							}
+						}
+					}
+					if (counter % 100 == 0) Debug.WriteLine(String.Format("counter: {0}  {1}", counter, settings.tblname));
+					counter++;
+
 				}
 
 			}
@@ -748,37 +863,54 @@ namespace uwac
 						{
 							row[fld.field] = GetValue(parser, type, fld.importposition);
 						}
-						else if (fld.mode == FieldExtractionMode.useConstString | fld.mode == FieldExtractionMode.useMarkerString)
+						else if (fld.mode == FieldExtractionMode.useConstString  )
 						{
-							switch (type)
-							{
-								case "System.Double":
-									row[fld.field] = Convert.ToDouble(fld.constString);
-									break;
-								case "System.Int32":
-									row[fld.field] = Convert.ToInt32(fld.constString);
-									break;
-								case "System.DateTime":
-									row[fld.field] = Convert.ToDateTime(fld.constString);
-									break;
-								default:
-									row[fld.field] = fld.constString;
-									break;
-							}
+							row[fld.field] = ConvertValue(type, fld.constString);
+						}
+						else if ( fld.mode == FieldExtractionMode.useMarkerString)
+						{
+							row[fld.field] = ConvertValue(type, fld.constString);
+
+							//switch (type)
+							//{
+							//	case "System.Double":
+							//		row[fld.field] = Convert.ToDouble(fld.constString);
+							//		break;
+							//	case "System.Int32":
+							//		row[fld.field] = Convert.ToInt32(fld.constString);
+							//		break;
+							//	case "System.DateTime":
+							//		row[fld.field] = Convert.ToDateTime(fld.constString);
+							//		break;
+							//	default:
+							//		row[fld.field] = fld.constString;
+							//		break;
+							//}
 						}
 						else if (fld.mode == FieldExtractionMode.useImportPositionWithNext)
 						{
-							switch (type)
+							string newvalue = String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]).Replace("\"", "");
+
+							if(type.ToString() == "System.DateTime")
 							{
-								case "System.DateTime":
-									row[fld.field] = RoundTime(Convert.ToDateTime(
-										String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]))
-										, RoundTo.HalfMinute);
-									break;
-								default:
-									row[fld.field] = String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]);
-									break;
+								row[fld.field] = RoundTime((DateTime)ConvertValue(type, newvalue), RoundTo.HalfMinute);
 							}
+							else
+							{
+								row[fld.field] = newvalue;
+							}
+
+							//switch (type)
+							//{
+							//	case "System.DateTime":
+							//		row[fld.field] = RoundTime(Convert.ToDateTime(
+							//			String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]).Replace("\"", ""))
+							//			, RoundTo.HalfMinute);
+							//		break;
+							//	default:
+							//		row[fld.field] = String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]);
+							//		break;
+							//}
 
 						}
 						else if (fld.mode == FieldExtractionMode.calcDayNum)
@@ -952,7 +1084,8 @@ namespace uwac
 		{
 			if(val != null)
 			{
-				if (val.ToString() == "" | val.ToString().ToLower() == "nan")
+				string valtxt = val.ToString().ToLower().Replace("\"","");
+				if (valtxt == "" | valtxt == "nan" | valtxt=="\"nan\"")
 				{
 					return DBNull.Value;
 				}
@@ -961,11 +1094,11 @@ namespace uwac
 					switch (type)
 					{
 						case "System.Double":
-							return Convert.ToDouble(val);
+							return Convert.ToDouble(valtxt);
 						case "System.DateTime":
-							return Convert.ToDateTime(val);
+							return Convert.ToDateTime(valtxt);
 						case "System.Int32":
-							return Convert.ToInt32(val);
+							return Convert.ToInt32(valtxt);
 						default:
 							return val.ToString();
 					}
@@ -993,6 +1126,46 @@ namespace uwac
 		}
 
 
+		public static DataTable LinkedImports(int studyID)
+		{
+			SQL_utils sql = new SQL_utils("data");
+
+			string code = String.Format("select a.* from def.LinkedImport a " + Environment.NewLine +
+				"  left join (select ltpk, count(*) n from def.LinkedImportTbl group by ltpk) e ON a.ltpk = e.ltpk " + Environment.NewLine +
+				" where e.n is null or a.ltpk in (select ltpk from def.LinkedImportTbl " + Environment.NewLine +
+				" where tblpk in (select tblpk from def.Tbl where measureID in " + Environment.NewLine +
+				" (select measureID from uwautism_research_backend..tblstudymeas where studyID={0} )))", studyID);
+
+			DataTable dt = sql.DataTable_from_SQLstring(code);
+			sql.Close();
+			return dt;
+		}
+		public static DataTable LinkedImportTbls(int studyID)
+		{
+			SQL_utils sql = new SQL_utils("data");
+			string code = "  select a.*, b.tblpk, tblname, measname from [def].[LinkedImport] a  " + Environment.NewLine +
+				"  join [def].[LinkedImportTbl] b ON a.ltpk = b.ltpk " + Environment.NewLine +
+				"  join def.Tbl c ON b.tblpk = c.tblpk " + Environment.NewLine +
+				"  join uwautism_research_backend..tblmeasure d ON c.measureID = d.measureID " + Environment.NewLine +
+				" where a.ltpk in (select ltpk from def.LinkedImportTbl " + Environment.NewLine + 
+				" where tblpk in (select tblpk from def.Tbl where measureID in " +
+				" (select measureID from uwautism_research_backend..tblstudymeas where studyID=" + studyID.ToString() + ")))" + 
+				" order by a.ltpk, d.measname";
+			DataTable dt = sql.DataTable_from_SQLstring(code);
+			sql.Close();
+			return dt;
+		}
+
+		public static DataTable AvailableMeasuresForLinking(int studyID)
+		{
+			SQL_utils sql = new SQL_utils("data");
+			string code = String.Format("select tblpk, measname from def.Tbl a " +
+				" JOIN uwautism_research_backend..tblmeasure  b ON a.measureID=b.measureID where measureID in " +
+				" (select measureID from uwautism_research_backend..tblstudymeas where studyID={0} )", studyID);
+			DataTable dt = sql.DataTable_from_SQLstring("select tblpk, measname from def.Tbl");
+			sql.Close();
+			return dt;
+		}
 
 		public void DeleteRecs()
 		{
