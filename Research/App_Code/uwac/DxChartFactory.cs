@@ -188,6 +188,8 @@ namespace uwac
 
 					foreach (DataSubset subset in subsets.subsets)
 					{
+						mysettings.date_txt = subset.dt.AsEnumerable().Min(f => f.Field<string>("report_date"));
+
 						DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());
 
 						foreach (DxChart sub in subbatch.charts)

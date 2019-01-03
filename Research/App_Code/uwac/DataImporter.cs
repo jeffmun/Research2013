@@ -493,6 +493,7 @@ namespace uwac
 			DataTable dt = EmptyDataTable(settings.tblname);
 			string myfilepath = filepath + csvfilename;
 
+			bool has_id = dt.ColumnNames().Contains("id");
 			bool hasindexnum = dt.ContainsColumnName("indexnum");
 
 			using (GenericParser parser = new GenericParser())
@@ -531,7 +532,10 @@ namespace uwac
 						else						
 						{
 							//Debug.WriteLine(String.Format("id='{0}'", row["id"].ToString()));
-							dt.Rows.Add(row);
+
+							AddRow(has_id, dt, row);
+
+							//dt.Rows.Add(row);
 							if (counter % 100 == 0) Debug.WriteLine("counter = " + counter.ToString());
 
 						}
@@ -545,79 +549,90 @@ namespace uwac
 		}
 
 
-		public DataTable GetDataTableFromText(string text)
-		{
-			DataTable dt = EmptyDataTable(settings.tblname);
-			bool has_id = dt.ColumnNames().Contains("id");
+		//public DataTable GetDataTableFromText(string text)
+		//{
+		//	DataTable dt = EmptyDataTable(settings.tblname);
+		//	bool has_id = dt.ColumnNames().Contains("id");
 
-			using (GenericParser parser = new GenericParser())
-			{
-				parser.SetDataSource(new StringReader(text));
+		//	using (GenericParser parser = new GenericParser())
+		//	{
+		//		parser.SetDataSource(new StringReader(text));
 
-				parser.ColumnDelimiter = settings.delimiter;   //= "\t".ToCharArray();
-				parser.FirstRowHasHeader = settings.firstRowContainsFieldnames;
-				parser.SkipStartingDataRows = settings.skipstartingrows;
-				parser.MaxBufferSize = 4096;
-				parser.MaxRows = settings.rowstoprocess;
-				parser.TextQualifier = settings.textqualifier;
+		//		parser.ColumnDelimiter = settings.delimiter;   //= "\t".ToCharArray();
+		//		parser.FirstRowHasHeader = settings.firstRowContainsFieldnames;
+		//		parser.SkipStartingDataRows = settings.skipstartingrows;
+		//		parser.MaxBufferSize = 4096;
+		//		parser.MaxRows = settings.rowstoprocess;
+		//		parser.TextQualifier = settings.textqualifier;
 
-				int counter = 0;
-				DateTime? basedate = null;
+		//		int counter = 0;
+		//		DateTime? basedate = null;
 
-				bool usebasedate = false;
-				int basedate_importpos = 0;
-				foreach (Importfield fld in settings.fields)
-				{
-					if (fld.mode == FieldExtractionMode.calcDayNum)
-					{
-						usebasedate = true;
-						basedate_importpos = fld.importposition;
-					}
-				}
+		//		bool usebasedate = false;
+		//		int basedate_importpos = 0;
+		//		foreach (Importfield fld in settings.fields)
+		//		{
+		//			if (fld.mode == FieldExtractionMode.calcDayNum)
+		//			{
+		//				usebasedate = true;
+		//				basedate_importpos = fld.importposition;
+		//			}
+		//		}
 
 
-				while (parser.Read()) //& counter < 100)
-				{
+		//		while (parser.Read()) //& counter < 100)
+		//		{
 
-					//CONDITIONS IN WHICH WE NEED TO TO SKIP THE ROW
-					bool isSummaryRow = CheckForSummaryRow(parser, 0, settings.measureID);
+		//			//CONDITIONS IN WHICH WE NEED TO TO SKIP THE ROW
+		//			bool isSummaryRow = CheckForSummaryRow(parser, 0, settings.measureID);
 
-					if (!isSummaryRow)
-					{
-						Debug.WriteLine(counter);
-						DataRow row = PopulateRow(dt, parser, settings, basedate);
-						if (row == null)
-						{
-							results.Add("ERROR. GetDataTableFromText: No Row! counter = " + counter.ToString());
-						}
-						else
-						{
-							if (usebasedate & basedate == null)
-							{
-								basedate = Convert.ToDateTime(parser[basedate_importpos]);
-							}
-							if (row != null)
-							{
-								if(has_id)
-								{
-									string row_id = row["id"].ToString();
-									if(String.IsNullOrEmpty(row_id))
-									{
-										row["id"] = settings.ID;
-									}
-								}
-								dt.Rows.Add(row);
-								if (counter % 100 == 0) Debug.WriteLine(counter);
-							}
-							counter++;
-						}
-					}
-				}
+		//			if (!isSummaryRow)
+		//			{
+		//				Debug.WriteLine(counter);
+		//				DataRow row = PopulateRow(dt, parser, settings, basedate);
+		//				if (row == null)
+		//				{
+		//					results.Add("ERROR. GetDataTableFromText: No Row! counter = " + counter.ToString());
+		//				}
+		//				else
+		//				{
+		//					if (usebasedate & basedate == null)
+		//					{
+		//						basedate = Convert.ToDateTime(parser[basedate_importpos]);
+		//					}
+		//					if (row != null)
+		//					{
+		//						//if(has_id)
+		//						//{
+		//						//	string row_id = row["id"].ToString();
+		//						//	if(String.IsNullOrEmpty(row_id))
+		//						//	{
+		//						//		row["id"] = settings.ID;
+		//						//	}
+		//						//}
+		//						//try
+		//						//{
+		//						//	dt.Rows.Add(row);
+		//						//}
+		//						//catch(Exception ex)
+		//						//{
+		//						//	Debug.WriteLine("=====================");
+		//						//	Debug.WriteLine(ex.Message);
+		//						//}
 
-			}
+		//						AddRow(has_id, dt, row);
 
-			return dt;
-		}
+		//						if (counter % 100 == 0) Debug.WriteLine(counter);
+		//					}
+		//					counter++;
+		//				}
+		//			}
+		//		}
+
+		//	}
+
+		//	return dt;
+		//}
 
 
 
@@ -657,7 +672,7 @@ namespace uwac
 
 				while (parser.Read()) //& counter < 100)
 				{
-					if (error_counter > 10)
+					if (error_counter > 1000000)
 					{
 						parser.Close();
 					}
@@ -673,35 +688,51 @@ namespace uwac
 							DataRow row = PopulateRow(dt, parser, settings, basedate);
 							if (row == null)
 							{
+								Debug.WriteLine(String.Format("{0} . . . . . . . . . . . . . . . row is null . . . . . . . . . . . . ", error_counter));
 								error_counter++;
 								results.Add("ERROR. GetDataTableFromText: No Row! counter = " + counter.ToString());
 							}
 							else
 							{
-								try
-								{
-									if (usebasedate & basedate == null)
-									{
-										basedate = Convert.ToDateTime(parser[basedate_importpos]);
-									}
-									if (row != null)
-									{
-										if (has_id)
-										{
-											string row_id = row["id"].ToString();
-											if (String.IsNullOrEmpty(row_id))
-											{
-												row["id"] = settings.ID;
-											}
-										}
-										dt.Rows.Add(row);
-									}
 
-								}
-								catch (Exception ex)
+								if (usebasedate & basedate == null)
 								{
-									error_counter++;
+									basedate = (DateTime)GetValue(parser, "System.DateTime", basedate_importpos);
+									//basedate = Convert.ToDateTime(parser[basedate_importpos]);
 								}
+								if (row != null)
+								{
+
+									AddRow(has_id, dt, row);
+
+									//if (has_id)
+									//{
+									//	string row_id = row["id"].ToString();
+									//	if (String.IsNullOrEmpty(row_id))
+									//	{
+									//		row["id"] = settings.ID;
+									//	}
+									//}
+
+									//Debug.WriteLine(String.Format(" . . . . . . . . . dt numrows = {0}", dt.Rows.Count));
+									//dt.Rows.Add(row);
+
+									////try
+									////{
+									////	dt.Rows.Add(row);
+									////}
+									////catch (Exception ex)
+									////{
+									////	Debug.WriteLine("=====ERROR================================");
+									////	Debug.WriteLine(ex.Message);
+									////	Debug.WriteLine(ex.InnerException);
+
+									////	error_counter++;
+									////}
+								}
+
+								
+
 							}
 						}
 					}
@@ -713,6 +744,20 @@ namespace uwac
 			}
 
 			return  dt;
+		}
+
+
+		protected void AddRow(bool has_id, DataTable dt, DataRow row)
+		{
+			if (has_id)
+			{
+				string row_id = row["id"].ToString();
+				if (String.IsNullOrEmpty(row_id))
+				{
+					row["id"] = settings.ID;
+				}
+			}
+			dt.Rows.Add(row);
 		}
 
 		#endregion
@@ -797,7 +842,7 @@ namespace uwac
 
 		private static bool CheckForExcludedRow(GenericParser parser, int position_to_check)
 		{
-			bool isExcluded = (parser[position_to_check] == "EXCLUDED") ? true : false;
+			bool isExcluded = (parser[position_to_check].Contains("EXCLUDED")) ? true : false;
 			return isExcluded;
 		}
 
@@ -834,8 +879,8 @@ namespace uwac
 			}
 			else
 			{
-				try
-				{
+				//try
+				//{
 					foreach (Importfield fld in settings.fields)
 					{
 						string type = dt.Columns[fld.field].DataType.ToString();
@@ -915,23 +960,20 @@ namespace uwac
 						}
 						else if (fld.mode == FieldExtractionMode.calcDayNum)
 						{
-							DateTime thisdate = Convert.ToDateTime(parser[fld.importposition]);
-
+							string datetxt = parser[fld.importposition].Replace("\"", "");
+							DateTime thisdate = Convert.ToDateTime(datetxt);
 							DateTime thisbasedate = (basedate != null) ? Convert.ToDateTime(basedate) : thisdate;
-
 							int daynum = ((thisdate - thisbasedate).Days) + 1; //make the first day = 1
-
 							row[fld.field] = daynum;
-
 						}
 					}
 					return row;
-				}
-				catch(Exception ex)
-				{
-					int foo = 0;
-					return null;
-				}
+				//}
+				//catch(Exception ex)
+				//{
+				//	int foo = 0;
+				//	return null;
+				//}
 			}
 
 			
@@ -1100,7 +1142,7 @@ namespace uwac
 						case "System.Int32":
 							return Convert.ToInt32(valtxt);
 						default:
-							return val.ToString();
+							return val.ToString().Replace("\"", "");
 					}
 				}
 
@@ -1124,6 +1166,43 @@ namespace uwac
 			sql.Close();
 			return dt;
 		}
+
+
+		public static DataTable LinkedREDCapFormsALL(int studyID)
+		{
+			SQL_utils sql = new SQL_utils("data");
+
+
+			string code = String.Format("select a.*, b.studyID, form_name, measureID " + Environment.NewLine +
+			"from def.REDCapToken a " + Environment.NewLine +
+			"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
+			"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
+			"join uwautism_research.backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
+			"where b.studyID = {0}", studyID);
+
+			DataTable dt = sql.DataTable_from_SQLstring(code);
+			sql.Close();
+			return dt;
+		}
+
+		public static DataTable LinkedREDCapForms(int studymeasID)
+		{
+			SQL_utils sql = new SQL_utils("data");
+
+
+			string code = String.Format("select a.*, b.studyID, form_name, c.measureID, measname, studymeasID, studymeasname " + Environment.NewLine +
+			"from def.REDCapToken a " + Environment.NewLine +
+			"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
+			"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
+			"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
+			"join uwautism_research_backend..tblStudyMeas e ON d.measureID = e.measureID " + Environment.NewLine +
+			"where e.studymeasID = {0}", studymeasID);
+
+			DataTable dt = sql.DataTable_from_SQLstring(code);
+			sql.Close();
+			return dt;
+		}
+
 
 
 		public static DataTable LinkedImports(int studyID)

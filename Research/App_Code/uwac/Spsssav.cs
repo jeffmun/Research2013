@@ -65,7 +65,7 @@ namespace uwac
 			foreach (uwac.Variable var in _dict.vars)
 			{
 				DataColumn col = new DataColumn(var.varname.ToLower());
-				col.DataType = GetDataType(var.datatype);
+				col.DataType = GetDataType(var.datatype.ToString());
 				dt.Columns.Add(col);
 
 			}

@@ -70,6 +70,31 @@ namespace uwac_REDCap
 		}
 
 
+		public string FieldsCSV(List<string> formnames)
+		{
+			List<string> flds = new List<string>();
+
+			foreach (string formname in formnames)
+			{
+				List<string> tmp_flds = api.MetaDataTable.AsEnumerable()
+					.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).ToList();
+
+				tmp_flds.Remove(idfld);
+
+				flds.AddRange(tmp_flds);
+			}
+
+
+			string flds_csv = String.Join(",", flds);
+			flds_csv = idfld + ", " + flds_csv ;
+			return flds_csv;
+
+		}
+
+
+
+
+
 		public string FirstField(string formname)
 		{
 			string fld = api.MetaDataTable.AsEnumerable()
@@ -101,6 +126,53 @@ namespace uwac_REDCap
 				return null;
 			}
 		}
+
+
+		public DataTable DataFromForms(List<string> formnames)
+		{
+			string strRecordsSelect = "";
+			string strFilterLogic = "";
+			string strFields = FieldsCSV(formnames);
+			string strEvents = "";
+			string strForms = "";
+			bool boolLabels = false;
+			bool boolAccessGroups = false;
+
+			string firstfld = FirstField(formnames[0]);
+
+			try
+			{
+				DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
+				return dt;
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+		}
+
+		public bool IsREDCapMeasure(int studymeasID)
+		{
+			SQL_utils sql = new SQL_utils("data");
+			int importfiletype = sql.IntScalar_from_SQLstring("select importfiletype from def.tbl where measureID=(select measureID from uwautism_research_backend..tblstudymeas where studymeasID=" + studymeasID.ToString() + ")");
+			sql.Close();
+
+			bool isREDCap = (importfiletype == (int)ImportFiletype.REDCap) ? true : false;
+			return isREDCap;
+		}
+
+		public Datadictionary Datadictionary(string formname)
+		{
+			return Datadictionary(new List<string> { formname });
+		}
+
+			public Datadictionary Datadictionary(List<string> formnames)
+		{
+			DataTable dt_meta = api.MetaDataTable.AsEnumerable().Where(f => formnames.Contains( f.Field<string>("form_name"))).CopyToDataTable();
+			Datadictionary dict = new Datadictionary(dt_meta, formnames);
+			return dict;
+		}
+
 		#endregion
 
 
@@ -127,16 +199,95 @@ namespace uwac_REDCap
 			}
 		}
 
-		public ASPxGridView gridMetaData()
+		public ASPxListBox lstFormSelector()
 		{
 			if (api != null)
 			{
+
+				ASPxListBox lst = new ASPxListBox();
+				lst.ID = "lstRedcapForms";
+				lst.ClientInstanceName = "lstRedcapForms";
+				lst.Caption = "REDCap Forms:";
+				//lst.DataSource = api.InstrumentDataTable;
+				//lst.TextField = "instrument_label";
+				//lst.ValueField = "instrument_name";
+				lst.ValueType = typeof(string);
+				lst.SelectionMode = ListEditSelectionMode.Multiple;
+				//cbo.NullText = String.Format("Available REDCap forms (N={0})", api.InstrumentDataTable.Rows.Count);
+				lst.Width = 300;
+				//lst.DataBind();
+
+				foreach(DataRow row in api.InstrumentDataTable.Rows)
+				{
+					ListEditItem itm = new ListEditItem();
+					itm.Value = row["instrument_name"].ToString();
+					itm.Text = row["instrument_label"].ToString();
+					lst.Items.Add(itm);
+				}
+
+
+				return lst;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		//public ASPxGridView gridMetaData()
+		//{
+		//	return gridMetaData(null);
+		//}
+
+		public ASPxGridView gridMetaData(string formname)
+		{
+			DataTable dt_meta;
+			if (formname == null)
+			{
+				dt_meta = api.MetaDataTable;
+			}
+			else
+			{
+				DataTable dt = api.MetaDataTable;
+				dt_meta = dt.AsEnumerable().Where(f => f.Field<string>("form_name") == formname).CopyToDataTable();
+			}
+
+			return gridMetaData(dt_meta, formname);
+		}
+
+
+		public ASPxGridView gridMetaData(List<string> formnames)
+		{
+			DataTable dt_meta;
+			if (formnames == null)
+			{
+				dt_meta = api.MetaDataTable;
+			}
+			else
+			{
+				DataTable dt = api.MetaDataTable;
+				dt_meta = dt.AsEnumerable().Where(f => formnames.Contains(f.Field<string>("form_name") )).CopyToDataTable();
+			}
+
+			return gridMetaData(dt_meta, String.Join(",",formnames));
+		}
+
+
+
+		public ASPxGridView gridMetaData(DataTable dt_meta, string title)
+		{
+			if (api != null)
+			{
+				string dataheader = String.Format("{0} (cols={1}, rows={2})", title, dt_meta.Columns.Count, dt_meta.Rows.Count);
+
 				ASPxGridView grid = new ASPxGridView();
 				grid.ID = "gridMeta";
 				grid.ClientInstanceName = "gridMeta";
+				grid.Caption = dataheader;
 				grid.AutoGenerateColumns = true;
 				grid.SettingsBehavior.AllowGroup = true;
-				grid.DataSource = api.MetaDataTable;
+				grid.SettingsPager.PageSize = 200;
+				grid.DataSource = dt_meta;
 				grid.DataBind();
 				return grid;
 			}
@@ -154,30 +305,60 @@ namespace uwac_REDCap
 				DataTable dt = DataFromForm(formname);
 				if (dt != null)
 				{
-					dataheader = String.Format("{0} (cols={1}, rows={2})", formname, dt.Columns.Count, dt.Rows.Count);
+					string title = String.Format("{0} (cols={1}, rows={2})", formname, dt.Columns.Count, dt.Rows.Count);
+
+					return gridDataFromForm(dt, title);
+				}
+			}
+			return null;
+		}
+
+
+		public ASPxGridView gridDataFromForm(List<string> formnames)
+		{
+			if (api != null)
+			{
+				DataTable dt = DataFromForms(formnames);
+				if (dt != null)
+				{
+					string forms = String.Join(",", formnames);
+					string title = String.Format("{0} (cols={1}, rows={2})", forms, dt.Columns.Count, dt.Rows.Count);
+
+					return gridDataFromForm(dt, title);
+				}
+			}
+			return null;
+		}
+
+
+
+		public ASPxGridView gridDataFromForm(DataTable dt, string title)
+		{
+			if (api != null)
+			{
+				if (dt != null)
+				{
+					dataheader = String.Format("{0} (cols={1}, rows={2})", title, dt.Columns.Count, dt.Rows.Count);
 
 					ASPxGridView grid = new ASPxGridView();
-					grid.ID = "grid" + formname;
-					grid.ClientInstanceName = "grid" + formname;
+					grid.ID = "gridREDCapMeta" ;
+					grid.ClientInstanceName = "gridREDCapMeta";
+					grid.Caption = dataheader;
 					grid.AutoGenerateColumns = true;
 					grid.SettingsBehavior.AllowGroup = true;
 					grid.Settings.HorizontalScrollBarMode = ScrollBarMode.Auto;
 					grid.Width = 1150;
+					grid.SettingsPager.PageSize = 200;
 					grid.DataSource = dt;
 					grid.DataBind();
 					return grid;
 				}
-				else
-				{
-					return null;
-				}
 			}
-			else
-			{
-				return null;
-			}
-
+			return null;
 		}
+
+
+
 		#endregion
 	}
 

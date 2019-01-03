@@ -88,9 +88,22 @@ public static class Actigraph
 
 				Debug.WriteLine(String.Format(" >>>> {0}  {1}  {2}", act_settings.skipstartingrows, act_settings.rowstoprocess, markers[i].text));
 
-				string text_to_parse = String.Join(Environment.NewLine,
-					lines.GetRange(markers[i].linenumber_start - 1, (markers[i].linenumber_end - markers[i].linenumber_start)));
 
+				string text_to_parse;
+
+				if (act_settings.measureID == 4853) //Actigraph Epoch
+				{
+					Debug.WriteLine(" **************             lines.Count = " + lines.Count.ToString());
+					List<string> lines_no_excluded = lines.GetRange(markers[i].linenumber_start - 1, (markers[i].linenumber_end - markers[i].linenumber_start));
+					lines_no_excluded = lines_no_excluded.Where(f => !f.Contains("EXCLUDED")).ToList();
+					Debug.WriteLine(" ************** lines_no_excluded.Count = " + lines_no_excluded.Count.ToString());
+					text_to_parse = String.Join(Environment.NewLine, lines_no_excluded);
+				}
+				else
+				{
+					text_to_parse = String.Join(Environment.NewLine,
+						lines.GetRange(markers[i].linenumber_start - 1, (markers[i].linenumber_end - markers[i].linenumber_start)));
+				}
 				DataImporter importer = new DataImporter(id, smID);
 
 

@@ -162,8 +162,6 @@ public partial class Reports_SleepSummary : BasePage
 			{
 				if (batch.charttype == DxChartType.Actogram)
 				{
-					batch.SetXAxisRange_1day();
-					batch.SetYAxisRange();
 
 
 					foreach (DxActogram ch in batch.charts)
@@ -173,14 +171,29 @@ public partial class Reports_SleepSummary : BasePage
 						xy.AxisX.DateTimeScaleOptions.GridAlignment = DateTimeGridAlignment.Hour;
 						xy.AxisX.Label.TextPattern = "{A:t}";
 
-						DataRow row = ds.Tables[1].Rows[counter];
+						DataTable dt = ds.Tables[1];
+						 
 
-						Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
+						string date_txt = String.Format("{0}, {1}", ch.date_txt, Convert.ToDateTime(ch.date_txt).DayOfWeek.ToString());
+						ch.SetMainTitle(date_txt);  //Place date in the title
+						
 
-						ch.AnnotateActogram(stats);
+						foreach (DataRow row in dt.Rows)
+						{
+							DateTime rpt_date = Convert.ToDateTime(row["report_date"].ToString());
+							if (rpt_date ==  Convert.ToDateTime(date_txt))
+							{
+								Actigraph.ActogramStats stats = new Actigraph.ActogramStats(row);
+								ch.AnnotateActogram(stats);
+								counter++;
+							}
+						}
 
-						counter++;
 					}
+
+					batch.SetYAxisRange();
+					batch.SetXAxisRange_1day();
+
 				}
 				else
 				{

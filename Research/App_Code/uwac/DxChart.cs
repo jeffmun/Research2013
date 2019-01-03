@@ -160,6 +160,22 @@ namespace uwac
 			}
 
 		}
+
+
+		public void SetMainTitle(string main)
+		{
+			SetMainTitle(main, 12f);
+		}
+
+		public void SetMainTitle(string main, float fontsize)
+		{
+			Font fnt_main = new Font("Arial", fontsize);
+			_chart.Titles[0].Text = main;
+			_chart.Titles[0].Font = fnt_main;
+		}
+
+
+
 		#endregion
 
 

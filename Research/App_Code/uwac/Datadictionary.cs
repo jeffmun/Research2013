@@ -48,6 +48,22 @@ namespace uwac
 			dt_dict = GetDatadictionaryFromDB();
 		}
 
+
+		public Datadictionary(DataTable dt_meta, List<string> formnames)
+		{
+			Initialize();
+
+			CreateDatadictionaryFromREDCapMeta(dt_meta, formnames);
+		}
+
+
+		public void Initialize()
+		{
+			vars = new List<Variable>();
+			valsets = new List<Valueset>();
+		}
+
+
 		public DataTable GetDatadictionaryFromDB()
 		{
 			DataTable dt = new DataTable();
@@ -83,12 +99,36 @@ namespace uwac
 			return dt;
 		}
 
-		public void Initialize()
-		{
-			vars = new List<Variable>();
-			valsets = new List<Valueset>();
-		}
 
+
+		public void CreateDatadictionaryFromREDCapMeta(DataTable dt_meta, List<string> formnames)
+		{
+
+			foreach(DataRow row in dt_meta.Rows)
+			{
+				if (formnames.Contains(row["form_name"]))
+				{
+					uwac.Variable var = new uwac.Variable(row);
+
+					string raw_vallabels = row["select_choices_or_calculations"].ToString();
+					if (raw_vallabels.Contains("|"))
+					{
+						uwac.Valueset valset = new Valueset(raw_vallabels);
+						if (valset != null)
+						{
+							var.valueset = valset;
+						}
+					}
+
+					if (var != null) vars.Add(var);
+
+				}
+
+			}
+
+
+			ExtractValuesets();
+		}
 
 
 		public void CreateDatadictionaryFromSpsssav(string filepath, string sourcefilename)
@@ -198,6 +238,7 @@ namespace uwac
 
 		}
 
+
 		public void AddValueset(Valueset valset, int idx)
 		{
 			valset.localvaluesetid = idx;
@@ -214,6 +255,7 @@ namespace uwac
 			}
 			return -1;
 		}
+
 
 		public string SaveValuesetsToDB(SQL_utils sql)
 		{
@@ -264,18 +306,27 @@ namespace uwac
 				{
 					foreach (uwac.Variable v in vars)
 					{
-						num_vars++;
-						string sqlcode = String.Format("insert into def.fld(tblpk, ord_pos, fldname, FieldDataType, FieldLabel, FieldValueSetID) " +
-							" values({0},{1},'{2}','{3}','{4}',{5})"
-							, tblpk, num_vars, v.varname, v.datatype, v.varlabel, v.fieldvaluesetid);
 
-						sql.NonQuery_from_SQLstring(sqlcode);
+						//Check that var is not already defined
+						int var_in_flds = sql.IntScalar_from_SQLstring(String.Format("select count(*) from def.fld where tblpk={0} and fldname='{1}'", tblpk, v.varname));
 
-						int newfldpk = sql.IntScalar_from_SQLstring(
-							String.Format("select fldpk from def.fld where tblpk={0} and fldname='{1}'", tblpk, v.varname));
+						if (var_in_flds == 0)
+						{
+
+							string sqlcode = String.Format("insert into def.fld(tblpk, ord_pos, fldname, FieldDataType, FieldLabel, FieldValueSetID) " +
+								" values({0},{1},'{2}','{3}','{4}',{5})"
+								, tblpk, num_vars, v.varname, v.datatype, v.varlabel, v.fieldvaluesetid);
+
+							sql.NonQuery_from_SQLstring(sqlcode);
+
+							int newfldpk = sql.IntScalar_from_SQLstring(
+								String.Format("select fldpk from def.fld where tblpk={0} and fldname='{1}'", tblpk, v.varname));
+
+							if(newfldpk > 0) num_vars++;
+						}
 
 					}
-					if (num_vars > 0) info += String.Format("{0} variables added.", num_vars);
+					if (num_vars > 0) info += String.Format(" {0} variables added.", num_vars);
 
 					return info;
 
@@ -293,9 +344,8 @@ namespace uwac
 
 		}
 
-
-
-	public string SaveToDB()
+		
+		public string SaveToDB()
 	{
 		if (tblpk > 0)
 		{
@@ -322,6 +372,7 @@ namespace uwac
 			return "ERROR: No tblpk defined.";
 		}
 	}
+
 
 		public bool CompareEm(Valueset vset1, Valueset vset2)
 		{
@@ -372,6 +423,27 @@ namespace uwac
 		{
 			valitems = new List<Valuesetitem>();
 		}
+		public Valueset(string raw_vallabels)
+		{
+			string[] delimiter = new string[] { " | " };
+			List<string> raw_vallabel = raw_vallabels.Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+			if (raw_vallabel.Count > 0)
+			{
+				valitems = new List<Valuesetitem>();
+
+				foreach (string raw_vl in raw_vallabel)
+				{
+					List<string> val_and_label = raw_vl.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+					Valuesetitem vi = new Valuesetitem(Convert.ToInt32(val_and_label[0]), val_and_label[1]);
+					if (vi != null)
+					{
+						valitems.Add(vi);
+					}
+				}
+			}
+		}
 	}
 
 	public class Valuesetitem
@@ -383,6 +455,11 @@ namespace uwac
 			value = input.Key;
 			label = input.Value;
 		}
+		public Valuesetitem(int myvalue, string mylabel)
+		{
+			value = myvalue;
+			label = mylabel;
+		}
 	}
 
 	public class Variable
@@ -390,16 +467,37 @@ namespace uwac
 		public string varname { get; set; }
 		public string varlabel { get; set; }
 		public int fieldvaluesetid { get; set; }
-		public string datatype { get; set; }
+		public Datatype datatype { get; set; }
 		public Valueset valueset { get; set; }
+
+		public Variable(DataRow row) //From a row of REDCap meta data
+		{
+			this.varname = row["field_name"].ToString();
+			this.varlabel = row["field_label"].ToString().Replace("'","`");
+
+			List<string> override_types = new List<string> { "number", "date_mdy", "time" };
+			string override_datatype = row["text_validation_type_or_show_slider_number"].ToString();
+
+			string mydatatype = (override_types.Contains(override_datatype)) ? override_datatype : row["field_type"].ToString();
+
+			this.datatype = new Datatype(mydatatype);
+
+
+		}
 
 		public Variable(SpssLib.SpssDataset.Variable spssvar)
 		{
 			varname = spssvar.Name;
 			varlabel = spssvar.Label;
-			if (spssvar.IsDate()) datatype = "date";
-			else if (spssvar.Type == SpssLib.SpssDataset.DataType.Numeric) datatype = "float";
-			else if (spssvar.Type == SpssLib.SpssDataset.DataType.Text) datatype = "varchar";
+			//if (spssvar.IsDate()) datatype = "date";
+			//else if (spssvar.Type == SpssLib.SpssDataset.DataType.Numeric) datatype = "float";
+			//else if (spssvar.Type == SpssLib.SpssDataset.DataType.Text) datatype = "varchar";
+
+			if (spssvar.IsDate()) datatype = new Datatype( SqlDatatype.Date);
+			else if (spssvar.Type == SpssLib.SpssDataset.DataType.Numeric) datatype = new Datatype(SqlDatatype.Float);
+			else if (spssvar.Type == SpssLib.SpssDataset.DataType.Text) datatype = new Datatype(SqlDatatype.Varchar);
+
+
 
 			if (spssvar.ValueLabels != null)
 			{
@@ -430,6 +528,55 @@ namespace uwac
 			}
 			return hasvalset;
 		}
+	}
+
+	public class Datatype
+	{
+		
+		private SqlDatatype _sqldatatype;
+		public SqlDatatype SqlDatatype { get { return _sqldatatype; } }
+
+		public Datatype(SqlDatatype mySqlDatatype)
+		{
+			_sqldatatype = mySqlDatatype;
+		}
+
+		public Datatype (string REDCapMeta_datatype)
+		{
+			List<string> inttypes = new List<string> { "radio", "yesno" };
+			List<string> floattypes = new List<string> { "number" };
+			List<string> texttypes = new List<string> { "text", "notes" };
+			List<string> datetypes = new List<string> { "date_mdy" };
+			List<string> datetimetypes = new List<string> { "time" };
+
+			if (inttypes.Contains(REDCapMeta_datatype)) _sqldatatype = SqlDatatype.Integer;
+			else if (texttypes.Contains(REDCapMeta_datatype)) _sqldatatype = SqlDatatype.Varchar;
+			else if (floattypes.Contains(REDCapMeta_datatype)) _sqldatatype = SqlDatatype.Float;
+			else if (datetypes.Contains(REDCapMeta_datatype)) _sqldatatype = SqlDatatype.Date;
+			else if (datetimetypes.Contains(REDCapMeta_datatype)) _sqldatatype = SqlDatatype.DateTime;
+			else _sqldatatype = SqlDatatype.Varchar;
+		}
+
+		public override string ToString()
+		{
+			if (_sqldatatype == SqlDatatype.Integer) return "int";
+			else if (_sqldatatype == SqlDatatype.Float) return "float";
+			else if (_sqldatatype == SqlDatatype.Varchar) return "varchar";
+			else if (_sqldatatype == SqlDatatype.Date) return "date";
+			else if (_sqldatatype == SqlDatatype.DateTime) return "datetime";
+			else return "varchar";
+		}
+	}
+
+
+
+	public enum SqlDatatype
+	{
+		Integer = 0,
+		Float = 1,
+		Varchar = 2,
+		Date = 3,
+		DateTime = 4
 	}
 
 }

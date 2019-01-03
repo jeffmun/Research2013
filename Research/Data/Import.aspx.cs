@@ -21,7 +21,7 @@ using uwac;
 using uwac_REDCap;
 using DevExpress.Web;
 using DevExpress.Web.Data;
-//using uwac_REDCap;
+
 
 public partial class Data_Import : BasePage
 {
@@ -54,17 +54,10 @@ public partial class Data_Import : BasePage
 
 		redcap = new REDCap(Master.Master_studyID);
 
-		ASPxComboBox cbo = redcap.cboFormSelector();
-		if (cbo != null)
-		{
-			placeholder_cboForms.Controls.Add(cbo);
-			panelREDCap_controls.Visible = true;
-		}
-		else {
-			panelREDCap_controls.Visible = false;
-		}
+		//panelREDCap_controls.Visible = false;
 
 		LoadlinkedTables();
+
 
 		if (IsCallback)
 		{
@@ -101,6 +94,9 @@ public partial class Data_Import : BasePage
 		gridLinkedImportTbl.DataSource = (DataTable)Session["LinkedImportTbls"];
 		gridLinkedImportTbl.DataBind();
 	}
+
+
+
 
 
 	protected void gridLinkedImport_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
@@ -217,41 +213,83 @@ public partial class Data_Import : BasePage
 		sql.Close();
 	}
 
+	protected void cboSubject_OnSelectedIndexChanged(object sender, EventArgs e)
+	{
+		CheckNs();
+	}
 	protected void cboStudymeas_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
-		string ID = cboSubject.Value.ToString();
-		int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
-
-
-		string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
-
-
-
-		if (ns.Contains("!" ))
-		{
-			lblNrecs.ForeColor = Color.Red;
-			lblNrecs.Text = String.Format("{0}There are records already entered!", ns);
-			FileUpload_Doc.Visible = false;
-			btnDelete.Visible = true;
-			btnContinue.Visible = true;
-		}
-		else 
-		{
-			lblNrecs.ForeColor = Color.ForestGreen;
-			lblNrecs.Text = ns;
-			FileUpload_Doc.Visible = true;
-			btnDelete.Visible = false;
-			btnContinue.Visible = false;
-		}
-		//else if (n < 0)
-		//{
-		//	lblNrecs.ForeColor = Color.DarkRed;
-		//	lblNrecs.Text = "SQL table not yet created.";
-		//	FileUpload_Doc.Visible = false;
-		//	btnDelete.Visible = false;
-		//}
+		CheckNs();
 	}
 
+
+	protected void CheckNs()
+	{
+		try
+		{
+			string ID = cboSubject.Value.ToString();
+			int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
+
+
+			REDCap redcap = new REDCap(Master.Master_studyID);
+
+			if (redcap.IsREDCapMeasure(studymeasID))
+			{
+				//List<int> redcap_measureIDs =
+
+				DataTable dt_forms = DataImporter.LinkedREDCapForms(studymeasID);
+
+				gridREDCapForms.DataSource = dt_forms;
+				gridREDCapForms.DataBind();
+				panelREDCap_controls.Visible = true;
+
+
+				lblNrecs.Visible = false;
+				btnDelete.Visible = false;
+				btnContinue.Visible = false;
+			}
+			else
+			{
+				panelREDCap_controls.Visible = false;
+
+				string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
+
+
+
+				if (ns.Contains("!"))
+				{
+					lblNrecs.Visible = true;
+					lblNrecs.ForeColor = Color.Red;
+					lblNrecs.Text = String.Format("{0}There are records already entered!", ns);
+					FileUpload_Doc.Visible = false;
+					btnDelete.Visible = true;
+					btnContinue.Visible = true;
+				}
+				else
+				{
+					lblNrecs.Visible = true;
+					lblNrecs.ForeColor = Color.ForestGreen;
+					lblNrecs.Text = ns;
+					FileUpload_Doc.Visible = true;
+					btnDelete.Visible = false;
+					btnContinue.Visible = false;
+				}
+				//else if (n < 0)
+				//{
+				//	lblNrecs.ForeColor = Color.DarkRed;
+				//	lblNrecs.Text = "SQL table not yet created.";
+				//	FileUpload_Doc.Visible = false;
+				//	btnDelete.Visible = false;
+				//}
+			}
+
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine("ERROR in CheckNs");
+			Debug.WriteLine(ex.Message);
+		}
+	}
 
 
 	protected void UploadDoc(object sender, EventArgs e)
@@ -272,6 +310,7 @@ public partial class Data_Import : BasePage
 			string info = String.Format("Begin. {0}<br/>", startupload.ToString());
 			DataImporter importer;
 
+			// Loop through all posted files
 			for (int f = 0; f < FileUpload_Doc.PostedFiles.Count; f++)
 			{
 				HttpPostedFile httpfile = FileUpload_Doc.PostedFiles[f];
@@ -291,15 +330,7 @@ public partial class Data_Import : BasePage
 					allowedExts = new string[] { ".xlsx", ".xls", ".txt", ".csv" };
 				}
 
-				//int nummatches_fileext = 0;
-				//for (int i = 0; i < allowedExts.Length; i++)
-				//{
-				//	if (allowedExts[i] == sFileExt) matches++;
-				//}
-
-				
-
-				// if (matches >= 1)
+				//Check if file extension is allowed 
 				if (allowedExts.Contains(sFileExt))
 				{
 					string newfilename = String.Format("smID{0}___ID{1}_{2}{3}"
@@ -381,93 +412,6 @@ public partial class Data_Import : BasePage
 
 
 
-
-	//protected string CheckLinkedTables(string ID, int studymeasID)
-	//{
-	//	SQL_utils sql = new SQL_utils("data");
-	//	DataTable dtlinkedimport = LinkedImportTbls(studymeasID);
-	//	sql.Close();
-	//	if (dtlinkedimport.HasRows())
-	//	{
-	//		string results = "Checking existing records in linked import tables:" + Environment.NewLine;
-
-	//		foreach (DataRow row in dtlinkedimport.Rows)
-	//		{
-	//			int linkedstudymeasid = Convert.ToInt32(row["studymeasid"]);
-	//			results += CheckExistingDataNrecs(ID, linkedstudymeasid) + Environment.NewLine;
-	//		}
-	//		return results;
-	//	}
-	//	else{
-	//		return "No records entered.";
-	//	}
-
-	//}
-
-//	protected string CheckExistingDataNrecs(string ID, int studymeasID, int linkedmeasureID)
-//{
-//		SQL_utils sql = new SQL_utils("backend");
-//		string code = String.Format("select studymeasID from tblstudymeas where timepointID=(select timepointID from tblstudymeas where studymeasID={0}) and measureID={1}"
-//			, studymeasID, linkedmeasureID);
-//		int linkedstudymeasid = sql.IntScalar_from_SQLstring(code);
-//		sql.Close();
-
-
-//		return CheckExistingDataNrecs(ID, linkedstudymeasid);
-//}
-
-
-//	protected string CheckExistingDataNrecs(string ID, int studymeasID)
-//	{
-//		SQL_utils sql = new SQL_utils("data");
-
-//		DbEntityInstance studymeas = new DbEntityInstance(
-//			new DbEntity(DbEntityType.studymeas), studymeasID);
-
-//		string studymeasname = studymeas.Name();
-//		string where = studymeas.WhereIn(DbEntityType.measure);
-
-//		string measname = studymeas.NameOfRelatedEntity(DbEntityType.measure);
-
-//		string tblname = studymeas.NameOfRelatedEntity2(DbEntityType.measure, DbEntityType.tbl);
-
-//		string nrecs_code = (ID.StartsWith("Multiple ")) ?
-//				String.Format("select count(*) from {0} where studymeasID={1}", tblname, studymeasID)
-//			  : String.Format("select count(*) from {0} where ID='{1}' and studymeasID={2}", tblname, ID, studymeasID);
-
-//		int nrecs = sql.IntScalar_from_SQLstring(nrecs_code, true);
-
-//		if (nrecs < 0) return "Error check # records for '" + studymeas + "'";
-
-//		int measureID = studymeas.PkvalOfRelatedEntity(DbEntityType.measure);
-
-
-
-//		//Also count the other Actigraph records 
-//		if (measureID == 3842)
-//		{
-//			int timepointID = studymeas.PkvalOfRelatedEntity(DbEntityType.timepoint);
-//			string sql_propsID = String.Format("select studymeasID from uwautism_research_backend..tblstudymeas where timepointID={0} and measureID=4855"
-//				, timepointID);
-//			string sql_epochID = String.Format("select studymeasID from uwautism_research_backend..tblstudymeas where timepointID={0} and measureID=4853"
-//				, timepointID);
-
-//			int studymeasID_props = sql.IntScalar_from_SQLstring(sql_propsID);
-//			int studymeasID_epoch = sql.IntScalar_from_SQLstring(sql_epochID);
-
-//			int n_props = sql.IntScalar_from_SQLstring(String.Format("select count(*) from ALL_ActigraphProps where ID='{0}' and studymeasID={1}", ID, studymeasID_props));
-//			int n_epoch = sql.IntScalar_from_SQLstring(String.Format("select count(*)  from ALL_ActigraphEpoch where ID='{0}' and studymeasID={1}", ID, studymeasID_epoch));
-
-//			nrecs = nrecs + n_props + n_epoch;
-//		}
-
-
-//		sql.Close();
-//		string hasrecs = (nrecs > 0) ? "!" : "";
-//		return String.Format("{0} records for '{1}'{2}", nrecs, studymeas.Name(), hasrecs);
-
-//	}
-
 	protected void ContinueAnyway(object sender, EventArgs e)
 	{
 		FileUpload_Doc.Visible = true;
@@ -483,203 +427,113 @@ public partial class Data_Import : BasePage
 		DataImporter importer = new DataImporter(ID, studymeasID); 
 		importer.DeleteRecs();
 
-		//string ID = cboSubject.Value.ToString();
-		//int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
-		//DbEntityInstance studymeas = new DbEntityInstance(new DbEntity(DbEntityType.studymeas), studymeasID);
-
-		//string tblname = studymeas.NameOfRelatedEntity2(DbEntityType.measure, DbEntityType.tbl);
-
-		//SQL_utils sql = new SQL_utils("data");
-
-		//string nrecs_code = (ID.StartsWith("Multiple ")) ?
-		//		String.Format("select count(*) from {0} where studymeasID={1}", tblname, studymeasID)
-		//	  : String.Format("select count(*) from {0} where ID='{1}' and studymeasID={2}", tblname, ID, studymeasID);
-
-
-		//string sqlcode = (ID.StartsWith("Multiple ")) ?
-		//	  String.Format("delete from {0} where  studymeasID={1}", tblname, studymeasID)
-		//	: String.Format("delete from {0} where ID='{1}' and studymeasID={2}", tblname, ID, studymeasID);
-		//sql.NonQuery_from_SQLstring(sqlcode);
-
-		//int measureID = studymeas.PkvalOfRelatedEntity(DbEntityType.measure);
-
-
-
-		////Also delete the other Actigraph records if needed
-		//if(measureID == 3842)
-		//{
-		//	int timepointID = studymeas.PkvalOfRelatedEntity(DbEntityType.timepoint);
-		//	string sql_propsID = String.Format("select studymeasID from uwautism_research_backend..tblstudymeas where timepointID={0} and measureID=4855"
-		//		, timepointID);
-		//	string sql_epochID = String.Format("select studymeasID from uwautism_research_backend..tblstudymeas where timepointID={0} and measureID=4853"
-		//		, timepointID);
-
-		//	int studymeasID_props = sql.IntScalar_from_SQLstring(sql_propsID);
-		//	int studymeasID_epoch = sql.IntScalar_from_SQLstring(sql_epochID);
-
-		//	sql.NonQuery_from_SQLstring(String.Format("delete from ALL_ActigraphProps where ID='{0}' and studymeasID={1}", ID, studymeasID_props));
-		//	sql.NonQuery_from_SQLstring(String.Format("delete from ALL_ActigraphEpoch where ID='{0}' and studymeasID={1}", ID, studymeasID_epoch));
-
-		//}
-
-
-		//sql.Close();
-
 		Response.Redirect(Request.Url.AbsolutePath);
 
 	}
 
 
+
 	#region RED Cap
-	protected void btnShowMeta_OnClick(object sender, EventArgs e)
+	protected void btnImportREDCap_OnClick(object sender, EventArgs e)
 	{
-		placeholder_gridMeta.Controls.Add(redcap.gridMetaData());
+
+	}
+	protected void btnShowREDCap_OnClick(object sender, EventArgs e)
+	{
+
+		int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
+
+
+		REDCap redcap = new REDCap(Master.Master_studyID);
+
+		if (redcap.IsREDCapMeasure(studymeasID))
+		{
+			//List<int> redcap_measureIDs =
+
+			DataTable dt_forms = DataImporter.LinkedREDCapForms(studymeasID);
+
+			List<string> formnames = dt_forms.AsEnumerable().Select(f => f.Field<string>("form_name")).ToList();
+
+
+			ASPxGridView grid = redcap.gridDataFromForm(formnames);
+			if (grid != null)
+			{
+				placeholder_REDCap_data.Controls.Clear();
+				placeholder_REDCap_data.Controls.Add(grid);
+			}
+
+		
+		}
+
+
+
 	}
 
 	#endregion
 
-
-	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
-	{
-		Debug.WriteLine("btnLoadFormData_OnClick");
-		ASPxComboBox cboRedcapForms = (ASPxComboBox)placeholder_cboForms.FindControlRecursive("cboRedcapForms");
-		string formname = cboRedcapForms.Value.ToString();
-
-		ASPxGridView grid = redcap.gridDataFromForm(formname);
-		if (grid != null)
-		{
-			grid.Caption = redcap.dataheader;
-			placeholder_gridMeta.Controls.Clear();
-			placeholder_gridMeta.Controls.Add(grid);
-		}
-
-	}
-
-
-
-	//protected string ProcessUploadedData_ALL(string ID, int main_studymeasID, string filepath, string filename)
+	//#region RED Cap
+	//protected void btnShowMeta_OnClick(object sender, EventArgs e)
 	//{
-	//	DataTable dtlinkedimport = LinkedImportTbls(main_studymeasID);
+	//	Debug.WriteLine("*************** btnLoadFormData_OnClick");
 
-	//	string results = "";
+	//	List<string> formnames = GetSelectedFormnames();
 
-	//	if(dtlinkedimport.HasRows())
+	//	placeholder_gridMeta.Controls.Add(redcap.gridMetaData(formnames));
+
+	//	if(cboStudymeas.Value != null)
 	//	{
-	//		for (int i = 0; i < dtlinkedimport.Rows.Count; i++)
-	//		{
-	//			DataRow row = dtlinkedimport.Rows[i];
-	//			int tblpk = Convert.ToInt32(row["tblpk"]);
-	//			int measureID = Convert.ToInt32(row["measureid"]);
-	//			string tblname = row["tblname"].ToString();
-	//			int studymeasID = Convert.ToInt32(row["studymeasid"]);
-
-	//			Debug.WriteLine( "*** " + tblname + " **************************************");
-	//			string result = ProcessUploadedData(ID, studymeasID, filepath, filename);
-
-	//			Debug.WriteLine("========");
-	//			Debug.WriteLine(result);
-	//			Debug.WriteLine("========");
-	//			results += result;
-	//		}
-
-	//		return results;
-	//	}
-	//	else
-	//	{
-	//		string result = ProcessUploadedData(ID, main_studymeasID, filepath, filename);
-	//		return result;
+	//		btnImportMeta.Visible = true;
 	//	}
 	//}
 
-
-	//protected string  ProcessUploadedData(string ID, int studymeasID,  string filepath, string filename)
+	//protected void btnImportMeta_OnClick(object sender, EventArgs e)
 	//{
-	//	Debug.WriteLine(" *** ProcessUploadedData *** ");
-	//	Debug.WriteLine(String.Format("ID:{0}  smID:{1}  filepath:{2}  filename:{3} ", ID, studymeasID, filepath, filename));
+	//	Debug.WriteLine("*************** btnImportFormData_OnClick");
 
-	//	SQL_utils sql = new SQL_utils("backend");
-	//	int measureID = sql.IntScalar_from_SQLstring(
-	//		String.Format("select measureID from tblstudymeas where studymeasID={0}", studymeasID));
+	//	List<string> formnames = GetSelectedFormnames();
 
-
-	//	string results = "";
+	//	Datadictionary dict = redcap.Datadictionary(formnames);
 
 
-	//		if (Actigraph.measureIDs.Contains(measureID))
-	//		{
-	//			results = Actigraph.ProcessActigraph(ID, filepath, filename, studymeasID);
-	//		}
-	//		//else if (measureID == 3843)  //SleepEnv_Sound
-	//		//{
-	//		//	//Note this involves looping through all files in a folder.
+	//	SQL_utils sql = new SQL_utils("data");
 
-
-	//		//}
-	//		else
-	//		{
-	//			Debug.WriteLine(" #### attempt to define DataImportSettings ####");
-	//			DataImportSettings settings = new DataImportSettings(ID, studymeasID);
-
-	//			if (settings.importfiletype == ImportFiletype.csv | settings.importfiletype == ImportFiletype.tsv)
-	//			{
-	//				Debug.WriteLine(" #### CSV TSV ####");
-
-	//				DataTable dt = DataImporter.GetDataTableFromCSVFile(filepath, filename, settings);
-	//				sql = new SQL_utils("data");
-	//				if (settings.tblname == "ALL_SleepEnv_Sound")
-	//				{
-	//					DataTable dt_agg = Actigraph.AggregrateSoundData(dt, settings.tblname);
-	//					results = sql.BulkInsert(dt_agg, settings.tblname);
-	//				}
-	//				else
-	//				{
-	//					results = sql.BulkInsert(dt, settings.tblname);
-	//				}
-
-	//			}
-	//			else if (settings.importfiletype == ImportFiletype.SPSSsav)
-	//			{
-	//				Debug.WriteLine(" #### SPSSsav ####");
-	//				settings = new DataImportSettings(ID, studymeasID);
-	//				sql = new SQL_utils("data");
-	//				Spsssav sav = new Spsssav(filepath, filename);
-	//				DataTable dt = sav.data;
-
-	//				int nsubj = dt.AsEnumerable().Select(f => f.Field<string>("study_id")).Distinct().Count();
-
-	//				string msg = String.Format("{0} records, {1} variables, {2} subjects", dt.Rows.Count, dt.Columns.Count, nsubj);
-
-	//				DataTable dt_prepped = DataImporter.AddNeededColumnsBeforeImport(dt, settings);
-
-	//				Debug.WriteLine("# recs: " + dt_prepped.Rows.Count);
-	//				dt_prepped = dt_prepped.RemoveRowsWithNullID();
-	//				Debug.WriteLine("# recs: " + dt_prepped.Rows.Count);
-
-
-	//				//msg += dt_source.RemoveRowsWithNullID();
-
-	//				string insert_results = sql.BulkInsert(dt_prepped, settings.tblname);
-
-	//				//sql = new SQL_utils("data");
-	//				results = "SPSSsav file => " + msg + "<br/>" + insert_results;
-	//			}
-	//			else if (settings.importfiletype == ImportFiletype.textlines)
-	//			{
-
-	//				results += "<br/>Importing not yet impletented for ImportFiletype.textlines.";
-	//			}
-	//		//}
-	//	}
 
 	//	sql.Close();
 
-	//	return results;
+	//	//dict.SaveToDB();
+
 	//}
 
+	//	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
+	//{
+	//	Debug.WriteLine("*************** btnLoadFormData_OnClick");
 
+	//	List<string> formnames = GetSelectedFormnames();
 
+	//	ASPxGridView grid = redcap.gridDataFromForm(formnames);
+	//	if (grid != null)
+	//	{
+	//		placeholder_gridMeta.Controls.Clear();
+	//		placeholder_gridMeta.Controls.Add(grid);
+	//	}
 
+	//}
 
+	//protected List<string> GetSelectedFormnames()
+	//{
+
+	//	ASPxListBox lstRedcapForms = (ASPxListBox)placeholder_cboForms.FindControlRecursive("lstRedcapForms");
+
+	//	List<string> formnames = new List<string>();
+	//	foreach (ListEditItem li in lstRedcapForms.SelectedItems)
+	//	{
+	//		formnames.Add(li.Value.ToString());
+	//	}
+
+	//	return formnames;
+	//}
+
+	//#endregion
 
 
 }
@@ -687,4 +541,4 @@ public partial class Data_Import : BasePage
 
 //TODO
 // add progress bar
-// delete contents in DB before inserting ? 
+

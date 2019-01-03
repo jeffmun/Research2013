@@ -127,7 +127,6 @@ namespace uwac
 			chart.AddTitles(title);
 			charts.Add(chart);
 
-
 			//if ( mysettings.panelvar != "variable")
 			//{
 			//	foreach (string v in _vars)
