@@ -92,7 +92,11 @@
       <siteMapNode url="~/stats/IntHxCharts.aspx" title="IntHx Data Summary" description="" menuitem="true" />
       <siteMapNode url="~/DataProject/IntHxTxCat.aspx" title="IntHx Tx Types &amp; Categories" description="" menuitem="true" />
       <siteMapNode url="~/Reliability/Rel_Tracking.aspx" title="Reliability tracking" description="" menuitem="true" />
-      <siteMapNode url="~/Data/Import.aspx" title="Import Data" description="" menuitem="true" />
+      <siteMapNode url="" title="Importing Data">
+        <siteMapNode url="~/Data/ImportHelp.aspx" title="Help on Importing Data" description="" menuitem="true" />
+        <siteMapNode url="~/Data/Import.aspx" title="Import Data" description="" menuitem="true" />
+        <siteMapNode url="~/Data/REDCap.aspx" title="REDCap Info" description="" menuitem="true" />
+      </siteMapNode>
     </siteMapNode>
     <siteMapNode url="" title="Admin">
       <siteMapNode url="~/NDAR/GUIDinfo.aspx" title="NDAR GUID Info" menuitem="true" />

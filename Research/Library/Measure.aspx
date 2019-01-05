@@ -60,7 +60,7 @@
 		<dx:ASPxLabel ID="ASPxLabel2" runat="server" Font-Size="Medium" Text="Measure Library: Details" Font-Bold="true"></dx:ASPxLabel>
 
 	<br />
-		<div class="buttonContainer">
+		<div id="btnDiv" runat="server" class="buttonContainer">
 			<table>
 				<tr>
 					<td style="width: 700px;"></td>
@@ -91,6 +91,8 @@
 				</tr>
 			</table>
 	</div>
+
+	<asp:Label ID="lblNoMeasure" runat="server" Visible="false" Text="No Measure was selected." Font-Size="Medium"></asp:Label>
 
 	<dx:ASPxFormLayout ID="FormLayout" ClientInstanceName="FormLayout" runat="server"  AlignItemCaptionsInAllGroups="True" UseDefaultPaddings="false"
 			EnableViewState="true">

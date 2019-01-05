@@ -31,15 +31,15 @@ public partial class Data_REDCap : BasePage
 
 	protected void Page_Init(object sender, EventArgs e)
 	{
+		Session["LinkedREDCapForm"] = null;
 		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
 		Session["studyID"] = Master.Master_studyID.ToString();
 	}
 
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-		Response.Redirect("Import.aspx");
+		Session["LinkedREDCapForm"] = null;
+		Response.Redirect("REDCap.aspx");
 	}
 
 
@@ -92,89 +92,88 @@ public partial class Data_REDCap : BasePage
 	#region Linked Import Tables
 	protected void LoadlinkedTables()
 	{
-		if(Session["LinkedImports"] == null)
+
+
+		if (cboMeas.Value != null)
 		{
-			DataTable dt1 = DataImporter.LinkedImports(Convert.ToInt32(Session["studyID"].ToString()));
-			Session["LinkedImports"] = dt1;
+			int measureID = Convert.ToInt32(cboMeas.Value.ToString());
+
+			if (Session["LinkedREDCapForm"] == null)
+			{
+				DataTable dt2 = DataImporter.LinkedREDCapForms(Convert.ToInt32(Session["studyID"].ToString()), measureID, DbEntityType.measure);
+				Session["LinkedREDCapForm"] = dt2;
+			}
+
+			if (Session["LinkedREDCapForm"] != null)
+			{
+				ASPxGridView gridLinkedREDCapForm = (ASPxGridView)this.Page.FindControlRecursive("gridLinkedREDCapForm");
+
+				gridLinkedREDCapForm.DataSource = (DataTable)Session["LinkedREDCapForm"];
+				gridLinkedREDCapForm.DataBind();
+				gridLinkedREDCapForm.Visible = true;
+			}
 		}
-		if (Session["LinkedImportTbls"] == null)
-		{
-			DataTable dt2 = DataImporter.LinkedImportTbls(Convert.ToInt32(Session["studyID"].ToString()));
-			Session["LinkedImportTbls"] = dt2;
+		else{
+			gridLinkedREDCapForm.Visible = false;
 		}
-		gridLinkedImport.DataSource = (DataTable)Session["LinkedImports"];
-		gridLinkedImport.DataBind();
-		gridLinkedImportTbl.DataSource = (DataTable)Session["LinkedImportTbls"];
-		gridLinkedImportTbl.DataBind();
 	}
 
 
-	protected void gridLinkedImport_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
+
+
+	protected void gridLinkedREDCapForm_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildInsertSqlCode(e, "LinkedImport", "data", "def");
+
+		DxDbOps.BuildUpdateSqlCode(e, "REDCap_Form", "data", "def");
 		gv.CancelEdit();
 		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-	protected void gridLinkedImport_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildUpdateSqlCode(e, "LinkedImport", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
+		Session["LinkedREDCapForm"] = null;
 
 		LoadlinkedTables();
 	}
 
 
-	protected void gridLinkedImportTbl_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
+	protected void gridLinkedREDCapForm_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildInsertSqlCode(e, "LinkedImportTbl", "data", "def");
+		SQL_utils sql = new SQL_utils("data");
+
+		int tokenid = sql.IntScalar_from_SQLstring(String.Format("select min(tokenID) from def.vwREDCap_Form where studyID={0} and measureID={1}",
+			Session["studyID"].ToString(), cboMeas.Value.ToString()));
+		sql.Close();
+
+		int measureID = Convert.ToInt32(cboMeas.Value.ToString());
+		e.NewValues.Add("tokenid", tokenid);
+		e.NewValues.Add("measureid", measureID);
+
+
+		DxDbOps.BuildInsertSqlCode(e, "REDCap_Form", "data", "def");
 		gv.CancelEdit();
 		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-	protected void gridLinkedImport_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildDeleteSqlCode(e, "LinkedImport", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-	protected void gridLinkedImportTbl_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildDeleteSqlCode(e, "LinkedImportTbl", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
+		Session["LinkedREDCapForm"] = null;
 
 		LoadlinkedTables();
 	}
 
 
-	protected void gridLinkedImportTbl_CellEditorInitialize(object sender,
+
+	protected void gridLinkedREDCapForm_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+		DxDbOps.BuildDeleteSqlCode(e, "REDCap_Form", "data", "def");
+		gv.CancelEdit();
+		e.Cancel = true;
+		Session["LinkedREDCapForm"] = null;
+
+		LoadlinkedTables();
+	}
+
+
+	protected void gridLinkedREDCapForm_CellEditorInitialize(object sender,
 	DevExpress.Web.ASPxGridViewEditorEventArgs e)
 	{
-		if (e.Column.FieldName == "ltpk")
+		if (e.Column.FieldName == "redcapformID")
 		{
 			e.Editor.ReadOnly = false;
 		}
@@ -192,81 +191,38 @@ public partial class Data_REDCap : BasePage
 			" group by a.measureID, measname ", (int)ImportFiletype.REDCap , Master.Master_studyID.ToString());
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
-		cboStudymeas.DataSource = dt;
-		cboStudymeas.ValueField = "measureID";
-		cboStudymeas.TextField = "measname";
-		cboStudymeas.DataBind();
+		cboMeas.DataSource = dt;
+		cboMeas.ValueField = "measureID";
+		cboMeas.TextField = "measname";
+		cboMeas.DataBind();
 
 		if (dt.Rows.Count > 0)
 		{
-			cboStudymeas.NullText = "select measure";
+			cboMeas.NullText = "select measure";
 		}
 		else
 		{
-			cboStudymeas.NullText = "none configured for REDCap";
+			cboMeas.NullText = "none configured for REDCap";
 		}
 		sql.Close();
 	}
 
-	//protected void LoadSubjects()
-	//{
-	//	SQL_utils sql = new SQL_utils("backend");
-
-	//	string sqlcode = String.Format("select 0 subjID, 'Multiple {0} subjects' ID union select subjID, ID from trk.vwMasterStatus_S where studyID={1}"
-	//		, Master.Master_studyname, Master.Master_studyID.ToString());
-	//	DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
-
-	//	cboSubject.DataSource = dt;
-	//	cboSubject.ValueField = "ID";
-	//	cboSubject.TextField = "ID";
-	//	cboSubject.DataBind();
-	//	sql.Close();
-	//}
 
 
-
-
-	//protected void LoadDatatypes()
-	//{
-	//	SQL_utils sql = new SQL_utils("backend");
-
-	//	string sqlcode = "select studymeasID, studymeasname from tblmeasure a join tblstudymeas b ON a.measureID=b.measureID " + Environment.NewLine +
-	//		" where a.measureID in (select measureID from uwautism_research_data.def.tbl where measureID>0 and importfiletype is not null) " + Environment.NewLine +
-	//		" and studyID = " + Master.Master_studyID.ToString() + Environment.NewLine +
-	//		" order by b.timepointID, studymeasname ";
-	//	DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
-
-	//	cboStudymeas.DataSource = dt;
-	//	cboStudymeas.ValueField = "studymeasID";
-	//	cboStudymeas.TextField = "studymeasname";
-	//	cboStudymeas.DataBind();
-
-	//	if (dt.Rows.Count > 0)
-	//	{
-	//		cboStudymeas.NullText = "select measure";
-	//	}
-	//	else
-	//	{
-	//		cboStudymeas.NullText = "none configured for import";
-	//	}
-	//	sql.Close();
-	//}
-
-	protected void cboStudymeas_OnSelectedIndexChanged(object sender, EventArgs e)
+	protected void cboMeas_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
 		try
 		{
-			string ID = cboSubject.Value.ToString();
-			int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
+			int measureID = Convert.ToInt32(cboMeas.Value.ToString());
 
 
-			string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
+			//string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
 
 
 		}
 		catch(Exception ex)
 		{
-			Debug.WriteLine("ERROR in cboStudymeas_OnSelectedIndexChanged");
+			Debug.WriteLine("ERROR in cboMeas_OnSelectedIndexChanged");
 			Debug.WriteLine(ex.Message);
 		}
 	}
@@ -274,17 +230,17 @@ public partial class Data_REDCap : BasePage
 
 
 	
-	protected void DeleteRecs(object sender, EventArgs e)
-	{
-		string ID = cboSubject.Value.ToString();
-		int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
+	//protected void DeleteRecs(object sender, EventArgs e)
+	//{
+	//	string ID = cboSubject.Value.ToString();
+	//	int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
 
-		DataImporter importer = new DataImporter(ID, studymeasID); 
-		importer.DeleteRecs();
+	//	DataImporter importer = new DataImporter(ID, studymeasID); 
+	//	importer.DeleteRecs();
 
-		Response.Redirect(Request.Url.AbsolutePath);
+	//	Response.Redirect(Request.Url.AbsolutePath);
 
-	}
+	//}
 
 
 	#region RED Cap
@@ -296,7 +252,7 @@ public partial class Data_REDCap : BasePage
 
 		placeholder_gridMeta.Controls.Add(redcap.gridMetaData(formnames));
 
-		if(cboStudymeas.Value != null)
+		if(cboMeas.Value != null)
 		{
 			btnImportMeta.Visible = true;
 		}
@@ -313,10 +269,10 @@ public partial class Data_REDCap : BasePage
 
 		SQL_utils sql = new SQL_utils("data");
 
-		int tblpk = sql.IntScalar_from_SQLstring(String.Format("select tblpk from def.tbl where measureID={0}", cboStudymeas.Value));
+		int tblpk = sql.IntScalar_from_SQLstring(String.Format("select tblpk from def.tbl where measureID={0}", cboMeas.Value));
 		string tblname = sql.StringScalar_from_SQLstring(String.Format("select tblname from def.tbl where tblpk={0}", tblpk));
 
-		dict.measureid = Convert.ToInt32(cboStudymeas.Value);
+		dict.measureid = Convert.ToInt32(cboMeas.Value);
 		dict.tblpk = tblpk;
 		dict.tblname = tblname;
 		string dict_save_info = dict.SaveToDB();

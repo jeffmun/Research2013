@@ -50,26 +50,15 @@ public partial class Data_Import : BasePage
 
 		LoadSubjects();
 		LoadDatatypes();
-
-
-		redcap = new REDCap(Master.Master_studyID);
-
-		//panelREDCap_controls.Visible = false;
-
+		
 		LoadlinkedTables();
-
 
 		if (IsCallback)
 		{
-			//if (Session["redcap_metadata"] != null)
-			//{
-			//	gridREDCap.DataSource = (DataTable)Session["redcap_metadata"];
-			//	gridREDCap.DataBind();
-			//}
+
 		}
 		if (panel.IsCallback)
 		{
-			//LoadFormData();
 
 		}
 
@@ -95,10 +84,7 @@ public partial class Data_Import : BasePage
 		gridLinkedImportTbl.DataBind();
 	}
 
-
-
-
-
+	   	 
 	protected void gridLinkedImport_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
@@ -110,6 +96,7 @@ public partial class Data_Import : BasePage
 
 		LoadlinkedTables();
 	}
+
 
 	protected void gridLinkedImport_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
 	{
@@ -136,6 +123,7 @@ public partial class Data_Import : BasePage
 		LoadlinkedTables();
 	}
 
+
 	protected void gridLinkedImport_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
@@ -147,6 +135,7 @@ public partial class Data_Import : BasePage
 
 		LoadlinkedTables();
 	}
+
 
 	protected void gridLinkedImportTbl_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
 	{
@@ -161,8 +150,7 @@ public partial class Data_Import : BasePage
 	}
 
 
-	protected void gridLinkedImportTbl_CellEditorInitialize(object sender,
-	DevExpress.Web.ASPxGridViewEditorEventArgs e)
+	protected void gridLinkedImportTbl_CellEditorInitialize(object sender, DevExpress.Web.ASPxGridViewEditorEventArgs e)
 	{
 		if (e.Column.FieldName == "ltpk")
 		{
@@ -171,6 +159,7 @@ public partial class Data_Import : BasePage
 	}
 
 	#endregion
+
 
 	protected void LoadSubjects()
 	{
@@ -230,57 +219,42 @@ public partial class Data_Import : BasePage
 			string ID = cboSubject.Value.ToString();
 			int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
 
+			string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
+
 
 			REDCap redcap = new REDCap(Master.Master_studyID);
 
 			if (redcap.IsREDCapMeasure(studymeasID))
 			{
-				//List<int> redcap_measureIDs =
-
-				DataTable dt_forms = DataImporter.LinkedREDCapForms(studymeasID);
+				DataTable dt_forms = DataImporter.LinkedREDCapForms(Master.Master_studyID, studymeasID, DbEntityType.studymeas);
 
 				gridREDCapForms.DataSource = dt_forms;
 				gridREDCapForms.DataBind();
 				panelREDCap_controls.Visible = true;
-
-
-				lblNrecs.Visible = false;
-				btnDelete.Visible = false;
-				btnContinue.Visible = false;
 			}
 			else
 			{
 				panelREDCap_controls.Visible = false;
-
-				string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
-
+			}
 
 
-				if (ns.Contains("!"))
-				{
-					lblNrecs.Visible = true;
-					lblNrecs.ForeColor = Color.Red;
-					lblNrecs.Text = String.Format("{0}There are records already entered!", ns);
-					FileUpload_Doc.Visible = false;
-					btnDelete.Visible = true;
-					btnContinue.Visible = true;
-				}
-				else
-				{
-					lblNrecs.Visible = true;
-					lblNrecs.ForeColor = Color.ForestGreen;
-					lblNrecs.Text = ns;
-					FileUpload_Doc.Visible = true;
-					btnDelete.Visible = false;
-					btnContinue.Visible = false;
-				}
-				//else if (n < 0)
-				//{
-				//	lblNrecs.ForeColor = Color.DarkRed;
-				//	lblNrecs.Text = "SQL table not yet created.";
-				//	FileUpload_Doc.Visible = false;
-				//	btnDelete.Visible = false;
-				//}
+			if (ns.Contains("!"))
+			{
+				lblNrecs.Visible = true;
+				lblNrecs.ForeColor = Color.Red;
+				lblNrecs.Text = String.Format("{0}There are records already entered!", ns);
+				FileUpload_Doc.Visible = false;
+				btnDelete.Visible = true;
+				btnContinue.Visible = true;
+			}
+			else
+			{
+				lblNrecs.Visible = true;
+				lblNrecs.ForeColor = Color.ForestGreen;
+				lblNrecs.Text = ns;
+				FileUpload_Doc.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? false : true;  // don't show if a REDCap measure, because you don't upload files for these
+				btnDelete.Visible = false;
+				btnContinue.Visible = false;
 			}
 
 		}
@@ -292,7 +266,39 @@ public partial class Data_Import : BasePage
 	}
 
 
-	protected void UploadDoc(object sender, EventArgs e)
+
+	/* IMPORT THE DATA */
+
+	protected void ImportREDCapToDB()
+	{
+		string info;
+
+		DateTime startupload = DateTime.Now;
+		info = String.Format("Begin. {0}<br/>", startupload.ToString());
+
+		string ID = cboSubject.Value.ToString();
+		int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
+		REDCap redcap = new REDCap(Master.Master_studyID);
+
+		if (redcap.IsREDCapMeasure(studymeasID))
+		{
+			DataTable dt_forms = DataImporter.LinkedREDCapForms(Master.Master_studyID, studymeasID, DbEntityType.studymeas);
+			List<string> formnames = dt_forms.AsEnumerable().Select(f => f.Field<string>("form_name")).ToList();
+
+
+			DataImporter importer = new DataImporter(ID, studymeasID, formnames);
+			info += importer.ResultsToString();
+		}
+
+		double timeelapsed = Math.Round((DateTime.Now - startupload).TotalSeconds, 2);
+		info += String.Format("<br/> End. {0} total seconds.", timeelapsed);
+
+		DisplayImporterResults(info);
+
+	}
+
+
+	protected void UploadFileAndSaveToDB(object sender, EventArgs e)
 	{
 		string ID = cboSubject.Value.ToString();
 		int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
@@ -301,13 +307,13 @@ public partial class Data_Import : BasePage
 		int mID = sql.IntScalar_from_SQLstring("select measureID from uwautism_research_backend..tblstudymeas where studymeasID=" + studymeasID.ToString());
 		int int_importfiletype = sql.IntScalar_from_SQLstring("select importfiletype from def.tbl where measureID=" + mID.ToString());
 
-
+		string info = "";
 
 		if (FileUpload_Doc.HasFile)
 		{
 
 			DateTime startupload = DateTime.Now;
-			string info = String.Format("Begin. {0}<br/>", startupload.ToString());
+			info = String.Format("Begin. {0}<br/>", startupload.ToString());
 			DataImporter importer;
 
 			// Loop through all posted files
@@ -359,11 +365,7 @@ public partial class Data_Import : BasePage
 					}
 
 					importer = new DataImporter(ID, studymeasID, myfilepath, newfilename, httpfile.FileName);
-
-					foreach (string s in importer.results)
-					{
-						info += String.Format("<br/>{0}", s);
-					}
+					info += importer.ResultsToString();
 
 				}
 				else
@@ -384,16 +386,24 @@ public partial class Data_Import : BasePage
 
 		else
 		{
-			lblDocUploadInfo.Text = "You must select a file for upload.";
-			lblDocUploadInfo.ForeColor = Color.Red;
+			info = "Error. You must select a file for upload.";
 		}
-		//oConn.Close();
+
+		DisplayImporterResults(info);
 	}
 
 
+	protected void DisplayImporterResults(string info)
+	{
+
+		lblDocUploadInfo.Text = Server.HtmlDecode(info);
+		lblDocUploadInfo.ForeColor = (info.ToLower().Contains("error")) ? Color.Red : Color.Green;
 
 
-	protected void UploadDoc_Cancel(object sender, EventArgs e)
+	}
+
+
+	protected void UploadFile_Cancel(object sender, EventArgs e)
 	{
 		//ddl_DocType.SelectedValue = "0";
 		//ddl_DocStatus.SelectedValue = "0";
@@ -402,16 +412,11 @@ public partial class Data_Import : BasePage
 		//lblDocUploadInfo.Text = "";
 
 		//Panel_UploadDocs.Update();
-
-
 		//Panel_UploadDocs.Visible = false;
-
 		//btnShowUploadDocPanel.Visible = true;
-
 	}
 
-
-
+	
 	protected void ContinueAnyway(object sender, EventArgs e)
 	{
 		FileUpload_Doc.Visible = true;
@@ -419,6 +424,7 @@ public partial class Data_Import : BasePage
 		btnContinue.Visible = false;
 	}
 	
+
 	protected void DeleteRecs(object sender, EventArgs e)
 	{
 		string ID = cboSubject.Value.ToString();
@@ -436,24 +442,20 @@ public partial class Data_Import : BasePage
 	#region RED Cap
 	protected void btnImportREDCap_OnClick(object sender, EventArgs e)
 	{
-
+		ImportREDCapToDB();
 	}
+
+
 	protected void btnShowREDCap_OnClick(object sender, EventArgs e)
 	{
-
+		string ID = cboSubject.Value.ToString();
 		int studymeasID = Convert.ToInt32(cboStudymeas.Value.ToString());
-
-
 		REDCap redcap = new REDCap(Master.Master_studyID);
 
 		if (redcap.IsREDCapMeasure(studymeasID))
 		{
-			//List<int> redcap_measureIDs =
-
-			DataTable dt_forms = DataImporter.LinkedREDCapForms(studymeasID);
-
+			DataTable dt_forms = DataImporter.LinkedREDCapForms(Master.Master_studyID, studymeasID, DbEntityType.studymeas);
 			List<string> formnames = dt_forms.AsEnumerable().Select(f => f.Field<string>("form_name")).ToList();
-
 
 			ASPxGridView grid = redcap.gridDataFromForm(formnames);
 			if (grid != null)
@@ -470,70 +472,6 @@ public partial class Data_Import : BasePage
 	}
 
 	#endregion
-
-	//#region RED Cap
-	//protected void btnShowMeta_OnClick(object sender, EventArgs e)
-	//{
-	//	Debug.WriteLine("*************** btnLoadFormData_OnClick");
-
-	//	List<string> formnames = GetSelectedFormnames();
-
-	//	placeholder_gridMeta.Controls.Add(redcap.gridMetaData(formnames));
-
-	//	if(cboStudymeas.Value != null)
-	//	{
-	//		btnImportMeta.Visible = true;
-	//	}
-	//}
-
-	//protected void btnImportMeta_OnClick(object sender, EventArgs e)
-	//{
-	//	Debug.WriteLine("*************** btnImportFormData_OnClick");
-
-	//	List<string> formnames = GetSelectedFormnames();
-
-	//	Datadictionary dict = redcap.Datadictionary(formnames);
-
-
-	//	SQL_utils sql = new SQL_utils("data");
-
-
-	//	sql.Close();
-
-	//	//dict.SaveToDB();
-
-	//}
-
-	//	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
-	//{
-	//	Debug.WriteLine("*************** btnLoadFormData_OnClick");
-
-	//	List<string> formnames = GetSelectedFormnames();
-
-	//	ASPxGridView grid = redcap.gridDataFromForm(formnames);
-	//	if (grid != null)
-	//	{
-	//		placeholder_gridMeta.Controls.Clear();
-	//		placeholder_gridMeta.Controls.Add(grid);
-	//	}
-
-	//}
-
-	//protected List<string> GetSelectedFormnames()
-	//{
-
-	//	ASPxListBox lstRedcapForms = (ASPxListBox)placeholder_cboForms.FindControlRecursive("lstRedcapForms");
-
-	//	List<string> formnames = new List<string>();
-	//	foreach (ListEditItem li in lstRedcapForms.SelectedItems)
-	//	{
-	//		formnames.Add(li.Value.ToString());
-	//	}
-
-	//	return formnames;
-	//}
-
-	//#endregion
 
 
 }

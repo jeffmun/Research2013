@@ -55,7 +55,7 @@ namespace uwac_REDCap
 
 
 
-		#region Data & Information
+		#region Fields 
 		public string FieldsCSV(string formname)
 		{
 			List<string> flds = api.MetaDataTable.AsEnumerable()
@@ -102,7 +102,9 @@ namespace uwac_REDCap
 
 			return fld;
 		}
+		#endregion
 
+		#region DataTables
 
 		public DataTable DataFromForm (string formname)
 		{
@@ -143,6 +145,9 @@ namespace uwac_REDCap
 			try
 			{
 				DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
+
+				dt.RenameColumn("id", "redcap_id");
+
 				return dt;
 			}
 			catch (Exception ex)
@@ -150,6 +155,9 @@ namespace uwac_REDCap
 				return null;
 			}
 		}
+
+
+
 
 		public bool IsREDCapMeasure(int studymeasID)
 		{
@@ -207,7 +215,7 @@ namespace uwac_REDCap
 				ASPxListBox lst = new ASPxListBox();
 				lst.ID = "lstRedcapForms";
 				lst.ClientInstanceName = "lstRedcapForms";
-				lst.Caption = "REDCap Forms:";
+				lst.Caption = "All REDCap Forms:";
 				//lst.DataSource = api.InstrumentDataTable;
 				//lst.TextField = "instrument_label";
 				//lst.ValueField = "instrument_name";

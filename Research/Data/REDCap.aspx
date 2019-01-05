@@ -41,22 +41,40 @@
 
 	<table>
 		<tr>
-			<td style="vertical-align: top; padding: 5px">
-				<dx:ASPxComboBox ID="cboSubject" ClientInstanceName="cboSubject" Visible="false" runat="server" Caption="Subject:" CaptionCellStyle-Width="90px" NullText="select subject"></dx:ASPxComboBox>
+			<td style="vertical-align: top; padding: 10px">
 
-				<dx:ASPxComboBox ID="cboStudymeas" ClientInstanceName="cboStudymeas" runat="server" Caption="Measure:" CaptionCellStyle-Width="90px" NullText="select measure"
-						 AutoPostBack="true" OnSelectedIndexChanged="cboStudymeas_OnSelectedIndexChanged"></dx:ASPxComboBox>
+				<dx:ASPxComboBox ID="cboMeas" ClientInstanceName="cboMeas" runat="server" Caption="Measure:" CaptionCellStyle-Width="90px" NullText="select measure"
+						 AutoPostBack="true" OnSelectedIndexChanged="cboMeas_OnSelectedIndexChanged"></dx:ASPxComboBox>
 
 			
 
 			</td>
 			
 			
-			<td style="width:200px">
+			<td style="width:400px; padding:10px">
+				
+			    <dx:ASPxGridView ID="gridLinkedREDCapForm" runat="server" ClientInstanceName="gridLinkedREDCapForm" KeyFieldName="redcapformID" 
+					    Caption="Linked REDCap Forms"
+					    SettingsDataSecurity-AllowAddingRecords ="true"
+					    SettingsDataSecurity-AllowInsert="true"
+					    SettingsDataSecurity-AllowDelete="true"
+					    OnRowInserting="gridLinkedREDCapForm_OnRowInserting"
+					    OnRowDeleting="gridLinkedREDCapForm_OnRowDeleting"
+					    OnCellEditorInitialize="gridLinkedREDCapForm_CellEditorInitialize">
+			    <Columns>
+				    <dx:GridViewDataColumn FieldName="redcapformID" Visible="false"></dx:GridViewDataColumn>
+				    <dx:GridViewDataColumn FieldName="form_name"></dx:GridViewDataColumn>
+				    <dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
 
+			    </Columns>
+			    <SettingsEditing Mode="Inline"></SettingsEditing>
+										
+
+			    </dx:ASPxGridView>
 			</td>
 			<td style="width:500px">
-				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked REDCap Forms"  Native="true" ClientVisible="true">
+
+<%--				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked REDCap Forms"  Native="true" ClientVisible="true">
 						<ClientSideEvents Click="ShowLinkedPanel" />
 					</dx:ASPxButton>
 
@@ -67,54 +85,9 @@
 									<ClientSideEvents Click="HideLinkedPanel" />
 									</dx:ASPxButton>
 				
-								<dx:ASPxGridView ID="gridLinkedImport" runat="server" ClientInstanceName="gridLinkedImport" KeyFieldName="ltpk"
-									 Caption="Sets of Linked Tables" 
-									 SettingsDataSecurity-AllowAddingRecords="true"
-									 SettingsDataSecurity-AllowInsert="true"
-									SettingsDataSecurity-AllowUpdate="true"
-									 SettingsDataSecurity-AllowDelete="true"
-									 OnRowUpdating="gridLinkedImport_OnRowUpdating"
-									 OnRowDeleting="gridLinkedImport_OnRowDeleting"
-									 OnRowInserting="gridLinkedImport_OnRowInserting">
-									<Columns>
-									   <dx:GridViewDataColumn FieldName="ltpk" Caption="pk"  CellStyle-ForeColor="Silver" Width="50px" Visible="false"></dx:GridViewDataColumn>
-									   <dx:GridViewDataColumn FieldName="linkedimport" Caption="LinkedImport"  Width="150px"></dx:GridViewDataColumn>
-
-									<dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="true" ShowNewButtonInHeader="true" />
-
-									</Columns>
-								</dx:ASPxGridView>
-								<dx:ASPxGridView ID="gridLinkedImportTbl" runat="server" ClientInstanceName="gridLinkedImportTbl" KeyFieldName="ltpk;tblpk" 
-									 Caption="Linked Tables"
-									 SettingsDataSecurity-AllowAddingRecords ="true"
-									 SettingsDataSecurity-AllowInsert="true"
-									 SettingsDataSecurity-AllowDelete="true"
-									 OnRowInserting="gridLinkedImportTbl_OnRowInserting"
-									 OnRowDeleting="gridLinkedImportTbl_OnRowDeleting"
-									 OnCellEditorInitialize="gridLinkedImportTbl_CellEditorInitialize">
-								<Columns>
-									   <dx:GridViewDataComboBoxColumn FieldName="ltpk" Caption="Set of Linked Tables" ReadOnly="false" >
-											<PropertiesComboBox DataSourceID="sqlLT" TextField="_linkedimport" ValueField="_ltpk"
-												></PropertiesComboBox>
-										</dx:GridViewDataComboBoxColumn>
-
-
-
-										<dx:GridViewDataComboBoxColumn FieldName="tblpk" Caption="Measure" >
-											<PropertiesComboBox DataSourceID="sqlMeas" TextField="_measname" ValueField="_tblpk"
-												></PropertiesComboBox>
-										</dx:GridViewDataComboBoxColumn>
-
-										<dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
-
-									</Columns>
-									<SettingsEditing Mode="Inline"></SettingsEditing>
-										
-
-								</dx:ASPxGridView>
 							</dx:PanelContent>
 						</PanelCollection>
-					</dx:ASPxPanel>
+					</dx:ASPxPanel>--%>
 
 			</td>
 		</tr>
@@ -132,14 +105,13 @@
 <%--				<dx:ASPxComboBox ID="cboForms" runat="server" Caption="Forms:"></dx:ASPxComboBox>--%>
 			</td>
 			<td style="vertical-align: top; padding: 10px">
-				<dx:ASPxButton ID="btnLoadFormData" runat="server" Text="Load Selected Data" OnClick="btnLoadFormData_OnClick" >
+				<dx:ASPxButton ID="btnLoadFormData" runat="server" Text="Display REDCap Data from Selected Forms" OnClick="btnLoadFormData_OnClick" >
 				<%--	<ClientSideEvents Click="function(s,e) {  panel.PerformCallback();}" />--%>
 				</dx:ASPxButton>
-			</td>
-			<td style="vertical-align: top; padding: 10px">
-				<dx:ASPxButton ID="btnShowMeta" runat="server" Text="Show REDCap meta data" OnClick="btnShowMeta_OnClick"></dx:ASPxButton>
-			</td>
-			<td style="vertical-align: top; padding: 10px">
+				   <br /><br />
+				<dx:ASPxButton ID="btnShowMeta" runat="server" Text="Display REDCap Meta-Data from Selected Forms" OnClick="btnShowMeta_OnClick"></dx:ASPxButton>
+
+				   <br /><br />
 				<dx:ASPxButton ID="btnImportMeta" runat="server" Text="Import this meta data" Visible="false" OnClick="btnImportMeta_OnClick"></dx:ASPxButton>
 
 				<br />

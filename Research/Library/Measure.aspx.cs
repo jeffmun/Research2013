@@ -25,17 +25,38 @@ public partial class Library_Measure : BasePage
 		bool isCallback = IsCallback;
 		bool isPostback = IsPostBack;
 
-		if(!IsPostBack & Request.QueryString["mID"] != null)
-		{
-			if (Request.QueryString["mID"] != null)
+		string mID = Request.QueryString["mID"];
+
+		if (!IsPostBack)
+		{ 
+			if(!String.IsNullOrEmpty(mID))
 			{
+				FormLayout.Visible = true;
+				Panel_UploadDocs.Visible = true;
+				lblDocs.Visible = true;
+				btnShowUploadDocPanel.Visible = true;
+				gridDocs.Visible = true;
+				btnDiv.Visible = true;
+
+
+				lblNoMeasure.Visible = false;
+				
 				int measureID = Convert.ToInt32(Request.QueryString["mID"]);
 				LoadMeasureInfo(measureID);
 
 				LoadDocs(measureID);
 			}
-		 
-
+			else
+			{
+				FormLayout.Visible = false;
+				Panel_UploadDocs.Visible = false;
+				lblDocs.Visible = false;
+				btnShowUploadDocPanel.Visible = false;
+				gridDocs.Visible = false;
+				btnDiv.Visible = false; 
+				
+				lblNoMeasure.Visible = true;
+			}
 		}
 
 	}

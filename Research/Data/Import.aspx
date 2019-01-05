@@ -81,9 +81,9 @@
 			</td>
 
 			<td style="vertical-align: top; padding: 5px">
-				<dx:ASPxButton ID="btn1" ClientInstanceName="btn1" runat="server" AutoPostBack="true" Text="Import Data" OnClick="UploadDoc" Native="true" ClientVisible="false"/>
+				<dx:ASPxButton ID="btn1" ClientInstanceName="btn1" runat="server" AutoPostBack="true" Text="Import Data" OnClick="UploadFileAndSaveToDB" Native="true" ClientVisible="false"/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<dx:ASPxButton ID="btn2" ClientInstanceName="btn2" runat="server" AutoPostBack="true" Text="Cancel" OnClick="UploadDoc_Cancel" Native="true" ForeColor="Red" ClientVisible="false" />
+				<dx:ASPxButton ID="btn2" ClientInstanceName="btn2" runat="server" AutoPostBack="true" Text="Cancel" OnClick="UploadFile_Cancel" Native="true" ForeColor="Red" ClientVisible="false" />
 				<br />
 				<br />
 
@@ -103,51 +103,62 @@
 									<ClientSideEvents Click="HideLinkedPanel" />
 									</dx:ASPxButton>
 				
-								<dx:ASPxGridView ID="gridLinkedImport" runat="server" ClientInstanceName="gridLinkedImport" KeyFieldName="ltpk"
-									 Caption="Sets of Linked Tables" 
-									 SettingsDataSecurity-AllowAddingRecords="true"
-									 SettingsDataSecurity-AllowInsert="true"
-									SettingsDataSecurity-AllowUpdate="true"
-									 SettingsDataSecurity-AllowDelete="true"
-									 OnRowUpdating="gridLinkedImport_OnRowUpdating"
-									 OnRowDeleting="gridLinkedImport_OnRowDeleting"
-									 OnRowInserting="gridLinkedImport_OnRowInserting">
-									<Columns>
-									   <dx:GridViewDataColumn FieldName="ltpk" Caption="pk"  CellStyle-ForeColor="Silver" Width="50px" Visible="false"></dx:GridViewDataColumn>
-									   <dx:GridViewDataColumn FieldName="linkedimport" Caption="LinkedImport"  Width="150px"></dx:GridViewDataColumn>
+								<br />
+								<table>
+									<tr>
+										<td style="vertical-align:top; padding:10px">
+											<dx:ASPxGridView ID="gridLinkedImport" runat="server" ClientInstanceName="gridLinkedImport" KeyFieldName="ltpk"
+												 Caption="Sets of Linked Tables" 
+												 SettingsDataSecurity-AllowAddingRecords="true"
+												 SettingsDataSecurity-AllowInsert="true"
+												SettingsDataSecurity-AllowUpdate="true"
+												 SettingsDataSecurity-AllowDelete="true"
+												 OnRowUpdating="gridLinkedImport_OnRowUpdating"
+												 OnRowDeleting="gridLinkedImport_OnRowDeleting"
+												 OnRowInserting="gridLinkedImport_OnRowInserting">
+												<Columns>
+												   <dx:GridViewDataColumn FieldName="ltpk" Caption="pk"  CellStyle-ForeColor="Silver" Width="50px" Visible="false"></dx:GridViewDataColumn>
+												   <dx:GridViewDataColumn FieldName="linkedimport" Caption="LinkedImport"  Width="150px"></dx:GridViewDataColumn>
 
-									<dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="true" ShowNewButtonInHeader="true" />
+												<dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="true" ShowNewButtonInHeader="true" />
 
-									</Columns>
-								</dx:ASPxGridView>
-								<dx:ASPxGridView ID="gridLinkedImportTbl" runat="server" ClientInstanceName="gridLinkedImportTbl" KeyFieldName="ltpk;tblpk" 
-									 Caption="Linked Tables"
-									 SettingsDataSecurity-AllowAddingRecords ="true"
-									 SettingsDataSecurity-AllowInsert="true"
-									 SettingsDataSecurity-AllowDelete="true"
-									 OnRowInserting="gridLinkedImportTbl_OnRowInserting"
-									 OnRowDeleting="gridLinkedImportTbl_OnRowDeleting"
-									 OnCellEditorInitialize="gridLinkedImportTbl_CellEditorInitialize">
-								<Columns>
-									   <dx:GridViewDataComboBoxColumn FieldName="ltpk" Caption="Set of Linked Tables" ReadOnly="false" >
-											<PropertiesComboBox DataSourceID="sqlLT" TextField="_linkedimport" ValueField="_ltpk"
-												></PropertiesComboBox>
-										</dx:GridViewDataComboBoxColumn>
+												</Columns>
+											</dx:ASPxGridView>
+
+										</td>
+										<td style="vertical-align:top; padding:10px">
+											<dx:ASPxGridView ID="gridLinkedImportTbl" runat="server" ClientInstanceName="gridLinkedImportTbl" KeyFieldName="ltpk;tblpk" 
+												 Caption="Linked Tables"
+												 SettingsDataSecurity-AllowAddingRecords ="true"
+												 SettingsDataSecurity-AllowInsert="true"
+												 SettingsDataSecurity-AllowDelete="true"
+												 OnRowInserting="gridLinkedImportTbl_OnRowInserting"
+												 OnRowDeleting="gridLinkedImportTbl_OnRowDeleting"
+												 OnCellEditorInitialize="gridLinkedImportTbl_CellEditorInitialize">
+											<Columns>
+												   <dx:GridViewDataComboBoxColumn FieldName="ltpk" Caption="Set of Linked Tables" ReadOnly="false" >
+														<PropertiesComboBox DataSourceID="sqlLT" TextField="_linkedimport" ValueField="_ltpk"
+															></PropertiesComboBox>
+													</dx:GridViewDataComboBoxColumn>
 
 
 
-										<dx:GridViewDataComboBoxColumn FieldName="tblpk" Caption="Measure" >
-											<PropertiesComboBox DataSourceID="sqlMeas" TextField="_measname" ValueField="_tblpk"
-												></PropertiesComboBox>
-										</dx:GridViewDataComboBoxColumn>
+													<dx:GridViewDataComboBoxColumn FieldName="tblpk" Caption="Measure" >
+														<PropertiesComboBox DataSourceID="sqlMeas" TextField="_measname" ValueField="_tblpk"
+															></PropertiesComboBox>
+													</dx:GridViewDataComboBoxColumn>
 
-										<dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
+													<dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
 
-									</Columns>
-									<SettingsEditing Mode="Inline"></SettingsEditing>
+												</Columns>
+												<SettingsEditing Mode="Inline"></SettingsEditing>
 										
 
-								</dx:ASPxGridView>
+											</dx:ASPxGridView>
+
+										</td>
+									</tr>
+								</table>
 							</dx:PanelContent>
 						</PanelCollection>
 					</dx:ASPxPanel>

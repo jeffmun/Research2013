@@ -129,7 +129,7 @@ namespace uwac
 				// Get and convert the values of the old column, and insert them into the new
 				foreach (DataRow dr in dt.Rows)
 				{
-					if(dr[columnName] == DBNull.Value)
+					if(dr[columnName] == DBNull.Value | dr[columnName].ToString()=="")
 					{
 						dr[dc.ColumnName] = DBNull.Value;
 					}
@@ -243,9 +243,42 @@ namespace uwac
 			}
 		}
 
+		public static void RenameColumn(this DataTable dt, string colname_from, string colname_to)
+		{
+
+			foreach(DataColumn col in dt.Columns)
+			{
+				if(col.ColumnName.ToLower() == colname_from.ToLower())
+				{
+					col.ColumnName = colname_to;
+				}
+			}
+
+		}
 
 
-		//Needed for SPSSsav 
+		public static void MatchColumnDataTypes(this DataTable dt, DataTable dt_to_match)
+		{
+			//foreach(DataColumn col in dt.Columns)
+			//{
+			//	foreach (DataColumn col_to_match in dt_to_match.Columns)
+			for (int i=0; i < dt.Columns.Count; i++)
+			{
+				DataColumn col = dt.Columns[i];
+
+				for (int j = 0; j < dt_to_match.Columns.Count; j++)
+				{
+					DataColumn col_to_match = dt_to_match.Columns[j];
+					if (col.ColumnName == col_to_match.ColumnName)
+					{
+						ConvertColumnType(dt, col.ColumnName, col_to_match.DataType);
+					}
+				}	
+			}
+		}
+
+
+		//Needed for SPSSsav and other importing
 		public static void AddNeededColumnsBeforeImport(this DataTable dt, DataImportSettings settings)
 		{
 			bool hasindexnum = dt.ContainsColumnName("indexnum");
