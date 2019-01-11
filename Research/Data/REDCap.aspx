@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="c#"   Debug="true" MasterPageFile="~/UWAC.master" AutoEventWireup="true" EnableEventValidation="true"
-  CodeFile="REDCap.aspx.cs" Inherits="Data_REDCap"  Title ="REDCap Info"    %>  
+  CodeFile="REDCap.aspx.cs" Inherits="Data_REDCap"  Title ="Linked Import Tables"    %>  
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 <%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
@@ -36,7 +36,7 @@
 	</script>
 
 
-	<asp:Label ID="lbl1" runat="server" Text="REDCap Info" Font-Size="Medium" Font-Bold="true"></asp:Label>
+	<asp:Label ID="lbl1" runat="server" Text="Linked Tables for Import: General & REDCap Info" Font-Size="Medium" Font-Bold="true"></asp:Label>
 
 
 	<table>
@@ -53,28 +53,28 @@
 			
 			<td style="width:400px; padding:10px">
 				
-			    <dx:ASPxGridView ID="gridLinkedREDCapForm" runat="server" ClientInstanceName="gridLinkedREDCapForm" KeyFieldName="redcapformID" 
-					    Caption="Linked REDCap Forms"
-					    SettingsDataSecurity-AllowAddingRecords ="true"
-					    SettingsDataSecurity-AllowInsert="true"
-					    SettingsDataSecurity-AllowDelete="true"
-					    OnRowInserting="gridLinkedREDCapForm_OnRowInserting"
-					    OnRowDeleting="gridLinkedREDCapForm_OnRowDeleting"
-					    OnCellEditorInitialize="gridLinkedREDCapForm_CellEditorInitialize">
-			    <Columns>
-				    <dx:GridViewDataColumn FieldName="redcapformID" Visible="false"></dx:GridViewDataColumn>
-				    <dx:GridViewDataColumn FieldName="form_name"></dx:GridViewDataColumn>
-				    <dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
+				<dx:ASPxGridView ID="gridLinkedREDCapForm" runat="server" ClientInstanceName="gridLinkedREDCapForm" KeyFieldName="redcapformID" 
+						Caption="Linked REDCap Forms"
+						SettingsDataSecurity-AllowAddingRecords ="true"
+						SettingsDataSecurity-AllowInsert="true"
+						SettingsDataSecurity-AllowDelete="true"
+						OnRowInserting="gridLinkedREDCapForm_OnRowInserting"
+						OnRowDeleting="gridLinkedREDCapForm_OnRowDeleting"
+						OnCellEditorInitialize="gridLinkedREDCapForm_CellEditorInitialize">
+				<Columns>
+					<dx:GridViewDataColumn FieldName="redcapformID" Visible="false"></dx:GridViewDataColumn>
+					<dx:GridViewDataColumn FieldName="form_name"></dx:GridViewDataColumn>
+					<dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
 
-			    </Columns>
-			    <SettingsEditing Mode="Inline"></SettingsEditing>
+				</Columns>
+				<SettingsEditing Mode="Inline"></SettingsEditing>
 										
 
-			    </dx:ASPxGridView>
+				</dx:ASPxGridView>
 			</td>
 			<td style="width:500px">
 
-<%--				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked REDCap Forms"  Native="true" ClientVisible="true">
+				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked Import Tables (Non-REDCap)"  Native="true" ClientVisible="true">
 						<ClientSideEvents Click="ShowLinkedPanel" />
 					</dx:ASPxButton>
 
@@ -85,9 +85,65 @@
 									<ClientSideEvents Click="HideLinkedPanel" />
 									</dx:ASPxButton>
 				
+								<br />
+								<table>
+									<tr>
+										<td style="vertical-align:top; padding:10px">
+											<dx:ASPxGridView ID="gridLinkedImport" runat="server" ClientInstanceName="gridLinkedImport" KeyFieldName="ltpk"
+												 Caption="Sets of Linked Tables" 
+												 SettingsDataSecurity-AllowAddingRecords="true"
+												 SettingsDataSecurity-AllowInsert="true"
+												SettingsDataSecurity-AllowUpdate="true"
+												 SettingsDataSecurity-AllowDelete="true"
+												 OnRowUpdating="gridLinkedImport_OnRowUpdating"
+												 OnRowDeleting="gridLinkedImport_OnRowDeleting"
+												 OnRowInserting="gridLinkedImport_OnRowInserting">
+												<Columns>
+												   <dx:GridViewDataColumn FieldName="ltpk" Caption="pk"  CellStyle-ForeColor="Silver" Width="50px" Visible="false"></dx:GridViewDataColumn>
+												   <dx:GridViewDataColumn FieldName="linkedimport" Caption="LinkedImport"  Width="150px"></dx:GridViewDataColumn>
+
+												<dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="true" ShowNewButtonInHeader="true" />
+
+												</Columns>
+											</dx:ASPxGridView>
+
+										</td>
+										<td style="vertical-align:top; padding:10px">
+											<dx:ASPxGridView ID="gridLinkedImportTbl" runat="server" ClientInstanceName="gridLinkedImportTbl" KeyFieldName="ltpk;tblpk" 
+												 Caption="Linked Tables"
+												 SettingsDataSecurity-AllowAddingRecords ="true"
+												 SettingsDataSecurity-AllowInsert="true"
+												 SettingsDataSecurity-AllowDelete="true"
+												 OnRowInserting="gridLinkedImportTbl_OnRowInserting"
+												 OnRowDeleting="gridLinkedImportTbl_OnRowDeleting"
+												 OnCellEditorInitialize="gridLinkedImportTbl_CellEditorInitialize">
+											<Columns>
+												   <dx:GridViewDataComboBoxColumn FieldName="ltpk" Caption="Set of Linked Tables" ReadOnly="false" >
+														<PropertiesComboBox DataSourceID="sqlLT" TextField="_linkedimport" ValueField="_ltpk"
+															></PropertiesComboBox>
+													</dx:GridViewDataComboBoxColumn>
+
+
+
+													<dx:GridViewDataComboBoxColumn FieldName="tblpk" Caption="Measure" >
+														<PropertiesComboBox DataSourceID="sqlMeas" TextField="_measname" ValueField="_tblpk"
+															></PropertiesComboBox>
+													</dx:GridViewDataComboBoxColumn>
+
+													<dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
+
+												</Columns>
+												<SettingsEditing Mode="Inline"></SettingsEditing>
+										
+
+											</dx:ASPxGridView>
+
+										</td>
+									</tr>
+								</table>
 							</dx:PanelContent>
 						</PanelCollection>
-					</dx:ASPxPanel>--%>
+					</dx:ASPxPanel>
 
 			</td>
 		</tr>
@@ -134,6 +190,22 @@
 			</dx:PanelContent>
 		</PanelCollection>
 	</dx:ASPxCallbackPanel>
+
+
+	<asp:Panel ID="panelMerged" runat="server" Visible="false">
+		<dx:ASPxGridView ID="gridMerged" runat="server" ClientInstanceName="gridMerged">
+			<Columns>
+				<dx:GridViewDataColumn FieldName="ord_pos" Caption="Pos"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="fldname"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="fldlabel"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="redcap_fldname"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="redcap_fldlabel"></dx:GridViewDataColumn>
+			</Columns>
+			<SettingsPager PageSize="50"  PageSizeItemSettings-Items="20,50,200" PageSizeItemSettings-Visible="true"></SettingsPager>
+		</dx:ASPxGridView>
+	</asp:Panel>
+
+
 
 		<asp:SqlDataSource ID="sqlMeas" runat="server" SelectCommandType="Text"  
 		SelectCommand="select tblpk as _tblpk, measname as _measname from def.Tbl a JOIN uwautism_research_backend..tblmeasure  b ON a.measureID=b.measureID where a.measureID in (select measureID from uwautism_research_backend..tblstudymeas where studyID= @studyID) "

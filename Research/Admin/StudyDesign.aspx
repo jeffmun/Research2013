@@ -397,7 +397,7 @@
 							</dx:GridViewDataComboBoxColumn>
 							<dx:GridViewDataHyperLinkColumn FieldName="measureID" Caption="Measure" EditFormSettings-Visible="false"
 								PropertiesHyperLinkEdit-TextField="measname" 
-								PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Info/MeasureInfo.aspx?measureID={0}" ></dx:GridViewDataHyperLinkColumn>
+								PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Library/Measure.aspx?mID={0}" ></dx:GridViewDataHyperLinkColumn>
 							<dx:GridViewDataComboBoxColumn FieldName="measureID" Caption="Measure" Width="60" Visible="false" EditFormSettings-Visible="true" PropertiesComboBox-ClientSideEvents-SelectedIndexChanged="MeasChanged"  >
 								<PropertiesComboBox TextField="measname" ValueField="measureID" DataSourceID='sql_Measure'  >
 									<ClientSideEvents SelectedIndexChanged="OnMeasChanged" />

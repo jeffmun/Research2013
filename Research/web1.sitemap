@@ -61,6 +61,7 @@
       <siteMapNode url="~/Library/MeasureList.aspx" title="Measures for this Study" />
       <!--<siteMapNode url="~/Info/MeasureInfo.aspx" title="Measure Info" />-->
       <siteMapNode url="~/Library/MeasureLibrary.aspx" title="Measure Library" />
+      <siteMapNode url="~/Library/Measure.aspx" title="Measure Library: Details" />
       <siteMapNode url="~/Library/DocLibrary.aspx" title="Document Library" />
       <siteMapNode url="~/Data/Dictionary.aspx" title="Data Dictionary" />
       <siteMapNode url="~/Admin/NewMeasure.aspx" title="Create New Measure" menuitem="true" />
@@ -95,7 +96,7 @@
       <siteMapNode url="" title="Importing Data">
         <siteMapNode url="~/Data/ImportHelp.aspx" title="Help on Importing Data" description="" menuitem="true" />
         <siteMapNode url="~/Data/Import.aspx" title="Import Data" description="" menuitem="true" />
-        <siteMapNode url="~/Data/REDCap.aspx" title="REDCap Info" description="" menuitem="true" />
+        <siteMapNode url="~/Data/REDCap.aspx" title="Linked Import Tables (REDCap, etc.)" description="" menuitem="true" />
       </siteMapNode>
     </siteMapNode>
     <siteMapNode url="" title="Admin">

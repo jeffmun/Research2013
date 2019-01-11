@@ -169,8 +169,20 @@
 						</DataItemTemplate>--%>
 
 
+	<table>
+		<tr>
+			<td>
 				<dx:ASPxLabel ID="lblMeasName" runat="server"  Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
 				<dx:ASPxLabel ID="lblMeasFullName" runat="server"  Font-Size="Medium" Font-Bold="false"></dx:ASPxLabel>
+
+			</td>
+			<td style="width: 200px"></td>
+			<td>
+				<dx:ASPxLabel ID="lblTblInfo" runat="server"  Font-Size="small" ForeColor="Silver"></dx:ASPxLabel>
+				
+			</td>
+		</tr>
+	</table>
 				<br />
 
 				<dx:ASPxGridView ID="gridDict" ClientInstanceName="gridDict" runat="server" KeyFieldName="fldpk" 
@@ -215,8 +227,9 @@
 					<dx:GridViewDataColumn FieldName="fld_status" Caption="Status" Visible="true" ></dx:GridViewDataColumn>
 					
 					<dx:GridViewDataColumn FieldName="ExcludeFromNDARdict" Caption="Exclude<br/>NDAR"  Width="50px"></dx:GridViewDataColumn>
+					<dx:GridViewDataColumn FieldName="ConvertFromLabelToValue" Caption="Convert<br/>Label"  Width="50px"></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fldextractionmode" Visible="false"></dx:GridViewDataColumn>
-					<dx:GridViewDataColumn FieldName="fieldextractionmode_txt" Caption="Extraction mode"></dx:GridViewDataColumn>
+					<dx:GridViewDataColumn FieldName="fldextractionmode_txt" Caption="Extraction mode"></dx:GridViewDataColumn>
 				   
 					<dx:GridViewDataColumn FieldName="importposition" Caption="Import position" Visible="true" ></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="constString" Caption="constString" Visible="true" ></dx:GridViewDataColumn>
@@ -269,7 +282,7 @@
 							</dx:GridViewLayoutGroup>
 
 						<%-- Import Settings --%>
-						 <dx:GridViewLayoutGroup ColCount="1" ColumnSpan="1" Caption="Import / Export settings" Width="600px">
+						 <dx:GridViewLayoutGroup ColCount="1" ColumnSpan="1" Caption="Import settings" Width="600px">
 							<Items>
 
 								<dx:GridViewColumnLayoutItem ColumnName="fldextractionmode" Caption="Extraction Mode" ColumnSpan="1">
@@ -282,10 +295,11 @@
 
 									</Template>
 								</dx:GridViewColumnLayoutItem>
-								<dx:GridViewColumnLayoutItem ColumnName="importposition" Caption="Import position"  ColumnSpan="1" Width="190px"/>
-								<dx:GridViewColumnLayoutItem ColumnName="constString" Caption="Text constant"  ColumnSpan="1" Width="300px"/>
+								<dx:GridViewColumnLayoutItem ColumnName="importposition" Caption="Import position"  ColumnSpan="1" Width="250px"/>
+								<dx:GridViewColumnLayoutItem ColumnName="constString" Caption="Text constant"  ColumnSpan="1" Width="500px"/>
 								
-								<dx:GridViewColumnLayoutItem ColumnName="ExcludeFromNDARdict" Caption="In NDAR dict? (1=Exclude)" Width="190px"  ColumnSpan="1"/>
+								<dx:GridViewColumnLayoutItem ColumnName="ExcludeFromNDARdict" Caption="In NDAR dict? (1=Exclude)" Width="250px"  ColumnSpan="1"/>
+								<dx:GridViewColumnLayoutItem ColumnName="ConvertFromLabelToValue" Caption="Convert from label to value? (1=Yes)" Width="250px"  ColumnSpan="1"/>
 
 							</Items>
 						</dx:GridViewLayoutGroup>
@@ -377,7 +391,7 @@
 	
 
 	<asp:SqlDataSource ID="sqlFldExtractionMode" runat="server" SelectCommandType="Text"  
-		SelectCommand="select fieldextractionmode mode, fieldextractionmode_txt mode_txt from def.FldExtractionMode"
+		SelectCommand="select fldextractionmode mode, fldextractionmode_txt mode_txt from def.FldExtractionMode"
 		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
 	</asp:SqlDataSource>
 

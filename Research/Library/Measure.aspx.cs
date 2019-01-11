@@ -39,7 +39,7 @@ public partial class Library_Measure : BasePage
 				btnDiv.Visible = true;
 
 
-				lblNoMeasure.Visible = false;
+				panelNoMeasure.Visible = false;
 				
 				int measureID = Convert.ToInt32(Request.QueryString["mID"]);
 				LoadMeasureInfo(measureID);
@@ -55,7 +55,7 @@ public partial class Library_Measure : BasePage
 				gridDocs.Visible = false;
 				btnDiv.Visible = false; 
 				
-				lblNoMeasure.Visible = true;
+				panelNoMeasure.Visible = true;
 			}
 		}
 

@@ -122,13 +122,13 @@ public partial class Data_Dictionary: BasePage
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
 			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!') else '' end) datatype, fieldlabel, fieldvaluesetID " + Environment.NewLine +
 			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'<br/>') valuelabels " + Environment.NewLine +
-			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fieldextractionmode_txt, importposition, constString  " + Environment.NewLine +
-			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status, ExcludeFromNDARdict " + Environment.NewLine +
+			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fldextractionmode_txt, importposition, constString  " + Environment.NewLine +
+			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status, ExcludeFromNDARdict, ConvertFromLabelToValue " + Environment.NewLine +
 			" from def.Fld a " + Environment.NewLine +
 			" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
 			" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
 			" LEFT JOIN datFieldCode d ON a.fieldcodeID = d.fieldcodeID " + Environment.NewLine +
-			" LEFT JOIN def.FldExtractionMode e ON a.fldextractionmode = e.fieldextractionmode " + Environment.NewLine +
+			" LEFT JOIN def.FldExtractionMode e ON a.fldextractionmode = e.fldextractionmode " + Environment.NewLine +
 			" where a.tblpk = (select tblpk from def.tbl where measureID = {0}) " + Environment.NewLine +
 			" and fldname not in ('studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
 			" and (a.fieldcodeID >= 0 or a.fieldcodeID is null) " + Environment.NewLine +
@@ -138,9 +138,12 @@ public partial class Data_Dictionary: BasePage
 		string measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureID.ToString());
 		string measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureID.ToString());
 
+		string tblinfo = sql.StringScalar_from_SQLstring("select 'tblpk: ' + cast(tblpk as varchar) + '  ' + tblname from uwautism_research_data.def.tbl where measureID=" + measureID.ToString());
+
+
 		lblMeasName.Text = measname;
 		if(measname != measfullname) lblMeasFullName.Text = " - " + measfullname;
-
+		lblTblInfo.Text = tblinfo;
 
 
 		DataTable dt = sql.DataTable_from_SQLstring(code);
@@ -449,6 +452,15 @@ public partial class Data_Dictionary: BasePage
 			{
 				e.Cell.BackColor = Color.LightCoral;
 				e.Cell.ForeColor = Color.DarkRed;
+			}
+		}
+		if (e.Cell != null & e.DataColumn.FieldName == "ConvertFromLabelToValue")
+		{
+			string convert = e.CellValue.ToString();
+			if (convert == "1")
+			{
+				e.Cell.BackColor = Color.LawnGreen;
+				e.Cell.ForeColor = Color.Black;
 			}
 		}
 

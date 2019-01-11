@@ -27,6 +27,7 @@ namespace uwac
 		public int rowstoprocess { get; set; }
 		public char textqualifier { get; set; }
 		public List<Importfield> fields { get; set; }
+		public List<Valueset> valuesets { get; set; }
 
 		public DataImportSettings(string input_ID, int input_studymeasID)
 		{
@@ -35,6 +36,7 @@ namespace uwac
 			studymeasID = input_studymeasID;
 
 			fields = new List<Importfield>();
+			valuesets = new List<Valueset>();
 
 			PopulateImportSettingsFromDB(ID, studymeasID);
 			AssignDelimiter();
@@ -46,6 +48,7 @@ namespace uwac
 			rowstoprocess = numrows;
 
 			fields = new List<Importfield>();
+			valuesets = new List<Valueset>();
 
 			PopulateImportSettingsFromDB(ID, studymeasID);
 			//PopulateImportSettings(ID, studymeasID);
@@ -114,6 +117,8 @@ namespace uwac
 
 			Debug.WriteLine("*** == > Begin looping through rows ***");
 
+
+
 			foreach (DataRow row in dt_fld.Rows)
 			{
 				string fldname = row["fldname"].ToString();
@@ -122,70 +127,34 @@ namespace uwac
 				impfld.mode = ((FieldExtractionMode)Convert.ToInt32(row["fldextractionmode"]));
 				if (row["importposition"] != DBNull.Value) impfld.importposition = Convert.ToInt32(row["importposition"]);
 				if (row["constString"] != DBNull.Value) impfld.constString = row["constString"].ToString();
-
+				impfld.ConvertFromLabelToValue = (row["ConvertFromLabelToValue"].ToString() == "1") ? true : false;
+				if(row["fieldvaluesetID"] != DBNull.Value) impfld.fieldvaluesetID = Convert.ToInt32(row["fieldvaluesetID"].ToString());
 				fields.Add(impfld);
 			}
 			Debug.WriteLine("*** == > End looping through rows ***");
 
+			PopulateValueSets(tblpk);
 		}
 
 
+		private void PopulateValueSets(int tblpk)
+		{
 
-	}
+			SQL_utils sql = new SQL_utils("data");
 
-	public class Importfield
-	{
-		public string field { get; set; }
-		//public Type datatype { get; set; }
-		public FieldExtractionMode mode { get; set; }
-		public int importposition { get; set; }
-		public string constString { get; set; }
-		public Importfield() { }
+			DataTable dt_valsets = sql.DataTable_from_SQLstring("select fldname, fieldvaluesetID from def.fld where ConvertFromLabelToValue=1 and tblpk=" + tblpk.ToString());
 
+			List<int> valsetIDs = dt_valsets.AsEnumerable().Select(f => f.Field<int>("fieldvaluesetID")).Distinct().ToList();
 
-		//public T CastIt<T>(object input)
-		//{
-		//	return (T)input;
-		//}
+			foreach(int valsetID in valsetIDs)
+			{
+				Valueset valset = new Valueset(valsetID);
+				if (valset != null) valuesets.Add(valset);
+			}
 
-		//public T ConvertIt<T>(object input)
-		//{
-		//	return (T)Convert.ChangeType(input, typeof(T));
-		//}
-	}
+		}
 
 
-	public enum FieldExtractionMode
-	{
-		matchFldname = 0,
-		useImportPosition = 1,
-		useImportPositionWithNext = 2,
-		useConstString = 3,
-		calcDayNum = 4,
-		useMarkerString = 5,
-		isOtherFld = 6,
-		useOtherFld = 7
-	}
-
-
-	public enum ImportFiletype
-	{
-		csv = 0,
-		txt = 1,
-		xls = 2,
-		xlsx = 3,
-		tsv = 4,
-		textlines = 5,
-		actigraph = 6,
-		REDCap = 7,
-		SPSSsav = 8
-	}
-
-	public enum ImportTextqualifier
-	{
-		none = 0,
-		doublequote = 1,
-		singlequote = 2
 	}
 
 
@@ -304,6 +273,7 @@ namespace uwac
 			//this[(this.Count - 1)].linenumber_end = textlines.Count;
 		}
 	}
+
 
 
 }

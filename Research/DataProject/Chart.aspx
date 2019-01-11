@@ -981,8 +981,7 @@
 
 										</tr>
 										<tr>
-											<td style="padding: 5px">
-											</td>
+										
 											<td style="padding: 5px">
 											</td>
 											<td style="padding: 5px">
@@ -1006,6 +1005,8 @@
 															</dx:ASPxTextBox>
 
 												</td>
+											<td style="padding: 5px">
+											</td>
 										</tr>
 									</table>
 									<br />

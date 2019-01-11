@@ -92,7 +92,15 @@
 			</table>
 	</div>
 
-	<asp:Label ID="lblNoMeasure" runat="server" Visible="false" Text="No Measure was selected." Font-Size="Medium"></asp:Label>
+	<asp:Panel ID="panelNoMeasure" runat="server" Visible="false">
+	<asp:Label ID="lblNoMeasure" runat="server"  Text="No Measure was selected." Font-Size="Medium"></asp:Label>
+		<br />
+	<asp:Label ID="Label3" runat="server"  Text="Select a specific measure from the " Font-Size="Medium"></asp:Label>
+	<asp:HyperLink ID="hyp1" runat="server" NavigateUrl="MeasureList.aspx" Text="Measures for this Study" Font-Size="Medium"></asp:HyperLink>
+	<asp:Label ID="Label2" runat="server"  Text=" or the " Font-Size="Medium"></asp:Label>
+	<asp:HyperLink ID="hyp2" runat="server" NavigateUrl="MeasureLibrary.aspx" Text="Measure Library" Font-Size="Medium"></asp:HyperLink>
+	<asp:Label ID="Label1" runat="server"  Text=" pages." Font-Size="Medium"></asp:Label>
+		</asp:Panel>
 
 	<dx:ASPxFormLayout ID="FormLayout" ClientInstanceName="FormLayout" runat="server"  AlignItemCaptionsInAllGroups="True" UseDefaultPaddings="false"
 			EnableViewState="true">

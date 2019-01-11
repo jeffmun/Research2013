@@ -312,7 +312,7 @@ namespace uwac
 
 									string quote_holder = (char_types.Contains(data_type)) ? "'" : "";
 
-									string newentry_dblquotes = (newentry.Value == null) ? "null" : newentry.Value.ToString().Replace("'", "''");
+									string newentry_dblquotes = (newentry.Value == null | newentry.Value == DBNull.Value) ? "null" : newentry.Value.ToString().Replace("'", "''");
 
 									if (newentry_dblquotes == "null") quote_holder = "";
 

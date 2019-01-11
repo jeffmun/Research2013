@@ -312,11 +312,6 @@ namespace uwac
 						newcolname = importfield.field;
 						sourcecolname = importfield.constString;
 					}
-					else if (importfield.mode == FieldExtractionMode.isOtherFld)
-					{
-						newcolname = importfield.constString;
-						sourcecolname = importfield.field;
-					}
 					DataColumn sourcecol = dt.Columns[sourcecolname];
 					bool hasotherfld = dt.ContainsColumnName(newcolname);
 

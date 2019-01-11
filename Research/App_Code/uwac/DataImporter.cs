@@ -27,13 +27,14 @@ namespace uwac
 		public string ID;
 		public int main_studymeasID;
 		public int main_measureID;
+		public int inputfile_rowcounter { get; set; }
 		public List<int> studymeasIDs;
 		public List<string> redcap_formnames { get; set; }
 		public DataImportSettings settings { get; set; }
 		public List<string> results { get; set; }
 		public DataTable dtLinkedImportTbls { get; set; }
 		private DataTable _imported_dt;
-		public DataTable imported_dt {  get { return _imported_dt; } set { _imported_dt = value; } }
+		public DataTable imported_dt { get { return _imported_dt; } set { _imported_dt = value; } }
 
 		public DataImporter(string myID, int mystudymeasID)
 		{
@@ -71,6 +72,8 @@ namespace uwac
 				sql.Close();
 
 			}
+
+			SQLAfterInsert();
 		}
 
 
@@ -89,28 +92,35 @@ namespace uwac
 			if (fileexists)
 			{
 				Debug.WriteLine(" #### attempt to define DataImportSettings ####");
-				
+
 
 				results.Add(String.Format("You have successfully uploaded '{0}'.", uploadedfilename));
 
-				
-				CheckSubjects(_imported_dt);  //add any needed subjects in order to import this data.  Only need to do this once
+
 
 				//Begin processing each identified studymeasID
-				foreach(DataRow linkedrow in dtLinkedImportTbls.Rows)
+				foreach (DataRow linkedrow in dtLinkedImportTbls.Rows)
 				{
 					_imported_dt = null;
 					settings = new DataImportSettings(ID, Convert.ToInt32(linkedrow["studymeasID"]));
-					CreateTableForImport(ID, Convert.ToInt32(linkedrow["studymeasID"]), filepath, filename, linkedrow["tblname"].ToString()); 
+					CreateTableForImport(ID, Convert.ToInt32(linkedrow["studymeasID"]), filepath, filename, linkedrow["tblname"].ToString());
+
+					CheckSubjects(_imported_dt);  //add any needed subjects in order to import this data.  Only need to do this once
+
 					FixIndexnum(_imported_dt, linkedrow["tblname"].ToString()); //Check subjects and fix indexnum
 
 					if (_imported_dt.HasRows())
 					{
+
+						//ConvertLabelsToValues();
+
 						SQL_utils sql = new SQL_utils("data");
 						string insert_result = sql.BulkInsert(_imported_dt, linkedrow["tblname"].ToString());
 						results.Add(insert_result);
 						sql.Close();
 					}
+
+					SQLAfterInsert();
 				}
 
 			}
@@ -229,6 +239,12 @@ namespace uwac
 
 
 				}
+				else if (settings.importfiletype == ImportFiletype.xlsx)
+				{
+					Debug.WriteLine(" #### XLXS ####");
+
+					DataTable dt = GetDataTableFromXLSX(filepath, filename, settings);
+				}
 
 				else if (settings.importfiletype == ImportFiletype.SPSSsav)
 				{
@@ -243,23 +259,13 @@ namespace uwac
 					string msg = String.Format("{0} records, {1} variables, {2} subjects"
 						, _imported_dt.Rows.Count, _imported_dt.Columns.Count, nsubj);
 
-					//DataTable dt_prepped = AddNeededColumnsBeforeImport(dt, settings);
 					_imported_dt.AddNeededColumnsBeforeImport(settings);
 
 					Debug.WriteLine("# recs: " + _imported_dt.Rows.Count);
 					_imported_dt = _imported_dt.RemoveRowsWithNullID();
 					Debug.WriteLine("# recs: " + _imported_dt.Rows.Count);
 
-					//Debug.WriteLine("# recs: " + dt_prepped.Rows.Count);
-					//dt_prepped = dt_prepped.RemoveRowsWithNullID();
-					//Debug.WriteLine("# recs: " + dt_prepped.Rows.Count);
 
-
-					//msg += dt_source.RemoveRowsWithNullID();
-
-					//string insert_results = sql.BulkInsert(_imported_dt, settings.tblname);
-
-					//sql = new SQL_utils("data");
 					string result_sav = "SPSSsav file contains " + msg + "<br/>";
 					results.Add(result_sav);
 
@@ -276,7 +282,7 @@ namespace uwac
 
 			if (_imported_dt.HasRows())
 			{
-				string tblinfo = String.Format("local DataTable with {0} rows.", _imported_dt.Rows.Count);
+				string tblinfo = String.Format("local DataTable with {0} rows from a total of {1} rows processed.", _imported_dt.Rows.Count, inputfile_rowcounter);
 				results.Add(tblinfo);
 			}
 			else
@@ -284,6 +290,36 @@ namespace uwac
 				results.Add("_imported_dt Has No Rows!");
 			}
 
+		}
+
+		public void ConvertLabelsToValues()
+		{
+			SQL_utils sql = new SQL_utils("data");
+
+			//Get the set of fields and valuesets to transform
+			DataTable dt_valsets = sql.DataTable_from_SQLstring(String.Format("select fldname, fieldvaluesetid from def.fld where tblpk={0} and ConvertFromLabelToValue=1", settings.tblpk));
+
+			//Loop through the valuesets 
+			List<int> valsetIDs = dt_valsets.AsEnumerable().Select(f => f.Field<int>("fieldvaluesetid")).Distinct().ToList();
+			List<string> fldnames = dt_valsets.AsEnumerable().Select(f => f.Field<string>("fldname")).Distinct().ToList();
+
+			foreach (int valsetID in valsetIDs)
+			{
+				Valueset valset = new Valueset(valsetID);
+
+				//Loop through the fields
+				foreach (string fldname in fldnames)
+				{
+
+					//Loop through the rows and update the value
+					foreach (DataRow row in _imported_dt.Rows)
+					{
+						row[fldname] = valset.ValueFromLabel(row[fldname].ToString()).ToString();
+					}
+
+				}
+
+			}
 		}
 
 
@@ -315,7 +351,7 @@ namespace uwac
 
 					if (row == null)
 					{
-						results.Add("ERROR. GetDataTableFromCSVFile: No Row! counter = " + counter.ToString());
+						//results.Add("ERROR. GetDataTableFromCSVFile: No Row! counter = " + counter.ToString());
 					}
 					else
 					{
@@ -343,6 +379,8 @@ namespace uwac
 					}
 					counter++;
 				}
+
+				inputfile_rowcounter = counter;
 
 			}
 
@@ -410,8 +448,7 @@ namespace uwac
 
 								if (usebasedate & basedate == null)
 								{
-									basedate = (DateTime)GetValue(parser, "System.DateTime", basedate_importpos);
-									//basedate = Convert.ToDateTime(parser[basedate_importpos]);
+									basedate = (DateTime)Convert.ToDateTime(parser[basedate_importpos].ToString());
 								}
 								if (row != null)
 								{
@@ -426,6 +463,9 @@ namespace uwac
 					counter++;
 
 				}
+
+				inputfile_rowcounter = counter;
+
 
 			}
 
@@ -442,6 +482,66 @@ namespace uwac
 		}
 
 
+
+
+		public DataTable GetDataTableFromXLSX(string filepath, string xlsxfilename, DataImportSettings settings)
+		{
+			Debug.WriteLine("~~~~~ DataImporter ~~~~~~");
+			Debug.WriteLine("~~~~~ GetDataTableFromCSVFile ~~~~~~");
+			DataTable dt = EmptyDataTable(settings.tblname);
+			string myfilepath = filepath + xlsxfilename;
+
+			bool has_id = dt.ColumnNames().Contains("id");
+			bool hasindexnum = dt.ContainsColumnName("indexnum");
+
+			DataSet ds_xlsx = SpreadsheetGearUtils.GetDataSet(myfilepath, false);
+
+			DataTable dt_xlsx = ds_xlsx.Tables[0];
+			int counter = 0;
+			foreach (DataRow xlrow in dt_xlsx.Rows)
+			{
+				DataRow row = PopulateRow(dt, xlrow, settings, null);
+
+
+				if (row == null)
+				{
+					//results.Add("ERROR. GetDataTableFromCSVFile: No Row! counter = " + counter.ToString());
+				}
+				else
+				{
+					if (row.HasErrors)
+					{
+						DataColumn[] colArr;
+						colArr = row.GetColumnsInError();
+						for (int i = 0; i < colArr.Length; i++)
+						{
+							// Insert code to fix errors on each column.
+							Debug.WriteLine(colArr[i].ColumnName);
+						}
+
+					}
+					else
+					{
+						//Debug.WriteLine(String.Format("id='{0}'", row["id"].ToString()));
+
+						AddRow(has_id, dt, row);
+
+						//dt.Rows.Add(row);
+						if (counter % 100 == 0) Debug.WriteLine("counter = " + counter.ToString());
+
+					}
+				}
+				counter++;
+			}
+
+			inputfile_rowcounter = counter;
+
+
+			return dt;
+		}
+
+
+
 		#endregion
 
 
@@ -450,8 +550,9 @@ namespace uwac
 		{
 			//For ActigraphStats (measureID 3842) skip row if the first position contains " Summary"
 			if (measureID != 3842) return false;
-			else {
-				if (parser[position_to_check].Contains (" Summary")) return true;
+			else
+			{
+				if (parser[position_to_check].Contains(" Summary")) return true;
 			}
 			return false;
 		}
@@ -471,152 +572,67 @@ namespace uwac
 		}
 
 
-		private static DataRow PopulateRow(DataTable dt, GenericParser parser,  DataImportSettings settings, DateTime? basedate)
+		private static DataRow PopulateRow(DataTable dt, GenericParser parser, DataImportSettings settings, DateTime? basedate)
 		{
 			DataRow row = dt.NewRow();
-			bool printdebug = false;
-			if (printdebug)
-			{
-				Debug.WriteLine("..........................................................");
-				Debug.WriteLine("..........................................................");
-				Debug.WriteLine("..........................................................");
-
-
-				Debug.WriteLine("0 [{0}]   1 [{1}]   2 [{2}]   3 [{3}]", parser[0], parser[1], parser[2], parser[3]);
-				Debug.WriteLine("delim [{0}]   txtqual [{1}]   ", settings.delimiter, settings.textqualifier);
-				Debug.WriteLine("..........................................................");
-			}
 
 			bool isExcluded = false;
-			if(settings.measureID == 4853) isExcluded = (CheckForExcludedRow(parser, 11)) ; //For ActigraphEpoch check column 11 for "EXCLUDED"
+			if (settings.measureID == 4853) isExcluded = (CheckForExcludedRow(parser, 11)); //For ActigraphEpoch check column 11 for "EXCLUDED"
 
 
 			if (isExcluded)
 			{
-				return null;	
+				return null;
 			}
 			else
 			{
 				//try
 				//{
-					foreach (Importfield fld in settings.fields)
+				int n_nonnull_flds = 0;
+				foreach (Importfield fld in settings.fields)
+				{
+					fld.type = dt.Columns[fld.field].DataType.ToString();
+					fld.basedate = basedate;
+					if (fld.ConvertFromLabelToValue)
 					{
-						string type = dt.Columns[fld.field].DataType.ToString();
-						//Debug.WriteLine(String.Format("fld: {0} type:{1}", fld.field, type));
-						if (printdebug) Debug.WriteLine(String.Format("fld[{0}]  importpos[{1}] parservalue[{2}]", fld.field, fld.importposition, parser[fld.importposition]));
-
-						if (fld.field == "indexnum")
-						{
-							row[fld.field] = 0;
-						}
-						else if (fld.mode == FieldExtractionMode.matchFldname)
-						{
-							row[fld.field] = GetValue(parser, type, fld.field);
-						}
-						else if (fld.mode == FieldExtractionMode.useOtherFld)
-						{
-							row[fld.field] = GetValue(parser, type, fld.constString);
-						}
-						else if (fld.mode == FieldExtractionMode.isOtherFld)
-						{
-							type = dt.Columns[fld.constString].DataType.ToString();
-							row[fld.constString] = GetValue(parser, type, fld.field);
-						}
-						else if (fld.mode == FieldExtractionMode.useImportPosition)
-						{
-							row[fld.field] = GetValue(parser, type, fld.importposition);
-						}
-						else if (fld.mode == FieldExtractionMode.useConstString  )
-						{
-							row[fld.field] = ConvertValue(type, fld.constString);
-						}
-						else if ( fld.mode == FieldExtractionMode.useMarkerString)
-						{
-							row[fld.field] = ConvertValue(type, fld.constString);
-
-							//switch (type)
-							//{
-							//	case "System.Double":
-							//		row[fld.field] = Convert.ToDouble(fld.constString);
-							//		break;
-							//	case "System.Int32":
-							//		row[fld.field] = Convert.ToInt32(fld.constString);
-							//		break;
-							//	case "System.DateTime":
-							//		row[fld.field] = Convert.ToDateTime(fld.constString);
-							//		break;
-							//	default:
-							//		row[fld.field] = fld.constString;
-							//		break;
-							//}
-						}
-						else if (fld.mode == FieldExtractionMode.useImportPositionWithNext)
-						{
-							string newvalue = String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]).Replace("\"", "");
-
-							if(type.ToString() == "System.DateTime")
-							{
-								row[fld.field] = RoundTime((DateTime)ConvertValue(type, newvalue), RoundTo.HalfMinute);
-							}
-							else
-							{
-								row[fld.field] = newvalue;
-							}
-
-							//switch (type)
-							//{
-							//	case "System.DateTime":
-							//		row[fld.field] = RoundTime(Convert.ToDateTime(
-							//			String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]).Replace("\"", ""))
-							//			, RoundTo.HalfMinute);
-							//		break;
-							//	default:
-							//		row[fld.field] = String.Format("{0} {1}", parser[fld.importposition], parser[fld.importposition + 1]);
-							//		break;
-							//}
-
-						}
-						else if (fld.mode == FieldExtractionMode.calcDayNum)
-						{
-							string datetxt = parser[fld.importposition].Replace("\"", "");
-							DateTime thisdate = Convert.ToDateTime(datetxt);
-							DateTime thisbasedate = (basedate != null) ? Convert.ToDateTime(basedate) : thisdate;
-							int daynum = ((thisdate - thisbasedate).Days) + 1; //make the first day = 1
-							row[fld.field] = daynum;
-						}
+						fld.valueset = settings.valuesets.Where(v => v.fieldvaluesetid == fld.fieldvaluesetID).First();
 					}
+					fld.AssignImportValueToProcess(parser);
+
+					string rowfield =  fld.field;
+					row[rowfield] = fld.ProcessedValue();
+
+					List<string> flds_to_skip = new List<string> { "id", "studymeasid", "indexnum", "verified" };
+
+					if( !flds_to_skip.Contains(rowfield.ToLower()))
+					{
+						if (row[rowfield] != DBNull.Value) n_nonnull_flds++;
+					}
+
+
+				}
+
+				if (n_nonnull_flds == 0)
+				{
+					return null;
+				}
+				else
+				{
 					return row;
-				//}
-				//catch(Exception ex)
-				//{
-				//	int foo = 0;
-				//	return null;
-				//}
+				}
+
 			}
 
-			
+
 		}
 
 
 		private static DataRow PopulateRow(DataTable dt, DataRow source_row, DataImportSettings settings, DateTime? basedate)
 		{
 			DataRow row = dt.NewRow();
-			bool printdebug = false;
-			if (printdebug)
-			{
-				Debug.WriteLine("..........................................................");
-				Debug.WriteLine("..........................................................");
-				Debug.WriteLine("..........................................................");
-
-
-				Debug.WriteLine("0 [{0}]   1 [{1}]   2 [{2}]   3 [{3}]", source_row.ToString());
-				Debug.WriteLine("delim [{0}]   txtqual [{1}]   ", settings.delimiter, settings.textqualifier);
-				Debug.WriteLine("..........................................................");
-			}
 
 			bool isExcluded = false;
 			//if (settings.measureID == 4853) isExcluded = (CheckForExcludedRow(parser, 11)); //For ActigraphEpoch check column 11 for "EXCLUDED"
-
 
 			if (isExcluded)
 			{
@@ -628,81 +644,24 @@ namespace uwac
 				{
 					foreach (Importfield fld in settings.fields)
 					{
-						string type = dt.Columns[fld.field].DataType.ToString();
-						//Debug.WriteLine(String.Format("fld: {0} type:{1}", fld.field, type));
-						if (printdebug) Debug.WriteLine(String.Format("fld[{0}]  importpos[{1}] parservalue[{2}]", fld.field, fld.importposition, source_row[fld.importposition]));
+						fld.type = dt.Columns[fld.field].DataType.ToString();
+						fld.basedate = basedate;
+						if (fld.ConvertFromLabelToValue)
+						{
+							fld.valueset = settings.valuesets.Where(v => v.fieldvaluesetid == fld.fieldvaluesetID).First();
+						}
+						fld.AssignImportValueToProcess(source_row);
 
-						if (fld.field == "indexnum")
-						{
-							row[fld.field] = 0;
-						}
-						else if (fld.mode == FieldExtractionMode.matchFldname)
-						{
-							row[fld.field] = GetValue(source_row, type, fld.field);
-						}
-						else if (fld.mode == FieldExtractionMode.useOtherFld)
-						{
-							row[fld.field] = GetValue(source_row, type, fld.constString);
-						}
-						else if (fld.mode == FieldExtractionMode.isOtherFld)
-						{
-							type = dt.Columns[fld.constString].DataType.ToString();
-							row[fld.constString] = GetValue(source_row, type, fld.field);
-						}
-						else if (fld.mode == FieldExtractionMode.useImportPosition)
-						{
-							row[fld.field] = GetValue(source_row, type, fld.importposition);
-						}
-						else if (fld.mode == FieldExtractionMode.useConstString | fld.mode == FieldExtractionMode.useMarkerString)
-						{
-							switch (type)
-							{
-								case "System.Double":
-									row[fld.field] = Convert.ToDouble(fld.constString);
-									break;
-								case "System.Int32":
-									row[fld.field] = Convert.ToInt32(fld.constString);
-									break;
-								case "System.DateTime":
-									row[fld.field] = Convert.ToDateTime(fld.constString);
-									break;
-								default:
-									row[fld.field] = fld.constString;
-									break;
-							}
-						}
-						else if (fld.mode == FieldExtractionMode.useImportPositionWithNext)
-						{
-							switch (type)
-							{
-								case "System.DateTime":
-									row[fld.field] = RoundTime(Convert.ToDateTime(
-										String.Format("{0} {1}", source_row[fld.importposition], source_row[fld.importposition + 1]))
-										, RoundTo.HalfMinute);
-									break;
-								default:
-									row[fld.field] = String.Format("{0} {1}", source_row[fld.importposition], source_row[fld.importposition + 1]);
-									break;
-							}
+						string rowfield =  fld.field;
+						row[rowfield] = fld.ProcessedValue();
 
-						}
-						else if (fld.mode == FieldExtractionMode.calcDayNum)
-						{
-							DateTime thisdate = Convert.ToDateTime(source_row[fld.importposition]);
-
-							DateTime thisbasedate = (basedate != null) ? Convert.ToDateTime(basedate) : thisdate;
-
-							int daynum = ((thisdate - thisbasedate).Days) + 1; //make the first day = 1
-
-							row[fld.field] = daynum;
-
-						}
+						
 					}
 					return row;
 				}
 				catch (Exception ex)
 				{
-					int foo = 0;
+					//some error
 					return null;
 				}
 			}
@@ -713,80 +672,134 @@ namespace uwac
 
 		protected void AddRow(bool has_id, DataTable dt, DataRow row)
 		{
-			if (has_id)
+			if (row != null)
 			{
-				string row_id = row["id"].ToString();
-				if (String.IsNullOrEmpty(row_id))
+				if (has_id)
 				{
-					row["id"] = settings.ID;
-				}
-			}
-			dt.Rows.Add(row);
-		}
-
-
-		#endregion
-
-
-		#region process a specific VALUE
-		public static object GetValue(GenericParser parser, string type, string colname)
-		{
-			object val = parser[colname];
-			return ConvertValue(type, val);
-		}
-
-
-		public static object GetValue(GenericParser parser, string type, int index)
-		{
-			object val = parser[index];
-			return ConvertValue(type,  val);
-		}
-
-		public static object GetValue(DataRow row, string type, string colname)
-		{
-			object val = row[colname];
-			return ConvertValue(type, val);
-		}
-		public static object GetValue(DataRow row, string type, int index)
-		{
-			object val = row[index];
-			return ConvertValue(type, val);
-		}
-
-
-
-		public static object ConvertValue(string type, object val )
-		{
-			if(val != null)
-			{
-				string valtxt = val.ToString().ToLower().Replace("\"","");
-				if (valtxt == "" | valtxt == "nan" | valtxt=="\"nan\"")
-				{
-					return DBNull.Value;
-				}
-				else
-				{
-					switch (type)
+					string row_id = row["id"].ToString();
+					if (String.IsNullOrEmpty(row_id))
 					{
-						case "System.Double":
-							return Convert.ToDouble(valtxt);
-						case "System.DateTime":
-							return Convert.ToDateTime(valtxt);
-						case "System.Int32":
-							return Convert.ToInt32(valtxt);
-						default:
-							return val.ToString().Replace("\"", "");
+						row["id"] = settings.ID;
 					}
 				}
-
-			}
-			else 
-			{
-				return DBNull.Value;
+				dt.Rows.Add(row);
 			}
 		}
 
+
 		#endregion
+
+
+		//public static object GetValueFromLabel(string tblname, string type, string imported_label, Importfield fld)
+		//{
+		//	SQL_utils sql = new SQL_utils("data");
+
+		//	string sqlcode = String.Format("select def.fnGetValue_from_Label ('{0}','{1}', '{2}')", tblname, fld.field, imported_label.Replace("'","''"));
+
+		//	int fieldvaluesetID = sql.IntScalar_from_SQLstring(sqlcode);
+		//	sql.Close();
+
+		//	return ConvertValue(type, fieldvaluesetID);
+		//}
+
+		//public static object GetParserValue(GenericParser parser, string type, string colname)
+		//{
+		//	object val = parser[colname];
+		//	return ConvertValue(type, val);
+		//}
+
+
+		//public static object GetParserValue(GenericParser parser, string type, int index)
+		//{
+		//	object val = parser[index];
+		//	return ConvertValue(type, val);
+		//}
+
+
+		#region SQL After Insert
+		public void SQLAfterInsert()
+		{
+			//Loop through the fields
+			foreach (Importfield fld in settings.fields)
+			{
+				if (fld.mode == FieldExtractionMode.UpdateAfterInsert)
+				{
+					UpdateAfterInsertMode AfterInsertMode = (UpdateAfterInsertMode)Convert.ToInt32(fld.constString.Split(';').ToList()[0]);
+					string params_text = fld.constString.Split(';').ToList()[1];
+
+					string sqlafterinsert_results = BuildSQLAfterInsert(AfterInsertMode, fld, params_text);
+
+					results.Add(sqlafterinsert_results);
+
+
+				}
+			}
+		}
+
+		public string BuildSQLAfterInsert(UpdateAfterInsertMode afterinsertmode, Importfield fld, string params_text)
+		{
+			string result = null;
+			string code = null;
+			SQL_utils sql = new SQL_utils("data");
+
+			if (afterinsertmode == UpdateAfterInsertMode.ValFromStudymeasAndField)
+			{
+				int studymeasidFROM = Convert.ToInt32(params_text.Split(',').ToList()[0]);
+				string fldnameFROM = params_text.Split(',').ToList()[1];
+
+				string tblnameFROM = sql.StringScalar_from_SQLstring(
+					String.Format("select tblname from def.tbl where measureID=(select measureID from uwautism_research_backend..tblStudymeas where studymeasID={0})", studymeasidFROM));
+
+				code = String.Format("update {0} set {1} = b.[{2}] from (select * from {3} where studymeasID={4}) b WHERE {0}.id = b.id and {0}.studymeasID={5}"
+					, settings.tblname, fld.field, fldnameFROM, tblnameFROM, studymeasidFROM, settings.studymeasID);
+
+			}
+			else if (afterinsertmode == UpdateAfterInsertMode.ExtractFromListAllText)
+			{
+				string fldnameFROM = params_text;
+
+				string fieldlabel = sql.StringScalar_from_SQLstring(String.Format("select fieldlabel from def.fld where tblpk = {0} and fldname='{1}'"
+						, settings.tblpk, fld.field));
+
+				code = String.Format("update {0} set {1} = (case when {2} like '%{3}%' then 1 else 0 end) where studymeasID={4}"
+						, settings.tblname, fld.field, fldnameFROM, fieldlabel, settings.studymeasID);
+
+			}
+			else if (afterinsertmode == UpdateAfterInsertMode.ExtractOtherFromListAllText)
+			{
+				string fldnameFROM = params_text;
+
+				string fieldlabel = sql.StringScalar_from_SQLstring(String.Format("select fieldlabel from def.fld where tblpk = {0} and fldname='{1}'"
+						, settings.tblpk, fld.field));
+
+				code = String.Format("update {0} set {1} = (case when {2} like '%{3}%' then 1 else 0 end) where studymeasID={4}"
+						, settings.tblname, fld.field, fldnameFROM, fieldlabel, settings.studymeasID);
+
+			}
+
+
+
+
+			if (code != null)
+			{
+				try
+				{
+					sql.NonQuery_from_SQLstring(code);
+					result = String.Format("Success for UpdateAfterInsert for field '{0}', mode={1}, params='{2}'{3}", fld.field, (int)afterinsertmode, params_text, Environment.NewLine);
+				}
+				catch (Exception ex)
+				{
+					result = String.Format("ERROR in UpdateAfterInsert for field '{0}', mode={1}, params='{2}'{3}{4}{3}", fld.field, (int)afterinsertmode, params_text, Environment.NewLine, ex.Message);
+				}
+
+			}
+			sql.Close();
+
+			return result;
+		}
+
+		#endregion
+
 
 
 
@@ -839,12 +852,12 @@ namespace uwac
 								int ngrps = sql.IntScalar_from_SQLstring("select count(*) from tblGroup where studyID=" + studyid.ToString());
 								Debug.WriteLine(" **** Begin CheckSubjects -there are " + ngrps.ToString() + " groups *****");
 
-								// proceed if only 1 group
-								if (ngrps == 1)
+								// proceed if only there are some groups - NOTE HOWEVER THAT THIS MAY LEAD TO ASSIGNMENT TO A GROUP THAT MAY NEED TO BE CHANGED LATER
+								if (ngrps >= 1)
 								{
 									Debug.WriteLine(" **** Begin CheckSubjects - prepare to add subject *****");
 
-									int groupID = sql.IntScalar_from_SQLstring("select top 1 groupID from tblGroup where studyID=" + studyid.ToString());
+									int groupID = sql.IntScalar_from_SQLstring("select top 1 groupID from tblGroup where studyID=" + studyid.ToString() + " order by sortorder");
 
 									List<SqlParameter> ps = new List<SqlParameter>();
 									ps.Add(sql.CreateParam("PersonID", newpersonID.ToString(), "int"));
@@ -889,6 +902,9 @@ namespace uwac
 		//This needs to be done separately for each tbl that is imported into
 		public void FixIndexnum(DataTable dt, string tblname)
 		{
+
+			if (tblname == "ALL_ObsBehaviorCounts") return;
+
 			Debug.WriteLine(" **** Begin FixIndexnum *****");
 			if (dt.HasRows())
 			{
@@ -969,7 +985,7 @@ namespace uwac
 			//string tblname = sql.StringScalar_from_SQLstring(
 			//	String.Format("select tblname from uwautism_research_data.def.tbl where measureID = (select measureID from tblstudymeas where studymeasID={0})"
 			//	, studymeasID));
-			sql.Close();
+
 
 
 			if (dtLinkedImportTbls.HasRows())
@@ -983,11 +999,20 @@ namespace uwac
 			}
 			else
 			{
+
+				string importcode2 = String.Format("SELECT b.tblpk, b.measureid, b.tblname, c.studymeasid, studymeasname " +
+					"FROM (select * from def.tbl where measureID={0}) b   " +
+					"JOIN (select * from uwautism_research_backend..tblstudymeas where timepointID = " +
+					" (select timepointID from uwautism_research_backend..tblstudymeas where studymeasID={1})) c ON b.measureID = c.measureID "
+					, main_measureID, main_studymeasID);
+
+				dtLinkedImportTbls = sql.DataTable_from_SQLstring(importcode2);
+
 				studymeasIDs = new List<int> { main_studymeasID };
 				results.Add(String.Format("No additional linked tables for import found.", studymeasIDs.Count));
 
 			}
-
+			sql.Close();
 		}
 
 
@@ -1095,7 +1120,7 @@ namespace uwac
 
 			if (dbEntityType == DbEntityType.studymeas)
 			{
-				code = String.Format("select a.*, b.studyID, redcapformID, form_name, c.measureID, measname, studymeasID, studymeasname " + Environment.NewLine +
+				code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname, studymeasID, studymeasname " + Environment.NewLine +
 				"from def.REDCapToken a " + Environment.NewLine +
 				"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
 				"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
@@ -1106,7 +1131,7 @@ namespace uwac
 			}
 			else if (dbEntityType == DbEntityType.measure)
 			{
-				code = String.Format("select a.*, b.studyID, redcapformID, form_name, c.measureID, measname " + Environment.NewLine +
+				code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname " + Environment.NewLine +
 				"from def.REDCapToken a " + Environment.NewLine +
 				"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
 				"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
@@ -1144,9 +1169,9 @@ namespace uwac
 				"  join [def].[LinkedImportTbl] b ON a.ltpk = b.ltpk " + Environment.NewLine +
 				"  join def.Tbl c ON b.tblpk = c.tblpk " + Environment.NewLine +
 				"  join uwautism_research_backend..tblmeasure d ON c.measureID = d.measureID " + Environment.NewLine +
-				" where a.ltpk in (select ltpk from def.LinkedImportTbl " + Environment.NewLine + 
+				" where a.ltpk in (select ltpk from def.LinkedImportTbl " + Environment.NewLine +
 				" where tblpk in (select tblpk from def.Tbl where measureID in " +
-				" (select measureID from uwautism_research_backend..tblstudymeas where studyID=" + studyID.ToString() + ")))" + 
+				" (select measureID from uwautism_research_backend..tblstudymeas where studyID=" + studyID.ToString() + ")))" +
 				" order by a.ltpk, d.measname";
 			DataTable dt = sql.DataTable_from_SQLstring(code);
 			sql.Close();
@@ -1169,7 +1194,7 @@ namespace uwac
 		/* MISC */
 		public void DeleteRecs()
 		{
-			
+
 
 			if (dtLinkedImportTbls.Rows.Count > 0)
 			{
@@ -1182,7 +1207,7 @@ namespace uwac
 
 				}
 			}
-			else if(main_studymeasID > 0 & !String.IsNullOrEmpty(settings.tblname))
+			else if (main_studymeasID > 0 & !String.IsNullOrEmpty(settings.tblname))
 			{
 
 				DeleteRecs(settings.tblname, main_studymeasID);
@@ -1207,7 +1232,7 @@ namespace uwac
 			//}
 
 
-			
+
 		}
 
 
@@ -1238,90 +1263,8 @@ namespace uwac
 			return info;
 		}
 
-	public static DateTime RoundTime(DateTime d, RoundTo rt)
-		{
-			DateTime dtRounded = new DateTime();
-
-			switch (rt)
-			{
-				case RoundTo.Second:
-					dtRounded = new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second);
-					if (d.Millisecond >= 500) dtRounded = dtRounded.AddSeconds(1);
-					break;
-				case RoundTo.HalfMinute:
-					dtRounded = new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, 0);
-					if (d.Second >= 30) dtRounded = dtRounded.AddSeconds(30);
-					break;
-				case RoundTo.Minute:
-					dtRounded = new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, 0);
-					if (d.Second >= 30) dtRounded = dtRounded.AddMinutes(1);
-					break;
-				case RoundTo.Hour:
-					dtRounded = new DateTime(d.Year, d.Month, d.Day, d.Hour, 0, 0);
-					if (d.Minute >= 30) dtRounded = dtRounded.AddHours(1);
-					break;
-				case RoundTo.Day:
-					dtRounded = new DateTime(d.Year, d.Month, d.Day, 0, 0, 0);
-					if (d.Hour >= 12) dtRounded = dtRounded.AddDays(1);
-					break;
-			}
-
-			return dtRounded;
-		}
+	
 
 	}
-
-
-
-	public enum RoundTo
-	{
-		Second, HalfMinute, Minute, Hour, Day
-	}
-
-
-	//public DataImporter()
-	//{
-	//	//
-	//	// TODO: Add constructor logic here
-	//	//
-	//}
-
-	//public DataSet FiletoDataTable(string filename)
-	//{
-	//	DataSet dset = new DataSet();
-
-	//	string serverfilename =  HttpContext.Current.Server.MapPath(@"~/App_Data/DataUploads/" + filename);
-
-
-	//	try
-	//	{
-	//		//dset =
-	//		//SpreadsheetGear.Factory.GetWorkbook(serverfilename).GetDataSet(SpreadsheetGear.Data.GetDataFlags.NoColumnTypes);
-	//		//dset = SpreadsheetGear.Factory.GetWorkbook(serverfilename).GetDataSet(SpreadsheetGear.Data.GetDataFlags.NoColumnTypes);
-
-
-	//		//dset = SpreadsheetGear.Factory.GetWorkbook(serverfilename, CultureInfo.CurrentCulture).GetDataSet(SpreadsheetGear.Data.GetDataFlags.None);
-
-	//		SpreadsheetGear.Factory
-
-	//		dset = SpreadsheetGear.Factory.GetWorkbook(serverfilename, CultureInfo.CurrentCulture).Get(SpreadsheetGear.Data.GetDataFlags.None);
-
-
-	//		if (fixcols)
-	//		{
-	//			//bool cleaned = FixXLColumnTypes(dset);
-	//		}
-	//	}
-	//	catch (Exception ex)
-	//	{
-	//		string x = ex.Message;
-	//		//ex.Message;
-	//	}
-
-	//	//dset = RemoveMissingValues_from_DataSet(dset);
-
-	//	return dset;
-	//}
-
 
 }

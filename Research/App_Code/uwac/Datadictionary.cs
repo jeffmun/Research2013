@@ -22,7 +22,9 @@ namespace uwac
 		public string measname { get; set; }
 		public List<Variable> vars { get; set; }
 		public List<Valueset> valsets { get; set; }
+		public DataTable dt_ndardict { get; set; }
 		public DataTable dt_dict { get; set; }
+
 
 		public Datadictionary()
 		{
@@ -45,6 +47,7 @@ namespace uwac
 			measureid = mymeasureID;
 			Initialize();
 
+			dt_ndardict = GetNDARDatadictionaryFromDB();
 			dt_dict = GetDatadictionaryFromDB();
 		}
 
@@ -65,6 +68,43 @@ namespace uwac
 
 
 		public DataTable GetDatadictionaryFromDB()
+		{
+			DataTable dt = new DataTable();
+			if (measureid > 0)
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+
+				string code = String.Format("select a.ord_pos, fldname, fieldlabel " + Environment.NewLine +
+				" , (case " + Environment.NewLine + 
+				"    when importfiletype={0} and fldextractionmode={1} then constString  " + Environment.NewLine +
+				"    when importfiletype={0} and fldextractionmode={2} then fldname " + Environment.NewLine +
+				" else '' end) fldname_in_redcap " + Environment.NewLine +
+				" from def.Fld a " + Environment.NewLine +
+				" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
+				" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
+				" where a.tblpk = (select tblpk from def.tbl where measureID = {3}) " + Environment.NewLine +
+				" and fldname not in ('id','studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
+				" and ord_pos >= 0 " + Environment.NewLine +
+				" and (a.fieldcodeID != 10 or a.fieldcodeID is null) " + Environment.NewLine +
+				" order by a.ord_pos"
+				, (int)ImportFiletype.REDCap, (int)FieldExtractionMode.useOtherFld, (int)FieldExtractionMode.matchFldname
+				, measureid);
+
+				measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+				//measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+
+
+				dt = sql.DataTable_from_SQLstring(code);
+
+			}
+
+			return dt;
+		}
+
+
+
+		public DataTable GetNDARDatadictionaryFromDB()
 		{
 			DataTable dt = new DataTable();
 			if (measureid > 0)
@@ -444,6 +484,69 @@ namespace uwac
 				}
 			}
 		}
+
+		public Valueset(string tblname, string fldname)
+		{
+			valitems = new List<Valuesetitem>();
+
+			SQL_utils sql = new SQL_utils("data");
+
+			DataTable dt = sql.DataTable_from_SQLstring(String.Format("select * from datFieldValueSetItem where fieldvaluesetid = " + 
+				" (select fieldvaluesetid from def.fld where tblpk={0} and fldname='{1}')", tblname, fldname ));
+
+			fieldvaluesetid = dt.AsEnumerable().Select(f => f.Field<int>("fieldvaluesetid")).Min();
+
+			foreach (DataRow row in dt.Rows)
+			{
+				int val = Convert.ToInt32(row["FieldValue"]);
+				string label = row["FieldValueLabel"].ToString();
+				Valuesetitem itm = new Valuesetitem(val, label);
+
+				valitems.Add(itm);
+			}
+			sql.Close();
+		}
+
+
+		public Valueset(int myvaluesetid)
+		{
+			valitems = new List<Valuesetitem>();
+			fieldvaluesetid = myvaluesetid;
+
+			SQL_utils sql = new SQL_utils("data");
+
+			DataTable dt = sql.DataTable_from_SQLstring(String.Format("select * from datFieldValueSetItem where fieldvaluesetid = {0}", fieldvaluesetid));
+
+			foreach(DataRow row in dt.Rows)
+			{
+				int val = Convert.ToInt32(row["FieldValue"]);
+				string label = row["FieldValueLabel"].ToString();
+				Valuesetitem itm = new Valuesetitem(val, label);
+
+				valitems.Add(itm);
+			}
+			sql.Close();
+		}
+
+		public string LabelFromValue(int myvalue)
+		{
+			foreach (Valuesetitem itm in valitems)
+			{
+				if ((int)itm.value == myvalue) return itm.label;
+			}
+			return null;
+		}
+
+
+		public int ValueFromLabel(string mylabel)
+		{
+			foreach(Valuesetitem itm in valitems)
+			{
+				if (itm.label.ToLower() == mylabel.ToLower()) return (int)itm.value;
+			}
+			return -9876;
+		}
+
 	}
 
 	public class Valuesetitem

@@ -185,7 +185,7 @@
 					<dx:GridViewDataColumn FieldName="fld_status" Caption="Status" Visible="true" ></dx:GridViewDataColumn>
 					
 					<dx:GridViewDataComboBoxColumn FieldName="fldextractionmode" Caption="Extraction mode"
-						PropertiesComboBox-ValueField="fieldextractionmode" PropertiesComboBox-TextField="fieldextractionmode_txt" 
+						PropertiesComboBox-ValueField="fldextractionmode" PropertiesComboBox-TextField="fldextractionmode_txt" 
 						PropertiesComboBox-DataSourceID="sqlFldExtractionMode">
 
 					</dx:GridViewDataComboBoxColumn>
@@ -246,7 +246,7 @@
 								<dx:GridViewColumnLayoutItem ColumnName="fldextractionmode" Caption="Extraction Mode" ColumnSpan="1">
 									<Template>
 										<dx:ASPxComboBox ID="cbofldextractionmode" runat="server" Text='<%# Bind("fldextractionmode") %>' Width="225px"
-												 DataSourceID="sqlFldExtractionMode" TextField="fieldextractionmode_txt" ValueField="fieldextractionmode">
+												 DataSourceID="sqlFldExtractionMode" TextField="fldextractionmode_txt" ValueField="fldextractionmode">
 										</dx:ASPxComboBox>
 
 

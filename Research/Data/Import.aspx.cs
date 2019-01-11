@@ -51,7 +51,7 @@ public partial class Data_Import : BasePage
 		LoadSubjects();
 		LoadDatatypes();
 		
-		LoadlinkedTables();
+		//LoadlinkedTables();
 
 		if (IsCallback)
 		{
@@ -63,102 +63,6 @@ public partial class Data_Import : BasePage
 		}
 
 	}
-
-
-	#region Linked Import Tables
-	protected void LoadlinkedTables()
-	{
-		if(Session["LinkedImports"] == null)
-		{
-			DataTable dt1 = DataImporter.LinkedImports(Convert.ToInt32(Session["studyID"].ToString()));
-			Session["LinkedImports"] = dt1;
-		}
-		if (Session["LinkedImportTbls"] == null)
-		{
-			DataTable dt2 = DataImporter.LinkedImportTbls(Convert.ToInt32(Session["studyID"].ToString()));
-			Session["LinkedImportTbls"] = dt2;
-		}
-		gridLinkedImport.DataSource = (DataTable)Session["LinkedImports"];
-		gridLinkedImport.DataBind();
-		gridLinkedImportTbl.DataSource = (DataTable)Session["LinkedImportTbls"];
-		gridLinkedImportTbl.DataBind();
-	}
-
-	   	 
-	protected void gridLinkedImport_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildInsertSqlCode(e, "LinkedImport", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-
-	protected void gridLinkedImport_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildUpdateSqlCode(e, "LinkedImport", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-
-	protected void gridLinkedImportTbl_OnRowInserting(object sender, ASPxDataInsertingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildInsertSqlCode(e, "LinkedImportTbl", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-
-	protected void gridLinkedImport_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildDeleteSqlCode(e, "LinkedImport", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-
-	protected void gridLinkedImportTbl_OnRowDeleting(object sender, ASPxDataDeletingEventArgs e)
-	{
-		ASPxGridView gv = (ASPxGridView)sender;
-		DxDbOps.BuildDeleteSqlCode(e, "LinkedImportTbl", "data", "def");
-		gv.CancelEdit();
-		e.Cancel = true;
-		Session["LinkedImports"] = null;
-		Session["LinkedImportTbls"] = null;
-
-		LoadlinkedTables();
-	}
-
-
-	protected void gridLinkedImportTbl_CellEditorInitialize(object sender, DevExpress.Web.ASPxGridViewEditorEventArgs e)
-	{
-		if (e.Column.FieldName == "ltpk")
-		{
-			e.Editor.ReadOnly = false;
-		}
-	}
-
-	#endregion
 
 
 	protected void LoadSubjects()
@@ -246,6 +150,9 @@ public partial class Data_Import : BasePage
 				FileUpload_Doc.Visible = false;
 				btnDelete.Visible = true;
 				btnContinue.Visible = true;
+
+				btnShowREDCap.Visible = false;
+				btnImportREDCap.Visible = false;
 			}
 			else
 			{
@@ -255,6 +162,10 @@ public partial class Data_Import : BasePage
 				FileUpload_Doc.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? false : true;  // don't show if a REDCap measure, because you don't upload files for these
 				btnDelete.Visible = false;
 				btnContinue.Visible = false;
+
+				btnShowREDCap.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? true : false;
+				btnImportREDCap.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? true : false;
+
 			}
 
 		}
@@ -332,8 +243,25 @@ public partial class Data_Import : BasePage
 				{
 					allowedExts = new string[] { ".sav" };
 				}
-				else{
-					allowedExts = new string[] { ".xlsx", ".xls", ".txt", ".csv" };
+				else if (int_importfiletype == (int)ImportFiletype.tsv)
+				{
+					allowedExts = new string[] { ".tsv" };
+				}
+				else if (int_importfiletype == (int)ImportFiletype.xls)
+				{
+					allowedExts = new string[] { ".xls" };
+				}
+				else if (int_importfiletype == (int)ImportFiletype.xlsx)
+				{
+					allowedExts = new string[] { ".xlsx" };
+				}
+				else if (int_importfiletype == (int)ImportFiletype.csv)
+				{
+					allowedExts = new string[] { ".csv" };
+				}
+				else
+				{
+					allowedExts = new string[] { ".tsv", ".txt", ".csv" };
 				}
 
 				//Check if file extension is allowed 
@@ -396,10 +324,15 @@ public partial class Data_Import : BasePage
 	protected void DisplayImporterResults(string info)
 	{
 
+		info = info.Replace("\r\n", "<br/>");
+		info = info.Replace("\r", "<br/>");
+		info = info.Replace("\n", "<br/>");
+
 		lblDocUploadInfo.Text = Server.HtmlDecode(info);
 		lblDocUploadInfo.ForeColor = (info.ToLower().Contains("error")) ? Color.Red : Color.Green;
 
-
+		FileUpload_Doc.Visible = false;
+		lblNrecs.Visible = false;
 	}
 
 

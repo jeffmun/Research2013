@@ -26,31 +26,59 @@ namespace uwac_REDCap
 	public class REDCap
 	{
 		public RedcapAPI api { get; set; }
-		private string token;
-		private string url;
+		private DataTable dt_tokens;
+		public DataTable dt_redcapforms { get; set; }
+		public DataTable dt_metadata { get; set; }
 		private string idfld;
 		public string dataheader { get; set; }
 
 		public REDCap(int studyID)
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			idfld = "id";
 			SQL_utils sql = new SQL_utils("data");
-			token = "";
-			url = "";
 
-			string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s LEFT JOIN def.REDCapToken_Study a ON s.studyID=a.studyID LEFT JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
-			DataTable dt = sql.DataTable_from_SQLstring(code);
-			DataRow row = dt.Rows[0];
-			token = row["token"].ToString();
-			url = row["url"].ToString();
-			idfld = row["idfld"].ToString();
-
+			//string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s LEFT JOIN def.REDCapToken_Study a ON s.studyID=a.studyID LEFT JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
+			string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s JOIN def.REDCapToken_Study a ON s.studyID=a.studyID JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
+			dt_tokens = sql.DataTable_from_SQLstring(code);
 			sql.Close();
 
-			if (token != "" & url != "" & idfld != "") api = new RedcapAPI(url, token);
 
+
+			GetAPIInfo();
+
+			//DataRow row = dt.Rows[0];
+			//string token = row["token"].ToString();
+			//url = row["url"].ToString();
+			//idfld = row["idfld"].ToString();
+			//if (token != "" & url != "" & idfld != "") api = new RedcapAPI(url, token);
+
+		}
+
+		public void GetAPIInfo()
+		{
+			int counter = 0;
+			foreach (DataRow row in dt_tokens.Rows)
+			{
+				RedcapAPI api = new RedcapAPI(row["url"].ToString(), row["token"].ToString());
+
+				if (counter == 0)
+				{
+					dt_redcapforms = api.InstrumentDataTable;
+					dt_metadata = api.MetaDataTable;
+				}
+				else
+				{
+					foreach (DataRow row2 in api.InstrumentDataTable.Rows)
+					{
+						dt_redcapforms.ImportRow(row2);
+					}
+					foreach (DataRow row2m in api.MetaDataTable.Rows)
+					{
+						dt_metadata.ImportRow(row2m);
+					}
+				}
+				counter++;
+			}
 		}
 
 
@@ -58,8 +86,10 @@ namespace uwac_REDCap
 		#region Fields 
 		public string FieldsCSV(string formname)
 		{
-			List<string> flds = api.MetaDataTable.AsEnumerable()
-				.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).ToList();
+
+			//List<string> flds = api.MetaDataTable.AsEnumerable()
+			List<string> flds = dt_metadata.AsEnumerable()
+							.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).ToList();
 
 			flds.Remove(idfld);
 
@@ -76,7 +106,7 @@ namespace uwac_REDCap
 
 			foreach (string formname in formnames)
 			{
-				List<string> tmp_flds = api.MetaDataTable.AsEnumerable()
+				List<string> tmp_flds = dt_metadata.AsEnumerable()
 					.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).ToList();
 
 				tmp_flds.Remove(idfld);
@@ -97,7 +127,8 @@ namespace uwac_REDCap
 
 		public string FirstField(string formname)
 		{
-			string fld = api.MetaDataTable.AsEnumerable()
+
+			string fld = dt_metadata.AsEnumerable()
 				.Where(f => f.Field<string>("form_name") == formname).Select(f => f.Field<string>("field_name")).First();
 
 			return fld;
@@ -174,9 +205,9 @@ namespace uwac_REDCap
 			return Datadictionary(new List<string> { formname });
 		}
 
-			public Datadictionary Datadictionary(List<string> formnames)
+		public Datadictionary Datadictionary(List<string> formnames)
 		{
-			DataTable dt_meta = api.MetaDataTable.AsEnumerable().Where(f => formnames.Contains( f.Field<string>("form_name"))).CopyToDataTable();
+			DataTable dt_meta = dt_metadata.AsEnumerable().Where(f => formnames.Contains( f.Field<string>("form_name"))).CopyToDataTable();
 			Datadictionary dict = new Datadictionary(dt_meta, formnames);
 			return dict;
 		}
@@ -187,13 +218,14 @@ namespace uwac_REDCap
 		#region Controls
 		public ASPxComboBox cboFormSelector()
 		{
-			if (api != null)
+			//if (api != null)
+			if (dt_redcapforms.HasRows())
 			{
 				ASPxComboBox cbo = new ASPxComboBox();
 				cbo.ID = "cboRedcapForms";
 				cbo.ClientInstanceName = "cboRedcapForms";
 				cbo.Caption = "REDCap Forms:";
-				cbo.DataSource = api.InstrumentDataTable;
+				cbo.DataSource = dt_redcapforms;
 				cbo.TextField = "instrument_label";
 				cbo.ValueField = "instrument_name";
 				cbo.NullText = String.Format("Available REDCap forms (N={0})", api.InstrumentDataTable.Rows.Count);
@@ -209,27 +241,24 @@ namespace uwac_REDCap
 
 		public ASPxListBox lstFormSelector()
 		{
-			if (api != null)
+			//if (api != null)
+			if(dt_redcapforms.HasRows())
 			{
 
 				ASPxListBox lst = new ASPxListBox();
 				lst.ID = "lstRedcapForms";
 				lst.ClientInstanceName = "lstRedcapForms";
 				lst.Caption = "All REDCap Forms:";
-				//lst.DataSource = api.InstrumentDataTable;
-				//lst.TextField = "instrument_label";
-				//lst.ValueField = "instrument_name";
 				lst.ValueType = typeof(string);
 				lst.SelectionMode = ListEditSelectionMode.Multiple;
-				//cbo.NullText = String.Format("Available REDCap forms (N={0})", api.InstrumentDataTable.Rows.Count);
-				lst.Width = 300;
+				lst.Width = 400;
 				//lst.DataBind();
 
-				foreach(DataRow row in api.InstrumentDataTable.Rows)
+				foreach(DataRow row in dt_redcapforms.Rows)
 				{
 					ListEditItem itm = new ListEditItem();
 					itm.Value = row["instrument_name"].ToString();
-					itm.Text = row["instrument_label"].ToString();
+					itm.Text = row["instrument_name"].ToString();
 					lst.Items.Add(itm);
 				}
 
@@ -242,10 +271,6 @@ namespace uwac_REDCap
 			}
 		}
 
-		//public ASPxGridView gridMetaData()
-		//{
-		//	return gridMetaData(null);
-		//}
 
 		public ASPxGridView gridMetaData(string formname)
 		{
@@ -269,12 +294,11 @@ namespace uwac_REDCap
 			DataTable dt_meta;
 			if (formnames == null)
 			{
-				dt_meta = api.MetaDataTable;
+				dt_meta = dt_metadata;
 			}
 			else
 			{
-				DataTable dt = api.MetaDataTable;
-				dt_meta = dt.AsEnumerable().Where(f => formnames.Contains(f.Field<string>("form_name") )).CopyToDataTable();
+				dt_meta = dt_metadata.AsEnumerable().Where(f => formnames.Contains(f.Field<string>("form_name") )).CopyToDataTable();
 			}
 
 			return gridMetaData(dt_meta, String.Join(",",formnames));
@@ -284,7 +308,7 @@ namespace uwac_REDCap
 
 		public ASPxGridView gridMetaData(DataTable dt_meta, string title)
 		{
-			if (api != null)
+			if (dt_meta.HasRows())
 			{
 				string dataheader = String.Format("{0} (cols={1}, rows={2})", title, dt_meta.Columns.Count, dt_meta.Rows.Count);
 
