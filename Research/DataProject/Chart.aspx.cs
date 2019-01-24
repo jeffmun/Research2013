@@ -1,14 +1,15 @@
-﻿using Accord.Statistics.Analysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing.Imaging;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Drawing;
+using System.Xml;
+using System.Xml.Serialization;
 using uwac;
 using uwac.trk;
 using DevExpress.Web;
@@ -19,22 +20,10 @@ using DevExpress.Pdf;
 using DevExpress.Pdf.Interop;
 using DevExpress.Xpf.Printing;
 using DevExpress.XtraCharts;
-using DevExpress.XtraCharts.Native;
-using DevExpress.XtraCharts.Web;
-using DevExpress.XtraCharts.Web.Designer;
-using DevExpress.XtraPivotGrid;
-using DevExpress.XtraPrinting;
-using DevExpress.XtraPrinting.Links;
-
-using DevExpress.XtraReports;
-using DevExpress.XtraReports.UI;
-using NReco.PivotData;
-using System.IO;
-using NReco.PivotData.Output;
 using DevExpress.XtraPrintingLinks;
-using System.Xml;
-using System.Xml.Serialization;
 using DevExpress.XtraRichEdit.API.Native;
+
+using NReco.PivotData.Output;
 using uwac.data;
 
 //public partial class PointSeries : ChartBasePage{
@@ -387,9 +376,6 @@ public partial class DataProject_Chart : BasePage
 	}
 
 
-
-
-
 	protected void ReInitialize()
 	{
 		List<string> selected_numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
@@ -442,7 +428,11 @@ public partial class DataProject_Chart : BasePage
 	}
 
 
-	#region Custom Sorting and JS properties
+
+	#endregion
+
+
+	#region Custom Sorting and JS properties for vars grid (allows selected vars to stay at top of grid)
 
 	protected void gridVarsNum_OnInit(object sender, EventArgs e)
 	{
@@ -497,8 +487,6 @@ public partial class DataProject_Chart : BasePage
 
 	#endregion
 
-
-	#endregion
 
 
 	#region BIND controls
@@ -605,76 +593,7 @@ public partial class DataProject_Chart : BasePage
 
 		}
 	}
-
-	//protected void BindGrids()
-	//{
-	//	tokGroups.Visible = true;
-	//	tokTimepts.Visible = true;
-
-
-	//	if (Session["datadict_num"] != null)
-	//	{
-	//		gridVarsNum.DataSource = (DataTable)Session["datadict_num"];
-	//		gridVarsNum.DataBind();
-	//		gridVarsNum.Visible = true;
-	//	}
-	//	if (Session["datadict_text"] != null)
-	//	{
-	//		gridVarsText.DataSource = (DataTable)Session["datadict_text"];
-	//		gridVarsText.DataBind();
-	//		gridVarsText.Visible = true;
-	//	}
-	//	if (Session["datadict_date"] != null)
-	//	{
-	//		gridVarsDate.DataSource = (DataTable)Session["datadict_date"];
-	//		gridVarsDate.DataBind();
-	//		gridVarsDate.Visible = true;
-	//	}
-	//	if (Session["datadict_age"] != null)
-	//	{
-	//		gridVarsAge.DataSource = (DataTable)Session["datadict_age"];
-	//		gridVarsAge.DataBind();
-	//		gridVarsAge.Visible = true;
-	//	}
-
-	//	if (Session["datasheets"] != null)
-	//	{
-	//		gridDataSheets.DataSource = (DataTable)Session["datasheets"];
-	//		gridDataSheets.DataBind();
-	//	}
-
-
-	//	if (Session["selectedvars"] != null)
-	//	{
-	//		gvSelectedVars.DataSource = (DataTable)Session["selectedvars"];
-	//		gvSelectedVars.DataBind();
-
-	//	}
-
-	//	if (Session["chart_orders"] != null | Session["table_orders"] != null)
-	//	{
-	//		List<DxChartOrder> chartorders = (List<DxChartOrder>)Session["chart_orders"];
-	//		List<DxTableOrder> tableorders = (List<DxTableOrder>)Session["table_orders"];
-
-	//		DataTable orders = new InvoiceSummary(chartorders, tableorders);
-	//		if (orders.HasRows())
-	//		{
-	//			gridOrders.DataSource = orders;
-	//			gridOrders.DataBind();
-	//			gridOrders.Visible = true;
-	//		}
-
-	//	}
-	//}
-
-
-
 	#endregion
-
-
-
-
-
 
 
 
@@ -721,65 +640,13 @@ public partial class DataProject_Chart : BasePage
 		{
 			dpdata = new DPData(dataproject, "");
 		}
-		//else if (param == "Subjects")
-		//{
-		//	DataSet dset = (DataSet)Session["dset"];
-		//	dpdata = new DPData(dset.Tables["Subjects"], dset.Tables["DataDictionary"]);
-		//	//Session["dpdata"] = dpdata;
-		//	//lblSelectedDataInfo2.Text = dpdata.Info();
 
-
-		//	log(" - - heading to LoadVars from callbackVars_OnCallback");
-		//	LoadVars((DataSet)Session["dset"], param);
-
-		//}
-		//else if (param == "varstext")
-		//{
-
-
-		//}
-
-		//else if (param.StartsWith("filter!"))
-		//{
-		//	string filter = param.Replace("filter!", "");
-		//	dpdata = new DPData(dataproject, selectedsheet, filter);
-
-		//	//if (filter == "null")
-		//	//{
-		//	//	if (Session["dset"] != null)
-		//	//	{
-		//	//		DataSet dset = (DataSet)Session["dset"];
-
-		//	//		dpdata = new DPData(dataproject, selectedsheet, "");
-		//	//		//dpdata = new DPData(dset.Tables[selectedsheet], dset.Tables["DataDictionary"]);
-
-		//	//		Session["dpdata"] = dpdata;
-		//	//		lblSelectedDataInfo2.Text = dpdata.Info();
-		//	//	}
-		//	//}
-		//	//else
-		//	//{
-		//	//	log(String.Format(" BEFORE FILTER [{0}] dpdata.dt has {1} rows", filter, dpdata.dt.Rows.Count));
-		//	//	dpdata.filter = filter;
-		//	//	log(String.Format(" AFTER FILTER [{0}]  dpdata.dt has {1} rows", filter, dpdata.dt.Rows.Count));
-		//	//	Session["dpdata"] = dpdata;
-
-		//	//	lblSelectedDataInfo2.Text = dpdata.Info();
-		//	//}
-
-		//}
 
 		if (dpdata != null)
 		{
 			Session["dpdata"] = dpdata;
 			lblSelectedDataInfo2.Text = dpdata.Info();
 		}
-
-		//if (shouldWeLoadVars)
-		//{
-		//	log(" - - heading to LoadVars from callbackVars_OnCallback");
-		//	LoadVars(dataproject.Dataset, param);
-		//}
 
 	}
 
@@ -1222,215 +1089,9 @@ public partial class DataProject_Chart : BasePage
 	}
 
 
-	protected void callbackCharts_OnCallback(object source, CallbackEventArgsBase e)
-	{
-		log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackCharts_OnCallback {0}", e.Parameter.ToString()));
-
-		HandleOutput(e.Parameter);
-	}
 
 
 
-	protected void HandleOutput(string p)
-	{
-
-		if (sessionorders == null) sessionorders = new SessionOrders();
-
-		if (p == "clear")
-		{
-
-		}
-		else if (p.StartsWith("OldOrder"))
-		{
-			List<string> ps = p.Split('|').ToList();
-
-			int idx = Convert.ToInt32(ps[1]) ;
-
-			var orders = sessionorders;
-
-			DxOrder oldorder = sessionorders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
-
-			if (oldorder.ordertype == OrderType.chart)
-			{
-				List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder> { (DxChartOrder)oldorder });
-				DeliverOutputToPage(completedoldorders);
-
-			}
-			else if (oldorder.ordertype == OrderType.table)
-			{
-				List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder> { (DxTableOrder)oldorder });
-				DeliverOutputToPage( completedoldorders);
-
-			}
-
-			//DxChartOrder oldorder = existingorders[idx];
-
-
-
-		}
-		else if (p == "NewOrder")
-		{
-			List<DxChartOrder> completednewordersC = null;
-			List<DxTableOrder> completednewordersT = null;
-			DxChartOrder neworderC = GatherOrder();
-			if (neworderC.list_settings.Count > 0)
-			{
-				completednewordersC = PlaceOrders(new List<DxChartOrder>() { neworderC });
-				
-			}
-
-			DxTableOrder neworderT = GatherTableOrder();
-			if (neworderT.list_settings.Count > 0)
-			{
-				completednewordersT = PlaceOrders(new List<DxTableOrder>() { neworderT });
-			}
-
-
-			DeliverOutputToPage(completednewordersC, completednewordersT);
-
-
-		}
-		else if (p == "SaveNewOrder")
-		{
-
-
-			DxChartOrder neworderC = GatherOrder();
-			if (neworderC.list_settings.Count > 0)
-			{
-				List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworderC });
-				DeliverOutputToPage(completedneworders);
-
-				int numorders = sessionorders.NumSavedOrders();
-				for (int i = 0; i < completedneworders.Count; i++)
-				{
-					completedneworders[i].ordernum = numorders + 1 + i;
-					sessionorders.SaveOrder(completedneworders[i]);
-				}
-
-
-				
-			}
-
-			DxTableOrder neworderT = GatherTableOrder();
-			if (neworderT.list_settings.Count > 0)
-			{
-				List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworderT });
-				DeliverOutputToPage(completedneworders);
-
-				int numorders = sessionorders.NumSavedOrders();
-				for (int i = 0; i < completedneworders.Count; i++)
-				{
-					completedneworders[i].ordernum = numorders + 1 + i;
-					sessionorders.SaveOrder(completedneworders[i]);
-				}
-
-			}
-
-			Session["sessionorders"] = sessionorders;
-		}
-		else if (p.StartsWith("DisplayAllOrders"))
-		{
-			List<DxChartOrder> completedordersC = PlaceOrders(sessionorders.chartorders);
-			List<DxTableOrder> completedordersT = PlaceOrders(sessionorders.tableorders);
-			DeliverOutputToPage(completedordersC, completedordersT);
-
-		}
-		else if (p == "Docx")
-		{
-			string path = @"c:\_temp\factory\";
-
-			DxChartFactory factory = new DxChartFactory(dpdata.dt, sessionorders.chartorders);
-			DeliverOutputToPage(factory);
-			DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
-
-			//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-			//CreateCharts(orders, "docx");
-			//if (exportfiletype == "docx")
-			//{
-			//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-			//}
-
-		}
-
-	}
-
-	//protected void HandleTables(string p)
-	//{
-
-	//	if (sessionorders == null) sessionorders = new SessionOrders();
-
-	//	if (p == "clear")
-	//	{
-
-	//	}
-	//	else if (p.StartsWith("OldOrder"))
-	//	{
-	//		List<string> ps = p.Split('|').ToList();
-
-	//		int idx = Convert.ToInt32(ps[1]) - 1;
-
-	//		//DxChartOrder oldorder = existingorders[idx];
-	//		DxTableOrder oldorder = sessionorders.tableorders.AsEnumerable().Where(o => o.ordernum == idx).First();
-
-	//		List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder>() { oldorder });
-	//		DeliverOutputToPage(completedoldorders);
-
-	//	}
-	//	else if (p == "NewOrder")
-	//	{
-	//		DxTableOrder neworder = GatherTableOrder();
-	//		if (neworder.list_settings.Count > 0)
-	//		{
-	//			List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworder });
-	//			DeliverOutputToPage(completedneworders);
-	//		}
-	//	}
-	//	else if (p == "SaveNewOrder")
-	//	{
-
-
-	//		DxTableOrder neworder = GatherTableOrder();
-	//		if (neworder.list_settings.Count > 0)
-	//		{
-	//			List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworder });
-	//			DeliverOutputToPage(completedneworders);
-
-	//			int numorders = sessionorders.NumSavedOrders();
-	//			for (int i = 0; i < completedneworders.Count; i++)
-	//			{
-	//				completedneworders[i].ordernum = numorders + 1 + i;
-	//				sessionorders.SaveOrder(completedneworders[i]);
-	//			}
-
-	//			Session["sessionorders"] = sessionorders;
-	//		}
-
-
-	//	}
-	//	else if (p.StartsWith("DisplayAllOrders"))
-	//	{
-	//		List<DxTableOrder> completedorders = PlaceOrders(sessionorders.tableorders);
-	//		DeliverOutputToPage(completedorders);
-
-	//	}
-	//	else if (p == "Docx")
-	//	{
-	//		string path = @"c:\_temp\factory\";
-
-	//		//DxChartFactory factory = new DxChartFactory(dpdata.dt, sessionorders.chartorders);
-	//		//DeliverChartsToPage(factory);
-	//		//DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
-
-	//		//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-	//		//CreateCharts(orders, "docx");
-	//		//if (exportfiletype == "docx")
-	//		//{
-	//		//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-	//		//}
-
-	//	}
-
-	//}
 
 	protected void callbackOutput_OnCallback(object source, CallbackEventArgsBase e)
 	{
@@ -1439,112 +1100,33 @@ public partial class DataProject_Chart : BasePage
 		HandleOutput(e.Parameter);
 	}
 
-	protected void callbackTables_OnCallback(object source, CallbackEventArgsBase e)
-	{
-		log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackTables_OnCallback {0}", e.Parameter.ToString()));
+	//protected void callbackTables_OnCallback(object source, CallbackEventArgsBase e)
+	//{
+	//	log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackTables_OnCallback {0}", e.Parameter.ToString()));
 
-		//HandleTables(e.Parameter);
+	
+	//}
 
-		//List<DxTableOrder> existingorders = (List<DxTableOrder>)Session["table_orders"];
+	//protected void callbackCharts_OnCallback(object source, CallbackEventArgsBase e)
+	//{
+	//	log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackCharts_OnCallback {0}", e.Parameter.ToString()));
 
-		//var p = e.Parameter;
-
-		//if (p == "clear")
-		//{
-
-		//}
-		//else if (p.StartsWith("OldOrder"))
-		//{
-		//	List<string> ps = p.Split('|').ToList();
-
-		//	int idx = Convert.ToInt32(ps[1]) - 1;
-
-		//	//DxTableOrder oldorder = existingorders[idx];
-		//	DxTableOrder oldorder = existingorders.AsEnumerable().Where(o => o.ordernum == idx).First();
-
-		//	List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder>() { oldorder });
-		//	DeliverTablesToPage(completedoldorders);
+	//	HandleOutput(e.Parameter);
+	//}
 
 
-		//}
-		//else if (p == "NewOrder")
-		//{
-
-		//	DxTableOrder table_neworder = GatherTableOrder();
-		//	if (table_neworder.list_settings.Count > 0)
-		//	{
-		//		List<DxTableOrder> completedtable_neworders = PlaceOrders(new List<DxTableOrder>() { table_neworder });
-		//		DeliverTablesToPage(completedtable_neworders);
-		//	}
-		//}
-		//else if (p == "SaveNewOrder")
-		//{
-
-
-		//	DxTableOrder table_neworder = GatherTableOrder();
-		//	if (table_neworder.list_settings.Count > 0)
-		//	{
-		//		List<DxTableOrder> completedtable_neworders = PlaceOrders(new List<DxTableOrder>() { table_neworder });
-		//		DeliverTablesToPage(completedtable_neworders);
-
-		//		int numorders = sessionorders.NumSavedOrders();
-		//		for (int i = 0; i < completedtable_neworders.Count; i++)
-		//		{
-		//			completedtable_neworders[i].ordernum = numorders + 1 + i;
-		//		}
-
-
-		//		if (existingorders == null) existingorders = new List<DxTableOrder>();
-		//		existingorders.AddRange(completedtable_neworders); //Just add the first as only 1 order was placed
-
-		//		Session["table_orders"] = existingorders;
-		//	}
-
-
-		//}
-		//else if (p.StartsWith("DisplayAllOrders"))
-		//{
-		//	List<DxTableOrder> completedorders = PlaceOrders(existingorders);
-		//	DeliverTablesToPage(completedorders);
-		//}
-		//else if (p == "Docx")
-		//{
-		//	string path = @"c:\_temp\factory\";
-
-		//	DxTableFactory factory = new DxTableFactory(dpdata.dt, existingorders);
-		//	DeliverTablesToPage(factory);
-
-		//	//Still To Do
-		//	//DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
-
-
-
-
-		//	//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-		//	//CreateCharts(orders, "docx");
-		//	//if (exportfiletype == "docx")
-		//	//{
-		//	//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-		//	//}
-
-		//}
-	}
-
-
-
-
-	protected void gridOrders_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
-	{
-		log(">>>>>>>>>>>>>>>>>>>>>>>> gridOrders_CustomButtonCallback ");
-		if (e.ButtonID == "OldOrder")
-		{
-			//display this order
-			int ordernum = e.VisibleIndex;
-			string p = String.Format("{0}|{1}", "OldOrder",ordernum);
-			CallbackEventArgsBase arg = new CallbackEventArgsBase(p);
-			callbackCharts_OnCallback(callbackCharts, arg);
-		}
-	}
+	//protected void gridOrders_CustomButtonCallback(object sender, ASPxGridViewCustomButtonCallbackEventArgs e)
+	//{
+	//	log(">>>>>>>>>>>>>>>>>>>>>>>> gridOrders_CustomButtonCallback ");
+	//	if (e.ButtonID == "OldOrder")
+	//	{
+	//		//display this order
+	//		int ordernum = e.VisibleIndex;
+	//		string p = String.Format("{0}|{1}", "OldOrder",ordernum);
+	//		CallbackEventArgsBase arg = new CallbackEventArgsBase(p);
+	//		callbackCharts_OnCallback(callbackCharts, arg);
+	//	}
+	//}
 
 
 	protected void callbackOrders_OnCallback(object source, CallbackEventArgsBase e)
@@ -1878,6 +1460,132 @@ public partial class DataProject_Chart : BasePage
 
 	#region Step 4 - Deliver output to page
 
+
+
+	protected void HandleOutput(string p)
+	{
+
+		if (sessionorders == null) sessionorders = new SessionOrders();
+
+		if (p == "clear")
+		{
+
+		}
+		else if (p.StartsWith("OldOrder"))
+		{
+			List<string> ps = p.Split('|').ToList();
+
+			int idx = Convert.ToInt32(ps[1]);
+
+			var orders = sessionorders;
+
+			DxOrder oldorder = sessionorders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
+
+			if (oldorder.ordertype == OrderType.chart)
+			{
+				List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder> { (DxChartOrder)oldorder });
+				DeliverOutputToPage(completedoldorders);
+
+			}
+			else if (oldorder.ordertype == OrderType.table)
+			{
+				List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder> { (DxTableOrder)oldorder });
+				DeliverOutputToPage(completedoldorders);
+
+			}
+
+			//DxChartOrder oldorder = existingorders[idx];
+
+
+
+		}
+		else if (p == "NewOrder")
+		{
+			List<DxChartOrder> completednewordersC = null;
+			List<DxTableOrder> completednewordersT = null;
+			DxChartOrder neworderC = GatherOrder();
+			if (neworderC.list_settings.Count > 0)
+			{
+				completednewordersC = PlaceOrders(new List<DxChartOrder>() { neworderC });
+
+			}
+
+			DxTableOrder neworderT = GatherTableOrder();
+			if (neworderT.list_settings.Count > 0)
+			{
+				completednewordersT = PlaceOrders(new List<DxTableOrder>() { neworderT });
+			}
+
+
+			DeliverOutputToPage(completednewordersC, completednewordersT);
+
+
+		}
+		else if (p == "SaveNewOrder")
+		{
+
+
+			DxChartOrder neworderC = GatherOrder();
+			if (neworderC.list_settings.Count > 0)
+			{
+				List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworderC });
+				DeliverOutputToPage(completedneworders);
+
+				int numorders = sessionorders.NumSavedOrders();
+				for (int i = 0; i < completedneworders.Count; i++)
+				{
+					completedneworders[i].ordernum = numorders + 1 + i;
+					sessionorders.SaveOrder(completedneworders[i]);
+				}
+
+
+
+			}
+
+			DxTableOrder neworderT = GatherTableOrder();
+			if (neworderT.list_settings.Count > 0)
+			{
+				List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworderT });
+				DeliverOutputToPage(completedneworders);
+
+				int numorders = sessionorders.NumSavedOrders();
+				for (int i = 0; i < completedneworders.Count; i++)
+				{
+					completedneworders[i].ordernum = numorders + 1 + i;
+					sessionorders.SaveOrder(completedneworders[i]);
+				}
+
+			}
+
+			Session["sessionorders"] = sessionorders;
+		}
+		else if (p.StartsWith("DisplayAllOrders"))
+		{
+			List<DxChartOrder> completedordersC = PlaceOrders(sessionorders.chartorders);
+			List<DxTableOrder> completedordersT = PlaceOrders(sessionorders.tableorders);
+			DeliverOutputToPage(completedordersC, completedordersT);
+
+		}
+		else if (p == "Docx")
+		{
+			string path = @"c:\_temp\factory\";
+
+			DxChartFactory factory = new DxChartFactory(dpdata.dt, sessionorders.chartorders);
+			DeliverOutputToPage(factory);
+			DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
+
+			//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+			//CreateCharts(orders, "docx");
+			//if (exportfiletype == "docx")
+			//{
+			//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+			//}
+
+		}
+
+	}
+
+
 	protected void DeliverOutputToPage(DxChartFactory factory)
 	{
 		DeliverOutputToPage(factory.orders, null);
@@ -1985,104 +1693,6 @@ public partial class DataProject_Chart : BasePage
 		}
 	}
 
-
-	#region old
-	//protected void DeliverChartsToPage(DxChartFactory factory) 
-	//{
-	//	DeliverChartsToPage(factory.orders);
-	//}
-
-	//protected void DeliverChartsToPage(DxChartOrder order)
-	//{
-	//	DeliverChartsToPage(new List<DxChartOrder> { order });
-	//}
-
-	//protected void DeliverChartsToPage(List<DxChartOrder> orders)
-	//{
-	//	callbackCharts.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
-
-	//	foreach (DxChartOrder order in orders)
-	//	{
-	//		Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
-	//		foreach (DxChartBatch batch in order.batches)
-	//		{
-	//			Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.charts.Count));
-	//			System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
-				
-	//			if (t != null)
-	//			{
-	//				Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.charts.Count));
-	//				Label batchlabel = new Label();
-	//				batchlabel.Text = batch.batchtitle;
-	//				batchlabel.Font.Bold = true;
-	//				batchlabel.Font.Size = 12;
-
-	//				callbackCharts.Controls.Add(batchlabel);
-	//				callbackCharts.Controls.Add(t);
-	//				callbackCharts.Controls.Add(new Literal() { Text = "<br/>" });
-
-	//			}
-
-
-	//			if (batch.datatables.Count > 0)
-	//			{
-	//				System.Web.UI.WebControls.Table t2 = LayoutOutput.LayoutBatch(batch, "datatable");
-	//				callbackCharts.Controls.Add(t2);
-	//			}
-
-	//		}
-	//	}
-	//}
-
-
-
-	//protected void DeliverTablesToPage(DxTableFactory factory)
-	//{
-	//	DeliverTablesToPage(factory.orders);
-	//}
-
-	//protected void DeliverTablesToPage(DxTableOrder order)
-	//{
-	//	DeliverTablesToPage(new List<DxTableOrder> { order });
-	//}
-
-	//protected void DeliverTablesToPage(List<DxTableOrder> orders)
-	//{
-	//	callbackTables.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
-
-	//	foreach (DxTableOrder order in orders)
-	//	{
-	//		Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
-	//		foreach (DxTableBatch batch in order.batches)
-	//		{
-	//			Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.tables.Count));
-	//			System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
-
-	//			if (t != null)
-	//			{
-	//				Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.tables.Count));
-	//				Label batchlabel = new Label();
-	//				batchlabel.Text = String.Format("Crosstabs<br/><br/>");
-	//				batchlabel.Font.Bold = true;
-	//				batchlabel.Font.Size = 12;
-
-	//				callbackTables.Controls.Add(batchlabel);
-	//				callbackTables.Controls.Add(t);
-	//				callbackTables.Controls.Add(new Literal() { Text = "<br/>" });
-
-	//			}
-
-
-	//			//if (batch.tables.Count > 0)
-	//			//{
-	//			//	System.Web.UI.WebControls.Table t2 = LayoutOutput.LayoutBatch(batch);
-	//			//	callbackTables.Controls.Add(t2);
-	//			//}
-
-	//		}
-	//	}
-	//}
-	#endregion
 
 
 	protected DxLayout ConvertChartLayout(string layout)
@@ -2713,6 +2323,4 @@ public partial class DataProject_Chart : BasePage
 //pca  - plot scree plot for eigenvalues and polar coords for loadings...
 
 //PDF horizontal, vertical, and diag
-
-
 
