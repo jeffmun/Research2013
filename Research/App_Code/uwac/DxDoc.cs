@@ -336,7 +336,7 @@ public class DxDoc
 	{
 
 		bool addHeaderRow = true;
-		if (batch.chartlayout == DxChartLayout.Upper)
+		if (batch.layout == DxLayout.Upper)
 		{
 
 			int numrows = (addHeaderRow) ? batch.maxRow + 1 : batch.maxRow;

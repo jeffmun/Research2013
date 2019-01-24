@@ -60,10 +60,17 @@
             <td><asp:Label ID="v4" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
         </tr>
         <tr>
-            <td><asp:Label ID="l5" runat="server" Text ="N Records:"></asp:Label></td>
+            <td><asp:Label ID="l5" runat="server" Text ="N Total Records:"></asp:Label></td>
             <td><asp:Label ID="v5" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
         </tr>
-
+         <tr>
+            <td><asp:Label ID="l6" runat="server" Text ="N Recs valid:"></asp:Label></td>
+            <td><asp:Label ID="v6" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
+        </tr>
+        <tr>
+            <td><asp:Label ID="l7" runat="server" Text ="N Recs w/Reason Excl:"></asp:Label></td>
+            <td><asp:Label ID="v7" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
+        </tr>
     </table>
         </asp:Panel>
 

@@ -94,13 +94,11 @@ public partial class Data_Dictionary: BasePage
 
 		Datadictionary dict = new Datadictionary(measureID);
 
-		DataTable dt_dict = dict.dt_dict;
-
-		if(dt_dict.HasRows())
+		if(dict.dt_ndardict.HasRows())
 		{
 			string dictfilename = String.Format("{0}_definitions", dict.measname);
-			dt_dict.TableName = dictfilename;
-			SpreadsheetGearUtils.SaveDataTableToExcel(dt_dict, dictfilename);
+			dict.dt_ndardict.TableName = dictfilename;
+			SpreadsheetGearUtils.SaveDataTableToExcel(dict.dt_ndardict, dictfilename);
 		}
 	}
 
@@ -120,13 +118,16 @@ public partial class Data_Dictionary: BasePage
 		SQL_utils sql = new SQL_utils("data");
 
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
-			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!') else '' end) datatype, fieldlabel, fieldvaluesetID " + Environment.NewLine +
+			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!')  else '' end) " + Environment.NewLine +
+			" + (case  when fielddatatype <> data_type then ' <>TYPE!!' else '' end) " + Environment.NewLine +
+			" + (case  when fielddatatypelength<> character_maximum_length then ' <>LENGTH!!' else '' end ) as datatype " + Environment.NewLine +
+			" , fieldlabel, fieldvaluesetID " + Environment.NewLine +
 			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'<br/>') valuelabels " + Environment.NewLine +
 			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fldextractionmode_txt, importposition, constString  " + Environment.NewLine +
 			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status, ExcludeFromNDARdict, ConvertFromLabelToValue " + Environment.NewLine +
 			" from def.Fld a " + Environment.NewLine +
 			" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
-			" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
+			" LEFT JOIN (select table_name, column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
 			" LEFT JOIN datFieldCode d ON a.fieldcodeID = d.fieldcodeID " + Environment.NewLine +
 			" LEFT JOIN def.FldExtractionMode e ON a.fldextractionmode = e.fldextractionmode " + Environment.NewLine +
 			" where a.tblpk = (select tblpk from def.tbl where measureID = {0}) " + Environment.NewLine +
@@ -439,7 +440,7 @@ public partial class Data_Dictionary: BasePage
 			string datatype = e.CellValue.ToString();
 
 			
-			if(datatype.Contains("NEEDS LENGTH"))
+			if(datatype.Contains("!"))
 			{
 				e.Cell.ForeColor = Color.Red;
 			}

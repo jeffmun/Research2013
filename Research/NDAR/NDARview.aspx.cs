@@ -49,15 +49,17 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 			btnSaveNDARCSV.Visible = false;
 		}
 
+		this.Title = (shortName != "") ? String.Format("NDAR: {0}", shortName) : "NDAR data";
+
 		//if (chkShowSQLsyntax.Checked) {
 		//    string sqlout = NDAR.GetSQL_for_NDAR_view(shortName, Master.Master_studyID, "/* NONE SELECTED */");
 		//    lblSQLsyntax.Text = "<b><u>SQL syntax for creating NDAR data for '" + shortName + "':</u></b><br/><br/>" + sqlout;
 		//}
 
 
-		if(!IsPostBack)
+		if (!IsPostBack)
 		{
-
+			
 		}
 
 		if(isCallback)
@@ -159,8 +161,16 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 				gridNDARview.Columns[4].FixedStyle = DevExpress.Web.GridViewColumnFixedStyle.Left;
 
 
+				//count rows where reason_exclude is not null
+				int n_reason_exclude_NotNull = dt.AsEnumerable().Where(f => f.Field<string>("reason_exclude") != "").Count();
+				int n_reason_exclude_IsNull = dt.Rows.Count - n_reason_exclude_NotNull;
+
 				v5.Text = dt.Rows.Count.ToString();
 				v5.ForeColor = Color.Navy;
+				v6.Text = n_reason_exclude_IsNull.ToString();
+				v6.ForeColor = Color.Navy;
+				v7.Text = n_reason_exclude_NotNull.ToString();
+				v7.ForeColor = Color.DarkRed;
 			}
 			else
 			{

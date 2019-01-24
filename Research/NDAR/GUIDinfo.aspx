@@ -64,6 +64,7 @@
 				<dx:GridViewDataColumn FieldName="GUID_status"></dx:GridViewDataColumn>
 				<dx:GridViewDataColumn FieldName="GUID"></dx:GridViewDataColumn>
 				<dx:GridViewDataColumn FieldName="ID"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="src_subject_id"></dx:GridViewDataColumn>
 				<dx:GridViewDataColumn FieldName="subjstatus"></dx:GridViewDataColumn>
 				<dx:GridViewDataColumn FieldName="groupname"></dx:GridViewDataColumn>
 				<dx:GridViewDataHyperLinkColumn FieldName="householdID" Caption="View Household" 

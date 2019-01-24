@@ -1,6 +1,11 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="NDARdict.aspx.cs" Inherits="NDAR_NDARdict"
     EnableEventValidation="false"  %>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
+
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+
+
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
 
     <style type="text/css">
@@ -92,44 +97,57 @@
                 
             <tr>
                 <td style="vertical-align:top" colspan="3">
-                <asp:Panel ID="Panel_dataElements" runat="server" ScrollBars="Vertical" Height="700px"  >  
-                        <asp:GridView ID="gv_dataElements" runat="server" AutoGenerateColumns="false" EnableViewState="true" OnRowDataBound="gv_dataElements_RowDataBound" >
+                <asp:Panel ID="Panel_dataElements" runat="server"  >  
+  
+
+
+                        <dx:ASPxGridView ID="griddataElements" runat="server" AutoGenerateColumns="false" EnableViewState="true" OnHtmlRowPrepared="griddataElements_OnHtmlRowPrepared" 
+                                  Settings-VerticalScrollBarMode="Visible" Settings-VerticalScrollableHeight="600" KeyFieldName="name"
+                              Settings-HorizontalScrollBarMode="Visible" Width="1000">
+                                 <SettingsPager Mode="ShowAllRecords"></SettingsPager>
                             <Columns>
-                                <asp:BoundField HeaderText="Required" DataField="required" />
-                                <asp:BoundField HeaderText="Pos" DataField="position" />
-                                <asp:BoundField HeaderText="Name" DataField="name" />
-                                <asp:TemplateField HeaderText="UW fld pos">
-                                    <ItemTemplate>
+                                <dx:GridViewDataColumn Caption="Required" FieldName="required" Width="50" FixedStyle="Left"/>
+                                <dx:GridViewDataColumn Caption="Pos" FieldName="position" Width="40" FixedStyle="Left" />
+                                <dx:GridViewDataColumn Caption="Name" FieldName="name"  FixedStyle="Left"/>
+                                <dx:GridViewDataColumn Caption="UWfldpos" Width="40" FixedStyle="Left">
+                                    <DataItemTemplate>
                                         <asp:TextBox ID="txtUWfld" runat="server" Width="30px" EnableViewState="true" ></asp:TextBox>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:BoundField HeaderText="UW Fld" DataField="uwfld" />
-                                <asp:BoundField HeaderText="fx" DataField="fx" />
-                                <asp:BoundField HeaderText="params" DataField="params" />
-                                <asp:BoundField HeaderText="Type" DataField="type" />
-                                <asp:BoundField HeaderText="Size" DataField="size" />
-                                <asp:BoundField HeaderText="Description" DataField="description" ItemStyle-Width="400px" />
-                                <asp:BoundField HeaderText="Value Range" DataField="valueRange" />
-                                <asp:BoundField HeaderText="Notes" DataField="notes" />
+                                        
+                                    </DataItemTemplate>
+                                </dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn Caption="UW Fld" FieldName="uwfld" FixedStyle="Left"/>
+                                <dx:GridViewDataColumn Caption="fx" FieldName="fx" />
+                                <dx:GridViewDataColumn Caption="params" FieldName="params" />
+                                <dx:GridViewDataColumn Caption="Type" FieldName="type" Width="60"/>
+                                <dx:GridViewDataColumn Caption="Size" FieldName="size" Width="40" />
+                                <dx:GridViewDataColumn Caption="Description" FieldName="description" Width="400px" />
+                                <dx:GridViewDataColumn Caption="Value Range" FieldName="valueRange" />
+                                <dx:GridViewDataColumn Caption="Notes" FieldName="notes" Width="400" />
                 <%--                <asp:BoundField HeaderText="dataElementId" DataField="dataElementId" />--%>
                             </Columns>
-                        </asp:GridView>    
+                        </dx:ASPxGridView>   
                    </asp:Panel>
                 </td>
                 <td width="20px"></td>
             <td style="vertical-align:top" colspan="2">
-                <asp:Panel ID="Panel_UWtable" runat="server" Visible ="false" ScrollBars="Vertical" Height="700px">
-                    <asp:GridView ID="gvUWtable" runat="server" AutoGenerateColumns="false" OnRowDataBound="gvUWtable_RowDataBound" >
+                <asp:Panel ID="Panel_UWtable" runat="server" Visible ="false" >
+
+
+                    <dx:ASPxGridView ID="gridUWtable" runat="server" AutoGenerateColumns="false" EnableViewState="true" OnHtmlRowPrepared="gridUWtable_OnHtmlRowPrepared"
+                                   Settings-VerticalScrollBarMode="Visible" Settings-VerticalScrollableHeight="600">
+                                 <SettingsPager Mode="ShowAllRecords"></SettingsPager>
                         <Columns>
-                            <asp:BoundField HeaderText="Pos" DataField="ord_pos" />
-                            <asp:BoundField HeaderText="Field" DataField="fldname" />
-                            <asp:BoundField HeaderText="DataType" DataField="fielddatatype" />
-                            <asp:BoundField HeaderText="Label" DataField="fieldlabel" ItemStyle-Width="350px"/>
-                            <asp:BoundField HeaderText="Value Labels" DataField="valuelabels" />
-                            <asp:BoundField HeaderText="validlist" DataField="validlist" />
+                            <dx:GridViewDataColumn Caption="Pos" FieldName="ord_pos" Width="45" />
+                            <dx:GridViewDataColumn Caption="Field" FieldName="fldname"  Width="100"/>
+                            <dx:GridViewDataColumn Caption="DataType" FieldName="FieldDataType" Width="55"/>
+                            <dx:GridViewDataColumn Caption="Label" FieldName="FieldLabel" Width="350px"/>
+                            <dx:GridViewDataColumn Caption="Value Labels" FieldName="valuelabels"  Width="150"/>
+                            <dx:GridViewDataColumn Caption="validlist" FieldName="ValidList" Width="100" />
 
                         </Columns>
-                    </asp:GridView>
+                    </dx:ASPxGridView>
+
+
                 </asp:Panel>
 
             </td>
@@ -140,61 +158,28 @@
     </asp:Panel>
 
 
-    <br />
+ 
+
+
+    <br /><br /><br />
+
+    <asp:Label ID="lblmatched" runat="server" Font-Size="Medium" Text="Matched Fields" Font-Bold="true"></asp:Label>    <br />
+    <dx:ASPXGridView ID="gridMatched" runat="server" ClientInstanceName="gridMatched" EnableViewState="true" Styles-AlternatingRow-BackColor="WhiteSmoke">
+        <Columns>
+            <dx:GridViewDataColumn FieldName="shortname"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="position"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="ndar_name"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="ndar_description"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="ord_pos"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="fldname"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="fieldlabel"></dx:GridViewDataColumn>
+            <dx:GridViewDataColumn FieldName="diff_labels"></dx:GridViewDataColumn>
+        </Columns>
+        <SettingsPager Mode="ShowAllRecords"></SettingsPager>
+    </dx:ASPXGridView>
+
     <asp:GridView ID="gvTest" runat="server" Visible="false"></asp:GridView>
     <br />
-
-    
-    <%--    Added for GridViewScroll    see  http://gridviewscroll.aspcity.idv.tw/     
-    Note that the other javascript refs are placed in UWAutism.master  --%>
-<%--<script type="text/javascript">
-    $(document).ready(function () {
-        gridviewScroll1();
-    });
-
-    function gridviewScroll1() {
-        $('#<%=gv_dataElements.ClientID%>').gridviewScroll({
-            width: 1000,
-            height: 800,
-            freezesize: 2,
-            railcolor: "#F0F0F0",
-            barcolor: "#CDCDCD",
-            barhovercolor: "#606060",
-            bgcolor: "#F0F0F0",
-            arrowsize: 30,
-            varrowtopimg: "Images/arrowvt.png",
-            varrowbottomimg: "Images/arrowvb.png",
-            harrowleftimg: "Images/arrowhl.png",
-            harrowrightimg: "Images/arrowhr.png",
-            headerrowcount: 1,
-            railsize: 16,
-            barsize: 8
-
-        });
-
-        function gridviewScroll2() {
-            $('#<%=gvUWtable.ClientID%>').gridviewScroll({
-                width: 800,
-                height: 800,
-                freezesize: 2,
-                railcolor: "#F0F0F0",
-                barcolor: "#CDCDCD",
-                barhovercolor: "#606060",
-                bgcolor: "#F0F0F0",
-                arrowsize: 30,
-                varrowtopimg: "Images/arrowvt.png",
-                varrowbottomimg: "Images/arrowvb.png",
-                harrowleftimg: "Images/arrowhl.png",
-                harrowrightimg: "Images/arrowhr.png",
-                headerrowcount: 1,
-                railsize: 16,
-                barsize: 8
-
-            });
-
-    }
-    </script>
---%>
 
     
 

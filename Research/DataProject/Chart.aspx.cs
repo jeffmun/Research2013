@@ -35,6 +35,7 @@ using DevExpress.XtraPrintingLinks;
 using System.Xml;
 using System.Xml.Serialization;
 using DevExpress.XtraRichEdit.API.Native;
+using uwac.data;
 
 //public partial class PointSeries : ChartBasePage{
 public partial class DataProject_Chart : BasePage
@@ -55,7 +56,9 @@ public partial class DataProject_Chart : BasePage
 	//DxCharts dxchart;
 	List<Color> colors;
 	//List<DxChartOrder> orders;
+	Dataproject dataproject;
 	DPData dpdata;
+	SessionOrders sessionorders;
 	string selectedsheet;
 	bool printDebug = true;
 	List<string> dummydata;
@@ -82,7 +85,7 @@ public partial class DataProject_Chart : BasePage
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
-
+		
 		string filename = Request.QueryString["filename"]; 
 
 		if (!IsPostBack)
@@ -96,15 +99,16 @@ public partial class DataProject_Chart : BasePage
 			PageLoad_PostBack();
 
 		}
-
+		LogDataprojectInfo();
+		LogOrdersInfo();
 	}
 
 
 	protected void PageLoad_Initial()
 	{
-		log(String.Format("Page_Load NOT PostBack - {0}", IsPostBack));
-		List<DxChartOrder> orders = new List<DxChartOrder>();
-		Session["orders"] = orders;
+		log(String.Format("*** INITIAL ***"));
+
+		InitializeSessionVars();
 
 		panel.ContentTemplateContainer.Controls.Clear();
 
@@ -112,10 +116,8 @@ public partial class DataProject_Chart : BasePage
 
 		if (dataproj_pk > 0)
 		{
-			LoadFiles(dataproj_pk);
-			gridFile.Enabled = true;
-			gridFile.NullText = "Select Data File...";
-			gridFile.ClientEnabled = true;
+			BIND_gridFiles();
+
 
 		}
 
@@ -127,6 +129,8 @@ public partial class DataProject_Chart : BasePage
 		bool addtimept = (n_timept_levels > 1) ? true : false;
 		sql.Close();
 
+
+
 		InitializeChartSizes();
 		InitializeDropdowns(addtxgrp, addtimept);
 		InitializeTokenboxes(addtxgrp, addtimept);
@@ -136,135 +140,6 @@ public partial class DataProject_Chart : BasePage
 	}
 
 
-	protected void PageLoad_PostBack()
-	{
-		log(String.Format("Page_Load Is PostBack - {0}", IsPostBack));
-		Int32.TryParse(trackWhist.Value.ToString(), out chartWhist);
-		Int32.TryParse(trackHhist.Value.ToString(), out chartHhist);
-
-
-
-		//DataSet is NULL
-		if (Session["dset"] == null){
-			log(String.Format("Page_Load Is PostBack - {0}   A1 Session[dset] IS NULL", IsPostBack));
-		}
-		//DataSet is NOT NULL
-		else if (Session["dset"] != null)
-		{
-			log(String.Format("Page_Load Is PostBack - {0}   B1 Session[dset] IS NOT NULL", IsPostBack));
-			DataSet dset = (DataSet)Session["dset"];
-
-			//Set the selected sheet
-			string source = "";
-
-			//Selected sheet is NULL or Empty
-			if (String.IsNullOrEmpty(gridDataSheets.Text))
-			{
-				if (Session["selectedsheet"] == null)
-				{
-					selectedsheet = "Data";
-					source = "DEFAULT";
-				}
-				else
-				{
-					selectedsheet = Session["selectedsheet"].ToString();
-					source = "Session";
-				}
-			}
-			//Selected sheet is NOT NULL 
-			else
-			{
-				selectedsheet = gridDataSheets.Text;
-				source = "gridDataSheets";
-			}
-
-			Session["selectedsheet"] = selectedsheet;
-			log(String.Format(" *** selectedsheet         ={0}   source={1}", selectedsheet, source));
-			log(String.Format(" *** Session[selectedsheet]={0}   ", Session["selectedsheet"] ));
-
-
-
-			//dpdata IS NOT NULL
-			if (Session["dpdata"] != null)
-			{
-				log(String.Format(" !!!!!!!!!!!! dpdata IS NOT NULL !!!!!!!!!!!!"));
-				dpdata = (DPData)Session["dpdata"];
-				log(String.Format(" selectedsheet is {0}.", selectedsheet));
-				LogDPDataInfo(dpdata);
-
-				if (dpdata.dtstacked != null)
-				{
-					if (pivotMissing.Visible == true)
-					{
-						PopulatePivotMissing(dpdata.dtstacked);
-					}
-				}
-
-				lblSelectedDataInfo2.Text = dpdata.Info();
-
-			}
-			//dpdata IS NULL
-			else
-			{
-				log(String.Format(" ******** dpdata IS NULL ********"));
-				log(String.Format(" ******** CREATING NEW dpdata **********"));
-				log(String.Format(" selectedsheet is {0}.", selectedsheet));
-				if (txtFilter.Text == "")
-				{
-					dpdata = new DPData(dset.Tables[selectedsheet], dset.Tables["DataDictionary"]);
-				}
-				else
-				{
-					string filter = txtFilter.Text;
-					filter = filter.Replace("\"", "'");
-					log(String.Format(" >>> applying filter = {0}", txtFilter.Text));
-					dpdata = new DPData(dset.Tables[selectedsheet], dset.Tables["DataDictionary"], filter);
-				}
-
-				LogDPDataInfo(dpdata);
-				Session["dpdata"] = dpdata;
-
-				lblSelectedDataInfo2.Text = dpdata.Info();
-			}
-
-
-			log(String.Format(" - - heading to LoadVars from Page_Load IsPostBack"));
-
-			log("thing1");
-			LogDPDataInfo(dpdata);
-			LoadVars(dset, selectedsheet);
-			log("thing2");
-			LogDPDataInfo(dpdata);
-
-
-			gridDataSheets.Value = selectedsheet;
-
-			lblSelectedDataInfo2.Text = dpdata.Info();
-
-			BindVarGrids();
-
-			if (Session["datasheets"] != null)
-			{
-				gridDataSheets.DataSource = (DataTable)Session["datasheets"];
-				gridDataSheets.DataBind();
-			}
-
-
-			ReInitialize();
-
-
-			//LoadColors();
-			GetColors();
-		}
-
-
-		////needed?
-		//if (Session["orders"] != null)
-		//{
-		//	orders = (List<DxChartOrder>)Session["orders"];
-		//}
-	}
-
 	protected void ProcessQueryStringParams()
 	{
 
@@ -272,61 +147,114 @@ public partial class DataProject_Chart : BasePage
 		{
 			Int32.TryParse(Request.QueryString["pk"], out dataproj_pk);
 
-			if(dataproj_pk > 0)
+			if (dataproj_pk > 0)
 			{
-				SQL_utils sql = new SQL_utils("data");
+
+				log("** Instantiating dataproject - #" + dataproj_pk.ToString());
+				dataproject = new Dataproject(dataproj_pk, true);
+				Session["dataproject"] = dataproject;
+
+
 				gridDataProject.Visible = false;
 
 				Session["dataproj_pk"] = dataproj_pk.ToString();
 
-				projTitle = sql.StringScalar_from_SQLstring(String.Format("select projTitle from dp.DataProject where dataproj_pk={0}", dataproj_pk));
-				Session["projTitle"] = projTitle;
+				Session["projTitle"] = dataproject.projTitle;
+
 				lblProjTitle.Visible = true;
-				lblProjTitle.Text = String.Format("#{0} {1}", dataproj_pk, projTitle);
+				lblProjTitle.Text = String.Format("#{0} {1}", dataproj_pk, dataproject.projTitle);
 
-				int studyID = sql.IntScalar_from_SQLstring(String.Format("select studyID from dp.DataProject where dataproj_pk={0}", dataproj_pk));
 
-				if(studyID != Master.Master_studyID)
+
+				if (dataproject.studyID != Master.Master_studyID)
 				{
-					Master.Master_studyID = studyID;
+					Master.Master_studyID = dataproject.studyID;
 				}
 
-				sql.Close();
-
 			}
 		}
-
-		if (Request.QueryString["fn"] != null)
-		{
-			filename = Request.QueryString["fn"];
-		}
-
-		//Int32.TryParse(Request.QueryString["MA"], out movavg);
-
+		
 	}
 
-	protected void LogDPDataInfo(DPData dpdata)
+
+	protected void PageLoad_PostBack()
 	{
-		if (dpdata.dt != null)
+		log(String.Format("*** PostBack ***"));
+		
+		if (Session["dataproject"] != null)
 		{
-			log(String.Format(" /// dpdata.dt has {0} rows.", dpdata.dt.Rows.Count));
-			log(String.Format(" /// dpdata.dtdict has {0} rows.", dpdata.dtdict.Rows.Count));
-
-			if (dpdata.dtstacked == null)
-			{
-				log(String.Format(" /// dpdata.dtstacked IS NULL"));
-			}
-			else
-			{
-				log(String.Format(" /// dpdata.dtstacked has {0}", dpdata.dtstacked.Rows.Count));
-			}
+			//load the dataproject
+			dataproject = (Dataproject)Session["dataproject"];
 		}
 
+
+		if (Session["dataproject"] != null)
+		{
+			//load the dataproject
+			dpdata = (DPData)Session["dpdata"];
+		}
+
+
+		if(Session["sessionorders"] != null)
+		{
+			sessionorders = (SessionOrders)Session["sessionorders"];
+			BIND_orders();
+		}
+
+		#region misc old stuff to sort through
+ 
+
+		//	//	if (dpdata.dtstacked != null)
+		//	//	{
+		//	//		if (pivotMissing.Visible == true)
+		//	//		{
+		//	//			PopulatePivotMissing(dpdata.dtstacked);
+		//	//		}
+		//	//	}
+
+		//	//	lblSelectedDataInfo2.Text = dpdata.Info();
+
+
+		//	//gridDataSheets.Value = selectedsheet;
+
+		//	//lblSelectedDataInfo2.Text = dpdata.Info();
+
+		//	//BindGrids();
+
+
+		//	//ReInitialize();
+
+
+		//	////LoadColors();
+		//	//GetColors();
+		//}
+
+		#endregion
+
 	}
+
+
+
 
 	#endregion
 
 	#region Initialize controls
+
+	protected void InitializeSessionVars()
+	{
+		Session["dataproject"] = null;
+		Session["dpdata"] = null;
+		Session["datadict_num"] = null;
+		Session["datadict_text"] = null;
+		Session["datadict_date"] = null;
+		Session["datadict_age"] = null;
+		Session["datasheets"] = null;
+		Session["selectedvars"] = null;
+		Session["sessionorders"] = null;
+
+	}
+
+
 	protected void InitializeChartSizes()
 	{
 
@@ -366,8 +294,6 @@ public partial class DataProject_Chart : BasePage
 		PopulateDropdownItems(cboColorsvarBAR, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
 		PopulateDropdownItems(cboPanelvarBAR, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
 
-		//PopulateTokenboxItems(cboXaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
-		//PopulateTokenboxItems(cboYaxisvarSCAT, new List<string> { "timept", "group", "txgrp", "sex" });
 		PopulateDropdownItems(cboColorsvarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
 		PopulateDropdownItems(cboPanevarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
 		PopulateDropdownItems(cboPanelvarSCAT, new List<string> { "none", "group", "sex" }, addtxgrp, addtimept);
@@ -398,20 +324,70 @@ public partial class DataProject_Chart : BasePage
 
 	protected void InitializeTokenboxes(bool addtxgrp, bool addtimept)
 	{
-		PopulateTokenboxItems(tokXTrow, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
-		PopulateTokenboxItems(tokXTcol, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
-		PopulateTokenboxItems(tokXTpanel, new List<string> { "variable", "group", "sex" }, addtxgrp, addtimept);
+
+		PopulateTokenboxItems(tokXTrow, new List<string> { "group", "sex" }, addtxgrp, addtimept);
+		PopulateTokenboxItems(tokXTcol, new List<string> { "group", "sex" }, addtxgrp, addtimept);
+		PopulateTokenboxItems(tokXTpanel, new List<string> { "group", "sex" }, addtxgrp, addtimept);
+
 
 		PopulateTokenboxItems(tokXTcell, new List<string> { "id" });
 		PopulateTokenboxItems(tokXTstats, new List<string> { "N", "Mean", "SD" });
 
 
-		tokXTrow.Value = "variable";
+		tokXTrow.Value = "timept";
 		tokXTcol.Value = "group";
 		tokXTcell.Value = "id";
 		tokXTstats.Value = "N";
 
+		InitializeTokenboxes_GrpsTimepts();
 	}
+
+	protected void InitializeTokenboxes_GrpsTimepts()
+	{
+
+		if (Request.QueryString["pk"] != null)
+		{
+			SQL_utils sql = new SQL_utils("data");
+
+			string grp_code = String.Format("select distinct(groupname) groupname from uwautism_research_backend.trk.vwMasterStatus_S where subjID in " +
+					" (select subjID from dp.subj where subjset_pk = (select subjset_pk from dp.DataProject where dataproj_pk =  {0}))", Request.QueryString["pk"]);
+
+
+			string tp_code = String.Format("select distinct(timepoint_text) timepoint_text from uwautism_research_backend..tblstudymeas a " +
+					" join uwautism_research_backend..tbltimepoint b ON a.timepointID = b.timepointID " +
+					" where studymeasID in " +
+					" (select studymeasID from uwautism_research_data.dp.Meas where dataproj_pk = {0})", Request.QueryString["pk"]);
+
+
+
+			DataTable dt_grps = sql.DataTable_from_SQLstring(grp_code);
+			DataTable dt_tps = sql.DataTable_from_SQLstring(tp_code);
+
+			if (dt_grps.HasRows())
+			{
+				List<string> groups = dt_grps.AsEnumerable().Select(f => f.Field<string>("groupname")).ToList();
+				PopulateTokenboxItems(tokGroups, groups);
+
+				tokGroups.Enabled = true;
+				tokGroups.Value = String.Join(",", groups);
+
+			}
+
+			if (dt_tps.HasRows())
+			{
+				List<string> timepts = dt_tps.AsEnumerable().Select(f => f.Field<string>("timepoint_text")).ToList();
+				PopulateTokenboxItems(tokTimepts, timepts);
+				tokTimepts.Enabled = true;
+				tokTimepts.Value = String.Join(",", timepts);
+			}
+			sql.Close();
+		}
+
+
+	}
+
+
+
 
 
 	protected void ReInitialize()
@@ -448,519 +424,373 @@ public partial class DataProject_Chart : BasePage
 		PopulateDropdownItems(cboXaxisvarLINE, vars_for_xaxis_lineplot);
 
 
-		PopulateTokenboxItems(tokXTrow, selected_textvars);
-		PopulateTokenboxItems(tokXTcol, selected_textvars);
-		PopulateTokenboxItems(tokXTpanel, selected_textvars);
-
+		//Crosstabs 
 
 		List<string> selected_num_text = new List<string>();
 		selected_num_text.AddRange(selected_numvars);
 		selected_num_text.AddRange(selected_textvars);
 
-
+		PopulateTokenboxItems(tokXTrow, selected_num_text);
+		PopulateTokenboxItems(tokXTcol, selected_num_text);
+		PopulateTokenboxItems(tokXTpanel, selected_num_text);
 		PopulateTokenboxItems(tokXTcell, selected_num_text);
 
 		//PopulateTokenboxItems(tokXaxisvarSCAT, selected_numvars);
 		//PopulateTokenboxItems(tokYaxisvarSCAT, selected_numvars);
+
+		InitializeTokenboxes_GrpsTimepts();
 	}
+
+
+	#region Custom Sorting and JS properties
+
+	protected void gridVarsNum_OnInit(object sender, EventArgs e)
+	{
+		var lookup = (ASPxGridLookup)sender;
+		lookup.GridView.CustomColumnSort += Grid_CustomColumnSort_BySelected;
+		lookup.GridView.CustomJSProperties += GridView_CustomJSProperties;
+	}
+
+	protected void gridVarsText_OnInit(object sender, EventArgs e)
+	{
+		var lookup = (ASPxGridLookup)sender;
+		lookup.GridView.CustomColumnSort += Grid_CustomColumnSort_BySelected;
+		lookup.GridView.CustomJSProperties += GridView_CustomJSProperties;
+	}
+
+	protected void gridVarsDate_OnInit(object sender, EventArgs e)
+	{
+		var lookup = (ASPxGridLookup)sender;
+		lookup.GridView.CustomColumnSort += Grid_CustomColumnSort_BySelected;
+		lookup.GridView.CustomJSProperties += GridView_CustomJSProperties;
+	}
+
+	protected void gridVarsAge_OnInit(object sender, EventArgs e)
+	{
+		var lookup = (ASPxGridLookup)sender;
+		lookup.GridView.CustomColumnSort += Grid_CustomColumnSort_BySelected;
+		lookup.GridView.CustomJSProperties += GridView_CustomJSProperties;
+
+	}
+
+	private void Grid_CustomColumnSort_BySelected(object sender, CustomColumnSortEventArgs e)
+	{
+		ASPxGridView grid = sender as ASPxGridView;
+		bool isRow1Selected = grid.Selection.IsRowSelectedByKey(e.GetRow1Value(grid.KeyFieldName));
+		bool isRow2Selected = grid.Selection.IsRowSelectedByKey(e.GetRow2Value(grid.KeyFieldName));
+		e.Handled = isRow1Selected != isRow2Selected;
+		if (e.Handled)
+		{
+			if (e.SortOrder == DevExpress.Data.ColumnSortOrder.Descending)
+				e.Result = isRow1Selected ? 1 : -1;
+			else
+				e.Result = isRow1Selected ? -1 : 1;
+		}
+	}
+
+
+	void GridView_CustomJSProperties(object sender, ASPxGridViewClientJSPropertiesEventArgs e)
+	{
+		e.Properties["cpSelectedVars"] = (sender as ASPxGridView).GetSelectedFieldValues("varname").ToArray();
+	}
+
+
 	#endregion
 
 
+	#endregion
 
-	protected void BindVarGrids()
+
+	#region BIND controls
+
+
+	protected void BIND_gridFiles()
 	{
-		if (Session["datadict_num"] != null)
-		{
-			gridVarsNum.DataSource = (DataTable)Session["datadict_num"];
-			gridVarsNum.DataBind();
-			gridVarsNum.Visible = true;
-		}
-		if (Session["datadict_text"] != null)
-		{
-			gridVarsText.DataSource = (DataTable)Session["datadict_text"];
-			gridVarsText.DataBind();
-			gridVarsText.Visible = true;
-		}
-		if (Session["datadict_date"] != null)
-		{
-			gridVarsDate.DataSource = (DataTable)Session["datadict_date"];
-			gridVarsDate.DataBind();
-			gridVarsDate.Visible = true;
-		}
-		if (Session["datadict_age"] != null)
-		{
-			gridVarsAge.DataSource = (DataTable)Session["datadict_age"];
-			gridVarsAge.DataBind();
-			gridVarsAge.Visible = true;
-		}
-		if (Session["orders"] != null)
-		{
-			List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
-			if (orders.Count > 0)
-			{
-				//callbackCharts.Controls.Clear();
-				//ASPxGridView gridOrders = new ASPxGridView();
-				gridOrders.DataSource = new InvoiceSummary(orders);
-				gridOrders.DataBind();
-				gridOrders.Visible = true;
+		log("@@@ BIND_gridFiles @@@");
 
-				//callbackCharts.Controls.Add(gridOrders);
-			}
-			else
-			{
-
-			}
-
+		if (dataproject.HasFiles())
+		{
+			log(String.Format("dataproject does have files!!"));
+			gridFile.DataSource = dataproject.dt_files;
+			gridFile.DataBind();
+			gridFile.Enabled = true;
+			gridFile.NullText = "Select Data File...";
+			gridFile.ClientEnabled = true;
+		}
+		else
+		{
+			log(String.Format("dataproject DOES NOT have files!!"));
 		}
 	}
 
 
-
-	#region Load Controls
-	protected List<Color> GetColors()
+	protected void BIND_gridDataSheets()
 	{
-		List<Color> mycolors = new List<Color>();
-		mycolors.Add((Color)Color1.Value );
-		mycolors.Add((Color)Color2.Value );
-		mycolors.Add((Color)Color3.Value );
-		mycolors.Add((Color)Color4.Value );
-		mycolors.Add((Color)Color5.Value );
-		mycolors.Add((Color)Color6.Value );
-		mycolors.Add((Color)Color7.Value );
-		mycolors.Add((Color)Color8.Value );
-		mycolors.Add((Color)Color9.Value );
-		mycolors.Add((Color)Color10.Value);
-		mycolors.Add((Color)Color11.Value);
-		mycolors.Add((Color)Color12.Value);
-		mycolors.Add((Color)Color13.Value);
-		mycolors.Add((Color)Color14.Value);
-		mycolors.Add((Color)Color15.Value);
-
-		return mycolors;
-
-	}
-
-
-
-	protected void LoadFiles(int pk)
-	{
-		log(" === LoadFiles ===");
-		log("************** CLEARING DSET ********************");
-		Session["dset"] = null;
-		Session["dpdata"] = null;
-
-		log(String.Format("LoadFiles {0}", pk));
-
-		SQL_utils sql = new SQL_utils("data");
-
-		DataTable dt = sql.DataTable_from_SQLstring(String.Format("select *, dbo.fnElapTime_text(created, getdate()) elaptime " + 
-			" from dp.Datafile where isdeleted=0 and dataproj_pk={0} order by created desc", pk));
-
-		Session["datafiles"] = dt;
-
-		gridFile.DataSource = dt;
-		gridFile.DataBind();
-		
-		sql.Close();
-	}
-
-	
-	protected void LoadExcelData(string xlfile)
-	{
-		log(String.Format(" === LoadExcelData {0} ===", xlfile));
-		LoadExcelData(xlfile, "Data");
-	}
-
-	protected void LoadExcelData(string xlfile, string sheet)
-	{
-		log(String.Format(" === LoadExcelData {0} {1} ===", xlfile, sheet));
-
-		Session["filename"] = xlfile;
-
-		DataSet dset = SpreadsheetGearUtils.GetDataSet(xlfile);
-
-
-		if (dset.Tables.Count > 0)
+		log("@@@ BIND_gridDataSheets @@@");
+		DataTable dt_sheets = dataproject.DatasetSheets();
+		if (dt_sheets.HasRows())
 		{
-			log("************** SETTING DSET ********************");
-			Session["dset"] = dset;
-			log(String.Format(" - - heading to LoadSheets from LoadExcelData"));
-			LoadSheets(dset);
-			//LoadVars(dset, sheet);
-		}
-		else { 
-			//File not found
-		}
-
-	}
-
-	protected void LoadSheets(DataSet dset)
-	{
-		log(String.Format(" === LoadSheets ==="));
-		DataTable datasheets = new DataTable();
-		datasheets.Columns.Add("sheetname", typeof(string));
-		datasheets.Columns.Add("nrows", typeof(int));
-
-		bool hasData = false;
-
-		foreach (DataTable dt in dset.Tables)
-		{
-			string tblname = dt.TableName;
-			if (tblname=="Subjects" | (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode"))
-			{
-				DataRow row = datasheets.NewRow();
-
-				row["sheetname"] = tblname;
-				row["nrows"] = dt.Rows.Count;
-
-				datasheets.Rows.Add(row);
-				if (tblname == "Data") hasData = true;
-			}
-		}
-
-		if (datasheets.Rows.Count > 0)
-		{
-			//string selsheet = (Session["selectedsheet"] == null) ? "Data" : Session["selectedsheet"].ToString();
-			
-
-			//set selected sheet to Data if it exists, otherwise use the first data sheet
-			string selectedsheet = (hasData) ? "Data" : datasheets.AsEnumerable().Select(f => f["sheetname"]).First().ToString();
-
-			Session["datasheets"] = datasheets;
-
-			gridDataSheets.DataSource = (DataTable)Session["datasheets"];
+			log("  -  has sheets");
+			//gridDataSheets.DataSource = (DataTable)Session["datasheets"];
+			gridDataSheets.DataSource = dt_sheets;
 			gridDataSheets.DataBind();
 			gridDataSheets.Visible = true;
 
-			gridDataSheets.Value = selectedsheet;
-			log(String.Format(" - - heading to LoadVars from LoadSheets"));
-			LoadVars(dset, selectedsheet);
+
+			gridDataSheets.Value = dataproject.selectedsheet;
+			//log(String.Format(" - - heading to LoadVars from LoadSheets"));
+			//LoadVars(dset, selectedsheet);
 
 			Session[selectedsheet] = selectedsheet;
 			txtFilter.Visible = true;
 			btnFilter.Visible = true;
 			lblFilterExample.Visible = true;
-		}
 
-	}
-
-
-	protected List<string> GetDataSheetNames(DataSet dset)
-	{
-
-		DataTable dtsheets = (DataTable)Session["datasheets"];
-		if(dset.Tables.Count > 0)
-		{
-			List<string> datasheetnames = new List<string>();
-			foreach (DataTable dt in dset.Tables)
-			{
-				string tblname = dt.TableName;
-				if (tblname=="Subjects" | (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode"))
-				{
-					datasheetnames.Add(dt.TableName);
-				}
-			}
-			return datasheetnames;
 		}
 		else
 		{
-			return null;
+			log("  -  has NO sheets!");
+
 		}
 
 	}
 
 
-	protected DataTable DataDictionaryForSheet(DataSet dset, string sheet)
+	protected void BIND_vars()
 	{
-		List<string> datasheetnames = GetDataSheetNames(dset);
-		List<string> measnames_on_othersheets = new List<string>();
-		for (int i = 0; i < datasheetnames.Count; i++)
+		log(String.Format("@@@ BIND_vars  sheeet = {0} @@@", dataproject.selectedsheet));
+
+		if (!String.IsNullOrEmpty(dataproject.selectedsheet))
 		{
-			if (datasheetnames[i] != "Data") measnames_on_othersheets.Add(datasheetnames[i].Replace("Data_", ""));
+			DataTable datadict_num = dataproject.datadict_subtype("num");
+			DataTable datadict_text = dataproject.datadict_subtype("text");
+			DataTable datadict_date = dataproject.datadict_subtype("date");
+			DataTable datadict_age = dataproject.datadict_subtype("age");
+
+
+			gridVarsNum.DataSource = datadict_num;
+			gridVarsNum.DataBind();
+
+
+			gridVarsText.DataSource = datadict_text;
+			gridVarsText.DataBind();
+
+
+
+			gridVarsDate.DataSource = datadict_date;
+			gridVarsDate.DataBind();
+
+
+			gridVarsAge.DataSource = datadict_age;
+			gridVarsAge.DataBind();
+
 		}
+		
 
+	}
 
-		DataTable dictorig = dset.Tables["DataDictionary"];
-
-		if (sheet == "Data")
+	
+	protected void BIND_orders()
+	{
+		if (sessionorders != null )
 		{
-			string measnames_on_othersheets_csv = String.Join("','", measnames_on_othersheets);
-			DataView vw = dictorig.AsDataView();
-			vw.RowFilter = String.Format("[measname] NOT IN ('{0}')", measnames_on_othersheets_csv);
-			DataTable dt = vw.ToTable();
-			return dt;
-		}
-		else if (sheet == "Subjects")
-		{
-			DataView vw = dictorig.AsDataView();
-			vw.RowFilter = "[measname] = '!'";  //no records
-			DataTable dt = vw.ToTable();
 
-			int counter = 0;
-			foreach(DataColumn subjcol in dset.Tables["Subjects"].Columns)
+			DataTable orders = new InvoiceSummary(sessionorders);
+			if (orders.HasRows())
 			{
-				counter++;
-				string dtype = subjcol.DataType.ToString().Replace("System.","");
-
-				string sqldatatype = "";
-
-				if (subjcol.ColumnName.Contains("date")) sqldatatype = "date";
-				else if (subjcol.ColumnName == "studystart") sqldatatype = "date";
-				else if (subjcol.ColumnName == "txstart") sqldatatype = "date";
-				else if (dtype == "Double") sqldatatype = "float";
-				else if (dtype.StartsWith("Int")) sqldatatype = "int";
-				else if (dtype == "String") sqldatatype = "varchar";
-				else sqldatatype = "varchar";
-
-
-				DataRow row = dt.NewRow();
-				row["pos"] = counter;
-				row["measname"] = "Subjects";
-				row["varname"] = subjcol.ColumnName;
-				row["DataType"] = sqldatatype;
-				row["FieldLabel"] = SubjectVarLabel(subjcol.ColumnName);
-				row["InAnalysis"] = 0;
-				dt.Rows.Add(row);
+				gridOrders.DataSource = orders;
+				gridOrders.DataBind();
+				gridOrders.Visible = true;
 			}
-			return dt;
+
 		}
-		else
+	}
+
+	//protected void BindGrids()
+	//{
+	//	tokGroups.Visible = true;
+	//	tokTimepts.Visible = true;
+
+
+	//	if (Session["datadict_num"] != null)
+	//	{
+	//		gridVarsNum.DataSource = (DataTable)Session["datadict_num"];
+	//		gridVarsNum.DataBind();
+	//		gridVarsNum.Visible = true;
+	//	}
+	//	if (Session["datadict_text"] != null)
+	//	{
+	//		gridVarsText.DataSource = (DataTable)Session["datadict_text"];
+	//		gridVarsText.DataBind();
+	//		gridVarsText.Visible = true;
+	//	}
+	//	if (Session["datadict_date"] != null)
+	//	{
+	//		gridVarsDate.DataSource = (DataTable)Session["datadict_date"];
+	//		gridVarsDate.DataBind();
+	//		gridVarsDate.Visible = true;
+	//	}
+	//	if (Session["datadict_age"] != null)
+	//	{
+	//		gridVarsAge.DataSource = (DataTable)Session["datadict_age"];
+	//		gridVarsAge.DataBind();
+	//		gridVarsAge.Visible = true;
+	//	}
+
+	//	if (Session["datasheets"] != null)
+	//	{
+	//		gridDataSheets.DataSource = (DataTable)Session["datasheets"];
+	//		gridDataSheets.DataBind();
+	//	}
+
+
+	//	if (Session["selectedvars"] != null)
+	//	{
+	//		gvSelectedVars.DataSource = (DataTable)Session["selectedvars"];
+	//		gvSelectedVars.DataBind();
+
+	//	}
+
+	//	if (Session["chart_orders"] != null | Session["table_orders"] != null)
+	//	{
+	//		List<DxChartOrder> chartorders = (List<DxChartOrder>)Session["chart_orders"];
+	//		List<DxTableOrder> tableorders = (List<DxTableOrder>)Session["table_orders"];
+
+	//		DataTable orders = new InvoiceSummary(chartorders, tableorders);
+	//		if (orders.HasRows())
+	//		{
+	//			gridOrders.DataSource = orders;
+	//			gridOrders.DataBind();
+	//			gridOrders.Visible = true;
+	//		}
+
+	//	}
+	//}
+
+
+
+	#endregion
+
+
+
+
+
+
+
+
+
+	#region (A) - load dataset from Excel
+	protected void LoadExcelDataset(string xlfile)
+	{
+		log(String.Format(" === LoadExcelData {0} ===", xlfile));
+		if (xlfile.Contains(".xlsx"))
 		{
-			DataView vw = dictorig.AsDataView();
-			vw.RowFilter = String.Format("[measname] = '{0}'", sheet.Replace("Data_", ""));
-			DataTable dt = vw.ToTable();
-			return dt;
+			LoadExcelDataset(xlfile, "Data");
 		}
-
 	}
 
-	public string SubjectVarLabel (string v)
+	protected void LoadExcelDataset(string xlfile, string sheet)
 	{
-		string varlabel = "";
+		log(String.Format(" === LoadExcelData {0} {1} ===", xlfile, sheet));
 
-		switch (v)
+		if (xlfile.Contains(".xlsx"))
 		{
-			case "subjstatus": varlabel = "Subject status"; break;
-			case "subjstatusdetail": varlabel = "Subject status detail"; break;
-			case "txstart": varlabel = "Date Treatment started"; break;
-			case "txstart_agemos": varlabel = "Age when Treatment started"; break;
-			case "studystart": varlabel = "Date subject started the study"; break;
-			case "studystart_agemos": varlabel = "Age when subject started the study"; break;
-			case "txstartnote": varlabel = "Notes regarding treatment start date"; break;
-			case "subjnotes": varlabel = "Subject notes"; break;
-			default: varlabel = v; break;
+			//Session["filename"] = xlfile;
+
+			dataproject.PopulateDatasetFromExcelfile(xlfile);
+
+			if (dataproject.Dataset.Tables.Count > 0)
+			{
+				//Session["dset"] = dataproject.Dataset;
+				log("  -  now dataproject.Dataset is populated!");
+				//log(String.Format(" - - heading to LoadSheets from LoadExcelData"));
+				//LoadSheets(dataproject.Dataset);
+				//LoadVars(dataproject.Dataset, sheet);
+			}
+
 		}
-		return varlabel;
+		
 	}
 
-	protected void LoadVars(DataSet dset)
+	#endregion
+
+	#region (B) - load Data
+	protected void LoadDPData()
 	{
-		LoadVars(dset, "Data");
-	}
+		if (dataproject.selectedsheet != null & dataproject.selectedsheet!="")
+		{
+			dpdata = new DPData(dataproject, "");
+		}
+		//else if (param == "Subjects")
+		//{
+		//	DataSet dset = (DataSet)Session["dset"];
+		//	dpdata = new DPData(dset.Tables["Subjects"], dset.Tables["DataDictionary"]);
+		//	//Session["dpdata"] = dpdata;
+		//	//lblSelectedDataInfo2.Text = dpdata.Info();
 
 
+		//	log(" - - heading to LoadVars from callbackVars_OnCallback");
+		//	LoadVars((DataSet)Session["dset"], param);
 
-
-	protected void LoadVars(DataSet dset, string sheet)
-	{
-		log(String.Format(" === LoadVars {0} ===", sheet));
-
-		//DataTable datadict = dset.Tables["DataDictionary"];
-		DataTable datadict = DataDictionaryForSheet(dset, sheet);  //Limit Vars To Correct Sheet
-		DataTable compvars = dset.Tables["CompVars"];
-
-
-		List<string> nums = new List<string>(new string[] { "int", "smallint", "tinyint", "float", "decimal", "bigint","numeric" });
-		List<string> strings = new List<string>(new string[] { "char", "varchar", "nvarchar" });
-		List<string> dates = new List<string>(new string[] { "date", "smalldatetime", "datetime" });
-
-		DataView vwdatadict_num = datadict.AsDataView();
-		vwdatadict_num.RowFilter = "(FieldLabel not like '% age (mo%' and FieldLabel not like '%age mos%')";
-		DataTable tmpdatadict_num = vwdatadict_num.ToTable();
-
-
-		var qry_num = tmpdatadict_num.AsEnumerable()
-			.Where(f => f.Field<string>("DataType") == "int" ||
-				f.Field<string>("DataType") == "bigint" ||
-				f.Field<string>("DataType") == "smallint" ||
-				f.Field<string>("DataType") == "tinyint" ||
-				f.Field<string>("DataType") == "float" ||
-				f.Field<string>("DataType") == "numeric" ||
-				f.Field<string>("DataType") == "decimal")
-			.Select(r => new
-			{
-				measname = r.Field<string>("measname"),
-				varname = r.Field<string>("varname"),
-				fieldlabel = r.Field<string>("FieldLabel"),
-				datatype = r.Field<string>("DataType"),
-				valuelabels = r.Field<string>("ValueLabels")
-			});
-
-
-		DataView vwdatadict_age = datadict.AsDataView();
-		vwdatadict_age.RowFilter = "(FieldLabel like '%age in%' or FieldLabel like '%age (mo%' or FieldLabel like '%age mos%')";
-		DataTable tmpdatadict_age = vwdatadict_age.ToTable();
-
-
-		var qry_age = tmpdatadict_age.AsEnumerable()
-			.Where(f => f.Field<string>("DataType") == "int" ||
-				f.Field<string>("DataType") == "bigint" ||
-				f.Field<string>("DataType") == "smallint" ||
-				f.Field<string>("DataType") == "tinyint" ||
-				f.Field<string>("DataType") == "float" ||
-				f.Field<string>("DataType") == "numeric" ||
-				f.Field<string>("DataType") == "decimal")
-			.Select(r => new
-			{
-				measname = r.Field<string>("measname"),
-				varname = r.Field<string>("varname"),
-				fieldlabel = r.Field<string>("FieldLabel"),
-				datatype = r.Field<string>("DataType"),
-				valuelabels = r.Field<string>("ValueLabels")
-			});
-
-
-		var qry_text = datadict.AsEnumerable()
-			.Where(f => f.Field<string>("DataType") == "char" ||
-				f.Field<string>("DataType") == "varchar" ||
-				f.Field<string>("DataType") == "nvarchar" || 
-				f.Field<double>("InAnalysis") == 3)
-			.Select(r => new
-			{
-				measname = r.Field<string>("measname"),
-				varname = r.Field<string>("varname"),
-				fieldlabel = r.Field<string>("FieldLabel"),
-				datatype = r.Field<string>("DataType"),
-				valuelabels = r.Field<string>("ValueLabels")
-			});
-
-		var qry_date = datadict.AsEnumerable()
-			.Where(f => f.Field<string>("DataType") == "date" ||
-				f.Field<string>("DataType") == "smalldatetime" ||
-				f.Field<string>("DataType") == "datetime")
-			.Select(r => new
-			{
-				measname = r.Field<string>("measname"),
-				varname = r.Field<string>("varname"),
-				fieldlabel = r.Field<string>("FieldLabel"),
-				datatype = r.Field<string>("DataType"),
-				valuelabels = r.Field<string>("ValueLabels")
-			});
-
-
-
-		//var qry_compvar = compvars.AsEnumerable()
-		//	.Select(r => new
-		//	{
-		//		measname = "[COMP '" + r.Field<string>("compvarname") + "']",
-		//		varname = r.Field<string>("compvarname"),
-		//		fieldlabel = r.Field<string>("compvarlabel"),
-		//		datatype = "float",
-		//		valuelabels = ""
-		//	})
-		//	.Distinct();
-
-		//var qry_compvarvar = compvars.AsEnumerable()
-		//	.Select(r => new
-		//	{
-		//		measname = "[COMP '" + r.Field<string>("compvarname") + "'] " + r.Field<string>("measname"),
-		//		varname = r.Field<string>("varname") + "_z",
-		//		fieldlabel = r.Field<string>("FieldLabel"),
-		//		datatype = "float",
-		//		valuelabels = "ComponentVar"
-		//	});
-
-
-
-		DataTable datadict_num = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_num);
-		DataTable datadict_text = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_text);
-		DataTable datadict_date = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_date);
-		DataTable datadict_age = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_age);
-
-
-		//DataTable compvar = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_compvar);
-		//DataTable compvarvar = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_compvarvar);
-
-
-		//if (!sheet.Contains("IntHx"))
+		//}
+		//else if (param == "varstext")
 		//{
 
-		//	if (compvar.Rows.Count > 0)
-		//	{
-		//		foreach (DataRow dr in compvar.Rows)
-		//		{
-		//			if (true /* some condition */)
-		//				datadict_num.Rows.Add(dr.ItemArray);
-		//		}
-		//	}
 
-		//	if (compvarvar.Rows.Count > 0)
-		//	{
-		//		foreach (DataRow dr in compvarvar.Rows)
-		//		{
-		//			if (true /* some condition */)
-		//				datadict_num.Rows.Add(dr.ItemArray);
-		//		}
-		//	}
 		//}
 
+		//else if (param.StartsWith("filter!"))
+		//{
+		//	string filter = param.Replace("filter!", "");
+		//	dpdata = new DPData(dataproject, selectedsheet, filter);
 
-		Session["datadict"] = datadict;
-		//Session["compvar"] = compvar;
-		//Session["compvarvar"] = compvarvar;
+		//	//if (filter == "null")
+		//	//{
+		//	//	if (Session["dset"] != null)
+		//	//	{
+		//	//		DataSet dset = (DataSet)Session["dset"];
 
+		//	//		dpdata = new DPData(dataproject, selectedsheet, "");
+		//	//		//dpdata = new DPData(dset.Tables[selectedsheet], dset.Tables["DataDictionary"]);
 
-		Session["datadict_num"] = null;
-		Session["datadict_text"] = null;
-		Session["datadict_date"] = null;
-		Session["datadict_age"] = null;
+		//	//		Session["dpdata"] = dpdata;
+		//	//		lblSelectedDataInfo2.Text = dpdata.Info();
+		//	//	}
+		//	//}
+		//	//else
+		//	//{
+		//	//	log(String.Format(" BEFORE FILTER [{0}] dpdata.dt has {1} rows", filter, dpdata.dt.Rows.Count));
+		//	//	dpdata.filter = filter;
+		//	//	log(String.Format(" AFTER FILTER [{0}]  dpdata.dt has {1} rows", filter, dpdata.dt.Rows.Count));
+		//	//	Session["dpdata"] = dpdata;
 
-		if (datadict_num.Rows.Count > 0)
+		//	//	lblSelectedDataInfo2.Text = dpdata.Info();
+		//	//}
+
+		//}
+
+		if (dpdata != null)
 		{
-			Session["datadict_num"] = datadict_num;
-			gridVarsNum.DataSource = datadict_num; 
-			gridVarsNum.DataBind();
-			gridVarsNum.Visible = true;
+			Session["dpdata"] = dpdata;
+			lblSelectedDataInfo2.Text = dpdata.Info();
 		}
 
-
-		if (datadict_text.Rows.Count > 0)
-		{
-			Session["datadict_text"] = datadict_text;
-			gridVarsText.DataSource = (DataTable)Session["datadict_text"];
-			gridVarsText.DataBind();
-			gridVarsText.Visible = true;
-		}
-
-
-		if (datadict_date.Rows.Count > 0)
-		{
-			Session["datadict_date"] = datadict_date;
-			gridVarsDate.DataSource = (DataTable)Session["datadict_date"];
-			gridVarsDate.DataBind();
-			gridVarsDate.Visible = true;
-		}
-
-		if (datadict_age.Rows.Count > 0)
-		{
-			Session["datadict_age"] = datadict_age;
-			gridVarsAge.DataSource = (DataTable)Session["datadict_age"];
-			gridVarsAge.DataBind();
-			gridVarsAge.Visible = true;
-		}
+		//if (shouldWeLoadVars)
+		//{
+		//	log(" - - heading to LoadVars from callbackVars_OnCallback");
+		//	LoadVars(dataproject.Dataset, param);
+		//}
 
 	}
 
 
+	#endregion
 
-	protected void PopulatePivotMissing(DataTable dtstacked)
+	protected void DisplaySelectedGprsTimepts()
 	{
-		pivotMissing.DataSource = dtstacked;
-		pivotMissing.DataBind();
 
-		pivotMissing.Visible = true;
+
 	}
-
 
 	protected void DisplaySelectedVars()
 	{
@@ -987,7 +817,8 @@ public partial class DataProject_Chart : BasePage
 			//get the correct data dictionary
 			if (selectedsheet == "Subjects")
 			{
-				DataTable dtdict_subj = DataDictionaryForSheet((DataSet)Session["dset"], "Subjects");
+				//DataTable dtdict_subj = DataDictionaryForSheet((DataSet)Session["dset"], "Subjects");
+				DataTable dtdict_subj = dataproject.DataDictionaryForSheet("Subjects");
 				dv = dtdict_subj.AsDataView();
 			}
 			else
@@ -995,8 +826,8 @@ public partial class DataProject_Chart : BasePage
 				dv = dpdata.dtdict.AsDataView();
 			}
 
-			string notDataSheet = (selectedsheet != "Data") ?
-				String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
+			string notDataSheet = (dataproject.selectedsheet != "Data") ?
+				String.Format(" and measname='{0}'", dataproject.selectedsheet.Replace("Data_", "")) : "";
 
 			string filter = String.Format("varname in ('{0}') {1}"
 				, String.Join("','", allvars)
@@ -1020,8 +851,7 @@ public partial class DataProject_Chart : BasePage
 			}
 
 
-			gvSelectedVars.DataSource = dt;
-			gvSelectedVars.DataBind();
+
 
 
 			var x = from f in dt.AsEnumerable()
@@ -1039,7 +869,8 @@ public partial class DataProject_Chart : BasePage
 
 
 			Session["selectedvars"] = dtvars;
-
+			gvSelectedVars.DataSource = dtvars;
+			gvSelectedVars.DataBind();
 
 			gvSelectedVars.Visible = true;
 			lblVarLabels.Visible = true;
@@ -1062,20 +893,7 @@ public partial class DataProject_Chart : BasePage
 		int idx = tabSteps.TabPages.IndexOfName(name);
 		tabSteps.TabPages[idx].ClientVisible = makeVisible;
 	}
-
-
-
-	//protected void AddTextVarToSelector(DataTable dt, string varname, string label)
-	//{
-	//	DataRow add_var = dt.NewRow();
-	//	add_var["varname"] = varname;
-	//	add_var["FieldLabel"] = label;
-	//	dt.Rows.Add(add_var);
-	//}
-
-
-	#endregion
-
+	 
 
 
 	#region Populate Dropdowns
@@ -1210,16 +1028,7 @@ public partial class DataProject_Chart : BasePage
 
 	#region Callbacks 
 
-
-
-	//protected void tabSteps_OnCallback(object sender, CallbackEventArgsBase e)
-	//{
-	//	orders = (DxChartOrders)Session["orders"];
-	//	string sets_text = String.Format("Chart Sets (N={0})", orders.Count);
-	//	tabSteps.TabPages[3].Text = sets_text;
-
-	//}
-
+	
 	protected void callbackSelectors_OnCallback(object sender, CallbackEventArgsBase e)
 	{
 		log(String.Format("callbackSelectors_OnCallback {0}", e.Parameter.ToString()));
@@ -1236,6 +1045,7 @@ public partial class DataProject_Chart : BasePage
 		//PopulateDropdownItems(cboXaxisvar, selected_textvars);
 	}
 
+	//OK LoadExcelDataset
 	protected void callbackFile_OnCallback(object source, CallbackEventArgsBase e)
 	{
 		log(String.Format(">>> callbackFile_OnCallback {0}", e.Parameter.ToString()));
@@ -1249,8 +1059,7 @@ public partial class DataProject_Chart : BasePage
 		}
 		else if (e.Parameter.Contains(".xlsx"))
 		{
-			string x = e.Parameter.ToString();
-			LoadExcelData(x.ToString());
+			LoadExcelDataset(e.Parameter.ToString());
 		}
 		else
 		{
@@ -1258,7 +1067,7 @@ public partial class DataProject_Chart : BasePage
 
 			if (pk > 0)
 			{			
-				string url = String.Format("Chart.aspx?pk={0}", e.Parameter);
+				string url = String.Format("Chart.aspx?pk={0}", e.Parameter); //Redirect to this page, now with a dataproject_pk
 				DevExpress.Web.ASPxWebControl.RedirectOnCallback(url);
 			}
 
@@ -1266,109 +1075,40 @@ public partial class DataProject_Chart : BasePage
 
 	}
 
+	//OK LoadExcelDataset   BIND_gridDataSheets();
 	protected void callbackDataSheets_OnCallback(object sender, CallbackEventArgsBase e)
 	{
 		log(String.Format(">>> callbackDataSheets_OnCallback {0}", e.Parameter.ToString()));
+		log("      -- Sheet has been changed -- ");
 
-		string x = e.Parameter.ToString();
+		LoadExcelDataset(e.Parameter.ToString());
 
-		if (x.Contains(".xlsx"))
-		{
-			Session["filename"] = x;
-			if (Session["dset"] == null)
-			{
-				LoadExcelData(x.ToString());
-				DataSet dset = (DataSet)Session["dset"];
+		BIND_gridDataSheets();
 
-				//???
-				//string info = GetDataSheetInfo(dset, "Data");
-				//Session["datasheetinfo"] = info;
-			}
-			else
-			{
-				Session["selectedsheet"] = "Data";
-			}
-
-		}
-		else 
-		{
-			DataSet dset = (DataSet)Session["dset"];
-			Session["selectedsheet"] = x;
-
-			log(String.Format(" - - heading to LoadVars from callbackDataSheets_OnCallback"));
-			LoadVars(dset, x);
-
-			//??
-			//Session["datasheetinfo"] = GetDataSheetInfo(dset, x);
-		}
 	}
 
+	//OK BIND_vars
 	protected void callbackVars_OnCallback(object sender, CallbackEventArgsBase e)
 	{
-		log(String.Format(">>> callbackVars_OnCallback {0}", e.Parameter.ToString()));
+		log(String.Format(">>> callbackVars_OnCallback  [Sheet = {0}]", e.Parameter.ToString()));
 
-		string par = e.Parameter.ToString();
+		string param = e.Parameter.ToString();
 
+		dataproject.selectedsheet = param;
 
-		if (par.StartsWith("Data"))
-		{
-			DataSet dset = (DataSet)Session["dset"];
-			dpdata = new DPData(dset.Tables[selectedsheet], dset.Tables["DataDictionary"]);
-			Session["dpdata"] = dpdata;
-			lblSelectedDataInfo2.Text = dpdata.Info();
-
-
-			log(" - - heading to LoadVars from callbackVars_OnCallback");
-			LoadVars((DataSet)Session["dset"], par);
-
-			//???
-			//string info = GetDataSheetInfo((DataSet)Session["dset"], "Data");
-			//Session["datasheetinfo"] = info;
-		}
-		else if (par == "Subjects")
-		{
-			DataSet dset = (DataSet)Session["dset"];
-			dpdata = new DPData(dset.Tables["Subjects"], dset.Tables["DataDictionary"]);
-			Session["dpdata"] = dpdata;
-			lblSelectedDataInfo2.Text = dpdata.Info();
-
-
-			log(" - - heading to LoadVars from callbackVars_OnCallback");
-			LoadVars((DataSet)Session["dset"], par);
-
-		}
-		else if (par == "varstext")
-		{
-
-
-		}
-
-		if(par.StartsWith("filter!"))
-		{
-			string filter = par.Replace("filter!", "");
-			if (filter == "null")
-			{
-				if (Session["dset"] != null)
-				{
-					DataSet dset = (DataSet)Session["dset"];
-					dpdata = new DPData(dset.Tables[selectedsheet], dset.Tables["DataDictionary"]);
-					Session["dpdata"] = dpdata;
-					lblSelectedDataInfo2.Text = dpdata.Info();
-				}
-			}
-			else
-			{
-				log(String.Format(" BEFORE FILTER [{0}] dpdata.dt has {1} rows", filter, dpdata.dt.Rows.Count));
-				dpdata.filter = filter;
-				log(String.Format(" AFTER FILTER [{0}]  dpdata.dt has {1} rows", filter, dpdata.dt.Rows.Count));
-				Session["dpdata"] = dpdata;
-
-				lblSelectedDataInfo2.Text = dpdata.Info();
-			}
-
-		}
-
+		BIND_vars();
+		
 	}
+
+
+	protected void callbackSelectedDataInfo_OnCallback(object sender, CallbackEventArgsBase e)
+	{
+		log(String.Format(">>> callbackSelectedDataInfo_OnCallback {0}", e.Parameter.ToString()));
+		log(" HERE WE UPDATE THE SELECTED DATA INFO !!");
+
+		LoadDPData();
+	}
+
 
 	protected void callbackVarLabels_OnCallback(object sender, CallbackEventArgsBase e)
 	{
@@ -1377,7 +1117,16 @@ public partial class DataProject_Chart : BasePage
 		DisplaySelectedVars();
 	}
 
+	protected void callbackGrpTimept_OnCallback(object sender, CallbackEventArgsBase e)
+	{
+		log(String.Format(">>> callbackGrpTimept_OnCallback {0}", e.Parameter.ToString()));
 
+		DisplaySelectedGprsTimepts();
+	}
+
+	
+
+	
 	protected void callbackMissing_OnCallback(object sender, CallbackEventArgsBase e)
 	{
 		log(String.Format(">>> callbackMissing_OnCallback {0}", e.Parameter.ToString()));
@@ -1399,7 +1148,8 @@ public partial class DataProject_Chart : BasePage
 
 		if (numvars.Count > 0)
 		{
-
+			//List<int> txstudies = new List<int> { }
+			
 			List<string> idvars = new List<string> { "ref_id", "group", "txgrp", "timept" };
 
 			dpdata.Data_FullyStacked(idvars, numvars);
@@ -1419,7 +1169,7 @@ public partial class DataProject_Chart : BasePage
 	
 	protected void callbackViewData_OnCallback(object sender, CallbackEventArgsBase e)
 	{
-		log(String.Format(">>> callbackVars_OnCallback {0}", e.Parameter.ToString()));
+		log(String.Format(">>> callbackViewData_OnCallback {0}", e.Parameter.ToString()));
 
 		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
@@ -1476,82 +1226,122 @@ public partial class DataProject_Chart : BasePage
 	{
 		log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackCharts_OnCallback {0}", e.Parameter.ToString()));
 
-		List<DxChartOrder> existingorders = (List<DxChartOrder>)Session["orders"];
+		HandleOutput(e.Parameter);
+	}
 
-		var p = e.Parameter;
-		
+
+
+	protected void HandleOutput(string p)
+	{
+
+		if (sessionorders == null) sessionorders = new SessionOrders();
+
 		if (p == "clear")
 		{
 
 		}
-		else if (p.StartsWith( "OldOrder"))		
+		else if (p.StartsWith("OldOrder"))
 		{
 			List<string> ps = p.Split('|').ToList();
 
-			int idx = Convert.ToInt32(ps[1]) - 1;
+			int idx = Convert.ToInt32(ps[1]) ;
 
-			DxChartOrder oldorder = existingorders[idx];
-			List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder>() { oldorder });
-			DeliverChartsToPage(completedoldorders);
+			var orders = sessionorders;
 
-			//if (oldorder.isOrderFilled)
-			//{
-			//	DeliverChartsToPage(oldorder);
-			//}
-			//else
-			//{
-			//	List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder>() { oldorder });
-			//	DeliverChartsToPage(completedoldorders);
-			//	existingorders[idx] = completedoldorders[0];
-			//	Session["orders"] = existingorders;
-			//}
+			DxOrder oldorder = sessionorders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
+
+			if (oldorder.ordertype == OrderType.chart)
+			{
+				List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder> { (DxChartOrder)oldorder });
+				DeliverOutputToPage(completedoldorders);
+
+			}
+			else if (oldorder.ordertype == OrderType.table)
+			{
+				List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder> { (DxTableOrder)oldorder });
+				DeliverOutputToPage( completedoldorders);
+
+			}
+
+			//DxChartOrder oldorder = existingorders[idx];
+
 
 
 		}
 		else if (p == "NewOrder")
 		{
-			DxChartOrder neworder = GatherOrder();
-			List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworder });
-			DeliverChartsToPage(completedneworders);
+			List<DxChartOrder> completednewordersC = null;
+			List<DxTableOrder> completednewordersT = null;
+			DxChartOrder neworderC = GatherOrder();
+			if (neworderC.list_settings.Count > 0)
+			{
+				completednewordersC = PlaceOrders(new List<DxChartOrder>() { neworderC });
+				
+			}
+
+			DxTableOrder neworderT = GatherTableOrder();
+			if (neworderT.list_settings.Count > 0)
+			{
+				completednewordersT = PlaceOrders(new List<DxTableOrder>() { neworderT });
+			}
+
+
+			DeliverOutputToPage(completednewordersC, completednewordersT);
+
+
 		}
 		else if (p == "SaveNewOrder")
 		{
-			DxChartOrder neworder = GatherOrder();
-			List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworder});
-			DeliverChartsToPage(completedneworders);
-			existingorders.Add(completedneworders[0]); //Just add the first as only 1 order was placed
-			Session["orders"] = existingorders;
 
 
-			//need to return the orders and save to session variable
+			DxChartOrder neworderC = GatherOrder();
+			if (neworderC.list_settings.Count > 0)
+			{
+				List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworderC });
+				DeliverOutputToPage(completedneworders);
 
-			//if (saveOrder)
-			//{
-			//	//myorders[0].UpdateCounts(factory);
-			//	List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
-			//	orders.Add(myorders[0]);
-			//	Session["orders"] = orders;
-			//}
+				int numorders = sessionorders.NumSavedOrders();
+				for (int i = 0; i < completedneworders.Count; i++)
+				{
+					completedneworders[i].ordernum = numorders + 1 + i;
+					sessionorders.SaveOrder(completedneworders[i]);
+				}
 
+
+				
+			}
+
+			DxTableOrder neworderT = GatherTableOrder();
+			if (neworderT.list_settings.Count > 0)
+			{
+				List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworderT });
+				DeliverOutputToPage(completedneworders);
+
+				int numorders = sessionorders.NumSavedOrders();
+				for (int i = 0; i < completedneworders.Count; i++)
+				{
+					completedneworders[i].ordernum = numorders + 1 + i;
+					sessionorders.SaveOrder(completedneworders[i]);
+				}
+
+			}
+
+			Session["sessionorders"] = sessionorders;
 		}
 		else if (p.StartsWith("DisplayAllOrders"))
 		{
-			List<DxChartOrder> completedorders = PlaceOrders(existingorders);
-			DeliverChartsToPage(completedorders);
-			//Session["orders"] = completedorders;
-
+			List<DxChartOrder> completedordersC = PlaceOrders(sessionorders.chartorders);
+			List<DxTableOrder> completedordersT = PlaceOrders(sessionorders.tableorders);
+			DeliverOutputToPage(completedordersC, completedordersT);
 
 		}
 		else if (p == "Docx")
 		{
 			string path = @"c:\_temp\factory\";
 
-			DxChartFactory factory = new DxChartFactory(dpdata.dt, existingorders);
-			DeliverChartsToPage(factory);
+			DxChartFactory factory = new DxChartFactory(dpdata.dt, sessionorders.chartorders);
+			DeliverOutputToPage(factory);
 			DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
-			
-
-
 
 			//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
 			//CreateCharts(orders, "docx");
@@ -1561,7 +1351,185 @@ public partial class DataProject_Chart : BasePage
 			//}
 
 		}
+
 	}
+
+	//protected void HandleTables(string p)
+	//{
+
+	//	if (sessionorders == null) sessionorders = new SessionOrders();
+
+	//	if (p == "clear")
+	//	{
+
+	//	}
+	//	else if (p.StartsWith("OldOrder"))
+	//	{
+	//		List<string> ps = p.Split('|').ToList();
+
+	//		int idx = Convert.ToInt32(ps[1]) - 1;
+
+	//		//DxChartOrder oldorder = existingorders[idx];
+	//		DxTableOrder oldorder = sessionorders.tableorders.AsEnumerable().Where(o => o.ordernum == idx).First();
+
+	//		List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder>() { oldorder });
+	//		DeliverOutputToPage(completedoldorders);
+
+	//	}
+	//	else if (p == "NewOrder")
+	//	{
+	//		DxTableOrder neworder = GatherTableOrder();
+	//		if (neworder.list_settings.Count > 0)
+	//		{
+	//			List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworder });
+	//			DeliverOutputToPage(completedneworders);
+	//		}
+	//	}
+	//	else if (p == "SaveNewOrder")
+	//	{
+
+
+	//		DxTableOrder neworder = GatherTableOrder();
+	//		if (neworder.list_settings.Count > 0)
+	//		{
+	//			List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworder });
+	//			DeliverOutputToPage(completedneworders);
+
+	//			int numorders = sessionorders.NumSavedOrders();
+	//			for (int i = 0; i < completedneworders.Count; i++)
+	//			{
+	//				completedneworders[i].ordernum = numorders + 1 + i;
+	//				sessionorders.SaveOrder(completedneworders[i]);
+	//			}
+
+	//			Session["sessionorders"] = sessionorders;
+	//		}
+
+
+	//	}
+	//	else if (p.StartsWith("DisplayAllOrders"))
+	//	{
+	//		List<DxTableOrder> completedorders = PlaceOrders(sessionorders.tableorders);
+	//		DeliverOutputToPage(completedorders);
+
+	//	}
+	//	else if (p == "Docx")
+	//	{
+	//		string path = @"c:\_temp\factory\";
+
+	//		//DxChartFactory factory = new DxChartFactory(dpdata.dt, sessionorders.chartorders);
+	//		//DeliverChartsToPage(factory);
+	//		//DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
+
+	//		//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+	//		//CreateCharts(orders, "docx");
+	//		//if (exportfiletype == "docx")
+	//		//{
+	//		//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+	//		//}
+
+	//	}
+
+	//}
+
+	protected void callbackOutput_OnCallback(object source, CallbackEventArgsBase e)
+	{
+		log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackOutput_OnCallback {0}", e.Parameter.ToString()));
+
+		HandleOutput(e.Parameter);
+	}
+
+	protected void callbackTables_OnCallback(object source, CallbackEventArgsBase e)
+	{
+		log(String.Format(">>>>>>>>>>>>>>>>>>>>>>>> callbackTables_OnCallback {0}", e.Parameter.ToString()));
+
+		//HandleTables(e.Parameter);
+
+		//List<DxTableOrder> existingorders = (List<DxTableOrder>)Session["table_orders"];
+
+		//var p = e.Parameter;
+
+		//if (p == "clear")
+		//{
+
+		//}
+		//else if (p.StartsWith("OldOrder"))
+		//{
+		//	List<string> ps = p.Split('|').ToList();
+
+		//	int idx = Convert.ToInt32(ps[1]) - 1;
+
+		//	//DxTableOrder oldorder = existingorders[idx];
+		//	DxTableOrder oldorder = existingorders.AsEnumerable().Where(o => o.ordernum == idx).First();
+
+		//	List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder>() { oldorder });
+		//	DeliverTablesToPage(completedoldorders);
+
+
+		//}
+		//else if (p == "NewOrder")
+		//{
+
+		//	DxTableOrder table_neworder = GatherTableOrder();
+		//	if (table_neworder.list_settings.Count > 0)
+		//	{
+		//		List<DxTableOrder> completedtable_neworders = PlaceOrders(new List<DxTableOrder>() { table_neworder });
+		//		DeliverTablesToPage(completedtable_neworders);
+		//	}
+		//}
+		//else if (p == "SaveNewOrder")
+		//{
+
+
+		//	DxTableOrder table_neworder = GatherTableOrder();
+		//	if (table_neworder.list_settings.Count > 0)
+		//	{
+		//		List<DxTableOrder> completedtable_neworders = PlaceOrders(new List<DxTableOrder>() { table_neworder });
+		//		DeliverTablesToPage(completedtable_neworders);
+
+		//		int numorders = sessionorders.NumSavedOrders();
+		//		for (int i = 0; i < completedtable_neworders.Count; i++)
+		//		{
+		//			completedtable_neworders[i].ordernum = numorders + 1 + i;
+		//		}
+
+
+		//		if (existingorders == null) existingorders = new List<DxTableOrder>();
+		//		existingorders.AddRange(completedtable_neworders); //Just add the first as only 1 order was placed
+
+		//		Session["table_orders"] = existingorders;
+		//	}
+
+
+		//}
+		//else if (p.StartsWith("DisplayAllOrders"))
+		//{
+		//	List<DxTableOrder> completedorders = PlaceOrders(existingorders);
+		//	DeliverTablesToPage(completedorders);
+		//}
+		//else if (p == "Docx")
+		//{
+		//	string path = @"c:\_temp\factory\";
+
+		//	DxTableFactory factory = new DxTableFactory(dpdata.dt, existingorders);
+		//	DeliverTablesToPage(factory);
+
+		//	//Still To Do
+		//	//DxDoc doc = new DxDoc(factory, path, "foo.docx", lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx
+
+
+
+
+		//	//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+		//	//CreateCharts(orders, "docx");
+		//	//if (exportfiletype == "docx")
+		//	//{
+		//	//	DxDoc doc = new DxDoc(orders, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+		//	//}
+
+		//}
+	}
+
 
 
 
@@ -1583,18 +1551,18 @@ public partial class DataProject_Chart : BasePage
 	{
 		log(">>>>>>>>>>>>>>>>>>>>>>>> callbackOrders_OnCallback  ");
 		var p = e.Parameter;
-		List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
+		List<DxChartOrder> chartorders = (List<DxChartOrder>)Session["chart_orders"];
 
 		if (p.StartsWith("RemoveOrder"))
 		{
 			List<string> ps = p.Split('|').ToList();
 			int idx = Convert.ToInt32(ps[1]);
 
-			orders.RemoveAt(idx - 1);
+			chartorders.RemoveAt(idx - 1);
 
-			Session["orders"] = orders;
+			Session["chart_orders"] = chartorders;
 
-			gridOrders.DataSource = new InvoiceSummary(orders);
+			gridOrders.DataSource = new InvoiceSummary(chartorders);
 			gridOrders.DataBind();
 			gridOrders.Visible = true;
 
@@ -1604,140 +1572,46 @@ public partial class DataProject_Chart : BasePage
 	#endregion
 
 
-	protected DxChartLayout ConvertChartLayout(string layout)
+
+
+
+
+	#region Step 1 - Gather Orders 
+	protected DxTableOrder GatherTableOrder()
 	{
-		return ConvertChartLayout(layout, false);
-	}
-
-	protected DxChartLayout ConvertChartLayout(string layout, bool withDiag)
-	{
-		if (layout == "Upper" & !withDiag) return DxChartLayout.Upper;
-		else if (layout == "Upper" & withDiag) return DxChartLayout.UpperDiag;
-		else if (layout.StartsWith("Rows")) return DxChartLayout.Horizontal;
-		else if (layout.StartsWith("Cols")) return DxChartLayout.Vertical;
-		else return DxChartLayout.Horizontal;
-	}
+		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
+		DxTableOrder order = new DxTableOrder();
 
 
-	protected List<DxChartOrder> PlaceOrders(List<DxChartOrder> myorders)
-	{
-		log("-------------------- PlaceOrders --------------------");
 
-		DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
+		order.worksheet = gridDataSheets.Value.ToString();
 
-		//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
+		if (plotrequests.Contains("Crosstabs"))
+		{
+			DxCrosstabsSettings mysettings = CrosstabsSettings();
+			if (mysettings.HasVars()) order.list_settings.Add(mysettings);
+		}
 
-		return factory.orders;
 
+		order.SetFilter(txtFilter.Text, null, null);
 
-		////Check if orders are filled
-		//bool needToFillOrders = true;
-
-		//foreach (DxChartOrder order in myorders)
+		//if (txtFilter.Text != "")
 		//{
-		//	if (order.isOrderFilled) needToFillOrders = false;
+		//	//order.filter = txtFilter.Text;
 		//}
 
+		DataTable dt_selvars = (DataTable)Session["selectedvars"];
+		order.dt = dt_selvars;
 
-		////if (saveOrder)
-		////{
-		////	//myorders[0].UpdateCounts(factory);
-		////	List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
-		////	orders.Add(myorders[0]);
-		////	Session["orders"] = orders;
-		////}
-
-		//if (needToFillOrders)
-		//{
-		//	DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
-		//	//DeliverChartsToPage(factory);
-		//	return factory.orders;
-
-		//}
-		//else
-		//{
-		//	return myorders;
-		//	//DeliverChartsToPage(myorders);
-		//}
-
-
-		//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
+		return order;
 	}
-
-
-	//protected void CreateCharts(DxChartOrder myorder)
-	//{
-	//	List<DxChartOrder> myorders = new List<DxChartOrder>() { myorder };
-	//	CreateCharts(myorders, false, "");
-	//}
-	//protected void CreateCharts(DxChartOrder myorder, bool saveOrder)
-	//{
-	//	List<DxChartOrder> myorders = new List<DxChartOrder>() { myorder };
-	//	CreateCharts(myorders, saveOrder, "");
-
-	//	if (saveOrder)
-	//	{
-	//		//myorders[0].UpdateCounts(factory);
-	//		List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
-	//		orders.Add(myorders[0]);
-	//		Session["orders"] = orders;
-	//	}
-
-	//}
-
-	//protected void CreateCharts(List<DxChartOrder> myorders)
-	//{
-	//	CreateCharts(myorders, false, "");
-	//}
-	//protected void CreateCharts(List<DxChartOrder> myorders, string exportfiletype)
-	//{
-	//	CreateCharts(myorders, false, exportfiletype);
-	//}
-
-	//protected void CreateCharts(List<DxChartOrder> myorders, string exportfiletype)
-	//{
-	//	log("-------------------- CreateCharts --------------------");
-
-	//	//Check if orders are filled
-	//	bool needToFillOrders = true;
-
-	//	foreach(DxChartOrder order in myorders)
-	//	{
-	//		if (order.isOrderFilled  ) needToFillOrders = false;
-	//	}
-
-
-	//	//if (saveOrder)
-	//	//{
-	//	//	//myorders[0].UpdateCounts(factory);
-	//	//	List<DxChartOrder> orders = (List<DxChartOrder>)Session["orders"];
-	//	//	orders.Add(myorders[0]);
-	//	//	Session["orders"] = orders;
-	//	//}
-
-	//	if (needToFillOrders)
-	//	{
-	//		DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
-	//		DeliverChartsToPage(factory);
-
-	//		if (exportfiletype == "docx")
-	//		{
-	//			DxDoc doc = new DxDoc(factory, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-	//		}
-	//	}
-	//	else
-	//	{
-	//		DeliverChartsToPage(myorders);
-	//	}
-
-
-	//	//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
-	//}
-
-
 
 	protected DxChartOrder GatherOrder()
 	{
+
+		DataTable dt_selvars = (DataTable)Session["selectedvars"];
+
+		bool hasSelVars = dt_selvars.HasRows();
 
 
 		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
@@ -1766,7 +1640,6 @@ public partial class DataProject_Chart : BasePage
 			DxScatterplotSettings mysettings = ScatterplotSettings();
 			if (mysettings.HasVars) order.list_settings.Add(mysettings);
 		}
-
 		if (txtFilter.Text != "")
 		{
 			order.filter = txtFilter.Text;
@@ -1777,8 +1650,10 @@ public partial class DataProject_Chart : BasePage
 		return order;
 	}
 
+	#endregion
 
-	#region chart settings 
+
+	#region Step 2 - Create and Populate Chart and Table settings 
 	protected DxHistogramSettings HistogramSettings()
 	{
 		DxHistogramSettings settings = new DxHistogramSettings();
@@ -1871,6 +1746,10 @@ public partial class DataProject_Chart : BasePage
 			settings.movavgNumPts = movavgNumPts;
 		}
 
+		settings._modeA = chkCorrModeA.Checked;
+		settings._modeB = chkCorrModeB.Checked;
+		settings._modeC = chkCorrModeC.Checked;
+
 		settings.showhist = chkHist.Checked;
 		settings.showregline = chkRegline.Checked;
 		settings.useMovAvg = chkMovingAvg.Checked;
@@ -1909,56 +1788,328 @@ public partial class DataProject_Chart : BasePage
 
 		return settings;
 	}
+
+	protected DxCrosstabsSettings CrosstabsSettings()
+	{
+		DxCrosstabsSettings settings = new DxCrosstabsSettings();
+		settings.title = "Crosstabs!!";
+
+		//protected Literal CreatePivot(DataTable dt, List<string> pivot_rows, List<string> pivot_cols, string v0)
+		int x = 0;
+		var row = tokXTrow.Value.ToString().Replace("Data: ", "");
+		var col = tokXTcol.Value.ToString().Replace("Data: ", "");
+		var panel = tokXTpanel.Value.ToString().Replace("Data: ", "");
+		var cell = tokXTcell.Value.ToString().Replace("Data: ", "");
+		var stats = tokXTstats.Value.ToString().Replace("Data: ", "");
+
+
+		List<string> panelvars = panel.Split(',').ToList();
+
+
+		settings.pivot_rows = row.Split(',').ToList();
+		settings.pivot_cols = col.Split(',').ToList();
+		settings.pivot_cells = cell.Split(',').ToList();
+		settings.stats = stats.Split(',').ToList();
+		settings.layout = DxLayout.Horizontal;
+
+		var foo = gvSelectedVars.GetSelectedFieldValues("vartype");
+
+		int number_cat_vars = (chkXTincludenumeric.Checked) ?
+			gridVarsNum.GridView.GetSelectedFieldValues("varname").Count() :
+			gridVarsText.GridView.GetSelectedFieldValues("varname").Count();
+
+		settings.decimal_places = Convert.ToInt32(trkDecPlaces.Value);
+
+
+		return settings;
+	}
+
+
+	protected List<Color> GetColors()
+	{
+		List<Color> mycolors = new List<Color>();
+		mycolors.Add((Color)Color1.Value);
+		mycolors.Add((Color)Color2.Value);
+		mycolors.Add((Color)Color3.Value);
+		mycolors.Add((Color)Color4.Value);
+		mycolors.Add((Color)Color5.Value);
+		mycolors.Add((Color)Color6.Value);
+		mycolors.Add((Color)Color7.Value);
+		mycolors.Add((Color)Color8.Value);
+		mycolors.Add((Color)Color9.Value);
+		mycolors.Add((Color)Color10.Value);
+		mycolors.Add((Color)Color11.Value);
+		mycolors.Add((Color)Color12.Value);
+		mycolors.Add((Color)Color13.Value);
+		mycolors.Add((Color)Color14.Value);
+		mycolors.Add((Color)Color15.Value);
+
+		return mycolors;
+
+	}
+
 	#endregion
 
-	protected void DeliverChartsToPage(DxChartFactory factory) 
+
+	#region Step 3 - Place Orders
+	protected List<DxTableOrder> PlaceOrders(List<DxTableOrder> myorders)
 	{
-		DeliverChartsToPage(factory.orders);
+		log("-------------------- PlaceOrders : Charts --------------------");
+
+		DxTableFactory factory = new DxTableFactory(dpdata.dt, myorders);
+
+		return factory.orders;
 	}
 
-	protected void DeliverChartsToPage(DxChartOrder order)
+
+	protected List<DxChartOrder> PlaceOrders(List<DxChartOrder> myorders)
 	{
-		DeliverChartsToPage(new List<DxChartOrder> { order });
+		log("-------------------- PlaceOrders : Charts --------------------");
+
+		DxChartFactory factory = new DxChartFactory(dpdata.dt, myorders);
+
+		//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
+
+		return factory.orders;
+
+	}
+	#endregion
+
+
+	#region Step 4 - Deliver output to page
+
+	protected void DeliverOutputToPage(DxChartFactory factory)
+	{
+		DeliverOutputToPage(factory.orders, null);
 	}
 
-	protected void DeliverChartsToPage(List<DxChartOrder> orders)
+	protected void DeliverOutputToPage(DxChartOrder order)
 	{
-		callbackCharts.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
+		DeliverOutputToPage(new List<DxChartOrder> { order }, null);
+	}
+	protected void DeliverOutputToPage(DxTableFactory factory)
+	{
+		DeliverOutputToPage(null, factory.orders);
+	}
 
-		foreach (DxChartOrder order in orders)
+	protected void DeliverOutputToPage(DxTableOrder order)
+	{
+		DeliverOutputToPage(null, new List<DxTableOrder> { order });
+	}
+
+
+	protected void DeliverOutputToPage(List<DxChartOrder> orders)
+	{
+		DeliverOutputToPage(orders, null);
+	}
+	protected void DeliverOutputToPage(List<DxTableOrder> orders)
+	{
+		DeliverOutputToPage(null, orders);
+	}
+
+
+	protected void DeliverOutputToPage(List<DxChartOrder> chartorders, List<DxTableOrder> tableorders)
+	{
+		callbackOutput.Controls.Clear();
+
+		//callbackCharts.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
+
+		if(chartorders != null)
 		{
-			Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
-			foreach (DxChartBatch batch in order.batches)
+			foreach (DxChartOrder order in chartorders)
 			{
-				Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.charts.Count));
-				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
-				
-				if (t != null)
+				Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
+				foreach (DxChartBatch batch in order.batches)
 				{
-					Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.charts.Count));
-					Label batchlabel = new Label();
-					batchlabel.Text = batch.batchtitle;
-					batchlabel.Font.Bold = true;
-					batchlabel.Font.Size = 12;
+					Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.charts.Count));
+					System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
 
-					callbackCharts.Controls.Add(batchlabel);
-					callbackCharts.Controls.Add(t);
-					callbackCharts.Controls.Add(new Literal() { Text = "<br/>" });
+					if (t != null)
+					{
+						Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.charts.Count));
+						Label batchlabel = new Label();
+						batchlabel.Text = batch.batchtitle;
+						batchlabel.Font.Bold = true;
+						batchlabel.Font.Size = 12;
+
+						callbackOutput.Controls.Add(batchlabel);
+						callbackOutput.Controls.Add(t);
+						callbackOutput.Controls.Add(new Literal() { Text = "<br/>" });
+
+					}
+
+
+					if (batch.datatables.Count > 0)
+					{
+						System.Web.UI.WebControls.Table t2 = LayoutOutput.LayoutBatch(batch, "datatable");
+						callbackOutput.Controls.Add(t2);
+					}
 
 				}
+			}
+		}
 
-
-				if (batch.datatables.Count > 0)
+		if (tableorders != null)
+		{
+			foreach (DxTableOrder order in tableorders)
+			{
+				Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
+				foreach (DxTableBatch batch in order.batches)
 				{
-					System.Web.UI.WebControls.Table t2 = ChartOutput.LayoutBatch(batch, "datatable");
-					callbackCharts.Controls.Add(t2);
-				}
+					Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.tables.Count));
+					System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
 
+					if (t != null)
+					{
+						Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.tables.Count));
+						Label batchlabel = new Label();
+						batchlabel.Text = String.Format("Crosstabs<br/><br/>");
+						batchlabel.Font.Bold = true;
+						batchlabel.Font.Size = 12;
+
+						callbackOutput.Controls.Add(batchlabel);
+						callbackOutput.Controls.Add(t);
+						callbackOutput.Controls.Add(new Literal() { Text = "<br/>" });
+
+					}
+
+
+					//if (batch.tables.Count > 0)
+					//{
+					//	System.Web.UI.WebControls.Table t2 = LayoutOutput.LayoutBatch(batch);
+					//	callbackTables.Controls.Add(t2);
+					//}
+
+				}
 			}
 		}
 	}
 
 
+	#region old
+	//protected void DeliverChartsToPage(DxChartFactory factory) 
+	//{
+	//	DeliverChartsToPage(factory.orders);
+	//}
+
+	//protected void DeliverChartsToPage(DxChartOrder order)
+	//{
+	//	DeliverChartsToPage(new List<DxChartOrder> { order });
+	//}
+
+	//protected void DeliverChartsToPage(List<DxChartOrder> orders)
+	//{
+	//	callbackCharts.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
+
+	//	foreach (DxChartOrder order in orders)
+	//	{
+	//		Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
+	//		foreach (DxChartBatch batch in order.batches)
+	//		{
+	//			Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.charts.Count));
+	//			System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
+				
+	//			if (t != null)
+	//			{
+	//				Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.charts.Count));
+	//				Label batchlabel = new Label();
+	//				batchlabel.Text = batch.batchtitle;
+	//				batchlabel.Font.Bold = true;
+	//				batchlabel.Font.Size = 12;
+
+	//				callbackCharts.Controls.Add(batchlabel);
+	//				callbackCharts.Controls.Add(t);
+	//				callbackCharts.Controls.Add(new Literal() { Text = "<br/>" });
+
+	//			}
+
+
+	//			if (batch.datatables.Count > 0)
+	//			{
+	//				System.Web.UI.WebControls.Table t2 = LayoutOutput.LayoutBatch(batch, "datatable");
+	//				callbackCharts.Controls.Add(t2);
+	//			}
+
+	//		}
+	//	}
+	//}
+
+
+
+	//protected void DeliverTablesToPage(DxTableFactory factory)
+	//{
+	//	DeliverTablesToPage(factory.orders);
+	//}
+
+	//protected void DeliverTablesToPage(DxTableOrder order)
+	//{
+	//	DeliverTablesToPage(new List<DxTableOrder> { order });
+	//}
+
+	//protected void DeliverTablesToPage(List<DxTableOrder> orders)
+	//{
+	//	callbackTables.Controls.Clear();  // Always clear it now that the factory processes multiple orders 
+
+	//	foreach (DxTableOrder order in orders)
+	//	{
+	//		Debug.WriteLine(String.Format(" ********************* This order has {0} batches", order.batches.Count));
+	//		foreach (DxTableBatch batch in order.batches)
+	//		{
+	//			Debug.WriteLine(String.Format(" ********************* This batch has {0} charts", batch.tables.Count));
+	//			System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
+
+	//			if (t != null)
+	//			{
+	//				Debug.WriteLine(String.Format("{0} {1}", batch.batchtitle, batch.tables.Count));
+	//				Label batchlabel = new Label();
+	//				batchlabel.Text = String.Format("Crosstabs<br/><br/>");
+	//				batchlabel.Font.Bold = true;
+	//				batchlabel.Font.Size = 12;
+
+	//				callbackTables.Controls.Add(batchlabel);
+	//				callbackTables.Controls.Add(t);
+	//				callbackTables.Controls.Add(new Literal() { Text = "<br/>" });
+
+	//			}
+
+
+	//			//if (batch.tables.Count > 0)
+	//			//{
+	//			//	System.Web.UI.WebControls.Table t2 = LayoutOutput.LayoutBatch(batch);
+	//			//	callbackTables.Controls.Add(t2);
+	//			//}
+
+	//		}
+	//	}
+	//}
+	#endregion
+
+
+	protected DxLayout ConvertChartLayout(string layout)
+	{
+		return ConvertChartLayout(layout, false);
+	}
+
+	protected DxLayout ConvertChartLayout(string layout, bool withDiag)
+	{
+		if (layout == "Upper" & !withDiag) return DxLayout.Upper;
+		else if (layout == "Upper" & withDiag) return DxLayout.UpperDiag;
+		else if (layout.StartsWith("Rows")) return DxLayout.Horizontal;
+		else if (layout.StartsWith("Cols")) return DxLayout.Vertical;
+		else return DxLayout.Horizontal;
+	}
+	#endregion
+
+
+
+
+	protected void PopulatePivotMissing(DataTable dtstacked)
+	{
+		pivotMissing.DataSource = dtstacked;
+		pivotMissing.DataBind();
+
+		pivotMissing.Visible = true;
+	}
 
 
 	public void SerializeObject<T>(T serializableObject, string fileName)
@@ -2059,6 +2210,55 @@ public partial class DataProject_Chart : BasePage
 
 
 
+	#region LOGGING
+	protected void LogDataprojectInfo()
+	{
+		if (dataproject == null)
+		{
+			log("");
+			log("      >>> datproject IS NULL >>>");
+			log("");
+		}
+		else
+		{
+			log("");
+			log("      >>> datproject INFO >>>");
+			foreach (string s in dataproject.InfoList())
+			{
+				log(String.Format("              {0}", s));
+			}
+			log("      >>> datproject INFO >>>");
+			log("");
+		}
+	}
+
+	protected void LogOrdersInfo()
+	{
+		
+	}
+
+	protected void LogDPDataInfo(DPData dpdata)
+	{
+		if (dpdata != null)
+		{
+			if (dpdata.dt != null)
+			{
+				log(String.Format(" /// dpdata.dt has {0} rows.", dpdata.dt.Rows.Count));
+				log(String.Format(" /// dpdata.dtdict has {0} rows.", dpdata.dtdict.Rows.Count));
+
+				if (dpdata.dtstacked == null)
+				{
+					log(String.Format(" /// dpdata.dtstacked IS NULL"));
+				}
+				else
+				{
+					log(String.Format(" /// dpdata.dtstacked has {0}", dpdata.dtstacked.Rows.Count));
+				}
+			}
+		}
+
+	}
+
 	protected void log(string s)
 	{
 		if (printDebug)
@@ -2067,6 +2267,7 @@ public partial class DataProject_Chart : BasePage
 		}
 	}
 
+	#endregion
 
 	protected void btnPDF_OnClick(object source, EventArgs e)
 	{
@@ -2291,7 +2492,6 @@ public partial class DataProject_Chart : BasePage
 			//PdfDocumentReponse.SendDocument(Response, documentProcessor, "PDF Document Processor - Document Creation API Demo", "PDF Document Creation API");
 		}
 	}
-
 
 
 

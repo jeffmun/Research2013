@@ -60,10 +60,13 @@ public partial class Data_REDCap : BasePage
 		//ASPxComboBox cbo = redcap.cboFormSelector();
 
 		ASPxListBox lst = redcap.lstFormSelector();
-		lst.EnableViewState = true;
+
+
+		
 
 		if (lst != null)
 		{
+			lst.EnableViewState = true;
 			//placeholder_cboForms.Controls.Add(cbo);
 			placeholder_cboForms.Controls.Add(lst);
 			panelREDCap_controls.Visible = true;

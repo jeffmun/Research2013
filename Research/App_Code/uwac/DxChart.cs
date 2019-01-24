@@ -41,6 +41,7 @@ namespace uwac
 		public int H { get; set; }
 		public bool isdiag { get; set; }
 		public bool isempty { get; set; }
+		public RowColIndex rowcolIndex { get; set; }
 		public int n
 		{
 			get { return _n; }
@@ -282,6 +283,14 @@ namespace uwac
 
 
 
+	}
+
+
+	public class RowColIndex
+	{
+		public int r { get; set; }
+		public int c { get; set; }
+		public RowColIndex() { }
 	}
 
 

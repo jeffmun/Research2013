@@ -1799,6 +1799,10 @@ namespace uwac
 
 
 
+		public static int TriangleNumber(int x)
+		{
+			return (x * (x + 1)) / 2;
+		}
 
 
 		public static double RoundToNearestX(double val, int x)

@@ -36,11 +36,14 @@ namespace uwac
 		public List<DataTable> datatables { get { return _datatables; } set { _datatables = value; } }
 		public List<string> vars { get { return _vars; } set { _vars = value; } }
 		public DxChartType charttype { get; set; }
-		public DxChartLayout chartlayout { get; set; }
+		public DxLayout layout { get; set; }
 		public int maxRow { get; set; }
 		public int maxCol { get; set; }
 		public string batchtitle { get; set; }
 		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
+
+
+
 
 		public void Initialize()
 		{
@@ -69,7 +72,7 @@ namespace uwac
 			Initialize();
 			_settings = (DxChartSettings)mysettings;
 			charttype = DxChartType.Histogram;
-			chartlayout = mysettings.chartlayout;
+			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 			if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
 
@@ -120,7 +123,7 @@ namespace uwac
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Actogram;
-			chartlayout = mysettings.chartlayout;
+			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 
 			DxChart chart = new DxActogram(mysettings, dt);
@@ -151,7 +154,7 @@ namespace uwac
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Lineplot;
-			chartlayout = mysettings.chartlayout;
+			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 			if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
 
@@ -241,7 +244,7 @@ namespace uwac
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Barchart;
-			chartlayout = mysettings.chartlayout;
+			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 			if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
 
@@ -287,7 +290,7 @@ namespace uwac
 			_settings = (DxChartSettings)mysettings;
 
 			charttype = DxChartType.Scatterplot;
-			chartlayout = mysettings.chartlayout;
+			layout = mysettings.chartlayout;
 
 			_vars = mysettings.analysisvars();
 			
@@ -312,14 +315,14 @@ namespace uwac
 				{
 					XYpairs pairs = new XYpairs(mysettings.analysisvarsX(), mysettings.analysisvarsY()); //, mysettings.colors[0]);
 
-					if(mysettings.chartlayout == DxChartLayout.Horizontal)
+					if(mysettings.chartlayout == DxLayout.Horizontal)
 					{
-						mysettings.chartlayout = DxChartLayout.Vertical;
+						mysettings.chartlayout = DxLayout.Vertical;
 						mysettings.maxRow = mysettings.analysisvarsY().Count;
 					}
-					else if (mysettings.chartlayout == DxChartLayout.Vertical)
+					else if (mysettings.chartlayout == DxLayout.Vertical)
 					{
-						mysettings.chartlayout = DxChartLayout.Horizontal; 
+						mysettings.chartlayout = DxLayout.Horizontal; 
 						mysettings.maxCol = mysettings.analysisvarsX().Count;
 					}
 

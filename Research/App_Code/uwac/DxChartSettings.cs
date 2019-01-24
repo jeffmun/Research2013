@@ -53,7 +53,7 @@ namespace uwac
 		private List<string> _datevars;
 		private List<string> _agevars;
 		private PaneLayoutDirection _panesLayoutDirection = PaneLayoutDirection.Horizontal;
-		private DxChartLayout _chartlayout = DxChartLayout.Horizontal;
+		private DxLayout _chartlayout = DxLayout.Horizontal;
 		private ScaleMode _ScaleMode = ScaleMode.Continuous;
 		public int maxRow { get { return _maxRow; } set { _maxRow = value; } }
 		public int maxCol { get { return _maxCol; } set { _maxCol = value; } }
@@ -78,7 +78,7 @@ namespace uwac
 		public List<string> datevars { get { return _datevars; } set { _datevars = value; } }
 		public List<string> agevars { get { return _agevars; } set { _agevars = value; } }
 		public PaneLayoutDirection panesLayoutDirection { get { return _panesLayoutDirection; } set { _panesLayoutDirection = value; } }
-		public DxChartLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
+		public DxLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
 		public ScaleMode ScaleMode { get { return _ScaleMode; } set { _ScaleMode = value; } }
 
 		public bool HasVars {
@@ -182,7 +182,7 @@ namespace uwac
 		Actogram = 6
 	}
 
-	public enum DxChartLayout
+	public enum DxLayout
 	{
 		Horizontal = 1,
 		Vertical = 2,

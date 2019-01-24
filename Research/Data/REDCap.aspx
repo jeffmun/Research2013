@@ -74,7 +74,7 @@
 			</td>
 			<td style="width:500px">
 
-				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked Import Tables (Non-REDCap)"  Native="true" ClientVisible="true">
+				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked Import Tables (from files)"  Native="true" ClientVisible="true">
 						<ClientSideEvents Click="ShowLinkedPanel" />
 					</dx:ASPxButton>
 
@@ -109,7 +109,8 @@
 
 										</td>
 										<td style="vertical-align:top; padding:10px">
-											<dx:ASPxGridView ID="gridLinkedImportTbl" runat="server" ClientInstanceName="gridLinkedImportTbl" KeyFieldName="ltpk;tblpk" 
+											<dx:ASPxGridView ID="gridLinkedImportTbl" runat="server" ClientInstanceName="gridLinkedImportTbl" 
+												 KeyFieldName="ltpk;tblpk" 
 												 Caption="Linked Tables"
 												 SettingsDataSecurity-AllowAddingRecords ="true"
 												 SettingsDataSecurity-AllowInsert="true"
@@ -129,6 +130,8 @@
 														<PropertiesComboBox DataSourceID="sqlMeas" TextField="_measname" ValueField="_tblpk"
 															></PropertiesComboBox>
 													</dx:GridViewDataComboBoxColumn>
+
+													<dx:GridViewDataColumn FieldName="sortorder"></dx:GridViewDataColumn>
 
 													<dx:GridViewCommandColumn ShowDeleteButton="true" ShowNewButtonInHeader="true" />
 

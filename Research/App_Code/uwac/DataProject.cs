@@ -12,6 +12,7 @@ namespace uwac.data
 	/// <summary>
 	/// Summary description for dataproject
 	/// </summary>
+	[Serializable]
 	public class Dataproject
 	{
 		private DataSet _dataset;
@@ -35,6 +36,12 @@ namespace uwac.data
 
 		private List<string> MeasureID_list { get; set; }
 
+		public DataTable dt_files { get; set; }
+		public string projTitle { get; set; }
+		public int studyID { get; set; }
+		public bool hasSheetNamedData { get; set; }
+		public string loadedfilename { get; set; }
+		public string selectedsheet { get; set; }
 
 		//internal vars used to process & generate data
 		private List<string> _tbls_to_process = new List<string>();
@@ -51,13 +58,22 @@ namespace uwac.data
 		private string _sqlcode_subj;
 
 
+
+		//Creates a DataProject from live data, TO DO SOMEDAY
+		public Dataproject()
+		{
+			_dataproj_pk = -1;
+			projTitle = "New Project " + System.DateTime.Now.ToString();
+
+
+		}
 		//Creates a DataProject
 		public Dataproject(int dataproj_pk)
 		{
 			_dataproj_pk = dataproj_pk;
-			
+			PopulateFiles();
 
-			GetDataprojectComponents();
+			GetDataprojectComponentsFromDB();
 
 			CreateSqlForMeasures();
 			CreateSqlForIntHx();
@@ -73,9 +89,31 @@ namespace uwac.data
 				}
 			}
 
-			//StackData();
+			// /* not done unless called for */ StackData();
 		}
 
+
+		public Dataproject(int dataproj_pk, bool getExisting)
+		{
+			_dataproj_pk = dataproj_pk;
+
+			PopulateFiles();
+
+			//CreateSqlForMeasures();
+			//CreateSqlForIntHx();
+			//GetData();
+
+			//if (this._dataset.Tables.Contains("CompVars"))
+			//{
+			//	if (this._dataset.Tables["CompVars"].Rows.Count > 0)
+			//	{
+			//		GetCompvars();
+			//		CalculateZscores();
+			//	}
+			//}
+
+			//StackData();
+		}
 
 
 		public Dataproject(int dataproj_pk, int studyID, List<int> subjID_list, List<int> studymeasID_list, List<int> fldpk_list)
@@ -87,9 +125,338 @@ namespace uwac.data
 
 		}
 
+/*
+ * the Dataset contains all the info about the DataProject
+ * it can be populated from the DB or from an Excelfile.
+ */
 
 
-		private void GetDataprojectComponents()
+		public void PopulateDatasetFromDB()
+		{
+			GetDataprojectComponentsFromDB();
+
+			CreateSqlForMeasures();
+			CreateSqlForIntHx();
+			GetData();
+
+			if (this._dataset.Tables.Contains("CompVars"))
+			{
+				if (this._dataset.Tables["CompVars"].Rows.Count > 0)
+				{
+					GetCompvars();
+					CalculateZscores();
+				}
+			}
+
+			// /* not done unless called for */ StackData();
+		}
+
+
+		public void PopulateDatasetFromExcelfile(string xlfile)
+		{
+			_dataset = SpreadsheetGearUtils.GetDataSet(xlfile);
+
+
+			hasSheetNamedData = false;
+
+			foreach (DataTable dt in _dataset.Tables)
+			{
+				string tblname = dt.TableName;
+				if (tblname == "Data") hasSheetNamedData = true;
+			}
+
+			if(hasSheetNamedData)
+			{
+				selectedsheet = "Data";
+			}
+
+			loadedfilename = xlfile;
+
+			//GetDataprojectComponents();
+
+			//CreateSqlForMeasures();
+			//CreateSqlForIntHx();
+			//GetData();
+
+			//if (this._dataset.Tables.Contains("CompVars"))
+			//{
+			//	if (this._dataset.Tables["CompVars"].Rows.Count > 0)
+			//	{
+			//		GetCompvars();
+			//		CalculateZscores();
+			//	}
+			//}
+
+			// /* not done unless called for */ StackData();
+		}
+
+
+		private void PopulateFiles()
+		{
+			SQL_utils sql = new SQL_utils("data");
+			string files_code = String.Format("select *, dbo.fnElapTime_text(created, getdate()) elaptime " +
+				" from dp.Datafile where isdeleted=0 and dataproj_pk={0} order by created desc", _dataproj_pk);
+
+			DataTable tmp = sql.DataTable_from_SQLstring(files_code);
+			if (tmp.HasRows()) dt_files = tmp;
+
+			projTitle = sql.StringScalar_from_SQLstring(String.Format("select projTitle from dp.DataProject where dataproj_pk={0}", _dataproj_pk));
+			studyID = sql.IntScalar_from_SQLstring(String.Format("select studyID from dp.DataProject where dataproj_pk={0}", _dataproj_pk));
+
+
+			sql.Close();
+		}
+
+		#region Access Derived Info about the Project
+		public List<string> ListGroups()
+		{
+			try
+			{
+				List<string> groups = _dataset.Tables["Subjects"].AsEnumerable().Select(f => f.Field<string>("Group")).Distinct().ToList();
+				return groups;
+			}
+			catch (Exception ex) { return null; }
+		}
+
+		public List<string> ListTxgrps()
+		{
+			try
+			{
+				List<string> groups = _dataset.Tables["Subjects"].AsEnumerable().Select(f => f.Field<string>("txgrp")).Distinct().ToList();
+				return groups;
+			}
+			catch(Exception ex){ return null; }
+		}
+
+		public List<string> ListTimepoints()
+		{
+			try 
+			{ 
+				List<string> timepts = _dataset.Tables["Timepoints"].AsEnumerable().Select(f => f.Field<string>("timept")).Distinct().ToList();
+				return timepts;
+			}
+			catch(Exception ex){ return null; }
+		}
+
+		public List<string> GetDataSheetNames()
+		{
+			if (Dataset == null) return null;
+
+			if (Dataset.Tables.Count > 0)
+			{
+				List<string> datasheetnames = new List<string>();
+				foreach (DataTable dt in Dataset.Tables)
+				{
+					string tblname = dt.TableName;
+					if (tblname == "Subjects" | (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode"))
+					{
+						datasheetnames.Add(dt.TableName);
+					}
+				}
+				return datasheetnames;
+			}
+			else return null;
+		}
+
+		public DataTable DatasetSheets()
+		{
+			DataTable datasheets = new DataTable();
+			datasheets.Columns.Add("sheetname", typeof(string));
+			datasheets.Columns.Add("nrows", typeof(int));
+
+			if (Dataset == null) return null;
+			foreach (DataTable dt in Dataset.Tables)
+			{
+				string tblname = dt.TableName;
+				if (tblname == "Subjects" | (tblname.StartsWith("Data") && tblname != "DataDictionary" && tblname != "Data_sqlcode"))
+				{
+					DataRow row = datasheets.NewRow();
+
+					row["sheetname"] = tblname;
+					row["nrows"] = dt.Rows.Count;
+
+					datasheets.Rows.Add(row);
+				}
+			}
+
+			return datasheets;
+		}
+
+		public DataTable DataDictionaryForSheet( string sheet)
+		{
+			List<string> datasheetnames = GetDataSheetNames();
+			List<string> measnames_on_othersheets = new List<string>();
+			for (int i = 0; i < datasheetnames.Count; i++)
+			{
+				if (datasheetnames[i] != "Data") measnames_on_othersheets.Add(datasheetnames[i].Replace("Data_", ""));
+			}
+
+
+			DataTable dictorig = _dataset.Tables["DataDictionary"];
+
+			if (sheet == "Data")
+			{
+				string measnames_on_othersheets_csv = String.Join("','", measnames_on_othersheets);
+				DataView vw = dictorig.AsDataView();
+				vw.RowFilter = String.Format("[measname] NOT IN ('{0}')", measnames_on_othersheets_csv);
+				DataTable dt = vw.ToTable();
+				return dt;
+			}
+			else if (sheet == "Subjects")
+			{
+				DataView vw = dictorig.AsDataView();
+				vw.RowFilter = "[measname] = '!'";  //no records
+				DataTable dt = vw.ToTable();
+
+				int counter = 0;
+				foreach (DataColumn subjcol in _dataset.Tables["Subjects"].Columns)
+				{
+					counter++;
+					string dtype = subjcol.DataType.ToString().Replace("System.", "");
+
+					string sqldatatype = "";
+
+					if (subjcol.ColumnName.Contains("date")) sqldatatype = "date";
+					else if (subjcol.ColumnName == "studystart") sqldatatype = "date";
+					else if (subjcol.ColumnName == "txstart") sqldatatype = "date";
+					else if (dtype == "Double") sqldatatype = "float";
+					else if (dtype.StartsWith("Int")) sqldatatype = "int";
+					else if (dtype == "String") sqldatatype = "varchar";
+					else sqldatatype = "varchar";
+
+
+					DataRow row = dt.NewRow();
+					row["pos"] = counter;
+					row["measname"] = "Subjects";
+					row["varname"] = subjcol.ColumnName;
+					row["DataType"] = sqldatatype;
+					row["FieldLabel"] = SubjectVarLabel(subjcol.ColumnName);
+					row["InAnalysis"] = 0;
+					dt.Rows.Add(row);
+				}
+				return dt;
+			}
+			else
+			{
+				DataView vw = dictorig.AsDataView();
+				vw.RowFilter = String.Format("[measname] = '{0}'", sheet.Replace("Data_", ""));
+				DataTable dt = vw.ToTable();
+				return dt;
+			}
+
+		}
+
+		public string SubjectVarLabel(string v)
+		{
+			string varlabel = "";
+
+			switch (v)
+			{
+				case "subjstatus": varlabel = "Subject status"; break;
+				case "subjstatusdetail": varlabel = "Subject status detail"; break;
+				case "txstart": varlabel = "Date Treatment started"; break;
+				case "txstart_agemos": varlabel = "Age when Treatment started"; break;
+				case "studystart": varlabel = "Date subject started the study"; break;
+				case "studystart_agemos": varlabel = "Age when subject started the study"; break;
+				case "txstartnote": varlabel = "Notes regarding treatment start date"; break;
+				case "subjnotes": varlabel = "Subject notes"; break;
+				default: varlabel = v; break;
+			}
+			return varlabel;
+		}
+
+
+		public bool HasFiles()
+		{
+			return dt_files.HasRows();
+		}
+
+		public List<string> InfoList()
+		{
+			List<string> info = new List<string>();
+
+			info.Add(String.Format("HasFiles: {0}", HasFiles()));
+			info.Add(String.Format("Dataset is populated: {0}", (_dataset==null)? false:true ));
+			if (_dataset != null)
+			{
+				info.Add(String.Format("Loaded filename: {0}", loadedfilename));
+
+				info.Add(String.Format("Dataset has {0} sheets", DatasetSheets().Rows.Count));
+				info.Add(String.Format("hasSHeetNamedData {0}", hasSheetNamedData));
+				info.Add(String.Format("selectedsheet: {0}", selectedsheet));
+			}
+
+			return info;
+		}
+
+
+		#endregion
+
+
+		#region DataDictionary Subsets by variable type
+	
+		public DataTable datadict_subtype(string type)
+		{
+
+			List<string> types = new List<string>();
+			string rowfilter = "";
+
+			if(type =="num")
+			{
+				types = new List<string> { "int", "smallint", "tinyint", "float", "decimal", "bigint", "numeric" };
+				rowfilter = "(FieldLabel not like '% age (mo%' and FieldLabel not like '%age mos%')";
+			}
+			else if (type=="text")
+			{
+				types = new List<string> { "char", "varchar", "nvarchar" };
+				rowfilter = "";
+				//List<string> dates = new List<string>(new string[] { "date", "smalldatetime", "datetime" });
+
+			}
+			else if (type == "date")
+			{
+				types = new List<string> { "date", "smalldatetime", "datetime" };
+				rowfilter = "";
+			}
+			else if (type == "age")
+			{
+				types = new List<string> { "int", "smallint", "tinyint", "float", "decimal", "bigint", "numeric" };
+				rowfilter = "(FieldLabel like '%age in%' or FieldLabel like '%age (mo%' or FieldLabel like '%age mos%')";
+			}
+
+			return datadict_sub(types, rowfilter);
+		}
+
+			public DataTable datadict_sub(List<string> types, string rowfilter)
+		{
+
+			DataView vwdatadict_sub = DataDictionaryForSheet(selectedsheet).AsDataView();
+			if (rowfilter != "") vwdatadict_sub.RowFilter = rowfilter;
+			DataTable tmpdatadict_sub = vwdatadict_sub.ToTable();
+
+			var qry_sub = tmpdatadict_sub.AsEnumerable()
+				.Where(f => types.Contains(f.Field<string>("DataType")))
+				.Select(r => new
+				{
+					measname = r.Field<string>("measname"),
+					varname = r.Field<string>("varname"),
+					fieldlabel = r.Field<string>("FieldLabel"),
+					datatype = r.Field<string>("DataType"),
+					valuelabels = r.Field<string>("ValueLabels")
+				});
+
+
+			DataTable datadict_sub = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_sub);
+			return datadict_sub;
+		}
+
+
+		#endregion
+
+
+
+
+		private void GetDataprojectComponentsFromDB()
 		{
 			SQL_utils sql = new SQL_utils("data");
 			_studyID = sql.IntScalar_from_SQLstring("select studyID from dp.DataProject where dataproj_pk=" + _dataproj_pk.ToString());
@@ -123,6 +490,7 @@ namespace uwac.data
 
 			_fldname_list = _dataset.Tables["DataDictionary"].AsEnumerable().Select(f => f.Field<string>("varname")).ToList();
 
+			sql.Close();
 		}
 
 		private void RemoveTableIfRowsEq0(string tbl)

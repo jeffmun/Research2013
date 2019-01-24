@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 //using Newtonsoft.Json.Schema;
 using DevExpress.Web;
@@ -91,6 +92,28 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 		sql.NonQuery_from_ProcName("spNDAR_Insert_DS", p);
 	}
 
+	protected void OpenAllViewdataTabs(object sender, EventArgs e)
+	{
+		SQL_utils sql = new SQL_utils("data");
+		string where = txtWhere.Text;
+		int studyID = sql.GetUserStudyID();
+
+		DataTable dt = NDAR.LoadFullDataStructureList("localDB", where, chkUWview.Checked, studyID);
+
+		int counter = 0;
+		foreach(DataRow row in dt.Rows)
+		{
+			string shortName = row["shortName"].ToString() ;
+
+			string url = "NDARview.aspx?shortName=";
+
+			string url2 = String.Format("window.open('{0}{1}','_blank');", url, shortName);
+
+			ScriptManager.RegisterClientScriptBlock(this, this.GetType(), String.Format("key{0}",counter), url2 , true);
+			counter++;
+		}
+
+	}
 
 	////protected void gvScroll_RowCommand(object sender, GridViewCommandEventArgs e)
 	//protected void grid_RowCommand(object sender, ASPxGridViewRowCommandEventArgs e)

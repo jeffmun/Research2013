@@ -270,6 +270,17 @@ namespace uwac
 		}
 
 
+
+		public static DataTable NDAR_DSE_with_Matching_UWFlds(string shortName)
+		{
+			SQL_utils sql = new SQL_utils("data");
+
+			DataTable dt = sql.DataTable_from_ProcName("def.spNDAR_MatchedFlds", sql.CreateParam("shortname", shortName,"text"));
+
+			return dt;
+		}
+
+
 		#region Construct the NDAR view
 		public static string GetSQL_for_NDAR_fields(string shortName)
 		{
@@ -398,7 +409,7 @@ namespace uwac
 
 
 				//wrap the query as "x" in order to select the parameters needed for the function fnNDAR_ReasonExclude 
-				sql_string = "select cast( row_number() over(order by reason_exclude, src_subject_id) as varchar) + '|" + urlstem + "' + cast(databasepk as varchar) as rownum, * " + System.Environment.NewLine +
+				sql_string = "select FORMAT( row_number() over(order by reason_exclude, src_subject_id) , 'd4') + '|" + urlstem + "' + cast(databasepk as varchar) as rownum, * " + System.Environment.NewLine +
 					" from (select  dbo.fnNDAR_ReasonExclude(" + studyID.ToString() + ",subjectkey, src_subject_id, interview_date, gender) as reason_exclude " + System.Environment.NewLine +
 					" , * from (" + System.Environment.NewLine + "select " + databasepk + " as databasepk, id, " +
 					sql_for_NDAR_fields + System.Environment.NewLine +

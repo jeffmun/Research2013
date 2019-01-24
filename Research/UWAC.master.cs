@@ -438,8 +438,8 @@ public partial class UWAC : System.Web.UI.MasterPage
 		//DataTable dt = oSQL.DataTable_from_ProcName("spSEC_GetStudies_CanView_OR_Acess_by_User__Short__with_SelectStudy");
 
 		SQL_utils sql = new SQL_utils("backend");
-		DataTable dt = sql.DataTable_from_SQLstring("select - 1 as studyID, ' <select new study>' as studyname " +
-		"union select a.studyID, studyname " +
+		DataTable dt = sql.DataTable_from_SQLstring("select -1 as studyID, ' <select new study>' as StudyName " +
+		"union select a.studyID, StudyName " +
 		"from tblstudy a  order by 2");
 
 		sqluser.Text = String.Format("instantiate as:{0}<br/>viewable:{1}<br/>msg:{2}"
@@ -447,7 +447,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 			, sql.GetSessionContextViewableInfo()
 			, sql.Errormsg
 			);
-
+		
 		ddl_Master_SelectStudyID.DataSource = dt;
 		ddl_Master_SelectStudyID.DataBind();
 

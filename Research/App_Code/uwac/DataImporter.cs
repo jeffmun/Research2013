@@ -36,6 +36,21 @@ namespace uwac
 		private DataTable _imported_dt;
 		public DataTable imported_dt { get { return _imported_dt; } set { _imported_dt = value; } }
 
+		public int nrecs_nodata { 
+			get
+			{
+				if(_imported_dt.HasRows())
+				{
+					return _imported_dt.AsEnumerable().Where(f => f.Field<int>("verified") == 4).Count();
+				}
+				else{
+				return 0;
+				}
+
+			}
+		}
+
+
 		public DataImporter(string myID, int mystudymeasID)
 		{
 			main_studymeasID = mystudymeasID; // = new List<int> { mystudymeasID };
@@ -282,7 +297,8 @@ namespace uwac
 
 			if (_imported_dt.HasRows())
 			{
-				string tblinfo = String.Format("local DataTable with {0} rows from a total of {1} rows processed.", _imported_dt.Rows.Count, inputfile_rowcounter);
+				string tblinfo = String.Format("local DataTable with {0} rows from a total of {1} rows processed. {2} rows marked as 'NoData'"
+					, _imported_dt.Rows.Count, inputfile_rowcounter,  nrecs_nodata);
 				results.Add(tblinfo);
 			}
 			else
@@ -351,7 +367,7 @@ namespace uwac
 
 					if (row == null)
 					{
-						//results.Add("ERROR. GetDataTableFromCSVFile: No Row! counter = " + counter.ToString());
+						//do nothing for now
 					}
 					else
 					{
@@ -505,7 +521,7 @@ namespace uwac
 
 				if (row == null)
 				{
-					//results.Add("ERROR. GetDataTableFromCSVFile: No Row! counter = " + counter.ToString());
+					//do nothing for now
 				}
 				else
 				{
@@ -614,7 +630,8 @@ namespace uwac
 
 				if (n_nonnull_flds == 0)
 				{
-					return null;
+					row["verified"] = 4;
+					return row;
 				}
 				else
 				{
@@ -754,6 +771,20 @@ namespace uwac
 					, settings.tblname, fld.field, fldnameFROM, tblnameFROM, studymeasidFROM, settings.studymeasID);
 
 			}
+			else if (afterinsertmode == UpdateAfterInsertMode.ValFromStudymeasAndFieldWithCalculation)
+			{
+				int studymeasidFROM = Convert.ToInt32(params_text.Split(',').ToList()[0]);
+				string fldnameFROM = params_text.Split(',').ToList()[1];
+				string calculationCode = params_text.Split(',').ToList()[2];
+
+
+				string tblnameFROM = sql.StringScalar_from_SQLstring(
+					String.Format("select tblname from def.tbl where measureID=(select measureID from uwautism_research_backend..tblStudymeas where studymeasID={0})", studymeasidFROM));
+
+				code = String.Format("update {0} set {1} = b.[{2}]{6} from (select * from {3} where studymeasID={4}) b WHERE {0}.id = b.id and {0}.studymeasID={5}"
+					, settings.tblname, fld.field, fldnameFROM, tblnameFROM, studymeasidFROM, settings.studymeasID, calculationCode);
+
+			}
 			else if (afterinsertmode == UpdateAfterInsertMode.ExtractFromListAllText)
 			{
 				string fldnameFROM = params_text;
@@ -782,6 +813,12 @@ namespace uwac
 
 			if (code != null)
 			{
+				Debug.WriteLine("/****************************************/");
+				Debug.WriteLine(String.Format("/********  {0}  **********/", afterinsertmode));
+				Debug.WriteLine(code);
+				Debug.WriteLine("/****************************************/");
+
+
 				try
 				{
 					sql.NonQuery_from_SQLstring(code);
@@ -1165,14 +1202,14 @@ namespace uwac
 		public static DataTable LinkedImportTbls(int studyID)
 		{
 			SQL_utils sql = new SQL_utils("data");
-			string code = "  select a.*, b.tblpk, tblname, measname from [def].[LinkedImport] a  " + Environment.NewLine +
+			string code = "  select a.*, b.tblpk, tblname, measname, b.sortorder from [def].[LinkedImport] a  " + Environment.NewLine +
 				"  join [def].[LinkedImportTbl] b ON a.ltpk = b.ltpk " + Environment.NewLine +
 				"  join def.Tbl c ON b.tblpk = c.tblpk " + Environment.NewLine +
 				"  join uwautism_research_backend..tblmeasure d ON c.measureID = d.measureID " + Environment.NewLine +
 				" where a.ltpk in (select ltpk from def.LinkedImportTbl " + Environment.NewLine +
 				" where tblpk in (select tblpk from def.Tbl where measureID in " +
 				" (select measureID from uwautism_research_backend..tblstudymeas where studyID=" + studyID.ToString() + ")))" +
-				" order by a.ltpk, d.measname";
+				" order by a.ltpk, sortorder, d.measname";
 			DataTable dt = sql.DataTable_from_SQLstring(code);
 			sql.Close();
 			return dt;

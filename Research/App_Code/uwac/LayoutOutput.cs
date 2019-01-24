@@ -14,7 +14,7 @@ namespace uwac
 	/// <summary>
 	/// Summary description for ChartOutput
 	/// </summary>
-	public static class ChartOutput
+	public static class LayoutOutput
 	{
 		//public ChartOutput()
 		//{
@@ -26,10 +26,10 @@ namespace uwac
 		public static Table LayoutBatch(DxChartBatch batch)
 		{
 			Table t = new Table();
-			if (batch.chartlayout == DxChartLayout.Horizontal) t = HorizontalTable(batch);
-			else if (batch.chartlayout == DxChartLayout.Vertical) t = VerticalTable(batch);
-			else if (batch.chartlayout == DxChartLayout.Upper) return UpperTable(batch);
-			else if (batch.chartlayout == DxChartLayout.UpperDiag) return UpperDiagTable(batch);
+			if (batch.layout == DxLayout.Horizontal) t = HorizontalTable(batch);
+			else if (batch.layout == DxLayout.Vertical) t = VerticalTable(batch);
+			else if (batch.layout == DxLayout.Upper) return UpperTable(batch);
+			else if (batch.layout == DxLayout.UpperDiag) return UpperDiagTable(batch);
 
 			return t;
 		}
@@ -39,7 +39,7 @@ namespace uwac
 			if (obj == "datatable")
 			{
 				Table t = new Table();
-				if (batch.chartlayout == DxChartLayout.Horizontal) t = HorizontalTable(batch, obj);
+				if (batch.layout == DxLayout.Horizontal) t = HorizontalTable(batch, obj);
 				//else if (batch.chartlayout == DxChartLayout.Vertical) t = VerticalTable(batch);
 				//else if (batch.chartlayout == DxChartLayout.Upper) return UpperTable(batch);
 				//else if (batch.chartlayout == DxChartLayout.UpperDiag) return UpperDiagTable(batch);
@@ -49,6 +49,17 @@ namespace uwac
 			else return null;
 		}
 
+
+		public static Table LayoutBatch(DxTableBatch batch)
+		{
+			Table t = new Table();
+			if (batch.layout == DxLayout.Horizontal) t = HorizontalTable(batch);
+			//else if (batch.layout == DxLayout.Vertical) t = VerticalTable(batch);
+			//else if (batch.layout == DxLayout.Upper) return UpperTable(batch);
+			//else if (batch.layout == DxLayout.UpperDiag) return UpperDiagTable(batch);
+
+			return t;
+		}
 
 
 		#region UpperDiag
@@ -310,7 +321,7 @@ namespace uwac
 						int newH = Convert.ToInt32(batch.charts[counter].H);
 
 						DxChart thisdxchart = batch.charts[counter];
-						if (thisdxchart.chart == null) // | thisdxchart.chart.Series.Count == 0)
+						if (thisdxchart.chart == null  | thisdxchart.chart.Series.Count == 0)
 						{
 							addcell = !batch.settings.hideEmptyCharts;
 							//if we want to hideEmptyCharts (=T, that is Not Show It) then we don't want to add the cell.
@@ -374,6 +385,64 @@ namespace uwac
 						counter++;
 					}
 					if (addcell) r.Cells.Add(c);
+				}
+				t.Rows.Add(r);
+			}
+
+			return t;
+		}
+
+
+
+
+		public static Table HorizontalTable(DxTableBatch batch)
+		{
+
+			return HorizontalTable(batch, "string");
+		}
+
+		public static Table HorizontalTable(DxTableBatch batch, string obj)
+		{
+			Table t = new Table();
+
+			int numrow = (int)(batch.tables.Count / batch.maxCol) + 1;
+			int counter = 0;
+
+			for (int i = 0; i < numrow; i++)
+			{
+				TableRow r = new TableRow();
+				for (int j = 0; j < batch.maxCol; j++)
+				{
+					TableCell c = new TableCell();
+					bool addcell = true;
+					if (counter < batch.tables.Count)
+					{
+
+
+						DxTable thisdxtable = batch.tables[counter];
+						string output = thisdxtable.output;
+
+						if (thisdxtable.output == "" | thisdxtable.output== null)
+
+						//if (String.IsNullOrEmpty(thisdxtable.table))
+						{
+							string thisdxtable_info = String.Format("emptymsg={0} "
+								, thisdxtable.emptymsg);
+
+							PlaceTextInCell(c, thisdxtable_info);
+						}
+						else
+						{
+							if (obj == "string")
+							{
+								PlaceStringInCell(thisdxtable.output, c);
+							}
+							counter++;
+						}
+					
+						if (addcell) r.Cells.Add(c);
+					}
+					
 				}
 				t.Rows.Add(r);
 			}
@@ -463,7 +532,7 @@ namespace uwac
 							int newW = Convert.ToInt32(batch.charts[idx].W);
 							int newH = Convert.ToInt32(batch.charts[idx].H);
 
-							if (batch.charts[idx].chart == null)
+							if (batch.charts[idx].chart == null | batch.charts[idx].chart.Series.Count == 0)
 							{
 								//do nothing, the missing chart and emptymsg is not displayed
 								addcell = false;
@@ -526,6 +595,8 @@ namespace uwac
 
 
 		#endregion
+ 
+
 
 
 
@@ -586,6 +657,12 @@ namespace uwac
 		}
 
 
+		public static void PlaceStringInCell(string s, TableCell container)
+		{
+			Literal lit = new Literal();
+			lit.Text = s;
+			container.Controls.Add(lit);
+		}
 
 		#endregion
 

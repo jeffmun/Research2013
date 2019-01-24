@@ -85,7 +85,7 @@
 	</table>
 	<br />
 
-	<h4>Linked Import Tables</h4>
+	<h4>Linked Import Tables (from files)</h4>
 	<table>
 		<tr>
 			<td width="600px" style="vertical-align:top">

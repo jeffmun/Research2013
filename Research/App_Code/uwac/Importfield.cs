@@ -288,7 +288,8 @@ namespace uwac
 	{
 		ValFromStudymeasAndField = 0,
 		ExtractFromListAllText = 1,
-		ExtractOtherFromListAllText = 2
+		ExtractOtherFromListAllText = 2,
+		ValFromStudymeasAndFieldWithCalculation = 3,
 	}
 
 	public enum FieldExtractionMode

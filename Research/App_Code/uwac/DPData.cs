@@ -21,7 +21,7 @@ using uwac.trk;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Testing;
 using Accord.Statistics.Models.Regression.Linear;
-
+using uwac.data;
 
 namespace uwac
 {
@@ -110,6 +110,20 @@ namespace uwac
 				{
 					FilterData();
 				}
+			}
+		}
+
+
+		public DPData(Dataproject dataproject, string filter)
+		{
+			_filter = filter;
+			_dtdict = AddIsCatToDataDict(dataproject.Dataset.Tables["DataDictionary"]);
+			DataTable dt_fixedcols = FixColumnTypes(dataproject.Dataset.Tables[dataproject.selectedsheet], dataproject.Dataset.Tables["DataDictionary"]);
+			_dt = dt_fixedcols;
+			_idvars = new List<string> { "ref_id", "group", "txgrp", "timept" };
+			if (filter != "" & filter != "null")
+			{
+				FilterData();
 			}
 		}
 
