@@ -29,9 +29,9 @@ namespace uwac
 	/// </summary>
 
 
-	public abstract class DxChartSettings : IChartType
+	public abstract class DxChartSettings : IOutputtype
 	{
-		private DxChartType _charttype;
+		private DxOutputtype _outputtype;
 		private int _W = 300; //width
 		private int _H = 300; //height
 		private int _minx = -999;
@@ -59,7 +59,7 @@ namespace uwac
 		public int maxCol { get { return _maxCol; } set { _maxCol = value; } }
 		public bool hideEmptyCharts {  get { return _hideEmptyCharts; } set { _hideEmptyCharts = value; } }
 
-		public DxChartType ChartType { get { return _charttype; } set { _charttype = value; } }
+		public DxOutputtype outputtype { get { return _outputtype; } set { _outputtype = value; } }
 		public int W { get { return _W; } set { _W = value; } }
 		public int H { get { return _H; } set { _H = value; } }
 		public int minx { get { return _minx; } set { _minx = value; } }
@@ -80,6 +80,7 @@ namespace uwac
 		public PaneLayoutDirection panesLayoutDirection { get { return _panesLayoutDirection; } set { _panesLayoutDirection = value; } }
 		public DxLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
 		public ScaleMode ScaleMode { get { return _ScaleMode; } set { _ScaleMode = value; } }
+		public List<string> setup_errors { get; set; }
 
 		public bool HasVars {
 			get{
@@ -122,9 +123,9 @@ namespace uwac
 			Initialize();
 		}
 
-		public DxChartSettings(DxChartType dxChartType)
+		public DxChartSettings(DxOutputtype mydxOutputType)
 		{
-			SetChartType(dxChartType);
+			SetOutputtype(mydxOutputType);
 			Initialize();
 		}
 
@@ -136,9 +137,9 @@ namespace uwac
 			_colors = DefaultColors();
 		}
 
-		public void SetChartType(DxChartType dxChartType)
+		public void SetOutputtype(DxOutputtype mydxOutputtype)
 		{
-			_charttype = dxChartType;
+			_outputtype = mydxOutputtype;
 			_colors = DefaultColors();
 		}
 
@@ -165,32 +166,6 @@ namespace uwac
 	}
 
 
-	public interface IChartType
-	{
-		void SetChartType(DxChartType dxChartType);
-
-	}
-
-	public enum DxChartType : int
-	{
-		Histogram = 0,
-		Barchart = 1,
-		StackedBarchart = 2,
-		Scatterplot = 3,
-		Lineplot = 4,
-		PCA = 5,
-		Actogram = 6
-	}
-
-	public enum DxLayout
-	{
-		Horizontal = 1,
-		Vertical = 2,
-		Upper = 3,
-		UpperDiag = 4,
-		Lower = 5,
-		LowerDiag = 6
-	}
 
 	public enum DxWideMode : int
 	{

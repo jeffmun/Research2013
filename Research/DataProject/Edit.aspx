@@ -79,6 +79,8 @@
 
 			//This will update the gridSelVars
 			gridVarsCallback.PerformCallback();
+
+			gridMeasNoVarsCallback.PerformCallback();
 		}
 		function VarSelectionChanged(s, e) {
 
@@ -203,12 +205,12 @@
 
 						</td>
 						<td style="vertical-align: top; width: 150px; padding: 5px">
-				            <dx:ASPxButton ID="btnUpdate" runat="server" Text="Update Settings" OnClick="btnUpdate_OnClick" ClientInstanceName="btnUpdate">
-					            <Image IconID="actions_save_16x16devav"></Image>
-				            </dx:ASPxButton>
-				            <dx:ASPxButton ID="btnNew" runat="server" Text="Save this Data Project"  OnClick="btnUpdate_OnClick">
-					             <Image IconID="actions_save_16x16devav"></Image>
-				            </dx:ASPxButton>
+							<dx:ASPxButton ID="btnUpdate" runat="server" Text="Update Project" OnClick="btnUpdate_OnClick" ClientInstanceName="btnUpdate">
+								<Image IconID="actions_save_16x16devav"></Image>
+							</dx:ASPxButton>
+							<dx:ASPxButton ID="btnNew" runat="server" Text="Save this Data Project"  OnClick="btnUpdate_OnClick">
+								 <Image IconID="actions_save_16x16devav"></Image>
+							</dx:ASPxButton>
 							<dx:ASPxLabel ID="lblERROR" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
 
 						</td>
@@ -218,7 +220,7 @@
 								 <Image IconID="actions_viewsetting_16x16devav"></Image>
 							</dx:ASPxButton>							&nbsp;&nbsp;&nbsp;&nbsp;
 						<td style="vertical-align: top; padding: 5px">
-								<dx:ASPxButton ID="btnFiles" runat="server" Text="Create & View Data Files" OnClick="btnFiles_OnClick" ClientInstanceName="btnbtnCreate">
+								<dx:ASPxButton ID="btnFiles" runat="server" Text="Create & View Data Files" OnClick="btnFiles_OnClick" ClientInstanceName="btnFiles">
 									<Image IconID="save_saveall_16x16office2013"></Image>
 								</dx:ASPxButton>
 						</td>
@@ -380,24 +382,41 @@
 								</PanelCollection>
 							</dx:ASPxCallbackPanel>
 
+
+
+
+
+				<table>
+					<tr>
+						<td style="vertical-align:top; padding: 15px">
 							<dx:ASPxCallbackPanel ID="pivotIntHxCallback" runat="server" OnCallback="pivotIntHxCallback_OnCallback" ClientInstanceName="pivotIntHxCallback">
 								<PanelCollection>
 									<dx:PanelContent ID="PanelContent5" runat="server">
-
-										<dx:ASPxGridView ID="PivotSelIntHx" runat="server"  AllowUserInput="false">
-											<Columns>
-												<dx:GridViewDataColumn FieldName="timept" Caption="IntHx Timept"></dx:GridViewDataColumn>
-											</Columns>
-										</dx:ASPxGridView>
-<%--										<dx:ASPxGridView ID="PivotSelIntHx" runat="server"  AllowUserInput="false">
-											<Columns>
-												<dx:GridViewDataColumn FieldName="measname" Caption="IntHx Measure"></dx:GridViewDataColumn>
-												<dx:GridViewDataColumn FieldName="measfullname" Caption="IntHx Measure - Full name"></dx:GridViewDataColumn>
-											</Columns>
-										</dx:ASPxGridView>--%>
+											<dx:ASPxGridView ID="PivotSelIntHx" runat="server"  AllowUserInput="false">
+												<Columns>
+													<dx:GridViewDataColumn FieldName="timept" Caption="IntHx Timept"></dx:GridViewDataColumn>
+												</Columns>
+											</dx:ASPxGridView>
 									</dx:PanelContent>
 								</PanelCollection>
 							</dx:ASPxCallbackPanel>
+						</td>
+						<td style="vertical-align:top; padding: 15px">
+								<dx:ASPxCallbackPanel ID="gridMeasNoVarsCallback" runat="server" OnCallback="gridMeasNoVarsCallback_OnCallback" ClientInstanceName="gridMeasNoVarsCallback">
+									<PanelCollection>
+										<dx:PanelContent ID="PanelContent6" runat="server">
+											<dx:ASPxGridView ID="gridMeasWithNoVars"  runat="server" SettingsText-EmptyDataRow="Great! All measures have variables selected."  AllowUserInput="false" >
+												<Columns>
+													<dx:GridViewDataColumn FieldName="measname" Caption="Measures with No Selected Vars" CellStyle-ForeColor="Red"></dx:GridViewDataColumn>
+												</Columns>
+											</dx:ASPxGridView>
+									</dx:PanelContent>
+								</PanelCollection>
+							</dx:ASPxCallbackPanel>
+						</td>
+					</tr>
+				</table>
+
 
 
 
@@ -805,6 +824,16 @@
 		 </SelectParameters>
 	 </asp:SqlDataSource> 
 
+
+
+	 <asp:SqlDataSource ID="SqlMeasWithNoVars" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
+		SelectCommandType="text"
+		SelectCommand="select dataproj_pk, measname from (select a.dataproj_pk, a.measureID, sum(case when b.fldpk > 0 then 1 else 0 end) n_vars from dp.Meas a left join dp.[Var] b ON a.measureID = b.measureID and a.dataproj_pk = b.dataproj_pk group by a.dataproj_pk, a.measureID) x left join uwautism_research_backend..tblMeasure y ON x.measureID = y.measureID where n_vars = 0 and dataproj_pk = @dataproj_pk"
+		>
+		 <SelectParameters>
+			 <asp:QueryStringParameter QueryStringField="pk" Name="dataproj_pk" />
+		 </SelectParameters>
+	 </asp:SqlDataSource>
 
 	 <asp:SqlDataSource ID="SqlCompvar" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
 		SelectCommandType="text"

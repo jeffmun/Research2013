@@ -80,7 +80,7 @@
 								<Columns>
 <%--									<dx:GridViewDataColumn FieldName="measname" Caption="Measure" GroupIndex="0"></dx:GridViewDataColumn>--%>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Edit" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Edit" PropertiesHyperLinkEdit-NavigateUrlFormatString="Edit.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
-									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Explore" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Explore" PropertiesHyperLinkEdit-NavigateUrlFormatString="Chart.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
+									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Explore" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Explore" PropertiesHyperLinkEdit-NavigateUrlFormatString="Explore.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Files" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Files" PropertiesHyperLinkEdit-NavigateUrlFormatString="Files.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
 									<dx:GridViewDataColumn FieldName="dataproj_pk" Caption="Proj #" VisibleIndex="0" ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="projTitle" Caption="Title" VisibleIndex="1"  ></dx:GridViewDataColumn>

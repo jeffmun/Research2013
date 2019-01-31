@@ -247,7 +247,7 @@ public partial class DataProject_Files : System.Web.UI.Page
 	protected void btnExplore_OnClick(object sender, EventArgs e)
 	{
 		Debug.Print("btnExplore_OnClick " + System.DateTime.Now.ToString());
-		Response.Redirect("Chart.aspx?pk=" + Request.QueryString["pk"]);
+		Response.Redirect("Explore.aspx?pk=" + Request.QueryString["pk"]);
 	}
 
 	protected void btnEdit_OnClick(object sender, EventArgs e)

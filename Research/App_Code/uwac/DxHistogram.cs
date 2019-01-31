@@ -411,7 +411,7 @@ namespace uwac
 		public int numbins { get { return _numbins; } set { _numbins = value; } }
 		public DxHistogramSettings()
 		{
-			SetChartType(DxChartType.Histogram);
+			SetOutputtype(DxOutputtype.Histogram);
 		}
 		public DxHistogramSettings(DxChartSettings settings)
 		{
@@ -422,7 +422,7 @@ namespace uwac
 			if (settings.agevars.Count > 0) numvars.AddRange(settings.agevars);
 			colors = settings.colors;
 
-			SetChartType(DxChartType.Histogram);
+			SetOutputtype(DxOutputtype.Histogram);
 		}
 
 		

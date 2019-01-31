@@ -8,12 +8,14 @@ namespace uwac
 	/// <summary>
 	/// Summary description for DxTableSettings
 	/// </summary>
-	public class DxTableSettings
+	public abstract class DxTableSettings : IOutputtype
 	{
-		private DxTableType _tabletype;
+		private DxOutputtype _outputtype; 
+
 		private List<string> vars;
 
-		public DxTableType tabletype { get { return _tabletype; } set { _tabletype = value; } }
+		public DxOutputtype outputtype { get { return _outputtype; } set { _outputtype = value; } }
+
 		public DxLayout layout { get; set; }
 
 		private int _maxRow = 4;
@@ -21,17 +23,24 @@ namespace uwac
 		public int maxRow { get { return _maxRow; } set { _maxRow = value; } }
 		public int maxCol { get { return _maxCol; } set { _maxCol = value; } }
 
-
 		public DxTableSettings()
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+
 		}
 
-		public void SetTableType(DxTableType dxTableType)
+		//public DxTableSettings(DxOutputType mydxOutputType)
+		//{
+		//	SetOutputType(mydxOutputType);
+		//	Initialize();
+		//}
+
+		public void Initialize()
+		{ }
+
+
+		public void SetOutputtype(DxOutputtype mydxOutputtype)
 		{
-			_tabletype = dxTableType;
+			_outputtype = mydxOutputtype;
 		}
 	}
 

@@ -28,20 +28,24 @@ namespace uwac
 	/// Summary description for DxChart
 	/// </summary>
 	[Serializable]
-	public abstract class DxChart
+	public abstract class DxChart : DxOutputitem
 	{
+		//public string guid { get; set; }
+		//public string emptymsg { get { return _emptymsg; } set { _emptymsg = value; } }
+		//public string infomsg { get { return _infomsg; } set { _infomsg = value; } }
+
+		//private string _emptymsg;
+		//private string _infomsg;
+
 		private WebChartControl _chart;
 		private XYDiagram _xydiagram;
-		private string _emptymsg;
-		private string _infomsg;
 		private ASPxCheckBox _chk;
 		private int _n;
-		public string guid { get; set; }
+
 		public int W { get; set; }
 		public int H { get; set; }
 		public bool isdiag { get; set; }
 		public bool isempty { get; set; }
-		public RowColIndex rowcolIndex { get; set; }
 		public int n
 		{
 			get { return _n; }
@@ -54,8 +58,6 @@ namespace uwac
 		{
 			get { return _chk; }
 		}
-		public string emptymsg { get { return _emptymsg; } set { _emptymsg = value; } }
-		public string infomsg { get { return _infomsg; } set { _infomsg = value; } }
 
 		public List<string> _colorLevels { get; set; }
 
@@ -286,12 +288,6 @@ namespace uwac
 	}
 
 
-	public class RowColIndex
-	{
-		public int r { get; set; }
-		public int c { get; set; }
-		public RowColIndex() { }
-	}
 
 
 	public class DxMarkerKinds :  List<MarkerKind>

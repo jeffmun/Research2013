@@ -679,14 +679,14 @@ namespace uwac
 			digits_corr = 2;
 			digits_pvalue = 3;
 			panevar = "none";
-			SetChartType(DxChartType.Scatterplot);
+			SetOutputtype(DxOutputtype.Scatterplot);
 		}
 		
 		public DxScatterplotSettings(DxChartSettings settings) {
 			digits_corr = 2;
 			digits_pvalue = 3;
 			panevar = "none";
-			SetChartType(DxChartType.Scatterplot);
+			SetOutputtype(DxOutputtype.Scatterplot);
 		}
 
 		public bool useMovAvg

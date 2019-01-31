@@ -9,12 +9,12 @@ namespace uwac
 	/// Summary description for DxTable
 	/// </summary>
 	/// 	[Serializable]
-	public abstract class DxTable 
+	public abstract class DxTable : DxOutputitem
 	{
 
-		public string guid { get; set; }
-		public string emptymsg { get; set; }
-		public string output { get; set; }
+		//public string guid { get; set; }
+		//public string emptymsg { get; set; }
+		//public string output { get; set; }
 
 		public DxTable()
 		{

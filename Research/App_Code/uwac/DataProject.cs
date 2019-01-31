@@ -165,10 +165,10 @@ namespace uwac.data
 				if (tblname == "Data") hasSheetNamedData = true;
 			}
 
-			if(hasSheetNamedData)
-			{
-				selectedsheet = "Data";
-			}
+			//if(hasSheetNamedData)
+			//{
+			//	selectedsheet = "Data";
+			//}
 
 			loadedfilename = xlfile;
 
@@ -232,7 +232,9 @@ namespace uwac.data
 		{
 			try 
 			{ 
-				List<string> timepts = _dataset.Tables["Timepoints"].AsEnumerable().Select(f => f.Field<string>("timept")).Distinct().ToList();
+				List<string> timepts = _dataset.Tables["Timepoints"].AsEnumerable()
+					.Where(f => f.Field<string>("Data_Included") != null)
+					.Select(f => f.Field<string>("timept")).Distinct().ToList();
 				return timepts;
 			}
 			catch(Exception ex){ return null; }
@@ -282,67 +284,79 @@ namespace uwac.data
 			return datasheets;
 		}
 
-		public DataTable DataDictionaryForSheet( string sheet)
+		public DataTable DataDictionaryForSheet()
 		{
-			List<string> datasheetnames = GetDataSheetNames();
-			List<string> measnames_on_othersheets = new List<string>();
-			for (int i = 0; i < datasheetnames.Count; i++)
+			if (this.selectedsheet != null)
 			{
-				if (datasheetnames[i] != "Data") measnames_on_othersheets.Add(datasheetnames[i].Replace("Data_", ""));
+				return DataDictionaryForSheet(this.selectedsheet);
 			}
-
-
-			DataTable dictorig = _dataset.Tables["DataDictionary"];
-
-			if (sheet == "Data")
+			else return null;
+		}
+				public DataTable DataDictionaryForSheet( string sheet)
+		{
+			if (this.Dataset != null)
 			{
-				string measnames_on_othersheets_csv = String.Join("','", measnames_on_othersheets);
-				DataView vw = dictorig.AsDataView();
-				vw.RowFilter = String.Format("[measname] NOT IN ('{0}')", measnames_on_othersheets_csv);
-				DataTable dt = vw.ToTable();
-				return dt;
-			}
-			else if (sheet == "Subjects")
-			{
-				DataView vw = dictorig.AsDataView();
-				vw.RowFilter = "[measname] = '!'";  //no records
-				DataTable dt = vw.ToTable();
-
-				int counter = 0;
-				foreach (DataColumn subjcol in _dataset.Tables["Subjects"].Columns)
+				List<string> datasheetnames = GetDataSheetNames();
+				List<string> measnames_on_othersheets = new List<string>();
+				for (int i = 0; i < datasheetnames.Count; i++)
 				{
-					counter++;
-					string dtype = subjcol.DataType.ToString().Replace("System.", "");
-
-					string sqldatatype = "";
-
-					if (subjcol.ColumnName.Contains("date")) sqldatatype = "date";
-					else if (subjcol.ColumnName == "studystart") sqldatatype = "date";
-					else if (subjcol.ColumnName == "txstart") sqldatatype = "date";
-					else if (dtype == "Double") sqldatatype = "float";
-					else if (dtype.StartsWith("Int")) sqldatatype = "int";
-					else if (dtype == "String") sqldatatype = "varchar";
-					else sqldatatype = "varchar";
-
-
-					DataRow row = dt.NewRow();
-					row["pos"] = counter;
-					row["measname"] = "Subjects";
-					row["varname"] = subjcol.ColumnName;
-					row["DataType"] = sqldatatype;
-					row["FieldLabel"] = SubjectVarLabel(subjcol.ColumnName);
-					row["InAnalysis"] = 0;
-					dt.Rows.Add(row);
+					if (datasheetnames[i] != "Data") measnames_on_othersheets.Add(datasheetnames[i].Replace("Data_", ""));
 				}
-				return dt;
+
+
+				DataTable dictorig = _dataset.Tables["DataDictionary"];
+
+				if (sheet == "Data")
+				{
+					string measnames_on_othersheets_csv = String.Join("','", measnames_on_othersheets);
+					DataView vw = dictorig.AsDataView();
+					vw.RowFilter = String.Format("[measname] NOT IN ('{0}')", measnames_on_othersheets_csv);
+					DataTable dt = vw.ToTable();
+					return dt;
+				}
+				else if (sheet == "Subjects")
+				{
+					DataView vw = dictorig.AsDataView();
+					vw.RowFilter = "[measname] = '!'";  //no records
+					DataTable dt = vw.ToTable();
+
+					int counter = 0;
+					foreach (DataColumn subjcol in _dataset.Tables["Subjects"].Columns)
+					{
+						counter++;
+						string dtype = subjcol.DataType.ToString().Replace("System.", "");
+
+						string sqldatatype = "";
+
+						if (subjcol.ColumnName.Contains("date")) sqldatatype = "date";
+						else if (subjcol.ColumnName == "studystart") sqldatatype = "date";
+						else if (subjcol.ColumnName == "txstart") sqldatatype = "date";
+						else if (dtype == "Double") sqldatatype = "float";
+						else if (dtype.StartsWith("Int")) sqldatatype = "int";
+						else if (dtype == "String") sqldatatype = "varchar";
+						else sqldatatype = "varchar";
+
+
+						DataRow row = dt.NewRow();
+						row["pos"] = counter;
+						row["measname"] = "Subjects";
+						row["varname"] = subjcol.ColumnName;
+						row["DataType"] = sqldatatype;
+						row["FieldLabel"] = SubjectVarLabel(subjcol.ColumnName);
+						row["InAnalysis"] = 0;
+						dt.Rows.Add(row);
+					}
+					return dt;
+				}
+				else
+				{
+					DataView vw = dictorig.AsDataView();
+					vw.RowFilter = String.Format("[measname] = '{0}'", sheet.Replace("Data_", ""));
+					DataTable dt = vw.ToTable();
+					return dt;
+				}
 			}
-			else
-			{
-				DataView vw = dictorig.AsDataView();
-				vw.RowFilter = String.Format("[measname] = '{0}'", sheet.Replace("Data_", ""));
-				DataTable dt = vw.ToTable();
-				return dt;
-			}
+			return null;
 
 		}
 

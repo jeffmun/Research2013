@@ -136,7 +136,7 @@ namespace uwac
 		public int decimal_places { get; set; }
 
 		public DxCrosstabsSettings() {
-			SetTableType(DxTableType.Crosstabs);
+			SetOutputtype(DxOutputtype.Crosstabs);
 		}
 
 		public object Clone()

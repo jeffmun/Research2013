@@ -1183,7 +1183,7 @@ public partial class DataProject_Chart : BasePage
 		//}
 
 		DataTable dt_selvars = (DataTable)Session["selectedvars"];
-		order.dt = dt_selvars;
+		order.dt_selectedvars = dt_selvars;
 
 		return order;
 	}
@@ -1227,7 +1227,7 @@ public partial class DataProject_Chart : BasePage
 			order.filter = txtFilter.Text;
 		}
 
-			order.dt = (DataTable)Session["selectedvars"];
+			order.dt_selectedvars = (DataTable)Session["selectedvars"];
 
 		return order;
 	}
@@ -1789,7 +1789,7 @@ public partial class DataProject_Chart : BasePage
 
 		foreach (System.Web.UI.WebControls.Table t in tables)
 		{
-			callbackCharts.Controls.Add(t);
+			callbackOutput.Controls.Add(t);
 		}
 
 

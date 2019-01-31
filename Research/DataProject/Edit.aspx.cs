@@ -634,6 +634,37 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 
 	}
 
+
+	protected void gridMeasNoVarsCallback_OnCallback(object sender, EventArgs e)
+	{
+		Debug.Print("  $$  gridMeasCallback_OnCallback " + System.DateTime.Now.ToString());
+
+
+		List<int> selmeasID = dataops.GetListInt(gridSelMeas.GetSelectedFieldValues("measureID")).Distinct().ToList();
+		List<int> measID_of_selvars = dataops.GetListInt(gridSelVars.GetSelectedFieldValues("measureID")).Distinct().ToList();
+
+		var MeasNoVars = selmeasID.Except(measID_of_selvars);
+
+
+		SQL_utils sql = new SQL_utils("backend");
+		string code = String.Format("select measname from tblMeasure where measureID in ({0})", String.Join(",", MeasNoVars));
+		DataTable dt_MeasNoVar = sql.DataTable_from_SQLstring(code);
+		sql.Close();
+
+
+		gridMeasWithNoVars.DataSource = dt_MeasNoVar;
+		gridMeasWithNoVars.DataBind();
+
+		//RefreshSession_selinthx();
+		//PivotSelIntHx.DataSource = (DataTable)Session["proj_inthx"];
+		//PivotSelIntHx.DataBind();
+
+
+		//var selinthx = gridSelIntHx.GetSelectedFieldValues(gridSelIntHx.KeyFieldName);
+		//selected_inthxlist = selinthx.ConvertAll(x => Convert.ToString(x));
+	}
+
+
 	protected void gridIntHxCallback_OnCallback(object sender, EventArgs e)
 	{
 		Debug.Print("  $$  gridMeasCallback_OnCallback " + System.DateTime.Now.ToString());
@@ -707,6 +738,7 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 
 
 		List<int> selmeas = dataops.GetListInt(gridSelMeas.GetSelectedFieldValues(gridSelMeas.KeyFieldName));
+
 
 		//List<int> selmeasint = selmeas.ConvertAll(new Converter<string, int>(Convert.ToInt32(x));
 
@@ -868,7 +900,7 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 
 	protected void btnProjects_OnClick(object sender, EventArgs e)
 	{
-		Debug.Print("btnSets_OnClick " + System.DateTime.Now.ToString());
+		Debug.Print("btnProjects_OnClick " + System.DateTime.Now.ToString());
 
 		Response.Redirect("DataProjects.aspx");
 	}
@@ -876,7 +908,7 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 	protected void btnExploreProject_OnClick(object sender, EventArgs e)
 	{
 		Debug.Print("btnExploreProject_OnClick " + System.DateTime.Now.ToString());
-		Response.Redirect("Explore2.aspx?pk=" + Request.QueryString["pk"]);
+		Response.Redirect("Explore.aspx?pk=" + Request.QueryString["pk"]);
 	}
 
 	protected void btnFiles_OnClick(object sender, EventArgs e)

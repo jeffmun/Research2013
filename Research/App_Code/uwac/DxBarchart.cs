@@ -128,10 +128,6 @@ namespace uwac
 			//chart.AxisVisualRangeChanged += LogAxesRangeVisual;
 
 
-
-			//chart.BoundDataChanged += new BoundDataChangedEventHandler(barchart_BoundDataChanged);
-
-
 			string mycolorvar;
 
 			if (_settings.colorvar == "none")
@@ -152,40 +148,16 @@ namespace uwac
 			if (_settings.panelvar != "none")
 			{
 				panes_levels = statstable.dt.AsEnumerable().Select(x => x.Field<string>(_settings.panelvar)).Distinct().ToList();
-
 				panes_levels.Sort();
 			}
 
 
-			//chart.DataSource = statstable.dt;
-			//chart.SeriesDataMember = (_settings.colorvar == "none") ? "All" : _settings.colorvar; //Colors - dimension in the Legend
-			//chart.SeriesTemplate.ArgumentDataMember = _settings.xaxisvar; //X axis dimention
-			//chart.SeriesTemplate.ValueDataMembers.AddRange("M"); // _numvars.ToArray());
-
-
-			for (int i = 0; i < colors_levels.Count; i++)
-			{
-				string current_color_lev = colors_levels[i];
-			}
-
-			//SeriesPoint[] pts = new DxSeriesPoints(statstable.dt, _settings.xaxisvar, "M", _settings.colors, g);
-
-
-			//SideBySideBarSeriesView vw = new SideBySideBarSeriesView();
-			//vw.Indicators.Add(new DataSourceBasedErrorBars
+			//for (int i = 0; i < colors_levels.Count; i++)
 			//{
-			//	Direction = ErrorBarDirection.Both,
-			//	Name = "SD",
-			//	Color = Color.Black,
-			//	PositiveErrorDataMember = "SD",
-			//	NegativeErrorDataMember = "SD"
-			//});
-			//chart.SeriesTemplate.View = vw;
+			//	string current_color_lev = colors_levels[i];
+			//}
 
-
-
-
-
+		
 			foreach (Series ser in chart.Series)
 			{
 				Debug.WriteLine(String.Format("arg data member:[{0}] color data member:[{1}]", ser.ArgumentDataMember, ser.ColorDataMember));
@@ -193,8 +165,6 @@ namespace uwac
 
 
 			BarchartSeries barseries = new BarchartSeries(statstable.dt, _settings.xaxisvar, _settings.colorvar, _settings.panelvar, _settings.colors, colors_levels);
-
-			//List<DxSeriesPoints> sps = CreateSeries(statstable.dt, _settings.xaxisvar, _settings.colorvar, _settings.panelvar, _settings.colors, colors_levels);
 
 			foreach (DxSeriesPoints sp in barseries.list_dxseriespoints)
 			{
@@ -219,6 +189,8 @@ namespace uwac
 
 			Debug.WriteLine(String.Format("***************************** INIT   # of Panes: {0}", xydiagram.Panes.Count));
 
+
+			//Additional Panes 
 			if (panes_levels.Count > 0)
 			{
 				xydiagram.Panes.Clear();
@@ -241,40 +213,11 @@ namespace uwac
 						{
 							XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
 							view.Pane = xydiagram.Panes[p];
-
-							//view.Indicators.Add(new FixedValueErrorBars
-							//{
-							//	Direction = ErrorBarDirection.Both,
-							//	Name = "SD",
-							//	Color = Color.Black,
-							//	PositiveError = i * .02,
-							//	NegativeError = i * .02
-
-							//});
-
 						}
 					}
 
 					xydiagram.DefaultPane.Visibility = ChartElementVisibility.Hidden;
-					//for (int i = 0; i < chart.Series.Count; i++)
-					//{
 
-					//XYDiagramPane pane = new XYDiagramPane("The Pane's Name");
-					//xydiagram.Panes.Add(pane);
-					//XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
-
-					////view.Indicators.Add(new DataSourceBasedErrorBars
-					////{
-					////	Direction = ErrorBarDirection.Both,
-					////	Name = "SD",
-					////	Color = Color.Black,
-					////	PositiveErrorDataMember = "SD",
-					////	NegativeErrorDataMember = "SD"
-					////});
-
-					//view.Pane = pane;
-
-					//}
 				}
 			}
 			//No Additional Panes
@@ -283,22 +226,14 @@ namespace uwac
 				{
 					XYDiagramSeriesViewBase view = (XYDiagramSeriesViewBase)chart.Series[i].View;
 					view.Pane = xydiagram.DefaultPane;
-					//view.Indicators.Add(new FixedValueErrorBars
-					//{
-					//	Direction = ErrorBarDirection.Both,
-					//	Name = "SD",
-					//	Color = Color.Black,
-					//	PositiveError = i * .02,
-					//	NegativeError = i * .02,
-					//	EndStyle = ErrorBarEndStyle.NoCap
 
-					//});
 				}
 			}
 
 			chart.DataBind();
 
 
+			//Adjust axis range if needed
 			if (_settings.miny != -999 && _settings.maxy != -999)
 			{
 				double y1 = _settings.miny;
@@ -312,6 +247,7 @@ namespace uwac
 			chart.Width = _settings.W;
 			chart.Height = _settings.H;
 
+			#region Titles
 			if (_settings.numvars.Count == 1)
 			{
 				AddTitles(_settings.title, _settings.subtitle, "", String.Format("{0} Mean (SD)", _settings.numvars[0]));
@@ -320,7 +256,13 @@ namespace uwac
 			{
 				AddTitles(_settings.title, _settings.subtitle, "", "Mean (SD)");
 			}
+			#endregion
+
 			chart.BorderOptions.Color = Color.White;
+
+
+			this.LegendByColorLevels(_settings.colors, colors_levels);
+
 			chart.Legend.Visibility = DevExpress.Utils.DefaultBoolean.True;
 
 		}
@@ -523,7 +465,7 @@ public class AxesRange
 		public bool showEmptyCategories { get; set; }
 
 		public DxBarchartSettings() {
-			SetChartType(DxChartType.Barchart);
+			SetOutputtype(DxOutputtype.Barchart);
 		}
 
 	}

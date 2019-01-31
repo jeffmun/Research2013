@@ -44,10 +44,10 @@ namespace uwac
 				_processedvars.AddRange(batch.vars);
 				foreach (DxChart dxchart in batch.charts)
 				{
-					if (batch.charttype == DxChartType.Histogram) _numHist++;
-					if (batch.charttype == DxChartType.Scatterplot) _numScat++;
-					if (batch.charttype == DxChartType.Barchart) _numBar++;
-					if (batch.charttype == DxChartType.Lineplot) _numLine++;
+					if (batch.outputtype == DxOutputtype.Histogram) _numHist++;
+					if (batch.outputtype == DxOutputtype.Scatterplot) _numScat++;
+					if (batch.outputtype == DxOutputtype.Barchart) _numBar++;
+					if (batch.outputtype == DxOutputtype.Lineplot) _numLine++;
 				}
 			}
 
@@ -66,7 +66,7 @@ namespace uwac
 				_processedvars.AddRange(batch.vars);
 				foreach (DxTable dxtable in batch.tables)
 				{
-					if (batch.tabletype == DxTableType.Crosstabs) _numCrosstabs++;
+					if (batch.outputtype == DxOutputtype.Crosstabs) _numCrosstabs++;
 				}
 			}
 
@@ -132,6 +132,7 @@ namespace uwac
 						row["worksheet"] = order.worksheet;
 						row["vars"] = myvars;
 						row["objects"] = charts;
+						row["filter"] = (order.filter == "") ? "---" : order.filter;
 						this.Rows.Add(row);
 						counter++;
 					}
@@ -163,6 +164,7 @@ namespace uwac
 						row["worksheet"] = order.worksheet;
 						row["vars"] = myvars;
 						row["objects"] = charts;
+						row["filter"] = (order.filter=="") ? "---" : order.filter;
 						this.Rows.Add(row);
 						counter++;
 					}
@@ -177,11 +179,13 @@ namespace uwac
 			DataColumn c1 = new DataColumn("worksheet", typeof(string));
 			DataColumn c2 = new DataColumn("vars", typeof(string));
 			DataColumn c3 = new DataColumn("objects", typeof(string));
+			DataColumn c4 = new DataColumn("filter", typeof(string));
 
 			this.Columns.Add(c0);
 			this.Columns.Add(c1);
 			this.Columns.Add(c2);
 			this.Columns.Add(c3);
+			this.Columns.Add(c4);
 		}
 
 	}

@@ -524,7 +524,7 @@ namespace uwac
 
 		public DxLineplotSettings()
 		{
-			SetChartType(DxChartType.Lineplot);
+			SetOutputtype(DxOutputtype.Lineplot);
 		}
 
 		public DxLineplotSettings(bool isActogram)
@@ -532,21 +532,21 @@ namespace uwac
 			_isActogram = isActogram;
 			if (_isActogram)
 			{
-				SetChartType(DxChartType.Actogram);
+				SetOutputtype(DxOutputtype.Actogram);
 			}
 			else
 			{
-				SetChartType(DxChartType.Lineplot);
+				SetOutputtype(DxOutputtype.Lineplot);
 			}
 		}
 
 		public DxLineplotSettings(DxChartSettings settings)
 		{
-			SetChartType(DxChartType.Lineplot);
+			SetOutputtype(DxOutputtype.Lineplot);
 		}
-		public DxLineplotSettings(DxChartSettings settings, DxChartType charttype)
+		public DxLineplotSettings(DxChartSettings settings, DxOutputtype myoutputtype)
 		{
-			SetChartType(charttype);
+			SetOutputtype(myoutputtype);
 		}
 		
 	}

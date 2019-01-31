@@ -1651,7 +1651,7 @@
 	</dx:ASPxCallbackPanel>
 
 	
-	<dx:ASPxCallbackPanel ID="callbackCharts" runat="server"  OnCallback="callbackCharts_OnCallback" ClientInstanceName="callbackCharts">
+<%--	<dx:ASPxCallbackPanel ID="callbackCharts" runat="server"  OnCallback="callbackCharts_OnCallback" ClientInstanceName="callbackCharts">
 		<PanelCollection>
 			<dx:PanelContent ID="panelcontent4" runat="server">
 			</dx:PanelContent>
@@ -1664,7 +1664,7 @@
 			<dx:PanelContent ID="panelcontent8" runat="server">
 			</dx:PanelContent>
 		</PanelCollection>
-	</dx:ASPxCallbackPanel>
+	</dx:ASPxCallbackPanel>--%>
 
 
 	<%--

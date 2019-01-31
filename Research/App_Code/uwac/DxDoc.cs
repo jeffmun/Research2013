@@ -280,9 +280,9 @@ public class DxDoc
 			{
 				doc.Paragraphs.Append(); 
 
-				if(order.dt != null)
+				if(order.dt_selectedvars != null)
 				{
-					AppendDataTable(doc, order.dt);
+					AppendDataTable(doc, order.dt_selectedvars);
 					doc.Paragraphs.Append();
 				}
 				doc.AppendSingleLineText(order.InvoiceToString());

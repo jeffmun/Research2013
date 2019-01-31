@@ -21,6 +21,7 @@ using uwac.trk;
 using System.Text;
 using System.Drawing.Imaging;
 using System.IO;
+using uwac.data;
 
 namespace uwac
 {
@@ -31,52 +32,66 @@ namespace uwac
 	[Serializable]
 	public class DxChartFactory
 	{
-		//private DxChartOrders _orders;
+		private Dataproject _dataproject;
+		private DPData _dpdata;
 		private List<DxChartOrder> _orders;
 		public List<DxChartOrder> orders { get { return _orders; } set { _orders = value; } }
 
-		//private List<DxBatchOcharts> _batches;
-		//public List<DxBatchOcharts> batches { get { return _batches; } set { _batches = value; } }
 
 		private DataTable _dt;
 
-		public int numHist { get { return CountCharts(DxChartType.Histogram); } }
-		public int numBar { get { return CountCharts(DxChartType.Barchart); } }
-		public int numScat { get { return CountCharts(DxChartType.Scatterplot); } }
-		public int numLine { get { return CountCharts(DxChartType.Lineplot); } }
+		public int numHist { get { return CountCharts(DxOutputtype.Histogram); } }
+		public int numBar {  get { return CountCharts(DxOutputtype.Barchart); } }
+		public int numScat { get { return CountCharts(DxOutputtype.Scatterplot); } }
+		public int numLine { get { return CountCharts(DxOutputtype.Lineplot); } }
 
 
 
 		public DataTable dt { get { return _dt; } set { _dt = value; } }
 
-		public DxChartFactory(DataTable dt, DxChartOrder order)
+		public DxChartFactory(Dataproject mydataproject, DPData mydpdata, List<DxChartOrder> myorders)
 		{
-			//_batches = new List<DxBatchOcharts>();
-			_orders = new List<DxChartOrder> { order };
-			_dt = dt;
+			_orders = myorders;
+			_dpdata = mydpdata;
+			_dataproject = mydataproject;
+
 			ProcessOrders();
+
 		}
-		public DxChartFactory(DataTable dt, List<DxChartOrder> orders)
-		{
-			//_batches = new List<DxBatchOcharts> ();
-			_orders = orders;
-			_dt = dt;
-			ProcessOrders();
-		}
+
+		//public DxChartFactory(DataTable dt, DxChartOrder order)
+		//{
+		//	_orders = new List<DxChartOrder> { order };
+		//	_dt = dt;
+		//	ProcessOrders();
+		//}
+
+
+		//public DxChartFactory(DataTable dt, List<DxChartOrder> myorders)
+		//{
+		//	_orders = myorders;
+		//	_dt = dt;
+		//	ProcessOrders();
+		//}
+
+
 		public void ProcessOrders()
 		{
-			foreach(DxChartOrder order in orders)
+			if (_dpdata != null)
 			{
-				ProcessOrder(order);
+				foreach (DxChartOrder order in orders)
+				{
+					ProcessOrder(order);
 
-				//if (order.HasVars())
-				//{
-				//	ProcessOrder(order);
-				//}
-				//else{
-				//	Debug.WriteLine(" !!!!!!!!!!!! This order has no Vars !!!!!!!!!! ");
-				//}
+					//if (order.HasVars())
+					//{
+					//	ProcessOrder(order);
+					//}
+					//else{
+					//	Debug.WriteLine(" !!!!!!!!!!!! This order has no Vars !!!!!!!!!! ");
+					//}
 
+				}
 			}
 		}
 
@@ -85,7 +100,27 @@ namespace uwac
 		{
 			//Clear any existing batches.
 			//It doesn't seem like a WebChartControl can perist in a Session var, so I just recreate them when asked for.
-			if (order.batches.Count > 0) order.batches.Clear();   
+			if (order.batches.Count > 0) order.batches.Clear();
+
+			bool hassameworksheet = order.HasSameWorksheet(_dpdata);
+
+			if (!hassameworksheet)
+			{
+				//Need new DPData
+				_dataproject.selectedsheet = order.worksheet;
+				_dpdata = new DPData(_dataproject, order.filter);
+			}
+
+
+			bool hassamefilter = order.HasSameFilter(_dpdata);
+
+			if (!hassamefilter)
+			{
+				_dpdata.filter = order.filter;
+			}
+
+			_dt = _dpdata.dt;
+
 
 			//Each order will result in a list of batches
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
@@ -93,21 +128,21 @@ namespace uwac
 
 			foreach (DxChartSettings settings in order.list_settings)
 			{
-				if (settings.ChartType == DxChartType.Histogram)
+				if (settings.outputtype == DxOutputtype.Histogram)
 				{
 					DxHistogramSettings mysettings = (DxHistogramSettings)settings;
 					DxChartBatch batch = new DxChartBatch(mysettings, dt);
 					PrepareBatch(batch, settings);
 					batchlist.Add(batch);
 				}
-				else if (settings.ChartType == DxChartType.Barchart)
+				else if (settings.outputtype == DxOutputtype.Barchart)
 				{
 					DxBarchartSettings mysettings = (DxBarchartSettings)settings;
 					DxChartBatch batch = new DxChartBatch(mysettings, dt);
 					PrepareBatch(batch, settings);
 					batchlist.Add(batch);
 				}
-				else if (settings.ChartType == DxChartType.Scatterplot)
+				else if (settings.outputtype == DxOutputtype.Scatterplot)
 				{
 					DxScatterplotSettings mysettings = (DxScatterplotSettings)settings;
 
@@ -181,10 +216,10 @@ namespace uwac
 						}
 					}
 				}
-				else if (settings.ChartType == DxChartType.Actogram )
+				else if (settings.outputtype == DxOutputtype.Actogram )
 				{
 					DxActogramSettings mysettings = (DxActogramSettings)settings;
-					mysettings.ChartType = DxChartType.Actogram;
+					mysettings.outputtype = DxOutputtype.Actogram;
 
 					List<string> varnames = new List<string>() { "id" };
 					varnames.AddRange(mysettings.numvars);
@@ -196,7 +231,7 @@ namespace uwac
 
 					DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
 
-					DxChartBatch batch2 = new DxChartBatch(DxChartType.Actogram, mysettings);
+					DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Actogram, mysettings);
 
 					foreach (DataSubset subset in subsets.subsets)
 					{
@@ -214,7 +249,7 @@ namespace uwac
 
 
 				}
-				else if (settings.ChartType == DxChartType.Lineplot)
+				else if (settings.outputtype == DxOutputtype.Lineplot)
 				{
 					DxLineplotSettings mysettings = (DxLineplotSettings)settings;
 
@@ -237,7 +272,7 @@ namespace uwac
 
 						DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
 
-						DxChartBatch batch2 = new DxChartBatch(DxChartType.Lineplot, mysettings);
+						DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Lineplot, mysettings);
 
 						foreach (DataSubset subset in subsets.subsets)
 						{
@@ -281,14 +316,14 @@ namespace uwac
 		}
 
 
-		public int CountCharts(DxChartType type)
+		public int CountCharts(DxOutputtype type)
 		{
 			int n = 0;
 			foreach (DxChartOrder order in orders)
 			{
 				foreach (DxChartBatch batch in order.batches)
 				{
-					if (batch.charttype == type)
+					if (batch.outputtype == type)
 					{
 						n += batch.charts.Count;
 					}

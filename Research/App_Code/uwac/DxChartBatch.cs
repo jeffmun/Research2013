@@ -1,19 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Linq.Dynamic;
-using System.Reflection;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using System.Drawing;
-using DevExpress.Web;
-using DevExpress.Utils;
-using DevExpress.XtraCharts;
-using DevExpress.XtraCharts.Web;
-using LinqStatistics;
-using MathNet.Numerics.Statistics;
 using uwac;
 using uwac.trk;
 using System.Text;
@@ -28,19 +16,22 @@ namespace uwac
 	{
 
 		private DxChartSettings _settings;
-		private List<DxChart> _charts = new List<DxChart>();
-		private List<DataTable> _datatables = new List<DataTable>();
-		private List<string> _vars;
+		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
 
+		private List<DxChart> _charts = new List<DxChart>();
 		public List<DxChart> charts { get { return _charts; } set { _charts = value; } }
+
+		private List<DataTable> _datatables = new List<DataTable>();
 		public List<DataTable> datatables { get { return _datatables; } set { _datatables = value; } }
+
+		public DxOutputtype outputtype { get; set; }
+
+		private List<string> _vars;
 		public List<string> vars { get { return _vars; } set { _vars = value; } }
-		public DxChartType charttype { get; set; }
 		public DxLayout layout { get; set; }
 		public int maxRow { get; set; }
 		public int maxCol { get; set; }
 		public string batchtitle { get; set; }
-		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
 
 
 
@@ -59,10 +50,10 @@ namespace uwac
 			Initialize();
 		}
 
-		public DxChartBatch(DxChartType mycharttype, DxChartSettings mysettings)
+		public DxChartBatch(DxOutputtype mycharttype, DxChartSettings mysettings)
 		{
 			Initialize();
-			charttype = mycharttype;
+			//outputtype = mycharttype;
 			_settings = mysettings;
 		}
 
@@ -71,7 +62,7 @@ namespace uwac
 		{
 			Initialize();
 			_settings = (DxChartSettings)mysettings;
-			charttype = DxChartType.Histogram;
+			outputtype = DxOutputtype.Histogram;
 			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 			if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
@@ -116,13 +107,14 @@ namespace uwac
 
 		}
 
+
 		public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title)
 		{
 			Initialize();
 
 			_settings = (DxChartSettings)mysettings;
 
-			charttype = DxChartType.Actogram;
+			outputtype = DxOutputtype.Actogram;
 			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 
@@ -146,14 +138,13 @@ namespace uwac
 		}
 
 
-
 		public DxChartBatch(DxLineplotSettings mysettings, DataTable dt, string title)
 		{
 			Initialize();
 
 			_settings = (DxChartSettings)mysettings;
 
-			charttype = DxChartType.Lineplot;
+			outputtype = DxOutputtype.Lineplot;
 			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 			if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
@@ -191,51 +182,6 @@ namespace uwac
 		}
 
 
-		//public DxChartBatch(DxActogramSettings mysettings, DataTable dt, string title, Actigraph.ActogramStats mystats)
-		//{
-		//	Initialize();
-
-		//	_settings = (DxChartSettings)mysettings;
-
-		//	charttype = DxChartType.Actogram;
-		//	chartlayout = mysettings.chartlayout;
-		//	vars = mysettings.numvars;
-
-		//	if (mysettings.xaxisvar == "variable") //This is just one plot
-		//	{
-		//		DxChart chart = new DxActogram(mysettings, dt, mystats); //, mystats);
-		//		chart.AddTitles(title);
-		//		charts.Add(chart);
-		//	}
-		//	else
-		//	{
-		//		//Check to see if "variable" is used in color, if not then loop through all the numvars and create a plot for each
-		//		if (mysettings.colorvar != "variable" & mysettings.panelvar != "variable")
-		//		{
-		//			foreach (string v in settings.numvars)
-		//			{
-		//				mysettings.yaxisvar = v;
-		//				mysettings.seriesby = "id";
-		//				DxChart chart = new DxActogram(mysettings, dt, mystats);
-		//				chart.AddTitles(String.Format("{0} {1}", v, title));
-		//				charts.Add(chart);
-
-		//			}
-
-
-		//		}
-		//		// if variable is used as a color
-		//		else
-		//		{
-		//			DxChart chart = new DxActogram(mysettings, dt, mystats);
-		//			chart.AddTitles(title);
-		//			charts.Add(chart);
-		//		}
-
-		//	}
-
-		//}
-
 		//need to get stats first!
 		public DxChartBatch(DxBarchartSettings mysettings, DataTable dt)
 		{
@@ -243,7 +189,7 @@ namespace uwac
 
 			_settings = (DxChartSettings)mysettings;
 
-			charttype = DxChartType.Barchart;
+			outputtype = DxOutputtype.Barchart;
 			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
 			if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
@@ -282,14 +228,13 @@ namespace uwac
 		}
 
 	
-
 		public DxChartBatch(DxScatterplotSettings mysettings, DataTable dt)
 		{
 			Initialize();
 
 			_settings = (DxChartSettings)mysettings;
 
-			charttype = DxChartType.Scatterplot;
+			outputtype = DxOutputtype.Scatterplot;
 			layout = mysettings.chartlayout;
 
 			_vars = mysettings.analysisvars();
@@ -386,7 +331,7 @@ namespace uwac
 
 		public void SetXAxisRange_1day()
 		{
-			if (charttype == DxChartType.Actogram)
+			if (outputtype == DxOutputtype.Actogram)
 			{
 				DateTime minx = Convert.ToDateTime("1900-01-01 12:00:00.000");
 				DateTime maxx = Convert.ToDateTime("1900-01-02 11:59:30.000");

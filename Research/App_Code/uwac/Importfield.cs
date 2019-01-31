@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using GenericParsing;
@@ -49,7 +50,7 @@ namespace uwac
 
 				if (type.ToString() == "System.DateTime")
 				{
-					inputValueToProcess = RoundTime((DateTime)ConvertValue(type, newvalue), RoundTo.HalfMinute);
+					inputValueToProcess = RoundTime((DateTime)ConvertValue(type, newvalue, "none_useImportPositionWithNext"), RoundTo.HalfMinute);
 				}
 				else
 				{
@@ -80,7 +81,7 @@ namespace uwac
 					string imported_label = GetValue(parser, "System.String", constString).ToString();
 					int imported_value = valueset.ValueFromLabel(imported_label);
 
-					inputValueToProcess = ConvertValue(type, (object)imported_value);
+					inputValueToProcess = ConvertValue(type, (object)imported_value, "ConvertFromLabelToValue");
 				}
 				else
 				{
@@ -155,7 +156,7 @@ namespace uwac
 
 		public object ProcessedValue()
 		{
-			return ConvertValue(type, inputValueToProcess);
+			return ConvertValue(type, inputValueToProcess, "none_from_ProcessdValue");
 			
 		}
 
@@ -165,56 +166,67 @@ namespace uwac
 		public static object GetValue(GenericParser parser, string type, string colname)
 		{
 			object val = parser[colname];
-			return ConvertValue(type, val);
+			return ConvertValue(type, val, colname);
 		}
 
 		public static object GetValue(GenericParser parser, string type, int index)
 		{
 			object val = parser[index];
-			return ConvertValue(type, val);
+			return ConvertValue(type, val, "index=" + index.ToString());
 		}
 
 		public static object GetValue(DataRow row, string type, string colname)
 		{
 			object val = row[colname];
-			return ConvertValue(type, val);
+			return ConvertValue(type, val, colname);
 		}
 		
 		public static object GetValue(DataRow row, string type, int index)
 		{
 			object val = row[index];
-			return ConvertValue(type, val);
+			return ConvertValue(type, val, "index=" + index.ToString());
 		}
 
 
 
-		public static object ConvertValue(string type, object val)
+		public static object ConvertValue(string type, object val, string colname)
 		{
-			if (val != null)
+			try
 			{
-				string valtxt = val.ToString().ToLower().Replace("\"", "");
-				if (valtxt == "" | valtxt == "nan" | valtxt == "\"nan\"" | valtxt == "-9876")
+				if (val != null)
 				{
-					return DBNull.Value;
+					string valtxt = val.ToString().ToLower().Replace("\"", "");
+					if (valtxt == "" | valtxt == "na" | valtxt == "nan" | valtxt == "\"nan\"" | valtxt == "-9876")
+					{
+						return DBNull.Value;
+					}
+					else
+					{
+						switch (type)
+						{
+							case "System.Double":
+								return Convert.ToDouble(valtxt);
+							case "System.DateTime":
+								return Convert.ToDateTime(valtxt);
+							case "System.Int32":
+								return Convert.ToInt32(valtxt);
+							default:
+								return val.ToString().Replace("\"", "");
+						}
+					}
+
 				}
 				else
 				{
-					switch (type)
-					{
-						case "System.Double":
-							return Convert.ToDouble(valtxt);
-						case "System.DateTime":
-							return Convert.ToDateTime(valtxt);
-						case "System.Int32":
-							return Convert.ToInt32(valtxt);
-						default:
-							return val.ToString().Replace("\"", "");
-					}
+					return DBNull.Value;
 				}
-
 			}
-			else
+			catch (Exception ex)
 			{
+				Debug.WriteLine("*** ERROR ************************************");
+				Debug.WriteLine(String.Format("type='{0}' val='{1}' colname='{2}'", type, val.ToString(), colname));
+				Debug.WriteLine(ex.Message);
+				Debug.WriteLine("**********************************************");
 				return DBNull.Value;
 			}
 		}

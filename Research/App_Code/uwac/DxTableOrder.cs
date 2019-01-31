@@ -16,15 +16,6 @@ namespace uwac
 	[Serializable]
 	public class DxTableOrder : DxOrder
 	{
-		// // Get from DxOrder
-		//private DataTable _dt;
-		//private string _filter;
-		//private List<string> _vars;
-		//public List<string> vars { get { return _vars; } set { _vars = value; } }
-		//public string worksheet { get; set; }
-		//public bool isOrderFilled { get; set; }
-		//public DataTable dt { get; set; }
-		//public string filter { get; set; }
 
 
 		private List<DxTableBatch> _batches;

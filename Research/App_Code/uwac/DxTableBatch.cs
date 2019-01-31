@@ -13,12 +13,14 @@ namespace uwac
 	{
 		private DxTableSettings _tblsettings;
 		public DxTableSettings tblsettings { get { return _tblsettings; } set { _tblsettings = value; } }
-		private List<string> _vars;
 
 		private List<DxTable> _tables;
 		public List<DxTable> tables { get { return _tables; } set { _tables = value; } }
+		
+		public DxOutputtype outputtype { get; set; }
+
+		private List<string> _vars;
 		public List<string> vars { get { return _vars; } set { _vars = value; } }
-		public DxTableType tabletype { get; set; }
 		public DxLayout layout { get; set; }
 		public int maxRow { get; set; }
 		public int maxCol { get; set; }
@@ -36,7 +38,7 @@ namespace uwac
 		{
 			Initialize();
 			_tblsettings = (DxTableSettings)mysettings;
-			tabletype = DxTableType.Crosstabs;
+			outputtype = DxOutputtype.Crosstabs;
 			layout = mysettings.layout;
 
 			if(mysettings.pivot_rows.Count > 0) vars.AddRange(mysettings.pivot_rows);
@@ -47,49 +49,16 @@ namespace uwac
 
 			tables.Add(crosstab);
 
-
-			//_vars = mysettings.numvars;
-			//if (mysettings.agevars != null) _vars.AddRange(mysettings.agevars);
-
-			//mysettings.numvars.Remove("id");
-
-
-			//if (mysettings.panelvar == "none")
-			//{
-			//	foreach (string v in _vars)
-			//	{
-			//		mysettings.xaxisvar = v;
-			//		DxChart chart = new DxHistogram(mysettings, dt, v, 0);
-			//		charts.Add(chart);
-			//	}
-			//}
-			//else  //Yes panels
-			//{
-			//	List<string> varnames = new List<string>();
-			//	varnames.AddRange(_vars);
-			//	varnames.Add(mysettings.xaxisvar);
-			//	varnames.Add(mysettings.colorvar);
-			//	varnames.RemoveAll(item => item == "variable");
-			//	varnames.RemoveAll(item => item == "none");
-
-
-			//	DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
-
-			//	foreach (DataSubset subset in subsets.subsets)
-			//	{
-			//		foreach (string v in mysettings.numvars)
-			//		{
-			//			settings.xaxisvar = v;
-			//			DxChart chart = new DxHistogram(mysettings, subset.dt, v, 0);
-			//			chart.AddTitles(subset.Cols_and_Vals_ToString());
-			//			charts.Add(chart);
-			//		}
-
-			//	}
-
-			//}
-
 		}
+
+
+		/*
+		 * 
+		 * More types of Table output can be added here.
+		 * Like is done in DxChartBatch
+		 * 
+		 */
+
 
 		public void Initialize()
 		{

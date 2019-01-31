@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
+using uwac.data;
 
 namespace uwac
 {
@@ -11,6 +12,8 @@ namespace uwac
 	/// </summary>
 	public class DxTableFactory
 	{
+		private Dataproject _dataproject;
+		private DPData _dpdata;
 		private List<DxTableOrder> _orders;
 		public List<DxTableOrder> orders { get { return _orders; } set { _orders = value; } }
 
@@ -19,41 +22,54 @@ namespace uwac
 
 		private DataTable _dt;
 
-		public int numCrosstabs { get { return CountTables(DxTableType.Crosstabs); } }
+		public int numCrosstabs { get { return CountTables(DxOutputtype.Crosstabs); } }
 
 
 
 		public DataTable dt { get { return _dt; } set { _dt = value; } }
 
-		public DxTableFactory(DataTable mydt, DxTableOrder order)
+		public DxTableFactory(Dataproject mydataproject, DPData mydpdata, List<DxTableOrder> myorders)
 		{
-			//_batches = new List<DxBatchOcharts>();
-			_orders = new List<DxTableOrder> { order };
-			_dt = mydt;
+			_orders = myorders;
+			_dpdata = mydpdata;
+			_dataproject = mydataproject;
+
 			ProcessOrders();
 		}
 
-		public DxTableFactory(DataTable mydt, List<DxTableOrder> orders)
-		{
-			//_batches = new List<DxBatchOcharts>();
-			_orders = orders ;
-			_dt = mydt;
-			ProcessOrders();
-		}
 
-		public DxTableFactory()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+		//public DxTableFactory(DataTable mydt, DxTableOrder order)
+		//{
+		//	_orders = new List<DxTableOrder> { order };
+		//	_dt = mydt;
+		//	ProcessOrders();
+
+		//}
+
+
+		//public DxTableFactory(DataTable mydt, List<DxTableOrder> myorders)
+		//{
+		//	_orders = myorders ;
+		//	_dt = mydt;
+		//	ProcessOrders();
+		//}
+
+		//public DxTableFactory()
+		//{
+		//	//
+		//	// TODO: Add constructor logic here
+		//	//
+		//}
 
 
 		public void ProcessOrders()
 		{
-			foreach (DxTableOrder order in orders)
+			if (_dpdata != null)
 			{
-				ProcessOrder(order);
+				foreach (DxTableOrder order in orders)
+				{
+					ProcessOrder(order);
+				}
 			}
 		}
 
@@ -61,13 +77,34 @@ namespace uwac
 		{
 			if (order.batches.Count > 0) order.batches.Clear();
 
+
+			bool hassameworksheet = order.HasSameWorksheet(_dpdata);
+			
+			if(!hassameworksheet)
+			{
+				//Need new DPData
+				_dataproject.selectedsheet = order.worksheet;
+				_dpdata = new DPData(_dataproject, order.filter);
+			}
+
+
+			bool hassamefilter = order.HasSameFilter(_dpdata);
+
+			if (!hassamefilter)
+			{
+				_dpdata.filter = order.filter;	
+			}
+
+			_dt = _dpdata.dt;
+
+
 			//Each order will result in a list of batches
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
 			List<DxTableBatch> batchlist = new List<DxTableBatch>();
 
 			foreach (DxTableSettings settings in order.list_settings)
 			{
-				if (settings.tabletype == DxTableType.Crosstabs)
+				if (settings.outputtype == DxOutputtype.Crosstabs)
 				{
 					DxCrosstabsSettings mysettings = (DxCrosstabsSettings)settings;
 					DxTableBatch batch = new DxTableBatch(mysettings, dt);
@@ -98,14 +135,14 @@ namespace uwac
 
 		}
 
-		public int CountTables(DxTableType type)
+		public int CountTables(DxOutputtype type)
 		{
 			int n = 0;
 			foreach (DxTableOrder order in orders)
 			{
 				foreach (DxTableBatch batch in order.batches)
 				{
-					if (batch.tabletype == type)
+					if (batch.outputtype == type)
 					{
 						n += batch.tables.Count;
 					}

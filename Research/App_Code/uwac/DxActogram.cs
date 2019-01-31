@@ -94,15 +94,15 @@ namespace uwac
 		public string date_txt { get; set; }
 		public DxActogramSettings()
 		{
-			SetChartType(DxChartType.Actogram);
+			SetOutputtype(DxOutputtype.Actogram);
 		}
 		public DxActogramSettings(DxChartSettings settings)
 		{
-			SetChartType(DxChartType.Actogram);
+			SetOutputtype(DxOutputtype.Actogram);
 		}
-		public DxActogramSettings(DxChartSettings settings, DxChartType charttype)
+		public DxActogramSettings(DxChartSettings settings, DxOutputtype myoutputtype)
 		{
-			SetChartType(charttype);
+			SetOutputtype(myoutputtype);
 		}
 
 	}

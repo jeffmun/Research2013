@@ -753,4 +753,15 @@ namespace uwac
 		}
 	}
 
+
+	public enum DxLayout
+	{
+		Horizontal = 1,
+		Vertical = 2,
+		Upper = 3,
+		UpperDiag = 4,
+		Lower = 5,
+		LowerDiag = 6
+	}
+
 }
