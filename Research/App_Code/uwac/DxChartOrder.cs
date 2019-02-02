@@ -36,7 +36,11 @@ namespace uwac
 		public List<DxChartBatch> batches { get { return _batches; } set { _batches = value; } }
 
 		private List<DxChartSettings> _list_settings;
-		public List<DxChartSettings> list_settings { get { return _list_settings; } set { _list_settings = value; } }
+		public List<DxChartSettings> list_settings { get { return _list_settings; } private set { } }
+			//set { 
+			//_list_settings = value; 
+			//} 
+		
 
 
 		private DxInvoice _invoice;
@@ -71,6 +75,16 @@ namespace uwac
 			ordertype = OrderType.chart;
 			_batches = new List<DxChartBatch>();
 			isOrderFilled = false;
+		}
+
+		public void AddSettings(DxChartSettings mysettings)
+		{
+			_list_settings.Add(mysettings);
+
+			if(mysettings.setup_errors != null)
+			{
+				this.errors.AddRange(mysettings.setup_errors);
+			}
 		}
 
 		public void PrepareInvoice()

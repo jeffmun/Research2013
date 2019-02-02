@@ -23,7 +23,10 @@ namespace uwac
 	{
 		public int r { get; set; }
 		public int c { get; set; }
-		public RowColIndex() { }
+		public RowColIndex(int rownum, int colnum) {
+			r = rownum;
+			c = colnum;
+		}
 	}
 
 

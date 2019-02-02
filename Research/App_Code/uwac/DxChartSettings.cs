@@ -135,6 +135,7 @@ namespace uwac
 			_datevars = new List<string>();
 			_agevars = new List<string>();
 			_colors = DefaultColors();
+			setup_errors = new List<string>();
 		}
 
 		public void SetOutputtype(DxOutputtype mydxOutputtype)

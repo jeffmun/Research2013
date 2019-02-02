@@ -126,142 +126,107 @@ namespace uwac
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
 			List<DxChartBatch> batchlist = new List<DxChartBatch>();
 
-			foreach (DxChartSettings settings in order.list_settings)
+			if (order.list_settings != null)
 			{
-				if (settings.outputtype == DxOutputtype.Histogram)
+				foreach (DxChartSettings settings in order.list_settings)
 				{
-					DxHistogramSettings mysettings = (DxHistogramSettings)settings;
-					DxChartBatch batch = new DxChartBatch(mysettings, dt);
-					PrepareBatch(batch, settings);
-					batchlist.Add(batch);
-				}
-				else if (settings.outputtype == DxOutputtype.Barchart)
-				{
-					DxBarchartSettings mysettings = (DxBarchartSettings)settings;
-					DxChartBatch batch = new DxChartBatch(mysettings, dt);
-					PrepareBatch(batch, settings);
-					batchlist.Add(batch);
-				}
-				else if (settings.outputtype == DxOutputtype.Scatterplot)
-				{
-					DxScatterplotSettings mysettings = (DxScatterplotSettings)settings;
-
-					if (mysettings.repeatedmeasVarname == "none")
+					if (settings.outputtype == DxOutputtype.Histogram)
 					{
+						DxHistogramSettings mysettings = (DxHistogramSettings)settings;
 						DxChartBatch batch = new DxChartBatch(mysettings, dt);
 						PrepareBatch(batch, settings);
 						batchlist.Add(batch);
 					}
-					else if (mysettings.repeatedmeasVarname != "none")
+					else if (settings.outputtype == DxOutputtype.Barchart)
 					{
-						List<string> repeatedmeas_levels = dt.AsEnumerable().Select(f => f.Field<string>(mysettings.repeatedmeasVarname)).Distinct().ToList();
+						DxBarchartSettings mysettings = (DxBarchartSettings)settings;
+						DxChartBatch batch = new DxChartBatch(mysettings, dt);
+						PrepareBatch(batch, settings);
+						batchlist.Add(batch);
+					}
+					else if (settings.outputtype == DxOutputtype.Scatterplot)
+					{
+						DxScatterplotSettings mysettings = (DxScatterplotSettings)settings;
 
-						List<string> analysisvars = new List<string>();
-						analysisvars.AddRange(mysettings.numvars);
-						if (mysettings.agevars != null) analysisvars.AddRange(mysettings.agevars);
-
-						int n_rptmeas = repeatedmeas_levels.Count;
-						int n_analysisvars = analysisvars.Count;
-
-						int ncol1 = utilStats.TriangleNumber(n_rptmeas );
-						
-
-						List<string> tmpvars = mysettings.analysisvars();
-						List<string> tmpvarsX = mysettings.analysisvarsX();
-						List<string> tmpvarsY = mysettings.analysisvarsY();
-
-
-						if (mysettings._modeA)
+						if (mysettings.repeatedmeasVarname == "none")
 						{
-
-							mysettings.xypairtype = XYpairType.SameVar_AcrossLevelsOfRptMeas;
-							mysettings.maxCol = ncol1;
-							//mysettings.maxRow = tmpvars.Count;
-							mysettings.chartlayout = DxLayout.Horizontal;
-							DxChartBatch batch1 = new DxChartBatch(mysettings, dt);
-							PrepareBatch(batch1, (DxChartSettings)mysettings);
-							batch1.batchtitle = "Same Variable ACROSS levels of " + mysettings.repeatedmeasVarname;
-							batchlist.Add(batch1);
+							DxChartBatch batch = new DxChartBatch(mysettings, dt);
+							PrepareBatch(batch, settings);
+							batchlist.Add(batch);
 						}
-
-						if (mysettings._modeB)
+						else if (mysettings.repeatedmeasVarname != "none")
 						{
-							//#2 - treat it as square
-							mysettings.xypairtype = XYpairType.DiffVar_WithinLevelsOfRptMeas;
-							mysettings.numvars = tmpvars;
-							mysettings.xvars = null;
-							mysettings.yvars = null;
+							List<string> repeatedmeas_levels = dt.AsEnumerable().Select(f => f.Field<string>(mysettings.repeatedmeasVarname)).Distinct().ToList();
 
-							mysettings.chartlayout = DxLayout.Vertical;
-							mysettings.maxRow = tmpvars.Count;
-							DxChartBatch batch2 = new DxChartBatch(mysettings, dt);
-							PrepareBatch(batch2, (DxChartSettings)mysettings);
-							batch2.batchtitle = "Different Variables WITHIN levels of " + mysettings.repeatedmeasVarname;
-							batchlist.Add(batch2);
+							List<string> analysisvars = new List<string>();
+							analysisvars.AddRange(mysettings.numvars);
+							if (mysettings.agevars != null) analysisvars.AddRange(mysettings.agevars);
 
-						}
+							int n_rptmeas = repeatedmeas_levels.Count;
+							int n_analysisvars = analysisvars.Count;
 
-						if (mysettings._modeC)
-						{
-							//#2 - back to original
-							mysettings.xypairtype = XYpairType.DiffVar_AcrossLevelsOfRptMeas;
-							mysettings.numvars = tmpvars;
-							mysettings.xvars = tmpvarsX;
-							mysettings.yvars = tmpvarsY;
-							mysettings.manualXandYvars = true;
-							DxChartBatch batch3 = new DxChartBatch(mysettings, dt);
-							PrepareBatch(batch3, (DxChartSettings)mysettings);
-							batch3.batchtitle = "Different Variables ACROSS levels of " + mysettings.repeatedmeasVarname;
-							batchlist.Add(batch3);
+							int ncol1 = utilStats.TriangleNumber(n_rptmeas);
+
+
+							List<string> tmpvars = mysettings.analysisvars();
+							List<string> tmpvarsX = mysettings.analysisvarsX();
+							List<string> tmpvarsY = mysettings.analysisvarsY();
+
+							#region Process By Mode
+							foreach (XYpairType mode in mysettings.xypairtypes)
+							{
+								if (mode == XYpairType.SameVar_AcrossLevelsOfRptMeas)
+								{
+
+									mysettings.current_xypairtype = mode;
+									mysettings.maxCol = ncol1;
+									//mysettings.maxRow = tmpvars.Count;
+									mysettings.chartlayout = DxLayout.Horizontal;
+									DxChartBatch batch1 = new DxChartBatch(mysettings, dt);
+									PrepareBatch(batch1, (DxChartSettings)mysettings);
+									batch1.batchtitle = "Same Variable ACROSS levels of " + mysettings.repeatedmeasVarname;
+									batchlist.Add(batch1);
+								}
+
+								if (mode == XYpairType.DiffVar_WithinLevelsOfRptMeas)
+								{
+									//#2 - treat it as square
+									mysettings.current_xypairtype = mode;
+									mysettings.numvars = tmpvars;
+									mysettings.xvars = null;
+									mysettings.yvars = null;
+
+									mysettings.chartlayout = DxLayout.Vertical;
+									mysettings.maxRow = tmpvars.Count;
+									DxChartBatch batch2 = new DxChartBatch(mysettings, dt);
+									PrepareBatch(batch2, (DxChartSettings)mysettings);
+									batch2.batchtitle = "Different Variables WITHIN levels of " + mysettings.repeatedmeasVarname;
+									batchlist.Add(batch2);
+
+								}
+
+								if (mode == XYpairType.DiffVar_AcrossLevelsOfRptMeas)
+								{
+									//#2 - back to original
+									mysettings.current_xypairtype = mode;
+									mysettings.numvars = tmpvars;
+									mysettings.xvars = tmpvarsX;
+									mysettings.yvars = tmpvarsY;
+									mysettings.manualXandYvars = true;
+									DxChartBatch batch3 = new DxChartBatch(mysettings, dt);
+									PrepareBatch(batch3, (DxChartSettings)mysettings);
+									batch3.batchtitle = "Different Variables ACROSS levels of " + mysettings.repeatedmeasVarname;
+									batchlist.Add(batch3);
+								}
+							}
+							#endregion
 						}
 					}
-				}
-				else if (settings.outputtype == DxOutputtype.Actogram )
-				{
-					DxActogramSettings mysettings = (DxActogramSettings)settings;
-					mysettings.outputtype = DxOutputtype.Actogram;
-
-					List<string> varnames = new List<string>() { "id" };
-					varnames.AddRange(mysettings.numvars);
-					varnames.Add(mysettings.xaxisvar);
-					varnames.Add(mysettings.colorvar);
-					varnames.RemoveAll(item => item == "variable");
-					varnames.RemoveAll(item => item == "none");
-
-
-					DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
-
-					DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Actogram, mysettings);
-
-					foreach (DataSubset subset in subsets.subsets)
+					else if (settings.outputtype == DxOutputtype.Actogram)
 					{
-						mysettings.date_txt = subset.dt.AsEnumerable().Min(f => f.Field<string>("report_date"));
+						DxActogramSettings mysettings = (DxActogramSettings)settings;
+						mysettings.outputtype = DxOutputtype.Actogram;
 
-						DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());
-
-						foreach (DxChart sub in subbatch.charts)
-						{
-							batch2.charts.Add(sub);
-						}
-					}
-					PrepareBatch(batch2, mysettings);
-					batchlist.Add(batch2);
-
-
-				}
-				else if (settings.outputtype == DxOutputtype.Lineplot)
-				{
-					DxLineplotSettings mysettings = (DxLineplotSettings)settings;
-
-					//NO Panels
-					if (mysettings.panelvar == "none" | mysettings.panelvar == "variable")
-					{
-						DxChartBatch batch1 = new DxChartBatch(mysettings, dt, " ");
-						PrepareBatch(batch1, settings);
-						batchlist.Add(batch1);
-					}
-					else
-					{
 						List<string> varnames = new List<string>() { "id" };
 						varnames.AddRange(mysettings.numvars);
 						varnames.Add(mysettings.xaxisvar);
@@ -272,10 +237,12 @@ namespace uwac
 
 						DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
 
-						DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Lineplot, mysettings);
+						DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Actogram, mysettings);
 
 						foreach (DataSubset subset in subsets.subsets)
 						{
+							mysettings.date_txt = subset.dt.AsEnumerable().Min(f => f.Field<string>("report_date"));
+
 							DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());
 
 							foreach (DxChart sub in subbatch.charts)
@@ -286,10 +253,50 @@ namespace uwac
 						PrepareBatch(batch2, mysettings);
 						batchlist.Add(batch2);
 
+
+					}
+					else if (settings.outputtype == DxOutputtype.Lineplot)
+					{
+						DxLineplotSettings mysettings = (DxLineplotSettings)settings;
+
+						//NO Panels
+						if (mysettings.panelvar == "none" | mysettings.panelvar == "variable")
+						{
+							DxChartBatch batch1 = new DxChartBatch(mysettings, dt, " ");
+							PrepareBatch(batch1, settings);
+							batchlist.Add(batch1);
+						}
+						else
+						{
+							List<string> varnames = new List<string>() { "id" };
+							varnames.AddRange(mysettings.numvars);
+							varnames.Add(mysettings.xaxisvar);
+							varnames.Add(mysettings.colorvar);
+							varnames.RemoveAll(item => item == "variable");
+							varnames.RemoveAll(item => item == "none");
+
+
+							DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
+
+							DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Lineplot, mysettings);
+
+							foreach (DataSubset subset in subsets.subsets)
+							{
+								DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());
+
+								foreach (DxChart sub in subbatch.charts)
+								{
+									batch2.charts.Add(sub);
+								}
+							}
+							PrepareBatch(batch2, mysettings);
+							batchlist.Add(batch2);
+
+						}
+
 					}
 
 				}
-
 			}
 
 			order.batches.AddRange(batchlist);

@@ -647,9 +647,9 @@ namespace uwac
 		public bool manualXandYvars = false;
 		public bool _useMovAvg = false;
 		public int _movavgNumPts = 15;
-		public bool _modeA { get; set; }  // Same vars ACROSS time
-		public bool _modeB { get; set; }  // Diff vars WITHIN timept
-		public bool _modeC { get; set; }  // Diff vars ACROSS timept
+		//public bool _modeA { get; set; }  // Same vars ACROSS time
+		//public bool _modeB { get; set; }  // Diff vars WITHIN timept
+		//public bool _modeC { get; set; }  // Diff vars ACROSS timept
 		public bool _showregline = false;
 		public bool _showhist = false;
 		public bool _jitter = false;
@@ -669,7 +669,8 @@ namespace uwac
 		public List<string> colorLevels { get { return _colorLevels; } set { _colorLevels = value; } }
 		private List<string> _paneLevels;
 		public List<string> paneLevels { get { return _paneLevels; } set { _paneLevels = value; } }
-		public XYpairType xypairtype { get; set; }
+		public List<XYpairType> xypairtypes { get; set; }
+		public XYpairType current_xypairtype { get; set; }
 
 
 
@@ -792,10 +793,22 @@ namespace uwac
 		}
 
 
+		//public enum  ScatterplotMode
+		//{
+		//	SameVar_AcrossLevelsOfRptMeas = 0,
+		//	DiffVar_WithinLevelsOfRptMeas = 1,
+		//	DiffVar_AcrossLevelsOfRptMeas = 2
+		//}
+
 	}
 
 
-
+	public enum XYpairType : int
+	{
+		SameVar_AcrossLevelsOfRptMeas = 0,
+		DiffVar_WithinLevelsOfRptMeas = 1,
+		DiffVar_AcrossLevelsOfRptMeas = 2
+	}
 
 }
 

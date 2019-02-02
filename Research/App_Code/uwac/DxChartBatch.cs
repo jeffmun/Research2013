@@ -240,6 +240,13 @@ namespace uwac
 			_vars = mysettings.analysisvars();
 			
 
+			//Define the sets of scatterplots to create.
+
+
+
+
+
+
 			bool isnoo = true;
 			if (isnoo)
 			{
@@ -302,12 +309,14 @@ namespace uwac
 
 					List<string> colnames = dtwide.ColumnNames();
 
-					XYpairs pairs = new XYpairs(mysettings.analysisvars(), mysettings.rptmeasLevels(dt), mysettings.xypairtype);
+					XYpairs pairs = new XYpairs(mysettings.analysisvars(), mysettings.rptmeasLevels(dt), mysettings.current_xypairtype);
 					
 					foreach (XYpair pair in pairs.pairs)
 					{
 						DxChart chart = new DxScatterplot(mysettings, dtwide, pair);
 						charts.Add(chart);
+						//new RowColIndex( )
+						//chart.rowcolIndex(new  
 					}
 
 				}
@@ -432,143 +441,143 @@ namespace uwac
 
 	}
 
-	public enum XYpairType : int
-	{
-		SameVar_AcrossLevelsOfRptMeas = 0,
-		DiffVar_WithinLevelsOfRptMeas = 1,
-		DiffVar_AcrossLevelsOfRptMeas = 2
-	}
+	//public enum XYpairType : int
+	//{
+	//	SameVar_AcrossLevelsOfRptMeas = 0,
+	//	DiffVar_WithinLevelsOfRptMeas = 1,
+	//	DiffVar_AcrossLevelsOfRptMeas = 2
+	//}
 
-	public class XYpair
-	{
-		private string _xvar;
-		private string _yvar;
-		private Color _color;
+	//public class XYpair
+	//{
+	//	private string _xvar;
+	//	private string _yvar;
+	//	private Color _color;
 
-		public string xvar { get { return _xvar; } set { _xvar = value; } }
-		public string yvar { get { return _yvar; } set { _yvar = value; } }
+	//	public string xvar { get { return _xvar; } set { _xvar = value; } }
+	//	public string yvar { get { return _yvar; } set { _yvar = value; } }
 
-		public Color color { get { return _color; } set { _color = value; } }
+	//	public Color color { get { return _color; } set { _color = value; } }
 
 
-	}
+	//}
 
-	public class XYpairs
-	{
-		private List<XYpair> _pairs;
-		public List<XYpair> pairs { get { return _pairs; } set { _pairs = value; } }
+	//public class XYpairs
+	//{
+	//	private List<XYpair> _pairs;
+	//	public List<XYpair> pairs { get { return _pairs; } set { _pairs = value; } }
 
-		public XYpairs(List<string> vars)
-		{
-			_pairs = new List<XYpair>();
+	//	public XYpairs(List<string> vars)
+	//	{
+	//		_pairs = new List<XYpair>();
 
-			for (int i = 0; i < vars.Count; i++)
-			{
-				for (int j = i + 1; j < vars.Count; j++)
-				{
-					XYpair pair = new XYpair { xvar = vars[i], yvar = vars[j] };
-					_pairs.Add(pair);
-				}
+	//		for (int i = 0; i < vars.Count; i++)
+	//		{
+	//			for (int j = i + 1; j < vars.Count; j++)
+	//			{
+	//				XYpair pair = new XYpair { xvar = vars[i], yvar = vars[j] };
+	//				_pairs.Add(pair);
+	//			}
 
-			}
-		}
+	//		}
+	//	}
 
-		public XYpairs(List<string> vars, Color color)
-		{
-			_pairs = new List<XYpair>();
+	//	public XYpairs(List<string> vars, Color color)
+	//	{
+	//		_pairs = new List<XYpair>();
 
-			for (int i = 0; i < vars.Count; i++)
-			{
-				for (int j = i + 1; j < vars.Count; j++)
-				{
-					XYpair pair = new XYpair { xvar = vars[i], yvar = vars[j], color = color };
-					_pairs.Add(pair);
-				}
+	//		for (int i = 0; i < vars.Count; i++)
+	//		{
+	//			for (int j = i + 1; j < vars.Count; j++)
+	//			{
+	//				XYpair pair = new XYpair { xvar = vars[i], yvar = vars[j], color = color };
+	//				_pairs.Add(pair);
+	//			}
 
-			}
-		}
+	//		}
+	//	}
 
-		public XYpairs(List<string> xvars, List<string> yvars)
-		{
-			_pairs = new List<XYpair>();
+	//	public XYpairs(List<string> xvars, List<string> yvars)
+	//	{
+	//		_pairs = new List<XYpair>();
 
-			for (int i = 0; i < xvars.Count; i++)
-			{
-				for (int j = 0; j < yvars.Count; j++)
-				{
-					if (xvars[i] != yvars[j])
-					{
-						XYpair pair = new XYpair { xvar = xvars[i], yvar = yvars[j] };
-						_pairs.Add(pair);
-					}
-				}
+	//		for (int i = 0; i < xvars.Count; i++)
+	//		{
+	//			for (int j = 0; j < yvars.Count; j++)
+	//			{
+	//				if (xvars[i] != yvars[j])
+	//				{
+	//					XYpair pair = new XYpair { xvar = xvars[i], yvar = yvars[j] };
+	//					_pairs.Add(pair);
+	//				}
+	//			}
 
-			}
-		}
+	//		}
+	//	}
 
-		public XYpairs(List<string> vars, List<string> rptmeas, XYpairType type)
-		{
-			_pairs = new List<XYpair>();
-			string x = "";
-			string y = "";
-			if (type == XYpairType.DiffVar_WithinLevelsOfRptMeas)
-			{
-				for (int i = 0; i < rptmeas.Count; i++)
-				{
-					for (int j = 0; j < (vars.Count - 1); j++)
-					{
-						for (int k = j + 1; k < vars.Count; k++)
-						{
-							x = String.Format("{0}_{1}", rptmeas[i], vars[j]);
-							y = String.Format("{0}_{1}", rptmeas[i], vars[k]);
-							XYpair pair = new XYpair { xvar = x, yvar = y };
-							_pairs.Add(pair);
-						}
-					}
-				}
-			}
+	//	public XYpairs(List<string> vars, List<string> rptmeas, XYpairType type)
+	//	{
+	//		_pairs = new List<XYpair>();
+	//		string x = "";
+	//		string y = "";
+	//		if (type == XYpairType.DiffVar_WithinLevelsOfRptMeas)
+	//		{
+	//			for (int i = 0; i < rptmeas.Count; i++)
+	//			{
+	//				for (int j = 0; j < (vars.Count - 1); j++)
+	//				{
+	//					for (int k = j + 1; k < vars.Count; k++)
+	//					{
+	//						x = String.Format("{0}_{1}", rptmeas[i], vars[j]);
+	//						y = String.Format("{0}_{1}", rptmeas[i], vars[k]);
+	//						XYpair pair = new XYpair { xvar = x, yvar = y };
+	//						_pairs.Add(pair);
+	//					}
+	//				}
+	//			}
+	//		}
 
-			else if (type == XYpairType.DiffVar_AcrossLevelsOfRptMeas)
-			{
-				for (int i = 0; i < rptmeas.Count; i++)
-				{
-					for (int j = 0; j < rptmeas.Count; j++)
-					{
-						for (int k = 0; k < vars.Count; k++)
-						{
-							for (int l = 0; l < vars.Count; l++)
-							{
-								x = String.Format("{0}_{1}", rptmeas[i], vars[k]);
-								y = String.Format("{0}_{1}", rptmeas[j], vars[l]);
-								if ((i != j) & (k != l))
-								{
-									XYpair pair = new XYpair { xvar = x, yvar = y };
-									_pairs.Add(pair);
-								}
-							}
-						}
-					}
-				}
-			}
+	//		else if (type == XYpairType.DiffVar_AcrossLevelsOfRptMeas)
+	//		{
+	//			for (int i = 0; i < rptmeas.Count; i++)
+	//			{
+	//				for (int j = 0; j < rptmeas.Count; j++)
+	//				{
+	//					for (int k = 0; k < vars.Count; k++)
+	//					{
+	//						for (int l = 0; l < vars.Count; l++)
+	//						{
+	//							x = String.Format("{0}_{1}", rptmeas[i], vars[k]);
+	//							y = String.Format("{0}_{1}", rptmeas[j], vars[l]);
+	//							if ((i != j) & (k != l))
+	//							{
+	//								XYpair pair = new XYpair { xvar = x, yvar = y };
+	//								_pairs.Add(pair);
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//		}
 
-			else if (type == XYpairType.SameVar_AcrossLevelsOfRptMeas)
-			{
-				for (int i = 0; i < vars.Count; i++)
-				{
-					for (int j = 0; j < (rptmeas.Count - 1); j++)
-					{
-						for (int k = j + 1; k < rptmeas.Count; k++)
-						{
-							x = String.Format("{0}_{1}", rptmeas[j], vars[i]);
-							y = String.Format("{0}_{1}", rptmeas[k], vars[i]);
-							XYpair pair = new XYpair { xvar = x, yvar = y };
-							_pairs.Add(pair);
-						}
-					}
-				}
-			}
+	//		else if (type == XYpairType.SameVar_AcrossLevelsOfRptMeas)
+	//		{
+	//			for (int i = 0; i < vars.Count; i++)
+	//			{
+	//				for (int j = 0; j < (rptmeas.Count - 1); j++)
+	//				{
+	//					for (int k = j + 1; k < rptmeas.Count; k++)
+	//					{
+	//						x = String.Format("{0}_{1}", rptmeas[j], vars[i]);
+	//						y = String.Format("{0}_{1}", rptmeas[k], vars[i]);
+	//						XYpair pair = new XYpair { xvar = x, yvar = y };
+	//						_pairs.Add(pair);
+	//					}
+	//				}
+	//			}
+	//		}
 
-		}
+	//	}
 
-	}
+	//}
 }

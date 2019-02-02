@@ -891,7 +891,7 @@
 													</tr>
 												</table>
 
-						
+												<dx:ASPxLabel ID="lblSetup_errors" ClientInstanceName="lblSetup_errors" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
 
 
 											</td>
@@ -1078,12 +1078,14 @@
 															<dx:ASPxCheckBox ID="chkHist" runat="server" ClientInstanceName="chkHist" Text="Show histograms?" Visible="false"></dx:ASPxCheckBox>
 														</td>
 														<td>
-														<dx:ASPxCheckBox ID="chkCorrModeA" runat="server" ClientInstanceName="chkCorrModeA" Text="Same vars ACROSS Time"></dx:ASPxCheckBox>
-														<dx:ASPxCheckBox ID="chkCorrModeB" runat="server" ClientInstanceName="chkCorrModeB" Text="Different vars WITHIN Time"></dx:ASPxCheckBox>
-														<dx:ASPxCheckBox ID="chkCorrModeC" runat="server" ClientInstanceName="chkCorrModeC" Text="Different vars ACROSS Time"></dx:ASPxCheckBox>
+															<dx:ASPxLabel ID="lblscatmode" runat="server" Text="Select modes:" ></dx:ASPxLabel>
+														<dx:ASPxCheckBox ID="chkCorrModeA" runat="server" ClientInstanceName="chkCorrModeA" Text="Same vars ACROSS Time/RptMeas"></dx:ASPxCheckBox>
+														<dx:ASPxCheckBox ID="chkCorrModeB" runat="server" ClientInstanceName="chkCorrModeB" Text="Different vars WITHIN Time/RptMeas"></dx:ASPxCheckBox>
+														<dx:ASPxCheckBox ID="chkCorrModeC" runat="server" ClientInstanceName="chkCorrModeC" Text="Different vars ACROSS Time/RptMeas"></dx:ASPxCheckBox>
 												
 														</td>
-														<td style="vertical-align: top; padding: 5px; width:110px">
+														<td style="vertical-align: top; padding: 5px; width:150px">
+															<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Options:" ></dx:ASPxLabel>
 															<dx:ASPxCheckBox ID="chkRegline" runat="server" ClientInstanceName="chkRegline" Text="Show regression line?"></dx:ASPxCheckBox>
 															<dx:ASPxCheckBox ID="chkMovingAvg" runat="server" ClientInstanceName="chkMovingAvg" Text="Show moving avg?">
 																<ClientSideEvents ValueChanged="ShowPtsCount" />
@@ -1748,7 +1750,7 @@
 
 		<dx:ASPxCallbackPanel ID="callbackOutput" runat="server"  OnCallback="callbackOutput_OnCallback" ClientInstanceName="callbackOutput">
 		<PanelCollection>
-			<dx:PanelContent ID="panelcontent10" runat="server">
+			<dx:PanelContent ID="panelcontentOutput" runat="server">
 			</dx:PanelContent>
 		</PanelCollection>
 	</dx:ASPxCallbackPanel>

@@ -24,6 +24,8 @@ namespace uwac
 		public string worksheet { get; set; }
 		public bool isOrderFilled { get; set; }
 		public int ordernum { get; set; }
+		private List<string> _errors;
+		public List<string> errors { get { return _errors; }  }
 
 		public DataTable dt_selectedvars { get { return _dt_selectedvars; } set { _dt_selectedvars = value; } }
 
@@ -32,6 +34,7 @@ namespace uwac
 			//
 			// TODO: Add constructor logic here
 			//
+			_errors = new List<string>();
 		}
 
 		//public void SetFilter(string myfilter, List<string> groups, List<string> timepts)
@@ -41,6 +44,7 @@ namespace uwac
 		//	filter = String.Format("{0}{1}{2}", myfilter, groups_sqlcode, timepts_sqlcode);
 
 		//}
+
 
 		public bool HasSameFilter(DPData dpdata)
 		{

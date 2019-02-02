@@ -853,8 +853,11 @@ public partial class DataProject_Explore : BasePage
 		{
 			log("  ======= allvars.Count > 0 ======= ");
 
+			string selectedsheet = dpdata.selectedsheet;
+
 			DataView dv = new DataView();
-			dv = dataproject.DataDictionaryForSheet().AsDataView();
+			DataTable dt_dict = dataproject.DataDictionaryForSheet(selectedsheet);
+			dv = dt_dict.AsDataView();
 
 			////get the correct data dictionary
 			//if (dpdata.selectedsheet == "Subjects")
@@ -868,8 +871,12 @@ public partial class DataProject_Explore : BasePage
 			//	dv = dpdata.dtdict.AsDataView();
 			//}
 
-			string notDataSheet = (dataproject.selectedsheet != "Data") ?
-				String.Format(" and measname='{0}'", dataproject.selectedsheet.Replace("Data_", "")) : "";
+			//string notDataSheet = (dataproject.selectedsheet != "Data") ?
+			//	String.Format(" and measname='{0}'", dataproject.selectedsheet.Replace("Data_", "")) : "";
+
+			string notDataSheet = (selectedsheet != "Data") ?
+				String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
+
 
 			string filter = String.Format("varname in ('{0}') {1}"
 				, String.Join("','", allvars)
@@ -1289,7 +1296,12 @@ public partial class DataProject_Explore : BasePage
 	{
 		log(String.Format(">>>>>>>>>>>> callbackOutput_OnCallback [{0}]", e.Parameter.ToString()));
 
-		HandleOutput(e.Parameter);
+		string outputstatus = CreateOutput(e.Parameter);
+
+		//if(outputstatus != "ok")
+		//{
+		//	AddErrorToOutput(outputstatus);
+		//}
 	}
 
 
@@ -1301,40 +1313,6 @@ public partial class DataProject_Explore : BasePage
 
 		HandleOrders(p);
 
-		//if (p.StartsWith("RemoveOrder"))
-		//{
-		//	List<string> ps = p.Split('|').ToList();
-		//	int idx = Convert.ToInt32(ps[1]);
-
-		//	bool huh = (sessionorders == null);
-
-		//	List<DxOrder> orders = sessionorders.orders;
-
-		//	DxOrder order_to_del = null;
-		//	try
-		//	{
-		//		order_to_del = sessionorders.orders.Where(o => o.ordernum == idx).First();
-		//	}
-		//	catch(Exception ex) { }
-
-		//	if (order_to_del != null)
-		//	if (order_to_del != null)
-		//	{
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		//		sessionorders.orders.Remove(order_to_del);
-
-		//		Session["sessionorders"] = sessionorders;
-
-		//		BIND_orders();
-		//	}
-
-		//}
 	}
 
 	#endregion
@@ -1351,68 +1329,106 @@ public partial class DataProject_Explore : BasePage
 		DxTableOrder order = new DxTableOrder();
 
 
+		string worksheet = (gridDataSheets.Value == null) ? null : gridDataSheets.Value.ToString();
 
-		order.worksheet = gridDataSheets.Value.ToString();
-
-		if (plotrequests.Contains("Crosstabs"))
+		if (worksheet == null)
 		{
-			DxCrosstabsSettings mysettings = CrosstabsSettings();
-			if (mysettings.HasVars()) order.list_settings.Add(mysettings);
+			return order;
 		}
+		else
+		{
 
-		string filter = (Session["datafilter"] == null) ? "" : Session["datafilter"].ToString();
+			order.worksheet = gridDataSheets.Value.ToString();
 
-		order.filter = filter;
+			if (plotrequests.Contains("Crosstabs"))
+			{
+				DxCrosstabsSettings mysettings = CrosstabsSettings();
+				if (mysettings.HasVars()) order.list_settings.Add(mysettings);
+			}
+
+			string filter = (Session["datafilter"] == null) ? "" : Session["datafilter"].ToString();
+
+			order.filter = filter;
 
 
-		DataTable dt_selvars = (DataTable)Session["selectedvars"];
-		order.dt_selectedvars = dt_selvars;
+			DataTable dt_selvars = (DataTable)Session["selectedvars"];
+			order.dt_selectedvars = dt_selvars;
 
-		return order;
+			return order;
+		}
 	}
 
 	protected DxChartOrder GatherChartOrder()
 	{
+		log(String.Format("-------------------- GatherChartOrder --------------------"));
 
 		DataTable dt_selvars = (DataTable)Session["selectedvars"];
 
 		bool hasSelVars = dt_selvars.HasRows();
 
 
+
 		List<string> plotrequests = dataops.GetListString(chkPlots.SelectedValues);
 		DxChartOrder order = new DxChartOrder();
 
-		order.worksheet = gridDataSheets.Value.ToString();
 
-		if (plotrequests.Contains("Barchart"))
+		string worksheet = (gridDataSheets.Value == null) ? null : gridDataSheets.Value.ToString();
+
+		if (worksheet == null)
 		{
-			DxBarchartSettings mysettings = BarchartSettings();
-			if (mysettings.HasVars) order.list_settings.Add(mysettings);
+			log(String.Format("  -  order IS NULL"));
+
+			//Literal lit = new Literal();
+			//lit.Text = "<b>Rats. No data was selected.</b>";
+			//callbackOutput.Controls.Add(lit);
+
+
+			order.errors.Add( "Rats. No data was selected.");
+
+			return order;
 		}
-		if (plotrequests.Contains("Histogram"))
+		else
 		{
-			DxHistogramSettings mysettings = HistogramSettings();
-			if (mysettings.HasVars) order.list_settings.Add(mysettings);
+			if (!hasSelVars)
+			{
+				order.errors.Add( "Rats. No variables have been selected.");
+			}
+			else
+			{
+				order.worksheet = gridDataSheets.Value.ToString();
+
+				if (plotrequests.Contains("Barchart"))
+				{
+					DxBarchartSettings mysettings = BarchartSettings();
+					if (mysettings.HasVars) order.AddSettings(mysettings);
+				}
+				if (plotrequests.Contains("Histogram"))
+				{
+					DxHistogramSettings mysettings = HistogramSettings();
+					if (mysettings.HasVars) order.AddSettings(mysettings);
+				}
+
+				if (plotrequests.Contains("Lineplot"))
+				{
+					DxLineplotSettings mysettings = LineplotSettings();
+					if (mysettings.HasVars) order.AddSettings(mysettings);
+				}
+				if (plotrequests.Contains("Scatterplot"))
+				{
+					DxScatterplotSettings mysettings = ScatterplotSettings();
+					if (mysettings.HasVars) order.AddSettings(mysettings);
+				}
+
+				string filter = (Session["datafilter"] == null) ? "" : Session["datafilter"].ToString();
+
+				order.filter = filter;
+
+				order.dt_selectedvars = (DataTable)Session["selectedvars"];
+				log(String.Format("  -  order CREATED"));
+			}
+			return order;
 		}
 
-		if (plotrequests.Contains("Lineplot"))
-		{
-			DxLineplotSettings mysettings = LineplotSettings();
-			if (mysettings.HasVars) order.list_settings.Add(mysettings);
-		}
-		if (plotrequests.Contains("Scatterplot"))
-		{
-			DxScatterplotSettings mysettings = ScatterplotSettings();
-			if (mysettings.HasVars) order.list_settings.Add(mysettings);
-		}
-
-		string filter = (Session["datafilter"] == null) ? "" : Session["datafilter"].ToString();
-
-		order.filter = filter;
-
-		order.dt_selectedvars = (DataTable)Session["selectedvars"];
-
-		return order;
 	}
 
 	#endregion
@@ -1511,10 +1527,13 @@ public partial class DataProject_Explore : BasePage
 			settings.movavgNumPts = movavgNumPts;
 		}
 
-		settings._modeA = chkCorrModeA.Checked;
-		settings._modeB = chkCorrModeB.Checked;
-		settings._modeC = chkCorrModeC.Checked;
+		List<XYpairType> modes = new List<XYpairType>();
+		if (chkCorrModeA.Checked) modes.Add(XYpairType.SameVar_AcrossLevelsOfRptMeas);
+		if (chkCorrModeB.Checked) modes.Add(XYpairType.DiffVar_WithinLevelsOfRptMeas);
+		if (chkCorrModeC.Checked) modes.Add(XYpairType.DiffVar_AcrossLevelsOfRptMeas);
 
+		settings.xypairtypes = modes;
+		
 		settings.showhist = chkHist.Checked;
 		settings.showregline = chkRegline.Checked;
 		settings.useMovAvg = chkMovingAvg.Checked;
@@ -1550,6 +1569,11 @@ public partial class DataProject_Explore : BasePage
 		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 		settings.maxCol = settings.numvars.Count;
 		settings.maxRow = settings.numvars.Count;
+
+		if(settings.xypairtypes.Count == 0)
+		{
+			settings.setup_errors.Add("Scatterplot mode not set.");
+		}
 
 		return settings;
 	}
@@ -1615,6 +1639,32 @@ public partial class DataProject_Explore : BasePage
 
 	#endregion
 
+	#region Check Orders for setup_errors
+	protected string CheckForSetupErrors(List<DxChartOrder> myorders)
+	{
+		log(String.Format("-------------------- CheckForSetupErrors [ourder.count={0}]--------------------", myorders.Count));
+
+		string errors = "";
+		foreach (DxChartOrder order in myorders)
+		{
+			foreach(DxChartSettings settings in  order.list_settings)
+			{
+				if(settings.setup_errors.Count > 0)
+				{
+					foreach(string e in settings.setup_errors)
+					{
+						if(e!="") errors += e + Environment.NewLine;
+					}
+				}
+			}
+		}
+		return  errors;
+
+	}
+
+	#endregion
+
+
 
 	#region Step 3 - Place Orders
 	protected List<DxTableOrder> PlaceOrders(List<DxTableOrder> myorders)
@@ -1633,12 +1683,12 @@ public partial class DataProject_Explore : BasePage
 
 		DxChartFactory factory = new DxChartFactory(dataproject, dpdata, myorders);
 
-		//SerializeObject<List<DxChartOrder>>(myorders, @"c:\_temp\factory\orders.xml");
-
 		return factory.orders;
-
+		
 	}
 	#endregion
+
+
 
 
 	#region Step 4 - Deliver output to page
@@ -1646,7 +1696,7 @@ public partial class DataProject_Explore : BasePage
 
 	protected void HandleOrders(string p)
 	{
-
+		log(String.Format("-------------------- HandleOrders [{0}]--------------------", p));
 		if (sessionorders == null) sessionorders = new SessionOrders();
 
 		if (p == "SaveNewOrder")
@@ -1654,8 +1704,12 @@ public partial class DataProject_Explore : BasePage
 
 
 			DxChartOrder neworderC = GatherChartOrder();
+
+			//???
+
 			if (neworderC.list_settings.Count > 0)
 			{
+				log(String.Format(" - yes there are orders with [{0}] list_settings ", neworderC.list_settings.Count));
 				List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworderC });
 
 				int numorders = sessionorders.NumSavedOrders();
@@ -1665,6 +1719,10 @@ public partial class DataProject_Explore : BasePage
 					sessionorders.SaveOrder(completedneworders[i]);
 				}
 
+			}
+			else
+			{
+				log("  - NO ORDERS!");
 			}
 
 			DxTableOrder neworderT = GatherTableOrder();
@@ -1701,69 +1759,84 @@ public partial class DataProject_Explore : BasePage
 
 	}
 
-	protected void HandleOutput(string p)
+	protected string CreateOutput(string p)
 	{
-
+		log(String.Format("-------------------- CreateOutput [{0}]--------------------", p));
 		if (sessionorders == null) sessionorders = new SessionOrders();
 
+		string outputstatus = "ok";
 		if (p == "clear")
 		{
 
 		}
-		else if (p.StartsWith("OldOrder"))
+		else if (p.StartsWith("OldOrder") | p == "NewOrder" | p == "SaveNewOrder")
 		{
-			List<string> ps = p.Split('|').ToList();
+			List<DxChartOrder> ordersC = new List<DxChartOrder>();
+			List<DxTableOrder> ordersT = new List<DxTableOrder>();
 
-			int idx = Convert.ToInt32(ps[1]);
-
-			var orders = sessionorders;
-
-			DxOrder oldorder = sessionorders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
-
-			if (oldorder.ordertype == OrderType.chart)
+			if (p == "NewOrder" | p == "SaveNewOrder")
 			{
-				List<DxChartOrder> completedoldorders = PlaceOrders(new List<DxChartOrder> { (DxChartOrder)oldorder });
-				DeliverOutputToPage(completedoldorders);
-
-			}
-			else if (oldorder.ordertype == OrderType.table)
-			{
-				List<DxTableOrder> completedoldorders = PlaceOrders(new List<DxTableOrder> { (DxTableOrder)oldorder });
-				DeliverOutputToPage(completedoldorders);
-
+				DxChartOrder neworderC = GatherChartOrder();
+				DxTableOrder neworderT = GatherTableOrder();
+				ordersT = PlaceOrders(new List<DxTableOrder>() { neworderT });
+				ordersC = PlaceOrders(new List<DxChartOrder>() { neworderC });
 			}
 
+			else if (p.StartsWith("OldOrder"))
+			{
+				List<string> ps = p.Split('|').ToList();
+
+				int idx = Convert.ToInt32(ps[1]);
+
+				var orders = sessionorders;
+
+				DxOrder oldorder = sessionorders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
+
+				if (oldorder.ordertype == OrderType.chart)
+				{
+					ordersC = PlaceOrders(new List<DxChartOrder> { (DxChartOrder)oldorder });
+				}
+				else if (oldorder.ordertype == OrderType.table)
+				{
+					ordersT = PlaceOrders(new List<DxTableOrder> { (DxTableOrder)oldorder });
+				}
+
+			}
+			
+			else if (p.StartsWith("DisplayAllOrders"))
+			{
+				ordersC = PlaceOrders(sessionorders.chartorders);
+				ordersT = PlaceOrders(sessionorders.tableorders);
+			}
+
+
+			List<string> outputerrors = new List<string>();
+			bool delivertopage = true;
+			//Check for errors
+			foreach(DxChartOrder orderC in ordersC)
+			{
+				
+				if(orderC.errors.Count > 0)
+				{
+					outputerrors.AddRange(orderC.errors);
+					delivertopage = false;
+				}
+			}
+
+
+			if (delivertopage)
+			{
+				DeliverOutputToPage(ordersC, ordersT);
+			}
+			else
+			{
+				DeliverOutputToPage(outputerrors);
+			}
 		}
-		else if (p == "NewOrder" | p == "SaveNewOrder")
-		{
-			List<DxChartOrder> completednewordersC = null;
-			List<DxTableOrder> completednewordersT = null;
-			DxChartOrder neworderC = GatherChartOrder();
-			if (neworderC.list_settings.Count > 0)
-			{
-				completednewordersC = PlaceOrders(new List<DxChartOrder>() { neworderC });
 
-			}
-
-			DxTableOrder neworderT = GatherTableOrder();
-			if (neworderT.list_settings.Count > 0)
-			{
-				completednewordersT = PlaceOrders(new List<DxTableOrder>() { neworderT });
-			}
-
-			DeliverOutputToPage(completednewordersC, completednewordersT);
-
-		}
-
-		else if (p.StartsWith("DisplayAllOrders"))
-		{
-			List<DxChartOrder> completedordersC = PlaceOrders(sessionorders.chartorders);
-			List<DxTableOrder> completedordersT = PlaceOrders(sessionorders.tableorders);
-			DeliverOutputToPage(completedordersC, completedordersT);
-
-		}
 		else if (p == "Docx")
 		{
+
 			//string path = @"c:\_temp\factory\";
 
 			//DxChartFactory factory = new DxChartFactory(dpdata, sessionorders.chartorders);
@@ -1779,6 +1852,7 @@ public partial class DataProject_Explore : BasePage
 
 		}
 
+		return outputstatus;
 
 	}
 
@@ -1890,6 +1964,19 @@ public partial class DataProject_Explore : BasePage
 		}
 	}
 
+
+	protected void DeliverOutputToPage(List<string> errors)
+	{
+
+		//protected void AddErrorToOutput(string e)
+		foreach(string e in errors)
+		{
+			Literal lit = new Literal();
+			string error = String.Format("<b>{0}</b></br>", e);
+			lit.Text = error;
+			callbackOutput.Controls.Add(lit);
+		}
+	}
 
 
 	protected DxLayout ConvertChartLayout(string layout)
