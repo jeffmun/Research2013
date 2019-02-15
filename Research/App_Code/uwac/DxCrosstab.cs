@@ -16,6 +16,8 @@ namespace uwac
 	/// <summary>
 	/// Summary description for DxCrosstab
 	/// </summary>
+	/// 
+	[Serializable] 
 	public class DxCrosstab : DxTable
 	{
 		private string _title;

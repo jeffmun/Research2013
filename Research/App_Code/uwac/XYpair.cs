@@ -117,7 +117,7 @@ namespace uwac
 			{
 				for (int i = 0; i < rptmeas.Count; i++)
 				{
-					for (int j = 0; j < rptmeas.Count; j++)
+					for (int j = i+1; j < rptmeas.Count; j++)
 					{
 						for (int k = 0; k < vars.Count; k++)
 						{
@@ -155,6 +155,36 @@ namespace uwac
 
 		}
 
+
+		public void RemoveInverse()
+		{
+			List<int> indices_to_remove = new List<int>();
+			for(int i=0; i < _pairs.Count; i++)
+			{
+				for (int j = (_pairs.Count-1);  j > i; j--)
+				{
+					string x1 = _pairs[i].xvar;
+					string y1 = _pairs[i].yvar;
+					string x2 = _pairs[j].xvar;
+					string y2 = _pairs[j].yvar;
+
+					bool b1 = (x1 == x2 & y1 == y2) ? true : false;
+					bool b2 = (x1 == y2 & y1 == x2) ? true : false;
+
+					if (b1 | b2 )
+					{
+						indices_to_remove.Add(j);
+					}
+				}
+
+			}
+
+			foreach(int k in indices_to_remove)
+			{
+				_pairs.RemoveAt(k);
+			}
+			
+		}
 	}
 
 	//public enum XYpairType : int

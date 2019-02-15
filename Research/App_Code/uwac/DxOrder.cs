@@ -26,6 +26,8 @@ namespace uwac
 		public int ordernum { get; set; }
 		private List<string> _errors;
 		public List<string> errors { get { return _errors; }  }
+		public OrderSaveState orderSaveState { get; set; }
+
 
 		public DataTable dt_selectedvars { get { return _dt_selectedvars; } set { _dt_selectedvars = value; } }
 
@@ -143,5 +145,13 @@ namespace uwac
 	{
 		chart = 0,
 		table = 1
+	}
+
+	public enum OrderSaveState
+	{
+		NotSaved = 0,
+		ReadyToSave = 1,
+		Saved = 2,
+		ReadyToDelete = 3
 	}
 }

@@ -26,7 +26,7 @@ namespace uwac
 	/// Summary description for DxLineplot
 	/// </summary>
 
-
+	[Serializable]
 	public class DxLineplot : DxChart
 	{
 		private DxLineplotSettings _settings;
@@ -486,6 +486,7 @@ namespace uwac
 		Triangle = 6
 	}
 
+	[Serializable]
 	public class DxLineplotSettings : DxChartSettings
 	{
 		private List<string> _xvars;

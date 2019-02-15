@@ -400,7 +400,7 @@ namespace uwac
 	}
 	#endregion
 
-
+	[Serializable]
 	public class DxHistogramSettings : DxChartSettings
 	{
 		private bool _shownormalcurve = false;

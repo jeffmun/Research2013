@@ -28,9 +28,7 @@ using System.Text;
 namespace uwac
 {
 
-	#region Scatterplot
-
-
+	[Serializable]
 	public class DxScatterplot : DxChart
 	{
 		private DxScatterplotSettings _settings;
@@ -51,6 +49,11 @@ namespace uwac
 
 			ConstructScatterplot(dataxy);
 			FormatChart();
+
+			if (corrs != null)
+			{
+				this.n = corrs.n;
+			}
 		}
 
 		public DxScatterplot(DxScatterplotSettings settings, DataTable mydt) //, string xvar, string yvar, string titleinput, string colorsby)
@@ -62,6 +65,11 @@ namespace uwac
 
 			ConstructScatterplot(dataxy);
 			FormatChart();
+
+			if (corrs != null)
+			{
+				this.n = corrs.n;
+			}
 		}
 
 		public DataTable GetXYData(DataTable mydt) //, string xvar, string yvar, string mytitle, Color mycolor, string colorsby)
@@ -263,10 +271,12 @@ namespace uwac
 			string mainTitleText = "";
 			try
 			{
-				mainTitleText = String.Format("{0}{1}{2} (N={3})"
-						, _settings.title, Environment.NewLine, corrs.results(CorrPValueMode.CorrWithStars), corrs.n);
+				//mainTitleText = String.Format("{0}{1}{2} (N={3})"
+				//		, _settings.title, Environment.NewLine, corrs.results(CorrPValueMode.CorrWithStars), corrs.n);
+				mainTitleText = String.Format("{0} (N={1})"
+						, corrs.results(CorrPValueMode.CorrWithStars), corrs.n);
 			}
-			catch(Exception ex){ }
+			catch (Exception ex) { }
 			//string mainTitleText = ((Math.Abs(corrs.pearson - corrs.spearman)) > .2 ) ?
 			//	String.Format("{0}{1} r={3:.00} s={4:.00} N={2}"
 			//		, _settings.title, Environment.NewLine, corrs.n, corrs.pearson, corrs.spearman)
@@ -390,10 +400,10 @@ namespace uwac
 	//}
 
 
-	#endregion
 
 
 
+	[Serializable]
 	public class ScatterplotSeries
 	{
 		private List<DxSeriesPoints> _list_dxseriespoints;
@@ -459,6 +469,8 @@ namespace uwac
 
 					Corrs tmpcorrs = new Corrs(dtSub, settings.xaxisvar, settings.yaxisvar, 2);
 
+					
+
 					_list_corrs.Add(tmpcorrs);
 
 					//List<string> keyvalues = group.Key.Values[0].ToString();
@@ -495,9 +507,16 @@ namespace uwac
 			int counter = 0;
 			foreach(Corrs corr in _list_corrs)
 			{
+				string sub = "";
 				string label = _list_dxseriespoints[counter].label;
-				string sub = String.Format("{0}: {1} (N={2})", label, corr.results(CorrPValueMode.CorrWithStars), corr.n);
-				subtitles.Add(sub);
+				if (label != "")
+				{
+					sub = String.Format("{0}: {1} (N={2})", label, corr.results(CorrPValueMode.CorrWithStars), corr.n);
+				}
+				else{
+					sub = String.Format("{0} (N={1})", corr.results(CorrPValueMode.CorrWithStars), corr.n);
+				}
+				if(sub != "") subtitles.Add(sub);
 
 				counter++;
 			}

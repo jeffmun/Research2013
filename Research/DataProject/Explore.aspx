@@ -116,7 +116,7 @@
 				callbackViewData.SetVisible(false);
 				callbackMissing.SetVisible(false);
 
-				//callbackOutput.PerformCallback("SaveNewOrder");
+				callbackOutput.PerformCallback("SaveNewOrder");
 				callbackOrders.PerformCallback("SaveNewOrder");
 			}
 
@@ -129,7 +129,7 @@
 				callbackMissing.SetVisible(false);
 
 				callbackOutput.PerformCallback("NewOrder");
-				callbackOrders.PerformCallback();
+				//callbackOrders.PerformCallback();
 			}
 
 

@@ -353,7 +353,7 @@ namespace DataEntryFramework3
 
 		
 
-		protected string GetSetUserContextSyntax()
+		public string GetSetUserContextSyntax()
 		{
 			SQL_utils sqlx = new SQL_utils("data");
 			string user = sqlx.GetUserNameFromIdentity();

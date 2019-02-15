@@ -13,6 +13,8 @@ namespace uwac
 	/// <summary>
 	/// Summary description for DxActogram
 	/// </summary>
+
+	[Serializable]
 	public class DxActogram : DxLineplot
 	{
 		private List<MarkerKind> _markers;
@@ -88,7 +90,7 @@ namespace uwac
 
 	}
 
-
+	[Serializable]
 	public class DxActogramSettings : DxLineplotSettings
 	{
 		public string date_txt { get; set; }

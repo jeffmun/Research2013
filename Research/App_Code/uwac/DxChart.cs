@@ -133,13 +133,20 @@ namespace uwac
 				else
 				{
 					string mainTitle_subtitles = (sub == null) ? "" : String.Join(Environment.NewLine, sub);
+
+					string title_to_use = (main == mainTitle_subtitles) ? main : String.Format("{0}{1}{2}", main, Environment.NewLine, mainTitle_subtitles);
+
 					mainTitle = new ChartTitle()
 					{
-						Text = String.Format("{0}{1}{2}", main, Environment.NewLine, mainTitle_subtitles),
+						Text = title_to_use,
 						Dock = ChartTitleDockStyle.Top
 						//Indent = 20
 					};
 				}
+			}
+			else
+			{
+				mainTitle.Text = main;
 			}
 
 			mainTitle.Font = fnt_main;
@@ -289,7 +296,7 @@ namespace uwac
 
 
 
-
+	[Serializable]
 	public class DxMarkerKinds :  List<MarkerKind>
 	{
 		//List<MarkerKind> _markers = new List<MarkerKind>();

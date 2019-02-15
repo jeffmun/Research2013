@@ -12,7 +12,7 @@ using DataEntryFramework4;
 using uwac;
 
 
-public partial class DataEntryForms_enterdata : System.Web.UI.Page
+public partial class DataEntryForms_enterdata : BasePage
 {
 	protected void Page_Init(object sender, EventArgs e)
 	{

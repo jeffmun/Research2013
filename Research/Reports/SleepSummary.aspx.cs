@@ -151,7 +151,7 @@ public partial class Reports_SleepSummary : BasePage
 		DataTable stats2 = utilStats.DataTable_DescStats(ds.Tables["epoch"], true);
 
 
-		DxChartFactory factory = new DxChartFactory(ds.Tables["epoch"], order);
+		DxChartFactory factory = new DxChartFactory(ds.Tables["epoch"], new List<DxChartOrder> { order });
 
 
 		int counter = 0;
@@ -160,7 +160,7 @@ public partial class Reports_SleepSummary : BasePage
 		{
 			foreach (DxChartBatch batch in myorder.batches)
 			{
-				if (batch.charttype == DxChartType.Actogram)
+				if (batch.settings.outputtype == DxOutputtype.Actogram)
 				{
 
 
@@ -204,7 +204,7 @@ public partial class Reports_SleepSummary : BasePage
 					}
 				}
 
-				System.Web.UI.WebControls.Table t = ChartOutput.LayoutBatch(batch);
+				System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
 				panel.Controls.Add(t);
 			}
 		}

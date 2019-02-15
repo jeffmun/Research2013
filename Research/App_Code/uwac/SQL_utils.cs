@@ -354,6 +354,33 @@ namespace uwac
 		}
 
 
+		public DataTable DataTable_from_SQLstring(string sSQL, List<SqlParameter> p)
+		{
+			SqlCommand oCmd = new SqlCommand();
+
+			oCmd.Connection = oSqlConn;
+			oCmd.CommandText = sSQL;
+			oCmd.CommandTimeout = 90;
+			oCmd.CommandType = CommandType.Text;
+
+			try
+			{
+				foreach (SqlParameter myp in p)
+				{
+					oCmd.Parameters.Add(myp);
+				}
+				SqlDataReader dr = oCmd.ExecuteReader();
+				DataTable dt = new DataTable();
+				dt.Load(dr);
+
+				return dt;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
 		public DataSet DataSet_from_SQLstring(string sSQL)
 		{
 			SqlCommand oCmd = new SqlCommand();

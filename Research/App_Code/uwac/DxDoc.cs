@@ -39,18 +39,33 @@ public class DxDoc
 		_creator_netid = netid;
 		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
 	}
-	public DxDoc(DxChartFactory factory, string path, string filename, string projtitle, string datafile, string netid)
+	//public DxDoc(DxChartFactory factory, string path, string filename, string projtitle, string datafile, string netid)
+	//{
+	//	_creator_netid = netid;
+	//	_path = path;
+	//	_projtitle = projtitle;
+	//	_datafile = datafile;
+	//	_filename = filename;
+
+	//	MakeDocx(factory);
+
+	////Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	//}
+
+	//public DxDoc(List<DxChartOrder> ordersC, string path, string filename, string projtitle, string datafile, string netid)
+	public DxDoc(List<DxChartOrder> ordersC, string path, string projtitle, string datafile, string netid)
 	{
 		_creator_netid = netid;
 		_path = path;
 		_projtitle = projtitle;
 		_datafile = datafile;
-		_filename = filename;
+		_filename = "test.docx"; // filename;
 
-		MakeDocx(factory);
+		MakeDocx(ordersC);
 
-	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
 	}
+
 
 
 	public DxDoc(DataTable dt_plots, List<string> htmltables, string path, string filename, string projtitle, string datafile, string netid)
@@ -245,8 +260,9 @@ public class DxDoc
 
 
 
+	//protected void MakeDocx(DxChartFactory factory) //, string path, string projtitle, string datafile)
 
-	protected void MakeDocx(DxChartFactory factory) //, string path, string projtitle, string datafile)
+	protected void MakeDocx(List<DxChartOrder> ordersC) //, string path, string projtitle, string datafile)
 	{
 		log(" ====== MakeDocx (DxChartFactory factory) ======");
 		//const float imageLocationX = 40;
@@ -254,8 +270,7 @@ public class DxDoc
 		//int counter = 0;
 		//string path = @"C:\_temp\factory\";
 
-		factory.ChartsToDisk(_path, .1, .1);
-
+	
 		string fileName = String.Format(@"{0}{1}", _path, _filename);
 
 
@@ -276,7 +291,7 @@ public class DxDoc
 			DocumentPosition pos = doc.Range.Start;
 			//New Section
 
-			foreach (DxChartOrder order in factory.orders)
+			foreach (DxChartOrder order in ordersC)
 			{
 				doc.Paragraphs.Append(); 
 
@@ -304,12 +319,15 @@ public class DxDoc
 					//	doc.Images[doc.Images.Count - 1].ScaleY = 0.5f;
 
 					//}
+					if (batch.charts.Count > 0)
+					{
 
-					doc.AppendSingleLineText(batch.batchtitle);
-					doc.Paragraphs.Append();
+						doc.AppendSingleLineText(batch.batchtitle);
+						doc.Paragraphs.Append();
 
-					AppendCharts(pos, batch, doc);
-					doc.Paragraphs.Append();
+						AppendCharts(pos, batch, doc);
+						doc.Paragraphs.Append();
+					}
 				}
 
 

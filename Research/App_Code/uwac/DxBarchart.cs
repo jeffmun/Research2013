@@ -28,8 +28,8 @@ namespace uwac
 	/// </summary>
 
 
-	#region Barchart
 
+	[Serializable]
 	public class DxBarchart : DxChart
 	{
 		DescStats _statstable;
@@ -356,6 +356,7 @@ namespace uwac
 
 	}
 
+	[Serializable]
 	public class BarchartSeries
 	{
 		private List<DxSeriesPoints> _list_dxseriespoints;
@@ -436,8 +437,8 @@ namespace uwac
 
 
 
-
-public class AxesRange
+	[Serializable]
+	public class AxesRange
 	{
 		private double _minx;
 		private double _maxx;
@@ -454,12 +455,7 @@ public class AxesRange
 
 
 
-
-
-	#endregion
-	//public delegate void MyEventHandler(object sender, MyEventArgs e);
-
-
+	[Serializable]
 	public class DxBarchartSettings : DxChartSettings
 	{
 		public bool showEmptyCategories { get; set; }

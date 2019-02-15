@@ -19,6 +19,8 @@ using MathNet.Numerics.Statistics;
 using uwac;
 using uwac.trk;
 using System.Text;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace uwac
 {
@@ -37,10 +39,6 @@ namespace uwac
 
 		private List<DxChartSettings> _list_settings;
 		public List<DxChartSettings> list_settings { get { return _list_settings; } private set { } }
-			//set { 
-			//_list_settings = value; 
-			//} 
-		
 
 
 		private DxInvoice _invoice;
@@ -72,6 +70,7 @@ namespace uwac
 
 		public void Initialize()
 		{
+			orderSaveState = OrderSaveState.NotSaved;
 			ordertype = OrderType.chart;
 			_batches = new List<DxChartBatch>();
 			isOrderFilled = false;
@@ -120,6 +119,65 @@ namespace uwac
 				return "Invoice is null.";
 			}
 		}
+
+
+
+		public void ChartsToDisk(string path)
+		{
+			double scaleW = .25f;
+			double scaleH = .25f;
+			ChartsToDisk(path, scaleW, scaleH);
+		}
+
+		public void ChartsToDisk(string path, double scaleW, double scaleH)
+		{
+			Debug.WriteLine("----- ChartsToDisk !!!!! -----");
+
+			foreach (DxChartBatch batch in this.batches)
+			{
+				foreach (DxChart chart in batch.charts)
+				{
+					try
+					{
+						//chartfiles.Add(chart.guid);
+						//string xmlfile = String.Format("{0}{1}.{2}", path, chart.guid, "xml");
+						//chart.chart.SaveToFile(xmlfile);
+						chart.W = Convert.ToInt32(chart.W * scaleW);
+						chart.H = Convert.ToInt32(chart.H * scaleH);
+
+						chart.chart.ExportToImage(String.Format("{0}{1}.{2}", path, chart.guid, "png"), ImageFormat.Png);
+					}
+					catch (Exception ex) { }
+				}
+			}
+
+			orderSaveState = OrderSaveState.Saved;
+
+		}
+
+
+		public void DeleteChartsOnDisk(string path)
+		{
+			Debug.WriteLine("----- DeleteChartsOnDisk  !!!!! -----");
+
+			foreach (DxChartBatch batch in this.batches)
+			{
+				foreach (DxChart chart in batch.charts)
+				{
+					try
+					{
+						File.Delete(String.Format("{0}{1}.{2}", path, chart.guid, "png"));
+					}
+					catch (Exception ex) { }
+				}
+			}
+
+			orderSaveState = OrderSaveState.NotSaved;
+
+		}
+
+
+	
 
 	}
 

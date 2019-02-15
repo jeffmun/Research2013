@@ -31,7 +31,11 @@ namespace uwac
 
 
 
+	public class DxOutputchunk
+	{
+		public List<DxOutputitem> items { get; set; }
 
+	}
 
 
 }

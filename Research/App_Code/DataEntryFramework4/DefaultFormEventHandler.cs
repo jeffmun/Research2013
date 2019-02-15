@@ -4,8 +4,8 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Collections;
 using System.Collections.Generic;
-
-
+using uwac;
+using System.Linq;
 
 namespace DataEntryFramework4
 {
@@ -49,7 +49,19 @@ namespace DataEntryFramework4
 			set {_updateVerifiedSqlCommandText = value;}
 		}
 
-		
+
+
+		public string GetSetUserContextSyntax()
+		{
+			SQL_utils sqlx = new SQL_utils("data");
+			string user = sqlx.GetUserNameFromIdentity();
+			sqlx.Close();
+
+			string usercontext = String.Format("EXEC uwautism_research_backend.sec.spSetUserContext '{0}'; ", user);
+			usercontext += String.Format("EXEC uwautism_research_data.sec.spSetUserContext '{0}'; ", user);
+			return usercontext;
+		}
+
 		/*
 		 * The InsertSqlCommand must contain one parameter for each data entry control
 		 * with IsInsertField == true.  It also should have a parameter for @verified.
@@ -80,28 +92,41 @@ namespace DataEntryFramework4
 
 				else
 				{
+
+					string _sqlInsert = GetSetUserContextSyntax();
+
+					//Check that subject ID exists 
+					var smID = dec.StudyMeasID;
+					var id = dec.SubjID;
+
+
+
 					// build and return sqlInsert SqlCommand object
-					string _sqlInsert = "INSERT INTO " + dec.DatabaseTable + " (";
+					_sqlInsert += "INSERT INTO " + dec.DatabaseTable + " (";
 					bool first = true;
+
+					//******************** Fields ********************
 					foreach (DataFieldControl d in dec.InsertDataFields.Values)
 					{
-						_sqlInsert += ((!first) ? "," : "") + d.FldName;
+						_sqlInsert += ((!first) ? "," : "") + d.FldName; //d.DatabaseField;
 						first = false;
 					}
 
-					_sqlInsert += "," + dec.VerifiedField + ", studymeasid";
+					_sqlInsert += "," + dec.VerifiedField + ", studymeasid, created, createdBy"; //JM added created etc here so that 
 					_sqlInsert += ") VALUES (";
-		
+
+
+					//******************** Values ********************
 					first = true;
 					foreach (DataFieldControl d in dec.InsertDataFields.Values)
 					{
-						_sqlInsert += ((!first) ? "," : "") + "@" + d.FldName;
+						_sqlInsert += ((!first) ? "," : "") + "@" + d.FldName; //d.DatabaseField;
 						first = false;
 					}
-					_sqlInsert += ", @" + dec.VerifiedField + ",@studymeasid";
+					_sqlInsert += ", @" + dec.VerifiedField + ",@studymeasid, getdate(), sec.systemuser()";
 					_sqlInsert += ");";
 
-					_sqlInsert += " SELECT t.*, st.studyname + ': ' + sm.studymeasname as studymeasname FROM " + dec.DatabaseTable +  " t join uwautism_research_backend..tblstudymeas sm ";
+					_sqlInsert += " SELECT t.*, st.studyname + ': ' + sm.studymeasname as studymeasname FROM " + dec.DatabaseTable + " t join uwautism_research_backend..tblstudymeas sm ";
 					_sqlInsert += " on t.studymeasid=sm.studymeasid ";
 					_sqlInsert += " join uwautism_research_backend..tblstudy st on st.studyid=sm.studyid ";
 					//_sqlInsert += " WHERE " + dec.PrimaryKeyField + " = @@IDENTITY;";
@@ -109,6 +134,36 @@ namespace DataEntryFramework4
 
 
 					return new SqlCommand(_sqlInsert, DBConnection);
+
+					//// build and return sqlInsert SqlCommand object
+					//_sqlInsert += "INSERT INTO " + dec.DatabaseTable + " (";
+					//bool first = true;
+					//foreach (DataFieldControl d in dec.InsertDataFields.Values)
+					//{
+					//	_sqlInsert += ((!first) ? "," : "") + d.FldName;
+					//	first = false;
+					//}
+
+					//_sqlInsert += "," + dec.VerifiedField + ", studymeasid";
+					//_sqlInsert += ") VALUES (";
+
+					//first = true;
+					//foreach (DataFieldControl d in dec.InsertDataFields.Values)
+					//{
+					//	_sqlInsert += ((!first) ? "," : "") + "@" + d.FldName;
+					//	first = false;
+					//}
+					//_sqlInsert += ", @" + dec.VerifiedField + ",@studymeasid";
+					//_sqlInsert += ");";
+
+					//_sqlInsert += " SELECT t.*, st.studyname + ': ' + sm.studymeasname as studymeasname FROM " + dec.DatabaseTable +  " t join uwautism_research_backend..tblstudymeas sm ";
+					//_sqlInsert += " on t.studymeasid=sm.studymeasid ";
+					//_sqlInsert += " join uwautism_research_backend..tblstudy st on st.studyid=sm.studyid ";
+					////_sqlInsert += " WHERE " + dec.PrimaryKeyField + " = @@IDENTITY;";
+					//_sqlInsert += " WHERE " + dec.PrimaryKeyField + " = scope_identity();";
+
+
+					//return new SqlCommand(_sqlInsert, DBConnection);
 				}
 			}
 
@@ -1045,9 +1100,36 @@ namespace DataEntryFramework4
 						lookupSqlCommand.Parameters.AddWithValue("@studymeasid", dec.LookupStudyMeasID);
 					}
 
-					SqlDataAdapter adp = new SqlDataAdapter(lookupSqlCommand);
+					//Not needed as of Feb 2019
+					//SqlDataAdapter adp = new SqlDataAdapter(lookupSqlCommand);
+					//DataSet ds = new DataSet();
+					//int rowsAdded = adp.Fill(ds, "results");
+
+
+					//New Feb 2019
+					SQL_utils sql = new SQL_utils("data");
+
+					SqlParameter[] newps = new SqlParameter[lookupSqlCommand.Parameters.Count];
+
+					List<SqlParameter> ps = new List<SqlParameter>();
+					foreach(SqlParameter p in lookupSqlCommand.Parameters)
+					{
+						SqlParameter newp = new SqlParameter();
+						newp.ParameterName = p.ParameterName;
+						newp.Value = p.Value;
+						newp.SqlValue = p.SqlValue;
+						newp.SqlDbType = p.SqlDbType;
+						ps.Add(newp);
+					}
+
+					string sqlproc = lookupSqlCommand.CommandText;
+
+					DataTable dt = sql.DataTable_from_SQLstring(sqlproc, ps);
+
 					DataSet ds = new DataSet();
-					int rowsAdded = adp.Fill(ds, "results");
+					dt.TableName = "results";
+					ds.Tables.Add(dt);
+					int rowsAdded = dt.Rows.Count;
 
 					if (rowsAdded == 1)
 					{

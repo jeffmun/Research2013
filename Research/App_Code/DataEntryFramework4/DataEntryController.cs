@@ -9,6 +9,8 @@ using System.Data;
 using System.Text;
 using System.Collections.Generic;
 
+using uwac;
+
 namespace DataEntryFramework4
 {
 
@@ -1744,8 +1746,8 @@ namespace DataEntryFramework4
 
 			try
 			{
-				conn = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"]);
-				cmd = new SqlCommand();
+				//conn = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"]);
+				//cmd = new SqlCommand();
 
 				//string sqlWhere = "where coalesce(tAll.[name], t.[name]) = '" + databaseTable + "' ";
 				string sqlWhere = "where 1=1 ";
@@ -1798,10 +1800,10 @@ namespace DataEntryFramework4
 
 
 				//UPDATED FEB 2017
-				string sql = "select sm.studymeasid, s.studyname + ': ' + sm.studymeasname as studymeasure  " + 
-				"from def.Tbl t                                                                " + 
-				"join uwautism_research_backend..tblstudymeas sm on sm.measureID=t.measureID   " +
-				"join uwautism_research_backend..tblstudy s on s.studyid=sm.studyid            " + sqlWhere + sqlUnion;
+				//string sql = "select sm.studymeasid, s.studyname + ': ' + sm.studymeasname as studymeasure  " + 
+				//"from def.Tbl t                                                                " + 
+				//"join uwautism_research_backend..tblstudymeas sm on sm.measureID=t.measureID   " +
+				//"join uwautism_research_backend..tblstudy s on s.studyid=sm.studyid            " + sqlWhere + sqlUnion;
 
 
 
@@ -1819,26 +1821,51 @@ namespace DataEntryFramework4
 				//sql += "order by studymeasure";
 
 
-				cmd.CommandText = sql;
-				cmd.CommandType = System.Data.CommandType.Text;
-				cmd.Connection = conn;
-				
+				//cmd.CommandText = sql;
+				//cmd.CommandType = System.Data.CommandType.Text;
+				//cmd.Connection = conn;
+
+
+
+
+				//ddl.DataTextField = "studymeasure";
+				//ddl.DataValueField = "studymeasid";
+				//ddl2.DataTextField = "studymeasure";
+				//ddl2.DataValueField = "studymeasid";
+				//conn.Open();
+				//SqlDataReader r = cmd.ExecuteReader();
+				//ddl.DataSource = r;
+				//ddl.DataBind();
+				//r.Close();
+				//r = cmd.ExecuteReader();
+				//ddl2.DataSource = r;
+				//ddl2.DataBind();
+
+
+				//Updated Feb 2019
+				SQL_utils sql = new SQL_utils("data");
+
+				string sqlcode = "select sm.studymeasid, s.studyname + ': ' + sm.studymeasname as studymeasure  " +
+				"from def.Tbl t                                                                " +
+				"join uwautism_research_backend..tblstudymeas sm on sm.measureID=t.measureID   " +
+				"join uwautism_research_backend..tblstudy s on s.studyid=sm.studyid            " + sqlWhere + sqlUnion;
+
+				DataTable dt_studymeas = sql.DataTable_from_SQLstring(sqlcode);
+
+
 				ddl.DataTextField = "studymeasure";
 				ddl.DataValueField = "studymeasid";
 				ddl2.DataTextField = "studymeasure";
 				ddl2.DataValueField = "studymeasid";
-				conn.Open();
-				SqlDataReader r = cmd.ExecuteReader();
-				ddl.DataSource = r;
+
+				ddl.DataSource = dt_studymeas;
 				ddl.DataBind();
-				r.Close();
-				r = cmd.ExecuteReader();
-				ddl2.DataSource = r;
+				ddl2.DataSource = dt_studymeas;
 				ddl2.DataBind();
 
 
 			}
-			catch{}
+			catch {}
 			finally
 			{
 				if (conn != null) conn.Close();
