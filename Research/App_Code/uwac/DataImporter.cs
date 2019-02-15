@@ -840,6 +840,7 @@ namespace uwac
 
 
 
+
 		#region Check the table for subjects, indexnum, etc. 
 		public string CheckSubjects(DataTable dt)
 		{
@@ -872,7 +873,14 @@ namespace uwac
 							if (personid == 0)
 							{
 								Debug.WriteLine(" **** Begin CheckSubjects - no person *****");
-								int anon_hhid = sql.IntScalar_from_SQLstring("select householdID from tblhousehold where hhname='Anonymous_imported'");
+
+								//int anon_hhid = sql.IntScalar_from_SQLstring("select householdID from tblhousehold where hhname='Imported_studyID_" + studyid.ToString() + "'");
+
+								string hhname = String.Format("Imported_stuydyID_{0}", studyid);
+								int anon_hhid = sql.IntScalar_from_SQLstring("exec hh.spHousehold_INSERT '" + hhname + "'");
+								sql.Close();
+
+
 								string newpersoncode = String.Format("insert into tblPerson(householdID, sex, firstname, lastname, ethnicityID, hispanicID) values ( {0}, 'U','{1}','studyid={2}', 7, 3 )"
 									, anon_hhid, id, studyid);
 								sql.NonQuery_from_SQLstring(newpersoncode);
