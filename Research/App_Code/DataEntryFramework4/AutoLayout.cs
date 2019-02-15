@@ -33,15 +33,6 @@ namespace DataEntryFramework4
 		}
 
 
-		//public static DataEntryController DEC_LoadFields_for_layout(string str_measureID, Panel panelDEMainBody, string mode, Panel panelDEInsert) //, Panel popupPanel)
-		//{
-		//    DataEntryController dec = new DataEntryController();
-
-
-		//    return dec;
-		//}
-
-
 		//Start here and retrieve the meta data that defines the fields for data
 		//entry.  
 		public static void LoadFields_for_layout(string str_measureID, UpdatePanel panelDEMainBody, string mode, Panel panelDEInsert) //, Panel popupPanel)
@@ -56,21 +47,7 @@ namespace DataEntryFramework4
 
 		}
 
-
-
-
-		//public static DataTable GetSectionText(string str_measureID)
-		//{
-		//    SQL_utils sql = new SQL_utils();
-
-		//    DataTable dt_sectiontext = sql.DataTable_from_SQLstring("select sectionID, tblpk, sectionnum, sectionheadertext" +
-		//        " from def.Tbl_Section where tblpk = " +
-		//        "(select tblpk from def.tbl where measureID = " + str_measureID + ") " +
-		//        " order by sectionnum");
-
-		//    sql.Close();
-		//    return dt_sectiontext;
-		//}
+	
 
 
 		public static DataTable GetSectionText(string str_measureID)
@@ -542,8 +519,14 @@ namespace DataEntryFramework4
 					dfc.FieldTextBoxText = row["fldname"].ToString();
 					//dfc.ToolTip = row["fieldnameandlabel"].ToString();
 
+					if(mode=="DataEntry")
+					{
+						TextBox txtbox = (TextBox)dfc.Controls[1];
+						txtbox.Enabled = true;
+						txtbox.ToolTip = row["fieldnameandlabel"].ToString();
+					}
 
-					if (mode == "Layout")
+					else if (mode == "Layout")
 					{
 
 						TextBox txtbox = (TextBox)dfc.Controls[1];
@@ -599,6 +582,13 @@ namespace DataEntryFramework4
 			return cell;
 		}
 		#endregion
+
+
+		#region Build the value sets
+
+
+		#endregion 
+
 
 
 	}
