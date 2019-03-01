@@ -117,7 +117,10 @@ public partial class Reports_SleepSummary : BasePage
 		s.seriesby = "id";
 		s.xaxisvar = "time_of_day";
 		s.xaxis_is_date = true;
-		s.numvars = new List<string>() { "activity", "is_wake", "white_light"};
+
+		s.AddVarsFromList(new List<string>() { "activity", "is_wake", "white_light" });
+		//Changed Feb 2019
+		//s.numvars = new List<string>() { "activity", "is_wake", "white_light"};
 		s.colorvar = "variable";
 		s.panelvar = "report_date";
 		s.colors = Actigraph.colors;
@@ -134,7 +137,9 @@ public partial class Reports_SleepSummary : BasePage
 	
 
 		DxHistogramSettings hist = new DxHistogramSettings((DxChartSettings)s);
-		hist.numvars = new List<string>() { "activity", "white_light" };
+		hist.AddVarsFromList(new List<string>() { "activity", "white_light" });
+		//Changed Feb 2019
+		//hist.numvars = new List<string>() { "activity", "white_light" };
 		hist.W = 400; hist.H = 200;
 		hist.colors = Actigraph.colors;
 

@@ -437,11 +437,26 @@ namespace uwac.data
 				types = new List<string> { "int", "smallint", "tinyint", "float", "decimal", "bigint", "numeric" };
 				rowfilter = "(FieldLabel like '%age in%' or FieldLabel like '%age (mo%' or FieldLabel like '%age mos%')";
 			}
+			else if (type=="all")
+			{
+				types = new List<string> { "int", "smallint", "tinyint", "float", "decimal", "bigint", "numeric"
+					, "char", "varchar", "nvarchar",  "date", "smalldatetime", "datetime" };
+				rowfilter = "";
 
-			return datadict_sub(types, rowfilter);
+			}
+
+			if (type == "all")
+			{
+				DataTable dt = datadict_sub(types, rowfilter);
+				return datadict_with_vartype(dt);
+			}
+			else
+			{
+				return datadict_sub(types, rowfilter);
+			}
 		}
 
-			public DataTable datadict_sub(List<string> types, string rowfilter)
+		public DataTable datadict_sub(List<string> types, string rowfilter)
 		{
 
 			DataView vwdatadict_sub = DataDictionaryForSheet(selectedsheet).AsDataView();
@@ -462,6 +477,42 @@ namespace uwac.data
 
 			DataTable datadict_sub = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry_sub);
 			return datadict_sub;
+		}
+
+
+		public DataTable datadict_with_vartype(DataTable dt)
+		{
+
+			bool contains_vartype = false;
+
+			
+			foreach(DataColumn col in dt.Columns)
+			{
+				if (col.ColumnName == "vartype") contains_vartype = true;
+			}
+
+			if (!contains_vartype)
+			{
+				dt.Columns.Add("vartype", typeof(string));
+			}
+
+			foreach (DataRow row in dt.Rows)
+			{
+				string vtype = "text";
+				string dtype = row["datatype"].ToString();
+				string fldlabel = row["fieldlabel"].ToString().ToLower();
+				List<string> numtypes = new List<string> { "int", "smallint", "tinyint", "float", "decimal", "bigint", "numeric" };
+				List<string> datetypes = new List<string> { "date", "smalldatetime", "datetime" };
+				
+
+				if (fldlabel.Contains("age in") | fldlabel.Contains("age mo(") | fldlabel.Contains("age mos")) vtype = "age";
+				else if (numtypes.Contains(dtype)) vtype = "num";
+				else if (datetypes.Contains(dtype)) vtype = "date";
+
+				row["vartype"] = vtype;
+			}
+
+			return dt;
 		}
 
 
@@ -1252,6 +1303,17 @@ namespace uwac.data
 						Debug.Print(String.Format("done retrieving dt  {0}       nrecs={1}", 
 							System.DateTime.Now.ToString(), dt.Rows.Count.ToString()));
 
+					List<string> colnames = dt.ColumnNames();
+
+					bool hasRELKEY = (colnames.Contains("RELKEY")) ? true : false;
+
+					if(hasRELKEY)
+					{
+						 //restructure the table here
+					}
+
+
+
 
 						//Need to remove fields for the Skipped measures.
 						string meas_to_skip_csv = String.Join(",", _meas_to_skip);
@@ -1313,6 +1375,7 @@ namespace uwac.data
 			this._dataset.Tables.Add(dt_stack);
 
 		}
+
 
 
 

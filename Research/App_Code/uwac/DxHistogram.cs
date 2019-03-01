@@ -417,9 +417,9 @@ namespace uwac
 		{
 			W = settings.W;
 			H = settings.H;
-			numvars = settings.numvars;
-			agevars = settings.agevars;
-			if (settings.agevars.Count > 0) numvars.AddRange(settings.agevars);
+			//numvars = settings.numvars;
+			//agevars = settings.agevars;
+			//if (settings.agevars.Count > 0) numvars.AddRange(settings.agevars);
 			colors = settings.colors;
 
 			SetOutputtype(DxOutputtype.Histogram);

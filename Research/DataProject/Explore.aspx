@@ -173,6 +173,39 @@
 			////
 			////
 			////
+			function OnVarsAllChanged(s, e) {
+
+				var grid = s.GetGridView();
+				grid.SortBy("measname");
+				btnCreateCharts.SetEnabled(true);
+				btnViewData.SetEnabled(true);
+				var seltext = grid.GetSelectedFieldValues("varname", RefreshSelectedVars);
+				ShowFinalTabs();
+				callbackVars.PerformCallback("all");
+				callbackSelectVarInfo.PerformCallback("all");
+			}
+
+			function DeleteSelVar(s, e)
+			{
+				var x = s.GetRowValues(e.visibleIndex, "varname", UnselectVarInGrid);
+			}
+
+			function UnselectVarInGrid(key)
+			{
+				gridSelVars.UnselectRowsByKey(key);
+			}
+			function VarSelectionChanged(s, e)
+			{
+				var num = gridSelVars.GetSelectedRowCount();
+				//selvars_n.SetText("(" + num + " selected)");
+				//selvars_n2.SetText("(" + num + " selected)");
+
+	//            pivotVarsCallback.PerformCallback();
+				var seltext = gridSelVars.GetSelectedFieldValues("varname", RefreshSelectedVars);
+				callbackVars.PerformCallback("all");
+				callbackSelectVarInfo.PerformCallback("all");
+			}
+
 
 			function OnVarsNumChanged(s, e) {
 
@@ -220,6 +253,7 @@
 
 			function RefreshSelectedAgeVars(selectedVals) {
 				RefreshSelectedVars2(selectedVals, cboXaxisvarLINE);
+				RefreshSelectedVars2(selectedVals, cboYaxisvarLINE);
 			}
 
 
@@ -238,18 +272,25 @@
 				RefreshSelectedVars2(selectedVals, cboPanelvarSCAT);
 
 				RefreshSelectedVars2(selectedVals, cboXaxisvarLINE);
+				RefreshSelectedVars2(selectedVals, cboYaxisvarLINE);
 				RefreshSelectedVars2(selectedVals, cboColorsvarLINE);
 				RefreshSelectedVars2(selectedVals, cboPanelvarLINE);
 
 
-				var selected_nums = gridVarsNum.GetGridView().cpSelectedVars;
-				var selected_text = gridVarsText.GetGridView().cpSelectedVars;
-				var selected_nums_text = selected_nums.concat(selected_text);
+				RefreshSelectedVars2(selectedVals, tokXTrow);
+				RefreshSelectedVars2(selectedVals, tokXTcol);
+				RefreshSelectedVars2(selectedVals, tokXTpanel);
+				RefreshSelectedVars2(selectedVals, tokXTcell);
 
-				RefreshSelectedVars2(selected_nums_text, tokXTrow);
-				RefreshSelectedVars2(selected_nums_text, tokXTcol);
-				RefreshSelectedVars2(selected_nums_text, tokXTpanel);
-				RefreshSelectedVars2(selected_nums_text, tokXTcell);
+
+				//var selected_nums = gridVarsNum.GetGridView().cpSelectedVars;
+				//var selected_text = gridVarsText.GetGridView().cpSelectedVars;
+				//var selected_nums_text = selected_nums.concat(selected_text);
+
+				//RefreshSelectedVars2(selected_nums_text, tokXTrow);
+				//RefreshSelectedVars2(selected_nums_text, tokXTcol);
+				//RefreshSelectedVars2(selected_nums_text, tokXTpanel);
+				//RefreshSelectedVars2(selected_nums_text, tokXTcell);
 			}
 
 
@@ -464,7 +505,16 @@
 			{
 				cboColorsvarLINE.SetValue("none");
 			}
+		}
+
+			
+		function cboYaxisvarLINE_changed(e) {
+			if (cboYaxisvarLINE.GetValue() == "variable" & 
+				cboColorsvarLINE.GetValue() == "variable")
+			{
+				cboColorsvarLINE.SetValue("none");
 			}
+		}
 
 		function cboColorsvarLINE_changed(e) {
 			if (cboXaxisvarLINE.GetValue() == "variable" & 
@@ -666,145 +716,41 @@
 										<SettingsLoadingPanel Text="Loading Variables..." />
 										<PanelCollection>
 											<dx:PanelContent ID="panelcontent1" runat="server">
+													<%--VARS--%>
 
-												<%--VARS NUM--%>
-												<dx:ASPxGridLookup ID="gridVarsNum" runat="server" KeyFieldName="varname" NullText="Select numeric variables to plot..." Width="350px"
-														ClientInstanceName="gridVarsNum" Visible="true" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-														SelectionMode="Multiple"  EnableClientSideAPI="true" 
-														OnInit="gridVarsNum_OnInit" GridViewProperties-SettingsBehavior-SortMode="Custom"
-														>
-													<ClientSideEvents ValueChanged="function(s, e) { OnVarsNumChanged(s); }" />
-													<Columns>
-														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0" SelectAllCheckboxMode="AllPages"/>
-														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-															<dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" VisibleIndex="4" Width="80px"/>
-													</Columns>
-													<GridViewProperties>
-														<Settings  ShowGroupPanel="true" ShowFilterRow="true" 
-															VerticalScrollBarMode="Visible" VerticalScrollableHeight="400"  />
-														<SettingsPopup>
-															<HeaderFilter>
-																<SettingsAdaptivity Mode="OnWindowInnerWidth" />
-															</HeaderFilter>
-														</SettingsPopup>
-														<SettingsPager Mode="ShowAllRecords" />
-														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick" EnableRowHotTrack="true"   />
-								
+												
+										<dx:ASPxGridView ID="gridSelVars" runat="server" AutoGenerateColumns="false" ClientInstanceName="gridSelVars"
+											  KeyFieldName="varname"  >
+											<ClientSideEvents SelectionChanged="VarSelectionChanged" />
+											<Columns>
+												<dx:GridViewCommandColumn SelectAllCheckboxMode="AllPages" ShowSelectCheckbox="True"  VisibleIndex="0"/>
+												<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="2" Width="100px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="0" Width="160px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="1" Width="400px"></dx:GridViewDataColumn>
+												<dx:GridViewDataColumn FieldName="vartype" Caption="VarType" VisibleIndex="4"  Width="90px"></dx:GridViewDataColumn>
+												 <dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" VisibleIndex="5" />
+												<%--<dx:GridViewDataColumn FieldName="fldpk" Caption="fldpk" Visible="false"></dx:GridViewDataColumn>--%>
+											</Columns>
+											<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
+												VerticalScrollBarMode="Visible" VerticalScrollableHeight="200" />
+											<SettingsPager Mode="ShowAllRecords" />
+											<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
+											<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />
 
-														<GroupSummary>
-															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-														</GroupSummary>
-													</GridViewProperties>
-												</dx:ASPxGridLookup>
-
-												<%--VARS TEXT--%>
-												<dx:ASPxGridLookup ID="gridVarsText" ClientInstanceName="gridVarsText" runat="server" KeyFieldName="varname" NullText="Select categorical variables for grouping..." Width="350px"
-														GridViewProperties-EnableCallBacks="true" Visible="true"  Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-														SelectionMode="Multiple"
-													OnInit="gridVarsText_OnInit" GridViewProperties-SettingsBehavior-SortMode="Custom" 
-														>
-													<ClientSideEvents ValueChanged="function(s, e) { OnVarsTextChanged(s); }" />
-													<Columns>
-														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
-														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-													</Columns>
-													<GridViewProperties>
-														<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
-																	VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
-														<SettingsPager Mode="ShowAllRecords" />
-														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
-														<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
-
-														<GroupSummary>
-															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-														</GroupSummary>
+											<GroupSummary>
+												<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
+											</GroupSummary>
+										</dx:ASPxGridView>
 
 
-													</GridViewProperties>
-												</dx:ASPxGridLookup>
-
-												<%--VARS DATE--%>
-												<dx:ASPxGridLookup ID="gridVarsDate" runat="server" KeyFieldName="varname" NullText="Select date variables..." Width="350px"
-														GridViewProperties-EnableCallBacks="true" Visible="true" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-														SelectionMode="Multiple"
-													OnInit="gridVarsDate_OnInit" GridViewProperties-SettingsBehavior-SortMode="Custom" >
-													<ClientSideEvents ValueChanged="function(s, e) { OnVarsDateChanged(s); }" />
-													<Columns>
-														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
-														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-													</Columns>
-													<GridViewProperties>
-														<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
-																	VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
-														<SettingsPager Mode="ShowAllRecords" />
-														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
-														<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
-
-														<GroupSummary>
-															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-														</GroupSummary>
 
 
-													</GridViewProperties>
-												</dx:ASPxGridLookup>
+													
 
-												<%--VARS AGE--%>
-												<dx:ASPxGridLookup ID="gridVarsAge" runat="server" KeyFieldName="varname" NullText="Select age variables..." Width="350px"
-														GridViewProperties-EnableCallBacks="true" Visible="true" Enabled="true" TextFormatString="{0}" MultiTextSeparator=","
-														SelectionMode="Multiple"
-													OnInit="gridVarsAge_OnInit" GridViewProperties-SettingsBehavior-SortMode="Custom" >
-													<ClientSideEvents ValueChanged="function(s, e) { OnVarsAgeChanged(s); }" />
-													<Columns>
-														<dx:GridViewCommandColumn ShowSelectCheckbox="True" VisibleIndex="0"/>
-														<dx:GridViewDataColumn FieldName="varname" Caption="Variable" VisibleIndex="1" Width="150px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="fieldlabel" Caption="Label" VisibleIndex="2" Width="350px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-														<dx:GridViewDataColumn FieldName="measname" Caption="Measure" VisibleIndex="3" Width="250px">
-															<Settings AutoFilterCondition="Contains" />
-														</dx:GridViewDataColumn>
-													</Columns>
-													<GridViewProperties>
-														<Settings ShowGroupPanel="true" ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterBar="Visible"  
-																	VerticalScrollBarMode="Visible" VerticalScrollableHeight="400" />
-														<SettingsPager Mode="ShowAllRecords" />
-														<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="false"  FilterRowMode="OnClick"   />
-														<%--<SettingsFilterControl ViewMode="VisualAndText" AllowHierarchicalColumns="true" ShowAllDataSourceColumns="true" MaxHierarchyDepth="1" />--%>
-
-														<GroupSummary>
-															<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
-														</GroupSummary>
+												<br /><br />
+											
 
 
-													</GridViewProperties>
-												</dx:ASPxGridLookup>
-										
 											</dx:PanelContent>
 										</PanelCollection>
 									</dx:ASPxCallbackPanel>
@@ -1279,21 +1225,26 @@
 												<table>
 													<tr>
 														<td style="padding: 5px">
-															<dx:ASPxComboBox ID="cboXaxisvarLINE" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarLINE" Width="130px" EnableCallbackMode="true" DropDownRows="12">
+															<dx:ASPxComboBox ID="cboXaxisvarLINE" runat="server" Caption="X axis:" CaptionSettings-Position="Top" ClientInstanceName="cboXaxisvarLINE" Width="120px" EnableCallbackMode="true" DropDownRows="12">
 																	<ClientSideEvents SelectedIndexChanged="cboXaxisvarLINE_changed" />
 															</dx:ASPxComboBox>
 														</td>
 														<td style="padding: 5px">
-															<dx:ASPxComboBox ID="cboColorsvarLINE" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarLINE" Width="130px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" >
+															<dx:ASPxComboBox ID="cboYaxisvarLINE" runat="server" Caption="Y axis:" CaptionSettings-Position="Top" ClientInstanceName="cboYaxisvarLINE" Width="120px" EnableCallbackMode="true" DropDownRows="12">
+																	<ClientSideEvents SelectedIndexChanged="cboYaxisvarLINE_changed" />
+															</dx:ASPxComboBox>
+														</td>
+														<td style="padding: 5px">
+															<dx:ASPxComboBox ID="cboColorsvarLINE" runat="server" Caption="Colors:" CaptionSettings-Position="Top" ClientInstanceName="cboColorsvarLINE" Width="120px" EnableClientSideAPI="true" EnableCallbackMode="true" DropDownRows="12" >
 																	<ClientSideEvents SelectedIndexChanged="cboColorsvarLINE_changed" />
 															</dx:ASPxComboBox>
 														</td>
 														<td style="padding: 5px">
-															<dx:ASPxComboBox ID="cboPanelvarLINE" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarLINE" Width="130px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
+															<dx:ASPxComboBox ID="cboPanelvarLINE" runat="server" Caption="Panels:" CaptionSettings-Position="Top" ClientInstanceName="cboPanelvarLINE" Width="120px" EnableCallbackMode="true"  DropDownRows="12"></dx:ASPxComboBox>
 
 														</td>
 														<td style="padding: 5px; width: 200px;">
-															<dx:ASPxComboBox ID="cboOutputStyleLINE" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleLINE" Width="130px" EnableCallbackMode="true" >
+															<dx:ASPxComboBox ID="cboOutputStyleLINE" runat="server" Caption="Output Style:" CaptionSettings-Position="Top" ClientInstanceName="cboOutputStyleLINE" Width="120px" EnableCallbackMode="true" >
 																<ClientSideEvents SelectedIndexChanged="changeOutputStyleLINE" />
 																<Items>
 																	<dx:ListEditItem Value="Rows, Left to Right" Selected="true" />
@@ -1707,13 +1658,20 @@
 							<dx:ASPxGridView ID="gvSelectedVars" runat="server" 
 								ClientInstanceName="gvSelectedVars" AutoGenerateColumns="false" SettingsText-EmptyDataRow="No variables selected" 
 								Visible="false"  >
-								
+								<ClientSideEvents CustomButtonClick="DeleteSelVar" />
 								<Columns>
-									<dx:GridViewDataColumn FieldName="Measure" Caption="Measure"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="Variable" Caption="Variable"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="Label" Caption="Label"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="DataType" Caption="Data Type"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="VarType" Caption="Var Type"></dx:GridViewDataColumn>
+									<dx:GridViewCommandColumn Caption="Del" ButtonRenderMode="Image" VisibleIndex="0" Width="50px">
+											<CustomButtons>
+											<dx:GridViewCommandColumnCustomButton ID="Delete"   >
+												<Image ToolTip="Delete Variable" Url="~/images/del.png" />
+											</dx:GridViewCommandColumnCustomButton>
+										</CustomButtons>
+									</dx:GridViewCommandColumn>									
+									<dx:GridViewDataColumn FieldName="measname" Caption="Measure"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="varname" Caption="Variable"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="fldlabel" Caption="Label"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="datatype" Caption="Data Type"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="vartype" Caption="Var Type"></dx:GridViewDataColumn>
 
 								</Columns>
 							</dx:ASPxGridView>

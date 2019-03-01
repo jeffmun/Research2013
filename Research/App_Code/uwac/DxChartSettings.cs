@@ -49,6 +49,8 @@ namespace uwac
 		private string _yaxisvar;
 		private string _colorvar = "none";
 		private string _panelvar = "none";
+
+		private List<Variable> _vars;
 		private List<string> _numvars;
 		private List<string> _datevars;
 		private List<string> _agevars;
@@ -74,9 +76,17 @@ namespace uwac
 		public string yaxisvar { get { return _yaxisvar; } set { _yaxisvar = value; } }
 		public string colorvar { get { return _colorvar; } set { _colorvar = value; } }
 		public string panelvar { get { return _panelvar; } set { _panelvar = value; } }
-		public List<string> numvars { get { return _numvars; } set { _numvars = value; } }
-		public List<string> datevars { get { return _datevars; } set { _datevars = value; } }
+
+		public List<Variable> vars { get { return _vars; } set { _vars = value; } }
+		//public List<string> numvars { get { return _numvars; } set { _numvars = value; } }
+		//public List<string> datevars { get { return _datevars; } set { _datevars = value; } }
+		//public List<string> agevars { get { return _agevars; } set { _agevars = value; } }
+
+		public List<string> numvars { get { return GetNumVars(); } }
+		public List<string> datevars { get { return GetDateVars(); }  }
 		public List<string> agevars { get { return _agevars; } set { _agevars = value; } }
+
+
 		public PaneLayoutDirection panesLayoutDirection { get { return _panesLayoutDirection; } set { _panesLayoutDirection = value; } }
 		public DxLayout chartlayout { get { return _chartlayout; } set { _chartlayout = value; } }
 		public ScaleMode ScaleMode { get { return _ScaleMode; } set { _ScaleMode = value; } }
@@ -84,10 +94,12 @@ namespace uwac
 
 		public bool HasVars {
 			get{
-				int n_num = (_numvars == null) ? 0 : _numvars.Count;
-				int n_date = (_datevars == null) ? 0 : _datevars.Count;
-				int n_age = (_agevars == null) ? 0 : _agevars.Count;
-				bool hasvars =  (n_num + n_date + n_age == 0) ? false : true;
+				//int n_num = (_numvars == null) ? 0 : _numvars.Count;
+				//int n_date = (_datevars == null) ? 0 : _datevars.Count;
+				//int n_age = (_agevars == null) ? 0 : _agevars.Count;
+				int n_vars = (_vars == null) ? 0 : _vars.Count;
+				bool hasvars =  (n_vars == 0) ? false : true;
+				
 				return hasvars;
 			}
 		}
@@ -131,9 +143,10 @@ namespace uwac
 
 		public void Initialize()
 		{
-			_numvars = new List<string>();
-			_datevars = new List<string>();
-			_agevars = new List<string>();
+			//_numvars = new List<string>();
+			//_datevars = new List<string>();
+			//_agevars = new List<string>();
+			_vars = new List<Variable>();
 			_colors = DefaultColors();
 			setup_errors = new List<string>();
 		}
@@ -164,6 +177,74 @@ namespace uwac
 			return mycolors;
 
 		}
+
+
+		public List<string> GetDateVars()
+		{
+			return GetVars(Vartype.date);
+		}
+		public List<string> GetTextVars()
+		{
+			return GetVars(Vartype.text);
+		}
+		public List<string> GetNumVars()
+		{
+			return GetVars(Vartype.numeric);
+		}
+
+
+
+		public List<string> GetVars(Vartype vtype)
+		{
+			List<string> tmpvars = new List<string>();
+
+			foreach (Variable v in _vars)
+			{
+				if (v.vartype == vtype)
+				{
+					tmpvars.Add(v.varname);
+				}
+			}
+			return tmpvars;
+		}
+
+		public void AddVars(DataTable dt)
+		{
+			foreach (DataRow row in dt.Rows)
+			{
+				Datatype dtype = new Datatype(row["datatype"].ToString(), Datatypesource.DxChartsettings);
+
+				Variable v = new Variable(row["varname"].ToString(), row["fldlabel"].ToString(), dtype);
+
+				_vars.Add(v);
+
+			}
+		}
+
+
+		//public void AddVarsFromDataTableUsingColumnDataType(DataTable dt)
+		//{
+		//	foreach (DataRow row in dt.Rows)
+		//	{
+		//		Datatype dtype = new Datatype(row["datatype"].ToString(), Datatypesource.DxChartsettings);
+
+		//		Variable v = new Variable(row["varname"].ToString(), row["fldlabel"].ToString(), dtype);
+
+		//		_vars.Add(v);
+
+		//	}
+		//}
+
+
+		public void AddVarsFromList(List<string> myvars)
+		{
+			foreach(string vname in myvars)
+			{
+				Variable v = new Variable(vname, vname, new Datatype(SqlDatatype.Float));
+				_vars.Add(v);
+			}
+		}
+
 	}
 
 

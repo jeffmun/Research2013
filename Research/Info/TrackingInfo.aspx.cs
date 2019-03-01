@@ -14,9 +14,10 @@ using AutismCenterBase.Utilities;
 using System.IO;
 using System.Drawing;
 using System.Text;
+using uwac;
 
 
-public partial class Info_TrackingInfo : System.Web.UI.Page
+public partial class Info_TrackingInfo : BasePage
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();

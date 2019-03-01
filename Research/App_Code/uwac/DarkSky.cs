@@ -32,4 +32,10 @@ public class DarkSky
 
 	}
 
+	//public struct Location
+	//{
+	//	float lat;
+	//	float lon;
+	//}
+
 }

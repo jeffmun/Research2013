@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Data;
 using System.Data.SqlClient;
-
+using uwac;
 
 namespace DataEntryFramework4
 {
@@ -51,8 +52,15 @@ namespace DataEntryFramework4
 			else
 				alreadyOpen = true;
 
-			SqlDataReader r = sqlcommand.ExecuteReader();
-			r.Read();
+
+			//SqlDataReader r = sqlcommand.ExecuteReader();
+			//r.Read();
+
+
+			//New Feb 2019
+			DataTable dt = DEF4adapter.SqlCommand_returns_DataTable(sqlcommand);
+			DataRow r = dt.Rows[0];
+
 
 			// loop and compare entered values to values in database
 
@@ -138,7 +146,7 @@ namespace DataEntryFramework4
 
 			} // end foreach loop
 
-			r.Close();
+			//r.Close();
 			if (alreadyOpen == false) sqlcommand.Connection.Close();
 			
 			// return false if any verification errors occured

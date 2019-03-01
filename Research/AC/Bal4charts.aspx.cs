@@ -126,10 +126,11 @@ public partial class AC_Bal4charts : BasePage
 					};
 
 					settings.maxCol = 2;
-					settings.W = 1200;
-					settings.H = 800;
+					settings.W = 1100;
+					settings.H = 400;
 					settings.colors = mycolors;
-					settings.numvars = yvars;
+					settings.AddVarsFromList(yvars);
+					//settings.numvars = yvars;
 					settings.seriesby = "id";
 					settings.xaxisvar = "yrmo";
 					settings.colorvar = "variable";

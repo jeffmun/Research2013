@@ -447,12 +447,15 @@ namespace DataEntryFramework4
 									SqlCommand sqlCommand )
 		{
 
-			//HERE!!!! 
-
 			// execute the query
-			if (DBConnection.State == ConnectionState.Closed) DBConnection.Open();
-			SqlDataReader r = sqlCommand.ExecuteReader();
-			r.Read();
+
+			//New Feb 2019
+			DataTable dt = DEF4adapter.SqlCommand_returns_DataTable(sqlCommand);
+			DataRow r = dt.Rows[0];
+
+			//if (DBConnection.State == ConnectionState.Closed) DBConnection.Open();
+			//SqlDataReader r = sqlCommand.ExecuteReader();
+			//r.Read();
 
 			//loop over fields and fetch values from columns of resultset
 			foreach (DataFieldControl dfc in dec.AllDataFields.Values) 
@@ -496,8 +499,8 @@ namespace DataEntryFramework4
 			//        dec.LastScoredDate = DateTime.MinValue;
 			//}
 
-			r.Close();
-			DBConnection.Close();			
+			//r.Close();
+			//DBConnection.Close();			
 
 		}
 
@@ -517,7 +520,7 @@ namespace DataEntryFramework4
 			AddParameters(sqlCommand.Parameters, paramFields);
 			
 			// set verified parameter
-			sqlCommand.Parameters.AddWithValue("@verified", verified);
+			sqlCommand.Parameters.AddWithValue("@verified", (int)verified);
 
 			// execute
 			DoCommand(dec, sqlCommand);
@@ -535,7 +538,7 @@ namespace DataEntryFramework4
 			AddParameters(sqlCommand.Parameters, paramFields);
 			
 			// set verified parameter
-			sqlCommand.Parameters.AddWithValue("@verified", verified);
+			sqlCommand.Parameters.AddWithValue("@verified", (int)verified);
 
 			// set studymeasid parameter
 			sqlCommand.Parameters.AddWithValue("@studymeasid", studymeasid);
@@ -563,7 +566,7 @@ namespace DataEntryFramework4
 			AddParameters(sqlCommand.Parameters, paramFields);
 			
 			// set verified parameter
-			sqlCommand.Parameters.AddWithValue("@verified", verified);
+			sqlCommand.Parameters.AddWithValue("@verified", (int)verified);
 
 			// set primary key parameter
 			sqlCommand.Parameters.AddWithValue("@" + dec.PrimaryKeyField, primaryKeyVal);
@@ -603,7 +606,7 @@ namespace DataEntryFramework4
 									int primaryKeyVal)
 		{
 			// set verified parameter
-			sqlCommand.Parameters.AddWithValue("@verified", verified);
+			sqlCommand.Parameters.AddWithValue("@verified", (int)verified);
 
 			// set primary key parameter
 			sqlCommand.Parameters.AddWithValue("@" + dec.PrimaryKeyField, primaryKeyVal);
@@ -836,16 +839,21 @@ namespace DataEntryFramework4
 						// and writing them back-- changing only fields with  'use new' checked. I'm doing
 						// it this way so I don't have to deal with dynamically creating sql strings.
 
-						DBConnection.Open();
-						SqlDataReader rSaved = selectSqlCommand.ExecuteReader();
-						rSaved.Read();  // contains all fields
+						//DBConnection.Open();
+						//SqlDataReader rSaved = selectSqlCommand.ExecuteReader();
+						//rSaved.Read();  // contains all fields
+
+						DataTable dt = DEF4adapter.SqlCommand_returns_DataTable(selectSqlCommand);
+						DataRow rSaved = dt.Rows[0];
+
+
 
 						// get update sqlcommand
 						SqlCommand updateSqlCommand = GetUpdateSqlCommand(dec);
 						
 						// set update sql parameters
 						updateSqlCommand.Parameters.AddWithValue("@" + dec.PrimaryKeyField, dec.PrimaryKeyVal);
-						updateSqlCommand.Parameters.AddWithValue("@verified", rSaved["verified"]);
+						updateSqlCommand.Parameters.AddWithValue("@verified", (int)rSaved["verified"]);
 
 						// set rest of parameters.  DoubleEntryDataFields is a subset of EntryDataFields.
 						foreach (DataFieldControl dfc in dec.EntryDataFields.Values)  
@@ -859,10 +867,11 @@ namespace DataEntryFramework4
 								updateSqlCommand.Parameters.AddWithValue("@" + dfc.FldName, rSaved[dfc.FldName]);
 							}
 						}
-						rSaved.Close();
+						//rSaved.Close();
 
 						// save
-						updateSqlCommand.ExecuteNonQuery();
+						//updateSqlCommand.ExecuteNonQuery();
+						DEF4adapter.SqlCommand_NonQuery(updateSqlCommand);
 					}
 
 					if (dec.Validator.Verify(selectSqlCommand, dec.DoubleEntryDataFields, dec.Notifications) == false) 
@@ -1107,24 +1116,28 @@ namespace DataEntryFramework4
 
 
 					//New Feb 2019
-					SQL_utils sql = new SQL_utils("data");
+					DataTable dt = DEF4adapter.SqlCommand_returns_DataTable(lookupSqlCommand);
+					//SQL_utils sql = new SQL_utils("data");
 
-					SqlParameter[] newps = new SqlParameter[lookupSqlCommand.Parameters.Count];
+					//SqlParameter[] newps = new SqlParameter[lookupSqlCommand.Parameters.Count];
 
-					List<SqlParameter> ps = new List<SqlParameter>();
-					foreach(SqlParameter p in lookupSqlCommand.Parameters)
-					{
-						SqlParameter newp = new SqlParameter();
-						newp.ParameterName = p.ParameterName;
-						newp.Value = p.Value;
-						newp.SqlValue = p.SqlValue;
-						newp.SqlDbType = p.SqlDbType;
-						ps.Add(newp);
-					}
+					//List<SqlParameter> ps = new List<SqlParameter>();
+					//foreach(SqlParameter p in lookupSqlCommand.Parameters)
+					//{
+					//	SqlParameter newp = new SqlParameter();
+					//	newp.ParameterName = p.ParameterName;
+					//	newp.Value = p.Value;
+					//	newp.SqlValue = p.SqlValue;
+					//	newp.SqlDbType = p.SqlDbType;
+					//	ps.Add(newp);
+					//}
 
-					string sqlproc = lookupSqlCommand.CommandText;
+					//string sqlproc = lookupSqlCommand.CommandText;
 
-					DataTable dt = sql.DataTable_from_SQLstring(sqlproc, ps);
+					//DataTable dt = sql.DataTable_from_SQLstring(sqlproc, ps);
+
+
+
 
 					DataSet ds = new DataSet();
 					dt.TableName = "results";
@@ -1278,6 +1291,7 @@ namespace DataEntryFramework4
 				dec.FormError = true;
 			}
 		}
+
 
 	}
 }

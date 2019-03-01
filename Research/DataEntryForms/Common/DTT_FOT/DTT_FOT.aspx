@@ -42,7 +42,7 @@
 <tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="Datafieldcontrol1" DatabaseField="NumRnds" IsReadOnly="true" RenderReadOnlyAsDiv="true"  FieldLabelWidth="200px" FieldTextBoxWidth="40px"></def:datafieldcontrol></td>
 <td></td></tr>
  
-<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="DTTavgFid" DatabaseField="DTTavgFid" IsReadOnly="true" RenderReadOnlyAsDiv="true"  FieldLabelWidth="200px" FieldTextBoxWidth="40px"></def:datafieldcontrol></td>
+<tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="DTT_FOT_Avg" DatabaseField="DTT_FOT_Avg" IsReadOnly="true" RenderReadOnlyAsDiv="true"  FieldLabelWidth="200px" FieldTextBoxWidth="40px"></def:datafieldcontrol></td>
 <td></td></tr>
  
 <tr><td style="vertical-align:top"><def:datafieldcontrol runat="server" id="AnyScoresLT3txt" DatabaseField="AnyScoresLT3txt" IsReadOnly="true" RenderReadOnlyAsDiv="true"  FieldLabelWidth="200px" FieldTextBoxWidth="40px"></def:datafieldcontrol></td>

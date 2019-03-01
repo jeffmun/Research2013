@@ -292,7 +292,9 @@ namespace DataEntryFramework4
 		private LinkButton _studymeasLinkButton;
 		private LinkButton _subjects_for_studymeasLinkButton;
 		//private LinkButton _measinfoLinkButton;
-		private LinkButton _deleteLinkButton;
+		private HyperLink _deleteLinkButton;
+
+		private HyperLink _resetsingleLinkButton;
 
 		private Button _blankmeasureButton; 
 
@@ -1892,6 +1894,21 @@ namespace DataEntryFramework4
 			_subjects_for_studymeasLinkButton.Visible = true;
 
 
+			_resetsingleLinkButton.Text = string.Format("Reset to single-entered", this.StudyMeasName, this.StudySubjectIDString);
+			_resetsingleLinkButton.ForeColor = Color.DarkGreen;
+			_resetsingleLinkButton.NavigateUrl = String.Format("~/Info/ResetVerified.aspx?mode=reset&studymeasID={0}&pkval={1}", this.StudyMeasID.ToString(), this.PrimaryKeyVal.ToString());
+			_resetsingleLinkButton.Target = "_blank";
+			_resetsingleLinkButton.Visible = false;
+
+
+
+			_deleteLinkButton.Text = string.Format("Delete {0} for {1}", this.StudyMeasName, this.StudySubjectIDString);
+			_deleteLinkButton.ForeColor = Color.DarkRed;
+			_deleteLinkButton.NavigateUrl = String.Format("~/Info/ResetVerified.aspx?mode=delete&studymeasID={0}&pkval={1}", this.StudyMeasID.ToString(), this.PrimaryKeyVal.ToString());
+			_deleteLinkButton.Target = "_blank";
+			_deleteLinkButton.Visible = false;
+
+
 			_subjectInfoLabel.Text = "Quick Links:";
 			_subjectInfoLabel.Font.Bold = true;
 			_subjectInfoLabel.Visible = true;
@@ -1950,6 +1967,20 @@ namespace DataEntryFramework4
 			_subjectInfoLabel.Text = "Quick Links:";
 			_subjectInfoLabel.Font.Bold = true;
 			_subjectInfoLabel.Visible = true;
+
+			_resetsingleLinkButton.Text = string.Format("Reset to single-entered", this.StudyMeasName, this.StudySubjectIDString);
+			_resetsingleLinkButton.ForeColor = Color.DarkGreen;
+			_resetsingleLinkButton.NavigateUrl = String.Format("~/Info/ResetVerified.aspx?mode=reset&studymeasID={0}&pkval={1}", this.StudyMeasID.ToString(), this.PrimaryKeyVal.ToString());
+			_resetsingleLinkButton.Target = "_blank";
+			_resetsingleLinkButton.Visible = false;
+
+
+
+			_deleteLinkButton.Text = string.Format("Delete {0} for {1}", this.StudyMeasName, this.StudySubjectIDString);
+			_deleteLinkButton.ForeColor = Color.DarkRed;
+			_deleteLinkButton.NavigateUrl = String.Format("~/Info/ResetVerified.aspx?mode=delete&studymeasID={0}&pkval={1}", this.StudyMeasID.ToString(), this.PrimaryKeyVal.ToString());
+			_deleteLinkButton.Target = "_blank";
+			_deleteLinkButton.Visible = false;
 
 
 			_blankmeasureButton.Text = "Change Measure";
@@ -2134,6 +2165,8 @@ namespace DataEntryFramework4
 					_createNewStudyMeasureDDL.Visible = false;
 					_newStudyMeasureLabel.Visible = false;
 
+					_resetsingleLinkButton.Visible = true;
+					_deleteLinkButton.Visible = true;
 
 					//JM new
 					if (studymeasidQSParam != null)
@@ -2715,8 +2748,11 @@ namespace DataEntryFramework4
 
 			_blankmeasureButton = new Button();
 			_blankmeasureButton.Font.Size = 8;
-			
-			
+
+			_resetsingleLinkButton = new HyperLink();
+
+			_deleteLinkButton = new HyperLink();
+
 			////label to hold warning that scoring is out-of-date.
 			//_lblNeedsScoring = new Label();
 			//_lblNeedsScoring.Text = "MEASURE HAS BEEN UPDATED AND NEEDS TO BE SCORED";
@@ -2754,7 +2790,8 @@ namespace DataEntryFramework4
 			this.Controls.Add(_subjects_for_studymeasLinkButton);
 			//this.Controls.Add(_measinfoLinkButton);
 			this.Controls.Add(_blankmeasureButton);
-
+			this.Controls.Add(_resetsingleLinkButton);
+			this.Controls.Add(_deleteLinkButton);
 		}
 
 
@@ -2817,6 +2854,10 @@ namespace DataEntryFramework4
 			_studymeasLinkButton.RenderControl(writer);
 			writer.Write("<br><br>");
 			_subjects_for_studymeasLinkButton.RenderControl(writer);
+			writer.Write("<br><br>");
+			_deleteLinkButton.RenderControl(writer);
+			writer.Write("<br><br>");
+			_resetsingleLinkButton.RenderControl(writer);
 			writer.Write("<br><br>&nbsp;&nbsp;");
 			_blankmeasureButton.RenderControl(writer);
 			writer.RenderEndTag(); // td

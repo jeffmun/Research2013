@@ -974,6 +974,151 @@ namespace uwac
 		}
 
 
+		//public static DataTable AddColumns(DataTable dt1, DataTable dt2, string matchcol, string suffix)
+		//{
+		//	DataTable dt1copy = dt1.Clone();
+
+		//	//Columns from dt2
+		//	var dt2Columns = dt2.Columns.OfType<DataColumn>().Select(dc =>
+		//		new DataColumn(dc.ColumnName + suffix, dc.DataType, dc.Expression, dc.ColumnMapping));
+		//	//Add cols from dt2 into dt1
+		//	dt1copy.Columns.AddRange(dt2Columns.ToArray());
+
+		//	var rowData =
+		//		from row1 in dt1.AsEnumerable()
+		//		join row2 in dt2.AsEnumerable()
+		//			on row1.Field<string>(matchcol) equals row2.Field<string>(matchcol)
+		//		select row1.ItemArray.Concat(row2.ItemArray).ToArray();
+		//	foreach (object[] values in rowData)
+		//		dt1copy.Rows.Add(values);
+
+		//	return dt1copy;
+		//}
+
+
+		public static DataTable WidenRelData(DataTable dt, List<string> vars_to_move, string var_to_joinby
+			, string var_to_divide_rows, string divide_val1, string divide_val2, string prefix_for_moved_vars, string suffix_for_moved_vars)
+		{
+			//returns a DataTable in which the vars_to_move are joined as new columns with the prefix/suffix 
+
+			//var dt_tomove = dt.AsEnumerable().Select(vars_to_move.Select(v => v[i]));
+
+			//List<DataTable> dts = new List<DataTable>();
+			//foreach (string v in vars_to_move)
+			//{
+			//	DataTable dt_for_var = new DataTable();
+			//	dt_for_var = GetDataTable_for_Variable(dt, vars_to_keep.ToArray<string>(), v);
+			//	dts.Add(dt_for_var);
+			//}
+
+
+
+
+			//public DataTable FullOuterJoinDataTables(List<string> idvars) // supports as many datatables as you need.
+			//{
+			//	DataTable[] datatables = this.DataTableArray(idvars);
+			//	DataTable result = datatables.First().Clone();
+
+			//	var commonColumns = result.Columns.OfType<DataColumn>();
+
+			//	foreach (var dt in datatables.Skip(1))
+			//	{
+			//		commonColumns = commonColumns.Intersect(dt.Columns.OfType<DataColumn>(), new DataColumnComparer());
+			//	}
+
+			//	result.PrimaryKey = commonColumns.ToArray();
+
+			//	foreach (var dt in datatables)
+			//	{
+			//		result.Merge(dt, false, MissingSchemaAction.AddWithKey);
+			//	}
+			//	return result;
+			//}
+
+
+			DataTable dtcopy = dt.Clone();
+
+			List<string> new_vars = new List<string>();
+
+			//Get a list of new var names
+			foreach (string v in vars_to_move)
+			{
+				string newv = String.Format("{0}{1}{2}", prefix_for_moved_vars, v, suffix_for_moved_vars);
+			}
+
+			//Rename vars in the REL copy
+			foreach (DataColumn col in dtcopy.Columns)
+			{
+				string newv = String.Format("{0}{1}{2}", prefix_for_moved_vars, col.ColumnName, suffix_for_moved_vars);
+				col.ColumnName = newv;
+			}
+
+
+			DataTable dtcopy1 = dt.Clone();
+			DataTable dtcopy2 = dt.Clone();
+
+			DataTable dt1 = dt.AsEnumerable().Where(f => f.Field<string>(var_to_divide_rows) == divide_val1).CopyToDataTable();
+			DataTable dt2 = dtcopy.AsEnumerable().Where(f => f.Field<string>(var_to_divide_rows) == divide_val2).CopyToDataTable();
+
+			foreach (DataColumn col in dt2.Columns)
+			{
+				bool deletecol = true;
+				if (new_vars.Contains(col.ColumnName)) deletecol = false;
+				if (col.ColumnName == var_to_joinby) deletecol = false;
+
+				if (deletecol) dt2.Columns.Remove(col);
+			}
+
+
+			var qryWide = dt1.AsEnumerable()
+				.GroupJoin(
+					dt2.AsEnumerable(),
+					dr1 => new { key1 = dr1[var_to_joinby] },
+					dr2 => new { key1 = dr2[var_to_joinby] },    //{ key1 = dr2["Key"], key2 = dr2["Key2"] },
+					(dr1, result) =>
+						dr1.ItemArray
+						.Concat(result.Any() ? result.First().ItemArray : Enumerable.Empty<object>())
+						.ToArray());
+
+			DataTable dtWide = qryWide.CustomCopyToDataTable();
+
+			return dtWide;
+
+			//var dt2Columns = dtcopy2.Columns.OfType<DataColumn>().Select(dc =>
+			//	new DataColumn(prefix_for_moved_vars + dc.ColumnName + suffix_for_moved_vars, dc.DataType, dc.Expression, dc.ColumnMapping));
+
+
+			////rename the vars to move
+
+			////Columns from dt2
+			//var dt2Columns = dtcopy2.Columns.OfType<DataColumn>().Select(dc =>
+			//	new DataColumn(prefix_for_moved_vars + dc.ColumnName + suffix_for_moved_vars, dc.DataType, dc.Expression, dc.ColumnMapping));
+			////Add cols from dt2 into dt1
+			//dt1copy.Columns.AddRange(dt2Columns.ToArray());
+
+			//var rowData =
+			//	from row1 in dt1.AsEnumerable()
+			//	join row2 in dt2.AsEnumerable()
+			//		on row1.Field<string>(matchcol) equals row2.Field<string>(matchcol)
+			//	select row1.ItemArray.Concat(row2.ItemArray).ToArray();
+			//foreach (object[] values in rowData)
+			//	dt1copy.Rows.Add(values);
+
+			//return dt1copy;
+
+
+
+
+
+
+			//DataTable dtStacked = new DataTable();
+			////dtStacked = AddRows(dts);
+
+			//return dtStacked;
+		}
+
+
+
 
 
 		public static void DebugTable(this DataTable table)

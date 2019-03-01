@@ -164,12 +164,14 @@ namespace uwac
 				{
 					foreach (string v in _vars)
 					{
-						mysettings.yaxisvar = v;
-						mysettings.seriesby = "id";
-						DxChart chart = new DxLineplot(mysettings, dt);
-						chart.AddTitles(String.Format("{0} {1}", v, title));
-						charts.Add(chart);
-
+						if (mysettings.xaxisvar != v) //If y is not the same as x, then continue
+						{
+							mysettings.yaxisvar = v;
+							mysettings.seriesby = "id";
+							DxChart chart = new DxLineplot(mysettings, dt);
+							chart.AddTitles(String.Format("{0} {1}", v, title));
+							charts.Add(chart);
+						}
 					}
 				}
 				// if variable is used as a color

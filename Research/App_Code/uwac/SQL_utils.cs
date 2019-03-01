@@ -1092,6 +1092,44 @@ namespace uwac
 			}
 		}
 
+
+
+
+		public void NonQuery_from_SQLstring(string sSQL, List<SqlParameter> p)
+		{
+			SqlCommand oCmd = new SqlCommand();
+
+			oCmd.Connection = oSqlConn;
+			oCmd.CommandText = sSQL;
+			oCmd.CommandTimeout = 90;
+			oCmd.CommandType = CommandType.Text;
+
+
+
+			foreach (SqlParameter myp in p)
+			{
+				oCmd.Parameters.Add(myp);
+			}
+
+			try
+			{
+				oCmd.ExecuteNonQuery();
+			}
+			catch (Exception exc)
+			{
+				string param_data = " PARAMS:";
+				foreach (SqlParameter pd in p)
+				{
+					param_data += "([" + pd.SqlDbType.ToString() + "] " + pd.ParameterName + "=" + pd.Value.ToString() + ")";
+				}
+				throw new System.Exception("An Error!NonQuery3 sql={" + sSQL + param_data + "}", exc);
+			}
+
+		}
+
+
+
+
 		public void NonQuery_from_ProcName(string sProc, SqlParameter myp)
 		{
 			List<SqlParameter> p = new List<SqlParameter>();

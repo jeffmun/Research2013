@@ -372,7 +372,7 @@ namespace uwac
 				{
 					seriesPoints[i] = new SeriesPoint(dataxy.Rows[i].Field<DateTime>("x"), new double[] { dataxy.Rows[i].Field<double>("y") });
 				}
-				else if (_settings.xaxis_is_age)
+				else if (_settings.xaxis_is_age | _settings.xaxis_is_num)
 				{
 					seriesPoints[i] = new SeriesPoint(dataxy.Rows[i].Field<double>("x"), new double[] { dataxy.Rows[i].Field<double>("y") });
 				}
@@ -402,7 +402,7 @@ namespace uwac
 			{
 				DateTime[] x = dataxy.AsEnumerable().Select(o => o.Field<DateTime>("x")).ToArray();
 			}
-			else if (_settings.xaxis_is_age)
+			else if (_settings.xaxis_is_age | _settings.xaxis_is_num)
 			{
 				double[] x = dataxy.AsEnumerable().Select(o => o.Field<double>("x")).ToArray();
 			}
@@ -494,6 +494,7 @@ namespace uwac
 		private string _seriesby;
 		private bool _xaxis_is_date = false;
 		private bool _xaxis_is_age = false;
+		private bool _xaxis_is_num = false;
 		private bool _showLegend = true;
 		private bool _matchYAxes = true;
 		private bool _isActogram = false;
@@ -511,6 +512,7 @@ namespace uwac
 		public List<string> yvars { get { return _yvars; } set { _yvars = value; } }
 		public bool xaxis_is_date { get { return _xaxis_is_date; } set { _xaxis_is_date = value; } }
 		public bool xaxis_is_age { get { return _xaxis_is_age; } set { _xaxis_is_age = value; } }
+		public bool xaxis_is_num { get { return _xaxis_is_num; } set { _xaxis_is_num = value; } }
 		public bool showLegend { get { return _showLegend; } set { _showLegend = value; } }
 		public string legend_pos_h { get { return _legend_pos_h; } set { _legend_pos_h = value; } }
 		public string legend_pos_v { get { return _legend_pos_v; } set { _legend_pos_v = value; } }

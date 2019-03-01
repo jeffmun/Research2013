@@ -13,7 +13,7 @@ using NReco.PivotData.File;
 using NReco.PivotData.Output;
 using uwac;
 
-public partial class AC_CHDDrpt : System.Web.UI.Page
+public partial class AC_CHDDrpt : BasePage //System.Web.UI.Page
 {
 	protected void Page_Load(object sender, EventArgs e)
 	{

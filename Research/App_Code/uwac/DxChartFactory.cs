@@ -78,6 +78,17 @@ namespace uwac
 
 				}
 			}
+			else
+			{
+				if(_dt != null)
+				{
+					foreach (DxChartOrder order in orders)
+					{
+						ProcessOrder(order);
+
+					}
+				}
+			}
 		}
 
 
@@ -89,25 +100,28 @@ namespace uwac
 				order.batches.Clear();
 			}
 
-			bool hassameworksheet = order.HasSameWorksheet(_dpdata);
-
-			if (!hassameworksheet)
+			//Skip the_dpdata stuff if _dt is already populated
+			if (_dt == null)
 			{
-				//Need new DPData
-				_dataproject.selectedsheet = order.worksheet;
-				_dpdata = new DPData(_dataproject, order.filter);
+				bool hassameworksheet = order.HasSameWorksheet(_dpdata);
+
+				if (!hassameworksheet)
+				{
+					//Need new DPData
+					_dataproject.selectedsheet = order.worksheet;
+					_dpdata = new DPData(_dataproject, order.filter);
+				}
+
+
+				bool hassamefilter = order.HasSameFilter(_dpdata);
+
+				if (!hassamefilter)
+				{
+					_dpdata.filter = order.filter;
+				}
+
+				_dt = _dpdata.dt;
 			}
-
-
-			bool hassamefilter = order.HasSameFilter(_dpdata);
-
-			if (!hassamefilter)
-			{
-				_dpdata.filter = order.filter;
-			}
-
-			_dt = _dpdata.dt;
-
 
 			//Each order will result in a list of batches
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
@@ -197,7 +211,7 @@ namespace uwac
 								{
 									//#2 - treat it as square
 									mysettings.current_xypairtype = mode;
-									mysettings.numvars = tmpvars;
+									//mysettings.numvars = tmpvars;
 									mysettings.xvars = null;
 									mysettings.yvars = null;
 
@@ -228,7 +242,7 @@ namespace uwac
 								{
 									//#2 - back to original
 									mysettings.current_xypairtype = mode;
-									mysettings.numvars = tmpvars;
+									//mysettings.numvars = tmpvars;
 									mysettings.xvars = tmpvarsX;
 									mysettings.yvars = tmpvarsY;
 									mysettings.manualXandYvars = true;

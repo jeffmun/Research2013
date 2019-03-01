@@ -120,7 +120,7 @@ public partial class Data_Dictionary: BasePage
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
 			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!')  else '' end) " + Environment.NewLine +
 			" + (case  when fielddatatype <> data_type then ' <>TYPE!!' else '' end) " + Environment.NewLine +
-			" + (case  when fielddatatypelength<> character_maximum_length then ' <>LENGTH!!' else '' end ) as datatype " + Environment.NewLine +
+			" + (case  when fielddatatypelength<> character_maximum_length then ' <>' + cast(character_maximum_length as varchar) + ' [in DB]!!' else '' end ) as datatype " + Environment.NewLine +
 			" , fieldlabel, fieldvaluesetID " + Environment.NewLine +
 			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'<br/>') valuelabels " + Environment.NewLine +
 			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fldextractionmode_txt, importposition, constString  " + Environment.NewLine +

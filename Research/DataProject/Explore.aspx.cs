@@ -231,7 +231,11 @@ public partial class DataProject_Explore : BasePage
 			//BIND_orders();
 		}
 
-		
+		if (Session["allvars"] != null)
+		{
+			gridSelVars.DataSource = Session["allvars"];
+			gridSelVars.DataBind();
+		}
 	}
 
 
@@ -302,6 +306,7 @@ public partial class DataProject_Explore : BasePage
 
 
 		PopulateDropdownItems(cboXaxisvarLINE, new List<string> { "variable" }, false, addtimept);
+		PopulateDropdownItems(cboYaxisvarLINE, new List<string> { "variable" }, false, addtimept);
 		PopulateDropdownItems(cboColorsvarLINE, new List<string> { "none", "variable", "group", "sex" }, addtxgrp, addtimept);
 		PopulateDropdownItems(cboPanelvarLINE, new List<string> { "none", "variable", "group", "sex", "id", "ref_id" }, addtxgrp, addtimept);
 
@@ -319,7 +324,8 @@ public partial class DataProject_Explore : BasePage
 		cboPanevarSCAT.Value = "none";
 		cboPanelvarSCAT.Value = "none";
 
-		cboXaxisvarLINE.Value = "variable";
+		cboXaxisvarLINE.Value = "timept";
+		cboYaxisvarLINE.Value = "variable";
 		cboColorsvarLINE.Value = "none";
 		cboPanelvarLINE.Value = "none";
 	}
@@ -413,10 +419,34 @@ public partial class DataProject_Explore : BasePage
 
 	protected void ReInitialize()
 	{
-		List<string> selected_numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		List<string> selected_textvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		List<string> selected_datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		List<string> selected_agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+		//List<string> selected_allvars = dataops.GetListString(gridSelVars.GetSelectedFieldValues("varname"));
+		//List<string> selected_allvars = dataops.GetListString(gridSelVars.GridView.GetSelectedFieldValues("varname"));
+
+		//List<string> selected_numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//List<string> selected_textvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+		//List<string> selected_datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		//List<string> selected_agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+		string varname = String.Empty;
+		string datatype = String.Empty;
+
+		List<string> selected_numvars = new List<string>();
+		List<string> selected_textvars = new List<string>();
+		List<string> selected_datevars = new List<string>();
+
+		List<string> selected_allvars = new List<string>();
+
+		for (int i = 0; i < gridSelVars.VisibleRowCount; i++)
+		{
+			if (gridSelVars.Selection.IsRowSelected(i))
+			{
+				varname = gridSelVars.GetRowValues(i, new string[] { "varname" }).ToString();
+				datatype = gridSelVars.GetRowValues(i, new string[] { "datatype" }).ToString();
+
+				selected_numvars.Add(varname);
+			}
+		}
 
 
 		dpdata.numericvars = selected_numvars;
@@ -440,9 +470,10 @@ public partial class DataProject_Explore : BasePage
 
 		List<string> vars_for_xaxis_lineplot = new List<string> { "variable", "timept " };
 		if (selected_datevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_datevars);
-		if (selected_agevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_agevars);
+		//FIXIT!!!  if (selected_agevars.Count > 0) vars_for_xaxis_lineplot.AddRange(selected_agevars);
 
 		PopulateDropdownItems(cboXaxisvarLINE, vars_for_xaxis_lineplot);
+		PopulateDropdownItems(cboYaxisvarLINE, vars_for_xaxis_lineplot);
 
 
 		//Crosstabs 
@@ -468,6 +499,14 @@ public partial class DataProject_Explore : BasePage
 
 
 	#region Custom Sorting and JS properties for vars grid (allows selected vars to stay at top of grid)
+
+	protected void gridVarsAll_OnInit(object sender, EventArgs e)
+	{
+		var lookup = (ASPxGridLookup)sender;
+		lookup.GridView.CustomColumnSort += Grid_CustomColumnSort_BySelected;
+		lookup.GridView.CustomJSProperties += GridView_CustomJSProperties;
+	}
+
 
 	protected void gridVarsNum_OnInit(object sender, EventArgs e)
 	{
@@ -584,61 +623,77 @@ public partial class DataProject_Explore : BasePage
 
 			if (param == "all")
 			{
-				BIND_vars_num();
-				BIND_vars_text();
-				BIND_vars_date();
-				BIND_vars_age();
+				BIND_vars_all();
+				//BIND_vars_num();
+				//BIND_vars_text();
+				//BIND_vars_date();
+				//BIND_vars_age();
 			}
-			else if (param == "num")
-			{
-				BIND_vars_num();
-			}
-			else if (param == "text")
-			{
-				BIND_vars_text();
-			}
-			else if (param == "date")
-			{
-				BIND_vars_date();
-			}
-			else if (param == "age")
-			{
-				BIND_vars_age();
-			}
+			//else if (param == "num")
+			//{
+			//	BIND_vars_num();
+			//}
+			//else if (param == "text")
+			//{
+			//	BIND_vars_text();
+			//}
+			//else if (param == "date")
+			//{
+			//	BIND_vars_date();
+			//}
+			//else if (param == "age")
+			//{
+			//	BIND_vars_age();
+			//}
 		}
 
 
 	}
 
-	protected void BIND_vars_num()
+	protected void BIND_vars_all()
 	{
-		DataTable datadict_num = dataproject.datadict_subtype("num");
+		DataTable datadict_all = dataproject.datadict_subtype("all");
 
-		gridVarsNum.DataSource = datadict_num;
-		gridVarsNum.DataBind();
+		//gridVarsAll.DataSource = datadict_all;
+		//gridVarsAll.DataBind();
+
+		Session["allvars"] = datadict_all;
+
+		gridSelVars.DataSource = datadict_all;
+		gridSelVars.DataBind();
+
 
 	}
-	protected void BIND_vars_text()
-	{
-		DataTable datadict_text = dataproject.datadict_subtype("text");
 
-		gridVarsText.DataSource = datadict_text;
-		gridVarsText.DataBind();
-	}
-	protected void BIND_vars_date()
-	{
-		DataTable datadict_date = dataproject.datadict_subtype("date");
+	//protected void BIND_vars_num()
+	//{
+	//	DataTable datadict_num = dataproject.datadict_subtype("num");
 
-		gridVarsDate.DataSource = datadict_date;
-		gridVarsDate.DataBind();
-	}
-	protected void BIND_vars_age()
-	{
-		DataTable datadict_age = dataproject.datadict_subtype("age");
+	//	gridVarsNum.DataSource = datadict_num;
+	//	gridVarsNum.DataBind();
 
-		gridVarsAge.DataSource = datadict_age;
-		gridVarsAge.DataBind();
-	}
+	//}
+	//protected void BIND_vars_text()
+	//{
+	//	DataTable datadict_text = dataproject.datadict_subtype("text");
+
+	//	gridVarsText.DataSource = datadict_text;
+	//	gridVarsText.DataBind();
+	//}
+	//protected void BIND_vars_date()
+	//{
+	//	DataTable datadict_date = dataproject.datadict_subtype("date");
+
+	//	gridVarsDate.DataSource = datadict_date;
+	//	gridVarsDate.DataBind();
+	//}
+	//protected void BIND_vars_age()
+	//{
+	//	DataTable datadict_age = dataproject.datadict_subtype("age");
+
+	//	gridVarsAge.DataSource = datadict_age;
+	//	gridVarsAge.DataBind();
+	//}
 
 
 
@@ -834,16 +889,21 @@ public partial class DataProject_Explore : BasePage
 	{
 		log("  ======= DisplaySelectedVarInfo ======= ");
 
-		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+		//List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+		//List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		//List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 
-		List<string> allvars = new List<string>();
-		allvars.AddRange(numvars);
-		allvars.AddRange(txtvars);
-		allvars.AddRange(datevars);
-		allvars.AddRange(agevars);
+
+		//List<string> allvars = new List<string>();
+		//allvars.AddRange(numvars);
+		//allvars.AddRange(txtvars);
+		//allvars.AddRange(datevars);
+		//allvars.AddRange(agevars);
+
+		//List<string> allvars = dataops.GetListString(gridVarsAll.GridView.GetSelectedFieldValues("varname"));
+		List<string> allvars = dataops.GetListString(gridSelVars.GetSelectedFieldValues("varname"));
+
 
 		DataTable dt_selvars = new DataTable();
 		dt_selvars.Columns.Add(new DataColumn("varname"));
@@ -856,23 +916,10 @@ public partial class DataProject_Explore : BasePage
 			string selectedsheet = dpdata.selectedsheet;
 
 			DataView dv = new DataView();
-			DataTable dt_dict = dataproject.DataDictionaryForSheet(selectedsheet);
+			//DataTable dt_dict = dataproject.DataDictionaryForSheet(selectedsheet);
+			DataTable dt_dict = dataproject.datadict_subtype("all");
 			dv = dt_dict.AsDataView();
 
-			////get the correct data dictionary
-			//if (dpdata.selectedsheet == "Subjects")
-			//{
-			//	//DataTable dtdict_subj = DataDictionaryForSheet((DataSet)Session["dset"], "Subjects");
-			//	DataTable dtdict_subj = dataproject.DataDictionaryForSheet("Subjects");
-			//	dv = dtdict_subj.AsDataView();
-			//}
-			//else
-			//{
-			//	dv = dpdata.dtdict.AsDataView();
-			//}
-
-			//string notDataSheet = (dataproject.selectedsheet != "Data") ?
-			//	String.Format(" and measname='{0}'", dataproject.selectedsheet.Replace("Data_", "")) : "";
 
 			string notDataSheet = (selectedsheet != "Data") ?
 				String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
@@ -885,30 +932,39 @@ public partial class DataProject_Explore : BasePage
 			DataTable dt = dv.ToTable();
 
 
-			dt.Columns.Add(new DataColumn("vartype", typeof(string)));
+			//dt.Columns.Add(new DataColumn("vartype", typeof(string)));
 
 
-			foreach (DataRow row in dt.Rows)
-			{
-				string v = row["varname"].ToString();
-				string vt = "";
-				if (numvars.Contains(v)) vt = "numeric";
-				else if (txtvars.Contains(v)) vt = "categorical";
-				else if (datevars.Contains(v)) vt = "date";
-				else if (agevars.Contains(v)) vt = "age";
-				row["vartype"] = vt;
-			}
+			//foreach (DataRow row in dt.Rows)
+			//{
+			//	string v = row["varname"].ToString();
+			//	string vt = "";
+			//	if (numvars.Contains(v)) vt = "numeric";
+			//	else if (txtvars.Contains(v)) vt = "categorical";
+			//	else if (datevars.Contains(v)) vt = "date";
+			//	else if (agevars.Contains(v)) vt = "age";
+			//	row["vartype"] = vt;
+			//}
 
+			//var x = from f in dt.AsEnumerable()
+			//		select new
+			//		{
+			//			Measure = f.Field<string>("measname"),
+			//			Variable = f.Field<string>("varname"),
+			//			Label = f.Field<string>("FieldLabel"),
+			//			DataType = f.Field<string>("DataType"),
+			//			VarType = f.Field<string>("vartype")
 
+			//		};
 
 			var x = from f in dt.AsEnumerable()
 					select new
 					{
-						Measure = f.Field<string>("measname"),
-						Variable = f.Field<string>("varname"),
-						Label = f.Field<string>("FieldLabel"),
-						DataType = f.Field<string>("DataType"),
-						VarType = f.Field<string>("vartype")
+						measname= f.Field<string>("measname"),
+						varname = f.Field<string>("varname"),
+						fldlabel = f.Field<string>("FieldLabel"),
+						datatype = f.Field<string>("DataType"),
+						vartype = f.Field<string>("vartype")
 
 					};
 
@@ -1017,7 +1073,7 @@ public partial class DataProject_Explore : BasePage
 
 		if (Master.Master_studyID == 1076)
 		{
-			List<string> exempt = new List<string> { "cboXaxisvarLINE", "tokXTcell", "tokXTstats" };
+			List<string> exempt = new List<string> { "cboXaxisvarLINE", "cboYaxisvarLINE", "tokXTcell", "tokXTstats" };
 			if (!exempt.Contains(controlname))
 			{
 				defaultvals.Add("txstyle");
@@ -1087,7 +1143,7 @@ public partial class DataProject_Explore : BasePage
 	{
 		log(String.Format(">>>>>>>>>>>> callbackSpecifics_OnCallback [{0}]", e.Parameter.ToString()));
 
-		List<string> selected_textvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+		//FIX  List<string> selected_textvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
 
 		//PopulateDropdownItems(cboColorsvar, selected_textvars);
 		//PopulateDropdownItems(cboPanelvar, selected_textvars);
@@ -1139,7 +1195,7 @@ public partial class DataProject_Explore : BasePage
 	//OK BIND_vars
 	protected void callbackVars_OnCallback(object sender, CallbackEventArgsBase e)
 	{
-		log(String.Format(">>>>>>>>>>>> callbackVars_OnCallback  [Sheet = {0}]", e.Parameter.ToString()));
+		log(String.Format(">>>>>>>>>>>> callbackVars_OnCallback  [{0}]", e.Parameter.ToString()));
 
 		string param = e.Parameter.ToString();
 
@@ -1201,36 +1257,37 @@ public partial class DataProject_Explore : BasePage
 		log(String.Format(">>> callbackMissing_OnCallback {0}", e.Parameter.ToString()));
 
 		List<string> numvars = new List<string>();
-		numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		
+		////FIX numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 
 
-		//bool useall = (numvars.Count == 0) ? true: false; // chkMissing_AllVars.Checked;
-		//if (useall)
+		////bool useall = (numvars.Count == 0) ? true: false; // chkMissing_AllVars.Checked;
+		////if (useall)
+		////{
+		////	var x1 = gridVarsNum.GridView.VisibleRowCount;
+		////	for (int i = 0; i < gridVarsNum.GridView.VisibleRowCount; i++)
+		////	{
+		////		string v = gridVarsNum.GridView.GetRowValues(i, "varname").ToString(); 
+		////		numvars.Add(v);
+		////	}
+		////}
+
+		//if (numvars.Count > 0)
 		//{
-		//	var x1 = gridVarsNum.GridView.VisibleRowCount;
-		//	for (int i = 0; i < gridVarsNum.GridView.VisibleRowCount; i++)
-		//	{
-		//		string v = gridVarsNum.GridView.GetRowValues(i, "varname").ToString(); 
-		//		numvars.Add(v);
-		//	}
+		//	//List<int> txstudies = new List<int> { }
+
+		//	List<string> idvars = new List<string> { "ref_id", "group", "txgrp", "timept" };
+
+		//	dpdata.Data_FullyStacked(idvars, numvars);
+
+		//	Session["dtstacked"] = dpdata.dtstacked;
+
+		//	log(String.Format(">>> numrows dtstacked = {0}", dpdata.dtstacked.Rows.Count.ToString()));
+
+		//	//ASPxPivotGrid pivot = CreateMissingPivot();
+
+		//	PopulatePivotMissing(dpdata.dtstacked);
 		//}
-
-		if (numvars.Count > 0)
-		{
-			//List<int> txstudies = new List<int> { }
-
-			List<string> idvars = new List<string> { "ref_id", "group", "txgrp", "timept" };
-
-			dpdata.Data_FullyStacked(idvars, numvars);
-
-			Session["dtstacked"] = dpdata.dtstacked;
-
-			log(String.Format(">>> numrows dtstacked = {0}", dpdata.dtstacked.Rows.Count.ToString()));
-
-			//ASPxPivotGrid pivot = CreateMissingPivot();
-
-			PopulatePivotMissing(dpdata.dtstacked);
-		}
 
 	}
 
@@ -1240,55 +1297,56 @@ public partial class DataProject_Explore : BasePage
 	{
 		log(String.Format(">>> callbackViewData_OnCallback {0}", e.Parameter.ToString()));
 
-		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+		////FIX
+		//List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+		//List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		//List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 
 
-		List<string> idetc = new List<string> { "id", "timept", "group", "txgrp", "txstyle", "txintensity" };
+		//List<string> idetc = new List<string> { "id", "timept", "group", "txgrp", "txstyle", "txintensity" };
 
-		List<string> keepvars = new List<string>();
-		keepvars.AddRange(idetc);
-		keepvars.AddRange(numvars);
-		keepvars.AddRange(txtvars);
-		keepvars.AddRange(datevars);
-		keepvars.AddRange(agevars);
+		//List<string> keepvars = new List<string>();
+		//keepvars.AddRange(idetc);
+		//keepvars.AddRange(numvars);
+		//keepvars.AddRange(txtvars);
+		//keepvars.AddRange(datevars);
+		//keepvars.AddRange(agevars);
 
-		for (int i = 0; i < keepvars.Count; i++)
-		{
-			keepvars[i] = keepvars[i].ToLower();
-		}
+		//for (int i = 0; i < keepvars.Count; i++)
+		//{
+		//	keepvars[i] = keepvars[i].ToLower();
+		//}
 
-		DataTable dt = dpdata.Data_SelectColumns(keepvars);
+		//DataTable dt = dpdata.Data_SelectColumns(keepvars);
 
-		int x = (Request.Browser.ScreenPixelsWidth) * 2 - 100;
+		//int x = (Request.Browser.ScreenPixelsWidth) * 2 - 100;
 
-		ASPxGridView gv = new ASPxGridView();
-		gv.Width = x;
-		gv.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
-		gv.Settings.VerticalScrollableHeight = 400;
-		gv.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
-		gv.DataSource = dt;
-		gv.DataBind();
+		//ASPxGridView gv = new ASPxGridView();
+		//gv.Width = x;
+		//gv.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+		//gv.Settings.VerticalScrollableHeight = 400;
+		//gv.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
+		//gv.DataSource = dt;
+		//gv.DataBind();
 
-		Label lbl = new Label();
-		lbl.Text = String.Format("# records = {0}", dt.Rows.Count);
-		callbackViewData.Controls.Clear();
-		callbackViewData.Controls.Add(lbl);
-		callbackViewData.Controls.Add(gv);
+		//Label lbl = new Label();
+		//lbl.Text = String.Format("# records = {0}", dt.Rows.Count);
+		//callbackViewData.Controls.Clear();
+		//callbackViewData.Controls.Add(lbl);
+		//callbackViewData.Controls.Add(gv);
 
 
 	}
 
 
-	protected void callbackVarsText_OnCallback(object sender, CallbackEventArgsBase e)
-	{
-		log(String.Format(">>>>>>>>>>>> callbackVarsText_OnCallback [{0}]", e.Parameter.ToString()));
-		List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		int x = 0;
+	//protected void callbackVarsText_OnCallback(object sender, CallbackEventArgsBase e)
+	//{
+	//	log(String.Format(">>>>>>>>>>>> callbackVarsText_OnCallback [{0}]", e.Parameter.ToString()));
+	//	List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
+	//	int x = 0;
 
-	}
+	//}
 
 
 
@@ -1435,6 +1493,8 @@ public partial class DataProject_Explore : BasePage
 
 
 	#region Step 2 - Create and Populate Chart and Table settings 
+
+
 	protected DxHistogramSettings HistogramSettings()
 	{
 		DxHistogramSettings settings = new DxHistogramSettings();
@@ -1457,11 +1517,11 @@ public partial class DataProject_Explore : BasePage
 		settings.colorvar = cboColorsvarHIST.Value.ToString();
 		settings.panelvar = cboPanelvarHIST.Value.ToString();
 
+		settings.AddVars((DataTable)Session["selectedvars"]);
 
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-
-		List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
-		settings.numvars.AddRange(agevars);
+		//settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+		//settings.numvars.AddRange(agevars);
 
 		return settings;
 	}
@@ -1481,8 +1541,9 @@ public partial class DataProject_Explore : BasePage
 		settings.panelvar = cboPanelvarBAR.Value.ToString(); //panelvar;
 
 		settings.colors = GetColors();
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+		settings.AddVars((DataTable)Session["selectedvars"]);
+		//settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 		return settings;
 	}
 
@@ -1496,6 +1557,7 @@ public partial class DataProject_Explore : BasePage
 		settings.chartlayout = ConvertChartLayout(cboOutputStyleLINE.Value.ToString());
 
 		settings.xaxisvar = cboXaxisvarLINE.Value.ToString(); //xaxisvar;
+		settings.yaxisvar = cboYaxisvarLINE.Value.ToString(); //yaxisvar;
 		settings.colorvar = cboColorsvarLINE.Value.ToString(); //colorsvar;
 		settings.panelvar = cboPanelvarLINE.Value.ToString(); //panelvar;
 		settings.legend_pos_h = cboLegendH_LINE.Value.ToString();
@@ -1505,12 +1567,26 @@ public partial class DataProject_Explore : BasePage
 		settings.hideEmptyCharts = chkLineHideBlank.Checked;
 
 		settings.colors = GetColors();
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		settings.datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+
+
+		DataTable dt_selvars = (DataTable)Session["selectedvars"];
+		settings.AddVars(dt_selvars);
+
+		//if (settings.xaxisvar != "variable" && settings.yaxisvar != "variable")
+		//{
+		//	settings.numvars.Add(settings.xaxisvar);
+		//	settings.numvars.Add(settings.yaxisvar);
+		//}
+		//else
+		//{
+		//	settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//}
+		//settings.datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
+		//settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 
 		if (settings.datevars.Contains(settings.xaxisvar)) settings.xaxis_is_date = true;
-		if (settings.agevars.Contains(settings.xaxisvar)) settings.xaxis_is_age = true;
+		//if (settings.agevars.Contains(settings.xaxisvar)) settings.xaxis_is_age = true;
+		if (settings.numvars.Contains(settings.xaxisvar)) settings.xaxis_is_num = true;
 		return settings;
 	}
 
@@ -1565,8 +1641,10 @@ public partial class DataProject_Explore : BasePage
 
 		}
 
-		settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
+		settings.AddVars((DataTable)Session["selectedvars"]);
+
+		//settings.numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+		//settings.agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
 		settings.maxCol = settings.numvars.Count;
 		settings.maxRow = settings.numvars.Count;
 
@@ -1603,9 +1681,11 @@ public partial class DataProject_Explore : BasePage
 
 		var foo = gvSelectedVars.GetSelectedFieldValues("vartype");
 
-		int number_cat_vars = (chkXTincludenumeric.Checked) ?
-			gridVarsNum.GridView.GetSelectedFieldValues("varname").Count() :
-			gridVarsText.GridView.GetSelectedFieldValues("varname").Count();
+		int number_cat_vars = 2;
+		////FIX
+		//int number_cat_vars = (chkXTincludenumeric.Checked) ?
+		//	gridVarsNum.GridView.GetSelectedFieldValues("varname").Count() :
+		//	gridVarsText.GridView.GetSelectedFieldValues("varname").Count();
 
 		settings.decimal_places = Convert.ToInt32(trkDecPlaces.Value);
 
@@ -2114,7 +2194,10 @@ public partial class DataProject_Explore : BasePage
 	protected void LaunchPCA()
 	{
 		string subgroupsvar = cboSubgroupsvarPCA.Value.ToString();
-		List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
+
+		List<string> numvars = new List<string>();
+		//FIX
+		//List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
 		string method = rblMethod.SelectedItem.Value.ToString();
 		List<System.Web.UI.WebControls.Table> tables = new List<System.Web.UI.WebControls.Table>();
 
