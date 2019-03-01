@@ -996,7 +996,7 @@ namespace uwac
 		//}
 
 
-		public static DataTable WidenRelData(DataTable dt, List<string> vars_to_move, string var_to_joinby
+		public static DataTable WidenRelData(this DataTable dt, List<string> vars_to_move, string var_to_joinby
 			, string var_to_divide_rows, string divide_val1, string divide_val2, string prefix_for_moved_vars, string suffix_for_moved_vars)
 		{
 			//returns a DataTable in which the vars_to_move are joined as new columns with the prefix/suffix 
@@ -1036,7 +1036,7 @@ namespace uwac
 			//}
 
 
-			DataTable dtcopy = dt.Clone();
+			DataTable dtcopy = dt.Copy();
 
 			List<string> new_vars = new List<string>();
 
