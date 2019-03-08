@@ -305,10 +305,17 @@ namespace uwac
 				keepvars.AddRange(mysettings.analysisvars());
 				keepvars.AddRange(idvars);
 
-				// Widen the data using the repeated measure value
-				DataSubsets subsets = new DataSubsets(dt, keepvars, new List<string> { mysettings.repeatedmeasVarname });
-				DataTable dtwide = subsets.FullOuterJoinDataTables(idvars);
-
+				DataTable dtwide;
+				if (mysettings.repeatedmeasVarname != "none")
+				{
+					// Widen the data using the repeated measure value
+					DataSubsets subsets = new DataSubsets(dt, keepvars, new List<string> { mysettings.repeatedmeasVarname });
+					dtwide = subsets.FullOuterJoinDataTables(idvars);
+				}
+				else
+				{
+					dtwide = dt.Copy();
+				}
 				List<string> colnames = dtwide.ColumnNames();
 
 				XYpairs pairs = new XYpairs(mysettings.analysisvars(), mysettings.rptmeasLevels(dt), mysettings.current_xypairtype);

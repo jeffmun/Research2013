@@ -826,7 +826,8 @@ namespace uwac
 	{
 		SameVar_AcrossLevelsOfRptMeas = 0,
 		DiffVar_WithinLevelsOfRptMeas = 1,
-		DiffVar_AcrossLevelsOfRptMeas = 2
+		DiffVar_AcrossLevelsOfRptMeas = 2,
+		AllVars_IgnoreLevelsOfRptMeas = 3
 	}
 
 }

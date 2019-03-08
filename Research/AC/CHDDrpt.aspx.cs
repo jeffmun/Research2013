@@ -41,25 +41,53 @@ public partial class AC_CHDDrpt : BasePage //System.Web.UI.Page
 	}
 
 
-
-	protected void LoadYr2(Panel p, List<string> rows, List<string> cols, List<string> functions, string title, bool useGTE0, bool useFromTo)
+	protected DataTable GetValantData_by_Dates(string d1, string d2)
 	{
 
+		//Note that this stored proc will create a single record for each patientID and determine the minimum agegroup and the dx for the period requested.
+		SQL_utils sql = new SQL_utils("backend");
 
 		DataTable dt = new DataTable();
+		string sqlcode = String.Format("exec vtj.spCHDDrpt '{0}', '{1}'", d1, d2);
 
-		if (useFromTo)
-		{
-			dt = GetValantData_From_To2(rows, cols, functions, useGTE0);
-		}
-		else
-		{
-			//this branch no longer used
-			//dt = GetValantData(rows, cols, functions, useGTE0);
-		}
+		dt = sql.DataTable_from_SQLstring(sqlcode);
+
+		return dt;
+	}
+
+	//protected void LoadYr2(Panel p, List<string> rows, List<string> cols, List<string> functions, string title, bool useGTE0, bool useFromTo)
+	//{
+	//	DataTable dt = new DataTable();
+
+	//	if (useFromTo)
+	//	{
+	//		dt = GetValantData_From_To2(rows, cols, functions, useGTE0);
+	//	}
+	//	else
+	//	{
+	//		//this branch no longer used
+	//		//dt = GetValantData(rows, cols, functions, useGTE0);
+	//	}
+
+	//	LoadYr2(dt, p, rows, cols, functions, title, useGTE0, useFromTo);
+	
+	//}
 
 
+	protected void LoadYr2(DataTable dt, Panel p, List<string> rows, List<string> cols, List<string> functions, string title, bool useGTE0, bool useFromTo)
+	{
 
+		//DataTable dt = new DataTable();
+
+		//if (useFromTo)
+		//{
+		//	dt = GetValantData_From_To2(rows, cols, functions, useGTE0);
+		//}
+		//else
+		//{
+		//	//this branch no longer used
+		//	//dt = GetValantData(rows, cols, functions, useGTE0);
+		//}
 
 
 		List<string> keepCols = new List<string>();
@@ -221,17 +249,16 @@ public partial class AC_CHDDrpt : BasePage //System.Web.UI.Page
 
 		List<string> cols = new List<string> { ddlMode.SelectedValue.ToString() };
 
-	
 
-		LoadYr2(panel1, new List<string> { "ptSex" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Sex", false, useFromTo);
-		LoadYr2(panel1, new List<string> { "agegroup" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Age Group", false, useFromTo);
-		LoadYr2(panel1, new List<string> { "CHDDpurpose_rpt" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Purpose", false, useFromTo);
-		LoadYr2(panel1, new List<string> { "CHDDdiscipline" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Discipline<br/>(Patients seen by mutliple disciplines,<br/> but counted only once in the Totals)", false, useFromTo);
+		DataTable dt = GetValantData_by_Dates( txtDate1.Text, txtDate2.Text);
 
-		LoadYr2(panel2, new List<string> { "CHDDdx1" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Diagnosis 1", false, useFromTo);
-		LoadYr2(panel2, new List<string> { "CHDDdx1", "CHDDdx2" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Diagnosis 1 & 2", false, useFromTo);
-
-		LoadYr2(panel3, new List<string> { "providerID" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Provider <br/>(Patients often seen by multiple providers,<br/> but counted only once in the Totals)", false, useFromTo);
+		LoadYr2(dt, panel1, new List<string> { "ptSex" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Sex", false, useFromTo);
+		LoadYr2(dt, panel1, new List<string> { "agegroup" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Age Group", false, useFromTo);
+		LoadYr2(dt, panel1, new List<string> { "CHDDpurpose_rpt" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Purpose", false, useFromTo);
+		LoadYr2(dt, panel1, new List<string> { "CHDDdiscipline" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Discipline<br/>(Patients seen by mutliple disciplines,<br/> but counted only once in the Totals)", false, useFromTo);
+		LoadYr2(dt, panel2, new List<string> { "CHDDdx1" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Diagnosis 1", false, useFromTo);
+		LoadYr2(dt, panel2, new List<string> { "CHDDdx1", "CHDDdx2" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Diagnosis 1 & 2", false, useFromTo);
+		LoadYr2(dt, panel3, new List<string> { "providerID" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Provider <br/>(Patients often seen by multiple providers,<br/> but counted only once in the Totals)", false, useFromTo);
 
 
 

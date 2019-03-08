@@ -20,6 +20,7 @@
 
 	<style type="text/css">
 		div[class*="dxchartsuiTooltip"] {
+		div[class*="dxchartsuiTooltip"] {
 			padding: 8px;
 		}
 		/*div[class*="dxchartsuiTooltip"] img {
@@ -1028,6 +1029,7 @@
 														<dx:ASPxCheckBox ID="chkCorrModeA" runat="server" ClientInstanceName="chkCorrModeA" Text="Same vars ACROSS Time/RptMeas"></dx:ASPxCheckBox>
 														<dx:ASPxCheckBox ID="chkCorrModeB" runat="server" ClientInstanceName="chkCorrModeB" Text="Different vars WITHIN Time/RptMeas"></dx:ASPxCheckBox>
 														<dx:ASPxCheckBox ID="chkCorrModeC" runat="server" ClientInstanceName="chkCorrModeC" Text="Different vars ACROSS Time/RptMeas"></dx:ASPxCheckBox>
+												        <dx:ASPxCheckBox ID="chkCorrModeD" runat="server" ClientInstanceName="chkCorrModeD" Text="All vars IGNORE Time/RptMeas" Checked="true"></dx:ASPxCheckBox>
 												
 														</td>
 														<td style="vertical-align: top; padding: 5px; width:150px">

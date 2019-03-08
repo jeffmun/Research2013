@@ -1293,7 +1293,7 @@ namespace uwac.data
 					for (int m = 0; m < _sqlcode_tbl_mult.Count(); m++)
 					{
 						string sqlcode = string.Format("select a.*, {0} from {1} {2} ",
-							String.Join(", ",_sqlcode_vars_mult[m]),
+							String.Join(", ",_sqlcode_vars_mult[m].ToLower()),
 							_sqlcode_subj,
 							String.Join(" ", _sqlcode_tbl_mult[m]));
 
@@ -1303,20 +1303,46 @@ namespace uwac.data
 						Debug.Print(String.Format("done retrieving dt  {0}       nrecs={1}", 
 							System.DateTime.Now.ToString(), dt.Rows.Count.ToString()));
 
-					List<string> colnames = dt.ColumnNames();
+					List<string> colnames = dt.ColumnNames("lower");
 
-					bool hasRELKEY = (colnames.Contains("RELKEY")) ? true : false;
+					bool hasRELKEY = (colnames.Contains("relkey")) ? true : false;
 
 					if(hasRELKEY)
 					{
-						 //restructure the table here
+						Debug.WriteLine("**** fields for measure with RELKEY ****");
+						//restructure the table here
+						List<string> vars_to_move = new List<string>();
+
+						foreach (string v in _fldname_list)
+						{
+							if(colnames.Contains(v)) vars_to_move.Add(v);
+						}
+
+
+						//Get a list of new var names
+						List<string> new_vars = new List<string>();
+						string prefix_for_moved_vars = "rel_";
+						string suffix_for_moved_vars = "";
+						foreach (string v in vars_to_move)
+						{
+							string newv = String.Format("{0}{1}{2}", prefix_for_moved_vars, v, suffix_for_moved_vars);
+							new_vars.Add(newv);
+						}
+
+
+
+
+						dt = dt.WidenRelData(vars_to_move, new_vars, "relkey", "isrel", "", "REL");
+
+						AddRELVarsToDictionary(vars_to_move);
+
 					}
 
 
 
 
-						//Need to remove fields for the Skipped measures.
-						string meas_to_skip_csv = String.Join(",", _meas_to_skip);
+					//Need to remove fields for the Skipped measures.
+					string meas_to_skip_csv = String.Join(",", _meas_to_skip);
 						DataTable dt_flds_to_drop = sql.DataTable_from_SQLstring(
 							String.Format("select fldname from def.vwFld where measureID in ({0})",
 								meas_to_skip_csv));
@@ -1355,6 +1381,37 @@ namespace uwac.data
 
 
 			sql.Close();
+		}
+
+
+
+
+		public void AddRELVarsToDictionary(List<string> vars)
+		{
+			DataTable dt = this._dataset.Tables["DataDictionary"];
+
+			List<DataRow> newrows = new List<DataRow>();
+			foreach(string v in vars)
+			{
+				foreach(DataRow row in dt.Rows)
+				{
+					if(row["varname"].ToString() == v)
+					{
+						DataRow newrow = dt.NewRow();
+
+						newrow.ItemArray = row.ItemArray.Clone() as object[];
+						newrow["varname"] = "rel_" + row["varname"].ToString();
+						newrow["FieldLabel"] = "(REL) " + row["FieldLabel"].ToString();
+
+						newrows.Add(newrow);
+						
+					}
+				}
+			}
+			foreach (DataRow newrow in newrows)
+			{
+				this._dataset.Tables["DataDictionary"].Rows.Add(newrow);
+			}
 		}
 
 		public void StackData()

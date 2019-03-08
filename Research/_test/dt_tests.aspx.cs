@@ -25,22 +25,20 @@ public partial class _test_dt_tests : BasePage
 	{
 		SQL_utils sql = new SQL_utils("data");
 
-		string sqlcode = "  select val, upper as up, '' isREL from const_INTs where val between 1 and 10 " +
-			" union select val - 10, upper as up, 'REL' isREL from const_INTs where val between  11 and 20";
+		string sqlcode = "  select val pk, val, upper as up, '' isREL from const_INTs where val between 1 and 10 " +
+			" union select val - 10 pk, val, upper as up, 'REL' isREL from const_INTs where val between  11 and 20";
 
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
-		dt.WidenRelData(new List<string> { "up" }, "val"
-			, "isREL", "", "REL", "REL_", "");
+		List<string> vars_to_move = new List<string> { "val", "up" };
+		dt.WidenRelData(vars_to_move, "pk", "isREL", "", "REL", "REL_", "");
 
 		ASPxGridView g1 = new ASPxGridView();
 		g1.DataSource = dt;
 		g1.DataBind();
+		g1.SettingsPager.PageSize = 50;
 		panel1.Controls.Add(g1);
 
-
-
-
-
+		
 		//DataTable dt2 = dt.Wi
 
 

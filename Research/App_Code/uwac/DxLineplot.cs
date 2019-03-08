@@ -299,6 +299,7 @@ namespace uwac
 						item.Text = colors_levels[lev];
 						int coloridx = (_coloroverride >= 0) ? _coloroverride : lev;
 						item.MarkerColor = _settings.colors[coloridx % _settings.colors.Count];
+						//item.
 					}
 				}
 

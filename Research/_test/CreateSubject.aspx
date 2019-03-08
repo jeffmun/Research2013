@@ -18,19 +18,19 @@
 			<label for="selStudyID">Study:</label><br/>
 			<asp:DropDownList id="selStudyID" runat="server" style="width: 450px;" autopostback="true"              OnSelectedIndexChanged="LoadGroups" />
 		<%--OnChange="DoSyncDropDowns(this.options[this.selectedIndex].value, null, 'group', 'selGroupID'); DisplayMaxID(this.options[this.selectedIndex].value);"--%>
-        </td>
+		</td>
 	</tr>
 	<tr>
 		<td  colspan="2">
 
-        <br />
-            <label for="selGroupID">Group:</label>
+		<br />
+			<label for="selGroupID">Group:</label>
 <%--			<select name="selGroupID" id="selGroupID" style="width: 450px;">
 				<option value="-1">--Select a Group--</option>
 			</select>--%>
-        <br />
-            <asp:DropDownList ID="ddlGroupID" runat="server">
-            </asp:DropDownList>
+		<br />
+			<asp:DropDownList ID="ddlGroupID" runat="server">
+			</asp:DropDownList>
 <%--            <asp:Button ID="ddlLoadGroups" runat="server" Text="Load Groups" OnClick="LoadGroups" />--%>
 		</td>
 	</tr>
@@ -41,19 +41,19 @@
 			<span id="spnMaxID"></span>
 			<span id="spnJS" runat="server"></span>
 		</td>
-        <td align="left" style="vertical-align:top">
-            <asp:Panel ID="Panel_maxID" runat="server">
-            </asp:Panel>
-        </td>
+		<td align="left" style="vertical-align:top">
+			<asp:Panel ID="Panel_maxID" runat="server">
+			</asp:Panel>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2">
 			<%--<input type="submit" name="btnSubmit" value="Create Subject" id="btnSubmit" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
-            <asp:Button ID="Button1" runat="server" Text="Create Subject" OnClick="MovePersonIntoStudy" />
+			<asp:Button ID="Button1" runat="server" Text="Create Subject" OnClick="MovePersonIntoStudy" />
 		</td>
 	</tr>
 </table>
    <br />
    <br />
-    <asp:Label ID="lblInfo" runat="server" Text=""></asp:Label>
+	<asp:Label ID="lblInfo" runat="server" Text=""></asp:Label>
 </asp:Content>

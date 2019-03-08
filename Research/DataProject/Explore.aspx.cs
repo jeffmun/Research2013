@@ -1607,6 +1607,7 @@ public partial class DataProject_Explore : BasePage
 		if (chkCorrModeA.Checked) modes.Add(XYpairType.SameVar_AcrossLevelsOfRptMeas);
 		if (chkCorrModeB.Checked) modes.Add(XYpairType.DiffVar_WithinLevelsOfRptMeas);
 		if (chkCorrModeC.Checked) modes.Add(XYpairType.DiffVar_AcrossLevelsOfRptMeas);
+		if (chkCorrModeD.Checked) modes.Add(XYpairType.AllVars_IgnoreLevelsOfRptMeas);
 
 		settings.xypairtypes = modes;
 		

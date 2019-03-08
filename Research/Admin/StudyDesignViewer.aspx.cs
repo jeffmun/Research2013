@@ -73,8 +73,8 @@ public partial class Admin_StudyDesignViewer : BasePage // OboutInc.oboutAJAXPag
 
 	}
 
-
-	protected void pivotENT_CustomSummary(object sender, PivotGridCustomSummaryEventArgs e)
+	//'DevExpress.Web.ASPxPivotGrid.PivotGridCustomSummaryEventArgs' and 'DevExpress.XtraPivotGrid.PivotGridCustomSummaryEventArgs
+	protected void pivotENT_CustomSummary(object sender, DevExpress.Web.ASPxPivotGrid.PivotGridCustomSummaryEventArgs e)
 	{
 		var x = e.DataField;
 

@@ -96,7 +96,23 @@ namespace uwac
 			_pairs = new List<XYpair>();
 			string x = "";
 			string y = "";
-			if (type == XYpairType.DiffVar_WithinLevelsOfRptMeas)
+			if (type == XYpairType.AllVars_IgnoreLevelsOfRptMeas)
+			{
+				for (int j = 0; j < (vars.Count - 1); j++)
+				{
+					for (int k = j + 1; k < vars.Count; k++)
+					{
+						if (j != k)
+						{
+							x = String.Format("{0}", vars[j]);
+							y = String.Format("{0}", vars[k]);
+							XYpair pair = new XYpair { xvar = x, yvar = y };
+							_pairs.Add(pair);
+						}
+					}
+				}
+			}
+			else if (type == XYpairType.DiffVar_WithinLevelsOfRptMeas)
 			{
 				for (int i = 0; i < rptmeas.Count; i++)
 				{

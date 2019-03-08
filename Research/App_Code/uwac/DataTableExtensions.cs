@@ -60,11 +60,22 @@ namespace uwac
 
 		public static List<string> ColumnNames(this DataTable dt)
 		{
+			return ColumnNames(dt, "");
+		}
+
+
+		public static List<string> ColumnNames(this DataTable dt, string upperlower)
+		{
 			List<string> colnames = new List<string>();
 
 			foreach (DataColumn col in dt.Columns)
 			{
-				colnames.Add(col.ColumnName);
+				string cname;
+				if(upperlower=="upper") cname = col.ColumnName.ToUpper();
+				else if (upperlower == "lower") cname = col.ColumnName.ToLower();
+				else cname = col.ColumnName;
+
+				colnames.Add(cname);
 			}
 			return colnames;
 		}
@@ -974,147 +985,177 @@ namespace uwac
 		}
 
 
-		//public static DataTable AddColumns(DataTable dt1, DataTable dt2, string matchcol, string suffix)
-		//{
-		//	DataTable dt1copy = dt1.Clone();
-
-		//	//Columns from dt2
-		//	var dt2Columns = dt2.Columns.OfType<DataColumn>().Select(dc =>
-		//		new DataColumn(dc.ColumnName + suffix, dc.DataType, dc.Expression, dc.ColumnMapping));
-		//	//Add cols from dt2 into dt1
-		//	dt1copy.Columns.AddRange(dt2Columns.ToArray());
-
-		//	var rowData =
-		//		from row1 in dt1.AsEnumerable()
-		//		join row2 in dt2.AsEnumerable()
-		//			on row1.Field<string>(matchcol) equals row2.Field<string>(matchcol)
-		//		select row1.ItemArray.Concat(row2.ItemArray).ToArray();
-		//	foreach (object[] values in rowData)
-		//		dt1copy.Rows.Add(values);
-
-		//	return dt1copy;
-		//}
 
 
-		public static DataTable WidenRelData(this DataTable dt, List<string> vars_to_move, string var_to_joinby
-			, string var_to_divide_rows, string divide_val1, string divide_val2, string prefix_for_moved_vars, string suffix_for_moved_vars)
+		public enum JoinType
 		{
-			//returns a DataTable in which the vars_to_move are joined as new columns with the prefix/suffix 
-
-			//var dt_tomove = dt.AsEnumerable().Select(vars_to_move.Select(v => v[i]));
-
-			//List<DataTable> dts = new List<DataTable>();
-			//foreach (string v in vars_to_move)
-			//{
-			//	DataTable dt_for_var = new DataTable();
-			//	dt_for_var = GetDataTable_for_Variable(dt, vars_to_keep.ToArray<string>(), v);
-			//	dts.Add(dt_for_var);
-			//}
+			/// <summary>
+			/// Same as regular join. Inner join produces only the set of records that match in both Table A and Table B.
+			/// </summary>
+			Inner = 0,
+			/// <summary>
+			/// Same as Left Outer join. Left outer join produces a complete set of records from Table A, with the matching records (where available) in Table B. If there is no match, the right side will contain null.
+			/// </summary>
+			Left = 1
+		}
 
 
+		/// <summary>
+		/// Joins the passed in DataTables on the colToJoinOn.
+		/// <para>Returns an appropriate DataTable with zero rows if the colToJoinOn does not exist in both tables.</para>
+		/// </summary>
+		/// <param name="dtblLeft"></param>
+		/// <param name="dtblRight"></param>
+		/// <param name="colToJoinOn"></param>
+		/// <param name="joinType"></param>
+		/// <returns></returns>
+		/// <remarks>
+		/// <para>http://stackoverflow.com/questions/2379747/create-combined-datatable-from-two-datatables-joined-with-linq-c-sharp?rq=1</para>
+		/// <para>http://msdn.microsoft.com/en-us/library/vstudio/bb397895.aspx</para>
+		/// <para>http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html</para>
+		/// <para>http://stackoverflow.com/questions/406294/left-join-and-left-outer-join-in-sql-server</para>
+		/// </remarks>
+		public static DataTable JoinTwoDataTablesOnOneColumn(DataTable dtblLeft, DataTable dtblRight, string colToJoinOn, JoinType joinType)
+		{
+			//Change column name to a temp name so the LINQ for getting row data will work properly.
+			string strTempColName = colToJoinOn + "_2";
+			if (dtblRight.Columns.Contains(colToJoinOn))
+				dtblRight.Columns[colToJoinOn].ColumnName = strTempColName;
+
+			//Get columns from dtblLeft
+			DataTable dtblResult = dtblLeft.Clone();
+
+			//Get columns from dtblRight
+			var dt2Columns = dtblRight.Columns.OfType<DataColumn>().Select(dc => new DataColumn(dc.ColumnName, dc.DataType, dc.Expression, dc.ColumnMapping));
+
+			//Get columns from dtblRight that are not in dtblLeft
+			var dt2FinalColumns = from dc in dt2Columns.AsEnumerable()
+								  where !dtblResult.Columns.Contains(dc.ColumnName)
+								  select dc;
+
+			//Add the rest of the columns to dtblResult
+			dtblResult.Columns.AddRange(dt2FinalColumns.ToArray());
+
+			//No reason to continue if the colToJoinOn does not exist in both DataTables.
+			if (!dtblLeft.Columns.Contains(colToJoinOn) || (!dtblRight.Columns.Contains(colToJoinOn) && !dtblRight.Columns.Contains(strTempColName)))
+			{
+				if (!dtblResult.Columns.Contains(colToJoinOn))
+					dtblResult.Columns.Add(colToJoinOn);
+				return dtblResult;
+			}
+
+			switch (joinType)
+			{
+
+				default:
+				case JoinType.Inner:
+					#region Inner
+					//get row data
+					//To use the DataTable.AsEnumerable() extension method you need to add a reference to the System.Data.DataSetExtension assembly in your project. 
+					var rowDataLeftInner = from rowLeft in dtblLeft.AsEnumerable()
+										   join rowRight in dtblRight.AsEnumerable() on rowLeft[colToJoinOn] equals rowRight[strTempColName]
+										   select rowLeft.ItemArray.Concat(rowRight.ItemArray).ToArray();
 
 
-			//public DataTable FullOuterJoinDataTables(List<string> idvars) // supports as many datatables as you need.
-			//{
-			//	DataTable[] datatables = this.DataTableArray(idvars);
-			//	DataTable result = datatables.First().Clone();
+					//Add row data to dtblResult
+					foreach (object[] values in rowDataLeftInner)
+						dtblResult.Rows.Add(values);
 
-			//	var commonColumns = result.Columns.OfType<DataColumn>();
+					#endregion
+					break;
+				case JoinType.Left:
+					#region Left
+					var rowDataLeftOuter = from rowLeft in dtblLeft.AsEnumerable()
+										   join rowRight in dtblRight.AsEnumerable() on rowLeft[colToJoinOn] equals rowRight[strTempColName] into gj
+										   from subRight in gj.DefaultIfEmpty()
+										   select rowLeft.ItemArray.Concat((subRight == null) ? (dtblRight.NewRow().ItemArray) : subRight.ItemArray).ToArray();
 
-			//	foreach (var dt in datatables.Skip(1))
-			//	{
-			//		commonColumns = commonColumns.Intersect(dt.Columns.OfType<DataColumn>(), new DataColumnComparer());
-			//	}
 
-			//	result.PrimaryKey = commonColumns.ToArray();
+					//Add row data to dtblResult
+					foreach (object[] values in rowDataLeftOuter)
+						dtblResult.Rows.Add(values);
 
-			//	foreach (var dt in datatables)
-			//	{
-			//		result.Merge(dt, false, MissingSchemaAction.AddWithKey);
-			//	}
-			//	return result;
-			//}
+					#endregion
+					break;
+			}
 
+			//Change column name back to original
+			dtblRight.Columns[strTempColName].ColumnName = colToJoinOn;
+
+			//Remove extra column from result
+			dtblResult.Columns.Remove(strTempColName);
+
+			return dtblResult;
+		}
+	
+
+	public static DataTable WidenRelData(this DataTable dt, List<string> vars_to_move, List<string> new_vars, string var_to_joinby
+			, string var_to_divide_rows, string divide_val1, string divide_val2)
+		{
+		
 
 			DataTable dtcopy = dt.Copy();
 
-			List<string> new_vars = new List<string>();
-
-			//Get a list of new var names
-			foreach (string v in vars_to_move)
-			{
-				string newv = String.Format("{0}{1}{2}", prefix_for_moved_vars, v, suffix_for_moved_vars);
-			}
-
-			//Rename vars in the REL copy
-			foreach (DataColumn col in dtcopy.Columns)
-			{
-				string newv = String.Format("{0}{1}{2}", prefix_for_moved_vars, col.ColumnName, suffix_for_moved_vars);
-				col.ColumnName = newv;
-			}
+			Debug.WriteLine(String.Format("dt     nrows:{0}", dt.Rows.Count));
+			Debug.WriteLine(String.Format("dtcopy nrows:{0}", dtcopy.Rows.Count));
 
 
-			DataTable dtcopy1 = dt.Clone();
-			DataTable dtcopy2 = dt.Clone();
 
 			DataTable dt1 = dt.AsEnumerable().Where(f => f.Field<string>(var_to_divide_rows) == divide_val1).CopyToDataTable();
-			DataTable dt2 = dtcopy.AsEnumerable().Where(f => f.Field<string>(var_to_divide_rows) == divide_val2).CopyToDataTable();
+			Debug.WriteLine(String.Format("dt1          nrows:{0}", dt1.Rows.Count));
 
-			foreach (DataColumn col in dt2.Columns)
+			DataTable dt2orignames = dtcopy.AsEnumerable().Where(f => f.Field<string>(var_to_divide_rows) == divide_val2).CopyToDataTable();
+			Debug.WriteLine(String.Format("dt2orignames nrows:{0}", dt2orignames.Rows.Count));
+
+
+			//Rename vars in the REL copy
+			foreach (DataColumn col in dt2orignames.Columns)
 			{
+				string newv = "";
+				for(int j=0; j < vars_to_move.Count; j++)
+				{
+					if (col.ColumnName == vars_to_move[j]) newv = new_vars[j]; 
+				}
+				if (col.ColumnName != var_to_joinby & newv != "")  col.ColumnName = newv;
+			}
+
+			DataTable dt2newnames = dt2orignames.Copy();
+
+			List<string> cols_to_remove = new List<string>();
+
+			for(int i=0; i < dt2newnames.Columns.Count; i++)
+			{
+				DataColumn col = dt2newnames.Columns[i];
 				bool deletecol = true;
 				if (new_vars.Contains(col.ColumnName)) deletecol = false;
 				if (col.ColumnName == var_to_joinby) deletecol = false;
 
-				if (deletecol) dt2.Columns.Remove(col);
+				if (deletecol) cols_to_remove.Add(col.ColumnName);
 			}
 
+			foreach (string d in cols_to_remove)
+			{
+				dt2newnames.Columns.Remove(d);
+			}
 
-			var qryWide = dt1.AsEnumerable()
-				.GroupJoin(
-					dt2.AsEnumerable(),
-					dr1 => new { key1 = dr1[var_to_joinby] },
-					dr2 => new { key1 = dr2[var_to_joinby] },    //{ key1 = dr2["Key"], key2 = dr2["Key2"] },
-					(dr1, result) =>
-						dr1.ItemArray
-						.Concat(result.Any() ? result.First().ItemArray : Enumerable.Empty<object>())
-						.ToArray());
+			DataTable dt2 = dt2newnames.Copy();
 
-			DataTable dtWide = qryWide.CustomCopyToDataTable();
+			DataTable dtWide = JoinTwoDataTablesOnOneColumn(dt1, dt2, var_to_joinby, JoinType.Left);
+
+			//var qryWide = dt1.AsEnumerable()
+			//	.GroupJoin(
+			//		dt2.AsEnumerable(),
+			//		dr1 => new { key1 = dr1[var_to_joinby] },
+			//		dr2 => new { key1 = dr2[var_to_joinby] },    //{ key1 = dr2["Key"], key2 = dr2["Key2"] },
+			//		(dr1, result) =>
+			//			dr1.ItemArray
+			//			.Concat(result.Any() ? result.First().ItemArray : Enumerable.Empty<object>())
+			//			.ToList());
+
+			//DataTable dtWide = qryWide.CustomCopyToDataTable();
 
 			return dtWide;
-
-			//var dt2Columns = dtcopy2.Columns.OfType<DataColumn>().Select(dc =>
-			//	new DataColumn(prefix_for_moved_vars + dc.ColumnName + suffix_for_moved_vars, dc.DataType, dc.Expression, dc.ColumnMapping));
-
-
-			////rename the vars to move
-
-			////Columns from dt2
-			//var dt2Columns = dtcopy2.Columns.OfType<DataColumn>().Select(dc =>
-			//	new DataColumn(prefix_for_moved_vars + dc.ColumnName + suffix_for_moved_vars, dc.DataType, dc.Expression, dc.ColumnMapping));
-			////Add cols from dt2 into dt1
-			//dt1copy.Columns.AddRange(dt2Columns.ToArray());
-
-			//var rowData =
-			//	from row1 in dt1.AsEnumerable()
-			//	join row2 in dt2.AsEnumerable()
-			//		on row1.Field<string>(matchcol) equals row2.Field<string>(matchcol)
-			//	select row1.ItemArray.Concat(row2.ItemArray).ToArray();
-			//foreach (object[] values in rowData)
-			//	dt1copy.Rows.Add(values);
-
-			//return dt1copy;
-
-
-
-
-
-
-			//DataTable dtStacked = new DataTable();
-			////dtStacked = AddRows(dts);
-
-			//return dtStacked;
+			
 		}
 
 
