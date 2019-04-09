@@ -59,7 +59,7 @@ public partial class Library_MeasureList : BasePage //System.Web.UI.Page
 
 	//protected void GetCurrentDefaultStudyID()
 	//{
-		
+
 	//	SqlCommand sqlCmd = new System.Data.SqlClient.SqlCommand("exec spSEC_Get_Default_StudyID_for_User", oConn);
 	//	DataTable dt = new DataTable();
 	//	SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
@@ -76,6 +76,34 @@ public partial class Library_MeasureList : BasePage //System.Web.UI.Page
 	//	lblStudyname_ContentPage.Text = Master.Master_studyname;
 	//}
 
+	protected void btnExportDict_OnClick(object sender, EventArgs e)
+	{
+		ExportDictionaryForStudy();
+	}
+
+	protected void ExportDictionaryForStudy()
+	{
+
+		Datadictionary dict = new Datadictionary(Master.Master_studyID, true);
+
+		if (dict.dt_dict.HasRows())
+		{
+			string dictfilename = String.Format("{0}_DataDictionary", Master.Master_studyname);
+			dict.dt_dict.TableName = "DataDictionary";
+
+			DataSet ds = new DataSet();
+			ds.Tables.Add(dict.dt_dict);
+
+
+			if (dict.dt_ndardict.HasRows())
+			{
+				dict.dt_ndardict.TableName = "NDA_DataDictionary";
+				ds.Tables.Add(dict.dt_ndardict);
+			}
+
+			SpreadsheetGearUtils.SaveDataSetToExcel(ds, dictfilename);
+		}
+	}
 
 
 

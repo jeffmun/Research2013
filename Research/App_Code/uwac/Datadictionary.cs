@@ -51,6 +51,18 @@ namespace uwac
 			dt_dict = GetDatadictionaryFromDB();
 		}
 
+		public Datadictionary(int mystudyID, bool forWholeStudy)
+		{
+			if(forWholeStudy)
+			{
+				Initialize();
+
+				dt_ndardict = GetNDARDatadictionaryFromDB_forStudy(mystudyID);
+				dt_dict = GetDatadictionaryFromDB_forStudy(mystudyID);
+
+			}
+		}
+
 
 		public Datadictionary(DataTable dt_meta, List<string> formnames)
 		{
@@ -104,6 +116,42 @@ namespace uwac
 
 
 
+		public DataTable GetDatadictionaryFromDB_forStudy(int studyID)
+		{
+			DataTable dt = new DataTable();
+			if (studyID > 0)
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+
+				string code = String.Format("select measname, rank() over(partition by measname order by a.ord_pos) position, fldname, fieldlabel " + Environment.NewLine +
+				" , FieldDataType + coalesce( '('+cast( FieldDataTypeLength as varchar)+')', '') as datatype " + Environment.NewLine +
+				" , def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'; ') valuelabels " + Environment.NewLine +
+				" from def.Fld a " + Environment.NewLine +
+				" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
+				" JOIN uwautism_research_backend..tblMeasure m ON b.measureID = m.measureID " + Environment.NewLine +
+				" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
+				" where a.tblpk in (select tblpk from def.tbl where measureID in (select distinct(measureID) from uwautism_research_backend..tblstudymeas where studyID={3})) " + Environment.NewLine +
+				" and fldname not in ('id','studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
+				" and ord_pos >= 0 " + Environment.NewLine +
+				" and (a.fieldcodeID != 10 or a.fieldcodeID is null) " + Environment.NewLine +
+				" order by measname, a.ord_pos"
+				, (int)ImportFiletype.REDCap, (int)FieldExtractionMode.useOtherFld, (int)FieldExtractionMode.matchFldname
+				, studyID);
+
+				measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+				//measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+
+
+				dt = sql.DataTable_from_SQLstring(code);
+
+			}
+
+			return dt;
+		}
+
+
+
 		public DataTable GetNDARDatadictionaryFromDB()
 		{
 			DataTable dt = new DataTable();
@@ -127,6 +175,51 @@ namespace uwac
 				" and ExcludeFromNDARdict is null " + Environment.NewLine +
 				" and (a.fieldcodeID != 10 or a.fieldcodeID is null) " + Environment.NewLine +
 				" ) x order by Pos", measureid);
+
+				measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+				//measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
+
+
+				dt = sql.DataTable_from_SQLstring(code);
+
+			}
+
+			return dt;
+		}
+
+
+		public DataTable GetNDARDatadictionaryFromDB_forStudy(int studyID)
+		{
+			DataTable dt = new DataTable();
+			if (studyID > 0)
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+
+
+
+				string code = String.Format("select * from (" +
+				" select '*In All DataStructures' shortname, '*In All DataStructures' title, * from vwNDAR_Required_Vars_Definition " + Environment.NewLine + 
+				" union " + Environment.NewLine +
+				" select coalesce(shortname, '*Not Yet In NDA') shortname, coalesce(title, '*(' + measname + ')') title " + Environment.NewLine +
+				", Row_number() over(partition by tblname  order by ord_pos) + 5  as Pos, fldname as ElementName " + Environment.NewLine +
+				", (case when fielddatatype in ('decimal', 'float') then 'Float' when fielddatatype like '%char%' then 'String' " + 
+				" when fielddatatype like '%int%' then 'Integer' when fielddatatype like '%date%' then 'Date' else 'String' end) DataType" +
+				", fielddatatypelength as  Size, 'Recommended' as Required " + Environment.NewLine +
+				", fieldlabel as ElementDescription " + Environment.NewLine +
+				" , def.fnValueLabels_for_NDARdatadict(fieldvaluesetID) ValueRange " + Environment.NewLine +
+				" , def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'; ') Notes, '' Aliases " + Environment.NewLine +
+				" from def.Fld a " + Environment.NewLine +
+				" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
+				" LEFT JOIN uwautism_research_backend..tblmeasure m ON b.measureID = m.measureID " + Environment.NewLine +
+				" LEFT JOIN NDAR_DS n ON b.tblname = n.uwtable " + Environment.NewLine +
+				" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
+				" where a.tblpk in (select tblpk from def.tbl where measureID in (select distinct(measureID) from uwautism_research_backend..tblstudymeas where studyID={0})) " + Environment.NewLine +
+				" and fldname not in ('id','studymeasID','indexnum','verified','created','updated','scored','createdby','updatedby','scoredby') " + Environment.NewLine +
+				" and ord_pos >= 1 " + Environment.NewLine +
+				" and ExcludeFromNDARdict is null " + Environment.NewLine +
+				" and (a.fieldcodeID != 10 or a.fieldcodeID is null) " + Environment.NewLine +
+				" ) x order by shortname, title, pos", studyID);
 
 				measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
 				//measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());

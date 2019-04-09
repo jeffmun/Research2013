@@ -47,6 +47,10 @@
      <td style="width:200px">
          <dx:ASPxButton ID="btnToggleGrid" runat="server" ClientInstanceName="btnToggleGrid" Text="Hide Measures" ClientSideEvents-Click="ToggleGrid" AutoPostBack="false" ></dx:ASPxButton>
      </td>
+     <td style="width:200px">
+         <dx:ASPxButton ID="btnExportDict" runat="server" ClientInstanceName="btnExportDict" Text="Export Data Dictionary to Excel" OnClick="btnExportDict_OnClick"
+               Image-IconID="export_exporttoxlsx_32x32office2013"></dx:ASPxButton>
+     </td>
  </tr>
  </table>
 
