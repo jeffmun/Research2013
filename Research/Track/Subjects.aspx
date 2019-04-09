@@ -138,10 +138,10 @@
         <table style="width: 100%">
             <tr>
                 <td style="text-align: right; padding-right: 25px;">
-                    <asp:Label ID="lblCB" runat="server" Text="Color brightness" ForeColor="Silver" Font-Size="XX-Small" Visible="true"></asp:Label>
+<%--                    <asp:Label ID="lblCB" runat="server" Text="Color brightness" ForeColor="Silver" Font-Size="XX-Small" Visible="true"></asp:Label>
                     <div id="slider" style="width: 100px" class="right">
                         <div id="custom-handle" class="ui-slider-handle"></div>
-                    </div>
+                    </div>--%>
 
                 </td>
             </tr>
@@ -158,26 +158,29 @@
 
 <br />
 
-    <dx:ASPxLabel ID="lblTest" runat="server" Text="" ForeColor="Magenta" />
-        <dx:ASPxComboBox ID="ddlEntity" runat="server" Font-Bold="true" Font-Size="16"  OnSelectedIndexChanged="ddlEntity_OnSelectedIndexChanged" AutoPostBack="true" >
-        <Items>
-            <dx:ListEditItem Value="Subjects" Selected="true" />
-            <dx:ListEditItem Value="Actions" />
-            <dx:ListEditItem Value="Measures" />
-            <%--<dx:ListEditItem Value="Consents" />--%>
-        </Items>
-    </dx:ASPxComboBox>
+   
 <%-- Select Controls --%>
         <table>
         <tr>
 
             <td style="vertical-align: top">
+
+                 <dx:ASPxLabel ID="lblTest" runat="server" Text="" ForeColor="Magenta" />
+                    <dx:ASPxComboBox ID="ddlEntity" runat="server" Font-Bold="true" Font-Size="16"  OnSelectedIndexChanged="ddlEntity_OnSelectedIndexChanged" AutoPostBack="true" >
+                    <Items>
+                        <dx:ListEditItem Value="Subjects" Selected="true" />
+                        <dx:ListEditItem Value="Actions" />
+                        <dx:ListEditItem Value="Measures" />
+                        <%--<dx:ListEditItem Value="Consents" />--%>
+                    </Items>
+                </dx:ASPxComboBox>
+
 <%--                Select Timepoints:
                 <dx:ASPxTokenBox ID="tokTimepoint" runat="server" ItemValueType="System.String" DataSourceID="sqlTP" ClientInstanceName="tokTimepoint"
                      TextField="timepoint_text" ValueField="timepointID"   >
                     <ClientSideEvents ValueChanged="SomeSelected" />
                 </dx:ASPxTokenBox>--%>
-                Select Groups:
+<%--                Select Groups:
                 <dx:ASPxTokenBox ID="tokGroup" runat="server" ItemValueType="System.String" DataSourceID="sqlGroup" ClientInstanceName="tokGroup"
                      TextField="groupname" ValueField="groupID"   >
                     <ClientSideEvents ValueChanged="SomeSelected" />
@@ -186,7 +189,7 @@
                 <dx:ASPxTokenBox ID="tokSubjStatus" runat="server" ItemValueType="System.String" DataSourceID="sqlSS" ClientInstanceName="tokSubjStatus"
                      TextField="SubjStatus" ValueField="subjstatusID"   >
                     <ClientSideEvents ValueChanged="SomeSelected" />
-                </dx:ASPxTokenBox>
+                </dx:ASPxTokenBox>--%>
 
 
             </td>

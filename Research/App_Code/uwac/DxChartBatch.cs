@@ -54,7 +54,7 @@ namespace uwac
 		public DxChartBatch(DxOutputtype mycharttype, DxChartSettings mysettings)
 		{
 			Initialize();
-			//outputtype = mycharttype;
+			outputtype = mycharttype;  //turned on Apr8 2019
 			_settings = mysettings;
 		}
 

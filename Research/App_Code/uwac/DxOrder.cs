@@ -98,39 +98,41 @@ namespace uwac
 			}
 			catch (Exception ex) { }
 
-			OrderType otype = order_to_del.ordertype;
 
 			if (order_to_del != null)
 			{
+				OrderType otype = order_to_del.ordertype;
 				this.orders.Remove(order_to_del);
+
+				if (otype == OrderType.chart)
+				{
+					DxChartOrder chartorder_to_del = null;
+					try
+					{
+						chartorder_to_del = this.chartorders.Where(o => o.ordernum == ordernum_todelete).First();
+					}
+					catch (Exception ex) { }
+					if (order_to_del != null)
+					{
+						this.chartorders.Remove(chartorder_to_del);
+					}
+				}
+				else if (otype == OrderType.table)
+				{
+					DxTableOrder tableorder_to_del = null;
+					try
+					{
+						tableorder_to_del = this.tableorders.Where(o => o.ordernum == ordernum_todelete).First();
+					}
+					catch (Exception ex) { }
+					if (order_to_del != null)
+					{
+						this.tableorders.Remove(tableorder_to_del);
+					}
+				}
+
 			}
 
-			if(otype == OrderType.chart)
-			{
-				DxChartOrder chartorder_to_del = null;
-				try
-				{
-					chartorder_to_del = this.chartorders.Where(o => o.ordernum == ordernum_todelete).First();
-				}
-				catch (Exception ex) { }
-				if (order_to_del != null)
-				{
-					this.chartorders.Remove(chartorder_to_del);
-				}
-			}
-			else if (otype == OrderType.table)
-			{
-				DxTableOrder tableorder_to_del = null;
-				try
-				{
-					tableorder_to_del = this.tableorders.Where(o => o.ordernum == ordernum_todelete).First();
-				}
-				catch (Exception ex) { }
-				if (order_to_del != null)
-				{
-					this.tableorders.Remove(tableorder_to_del);
-				}
-			}
 
 
 		}

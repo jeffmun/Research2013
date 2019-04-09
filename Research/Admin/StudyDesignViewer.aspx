@@ -22,7 +22,7 @@
 		<tr>
 			<td style="vertical-align:top; padding:10px">
 	<dx:ASPxCheckBoxList ID="cblItems" ClientInstanceName="cblItems" runat="server" Caption="Select Items to display:"  
-		Font-Size="X-Small" RepeatLayout="Flow" RepeatColumns="3" >
+		Font-Size="X-Small" RepeatLayout="Flow" RepeatColumns="3" visible="false">
 		<Items>
 			<dx:ListEditItem Value="Actions" Selected="true" />
 			<dx:ListEditItem Value="Measures" Selected="true"  />
@@ -34,7 +34,7 @@
 			</td>
 			<td style="vertical-align:top; padding:10px">
 
-	<dx:ASPxButton ID="btnLoad" runat="server" Text="Load Study Design" 
+	<dx:ASPxButton ID="btnLoad" runat="server" Text="Load Study Design" visible="false"
 		OnClick="btnLoad_OnClick" AutoPostBack="false" ClientInstanceName="btnLoad" />
 				
 
@@ -58,18 +58,18 @@
 	OnCustomCellDisplayText="pivotENT_CustomCellDisplayText"  OnCustomCellStyle="pivotENT_CustomCellStyle"
 		OnBeginRefresh="pivotENT_OnBeginRefresh"   --%>
 
-	<dx:ASPxPivotGrid ID="pivotENT" runat="server"    Visible="false"  
-		 OnCustomSummary="pivotENT_CustomSummary"
+	<dx:ASPxPivotGrid ID="pivotENT" runat="server"    Visible="true"   ClientInstanceName="pivotENT"   
+		 OnCustomSummary="Cell_Concat"  EncodeHtml="false"
 		EnableCallbackAnimation="true">
 	<Fields>
-		<dx:PivotGridField FieldName="studyactionID" ID="fsaID" Caption="saID"   />
-		<dx:PivotGridField FieldName="studymeasID" ID="fsmID" Caption="smID"   />
-		<dx:PivotGridField FieldName="groupname" ID="fgroupname" Caption="Group"  />
-		<dx:PivotGridField FieldName="timepoint_text" ID="ftimepoint_text" Caption="Timept" />                        
-		<dx:PivotGridField FieldName="actiontype" ID="factiontype" Caption="Action Type" />                        
-		<dx:PivotGridField FieldName="actiontext" ID="factiontext" Caption="Action" />                        
-		<dx:PivotGridField FieldName="studymeasname" ID="fstudymeasname" Caption="StudyMeas" />                        
-		<dx:PivotGridField FieldName="measname" ID="fmeasname" Caption="Measure" />                        
+<%--		<dx:PivotGridField FieldName="studyactionID" ID="fsaID" Caption="saID" Options-ShowTotals="false"   />
+		<dx:PivotGridField FieldName="studymeasID" ID="fsmID" Caption="smID"   />--%>
+		<dx:PivotGridField FieldName="groupname" ID="fgroupname" Caption="Group"  Area="ColumnArea"  Options-ShowTotals="false"/>
+		<dx:PivotGridField FieldName="timepoint_text" ID="ftimepoint_text" Caption="Timept" Area="RowArea"  Options-ShowTotals="false"/>                        
+		<dx:PivotGridField FieldName="actiontype" ID="factiontype" Caption="Action Type" Area="RowArea"  Options-ShowTotals="false"/>                        
+		<dx:PivotGridField FieldName="actiontext" ID="factiontext" Caption="Action" Area="RowArea"  Options-ShowTotals="false"/>                        
+		<dx:PivotGridField FieldName="studymeasname" ID="fstudymeasname" Caption="StudyMeas" Area="DataArea" SummaryType="Custom"  Options-ShowTotals="false"/>                        
+		<dx:PivotGridField FieldName="measname" ID="fmeasname" Caption="Measure"  Options-ShowTotals="false" />                        
 		<%--<dx:PivotGridField  FieldName="txgrp" ID="ftxgrp" Caption="TxGrp" />  --%>                      
 						
 	</Fields>
@@ -85,6 +85,8 @@
 		ShowColumnTotals="false" ShowRowTotals="false" ShowRowGrandTotals="false" ShowColumnGrandTotals="false" />
 </dx:ASPxPivotGrid>
 
+
+	
 
 
 	<asp:SqlDataSource ID="sql_StudyDesign_A" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"

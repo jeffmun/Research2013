@@ -597,9 +597,11 @@ public class DxDoc
 
 
 
-	protected void DeleteChartFiles()
+	protected void DeleteChartFiles(string path)
 	{
-		System.IO.DirectoryInfo di = new DirectoryInfo(@"c:\_temp\factory\");
+		//System.IO.DirectoryInfo di = new DirectoryInfo(@"c:\_temp\factory\");
+		//System.IO.DirectoryInfo di = new DirectoryInfo(System.MapPath(@"\App_Data\factory\"));
+		System.IO.DirectoryInfo di = new DirectoryInfo(path);
 
 		foreach (FileInfo file in di.GetFiles())
 		{

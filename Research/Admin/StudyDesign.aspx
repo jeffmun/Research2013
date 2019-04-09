@@ -328,6 +328,8 @@
 
 				<asp:HiddenField ID="hidstudymeasID_toDelete" runat="server" />
 
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<asp:Label ID="Label4" runat="server" Text="Click rows to assign them to an Action." ForeColor="Gray" Font-size="XX-Small"  Font-Italic="true" Font-Bold="true"></asp:Label>
 			</td>
 			<td style="width: 50px"></td>
 		<td><asp:Label ID="Label1" runat="server" Text="Measures Assigned to Actions" Font-size="Medium" ForeColor="LightGray"  Font-Bold="true"></asp:Label><br /></td>
@@ -457,6 +459,27 @@
 <br /><br />
 	<dx:ASPxLabel ID="lblFix1" ClientInstanceName="lblFix1"  runat="server" Text="Measures Not Assigned to Actions"  ClientVisible="false" Font-size="Medium" ForeColor="DarkRed"  Font-Bold="true"></dx:ASPxLabel><br />
 
+				<%--<table>
+					<tr>
+						<td style="padding:5px">
+						   <dx:ASPxComboBox ID="cboStudyAction_for_Meas" runat="server" Width="285px" DropDownWidth="350px" DataSourceID="sql_StudyActions_For_Meas"
+								DropDownStyle="DropDownList"  ValueField="studyactionID" NullText="Select Action...">
+								<Columns>
+									<dx:ListBoxColumn FieldName="studyactionID" Caption="saID"  Width="40px"  />
+									<dx:ListBoxColumn FieldName="timepoint_text" Caption="Timept" Width="60px" />
+									<dx:ListBoxColumn FieldName="actiontype" Caption="Action Type" Width="80px" />
+									<dx:ListBoxColumn FieldName="actiontext" Caption="Action" Width="150px" />
+								</Columns>
+							</dx:ASPxComboBox>
+						</td>
+						<td style="padding:5px">
+							<dx:ASPxButton ID="btnAssignMtoSA" runat="server" OnClick="btnAssignMtoSA_OnClick" Text="Assign"></dx:ASPxButton>
+						</td>
+					</tr>
+				</table>	
+--%>
+
+
 	<dx:ASPxGridView ID="grid_MeasNotInAction" runat="server"  ClientInstanceName="grid_MeasNotInAction"   DataSourceID="sql_StudyMeas_not_in_Action"  ForeColor="DarkRed"  
 		AutoGenerateColumns="false"  OnCellEditorInitialize="grid_MeasNotInAction_CellEditorInitialize" EnableCallBacks="true" ClientVisible="true"
 		AllowAddingRecords="false" AllowSorting="false" ShowFooter="false"  KeyFieldName="studymeasgroupID"
@@ -466,6 +489,8 @@
 			<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
 		</SettingsPager>						
 		<Columns>
+			<dx:GridViewCommandColumn ShowSelectCheckbox="true"></dx:GridViewCommandColumn>
+			<dx:GridViewDataColumn FieldName="studymeasgroupID" Caption="smgID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
 			<dx:GridViewDataColumn FieldName="studymeasID" Caption="smID" Width="50"  ReadOnly="true" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false" />
 			<dx:GridViewDataColumn FieldName="timepoint_text" Caption="Timept" EditFormSettings-Visible="false" />
 			<dx:GridViewDataColumn FieldName="studymeasname" Caption="StudyMeas" EditFormSettings-Visible="false" />
@@ -886,8 +911,17 @@
 	</asp:SqlDataSource>
 
 
+		<asp:SqlDataSource ID="sql_StudyActions_For_Meas" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select studyactionID, timepoint_text , actiontype, actiontext from vwstudyaction where actiontype in ('Session','Phone Call','Receive Item') and studyID = @studyID and actiontype in ('Session','Phone Call','Receive Item') order by timepoint, actiontype, actiontext">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+
 	<asp:SqlDataSource ID="sql_StudyMeas_not_in_Action" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
-		SelectCommand="select sm.studymeasID, sm.timepointID, timepoint_text, studymeasname, smg.groupID, groupname, studymeasgroupID, studyactiongroupID 
+		SelectCommand="exec sec.spsetusercontext 'jeffmun'; select sm.studymeasID, sm.timepointID, timepoint_text, studymeasname, smg.groupID, groupname, studymeasgroupID, studyactiongroupID 
 	from tblStudyMeas sm
 	join tblTimepoint tp ON sm.timepointID = tp.timepointID
 	join tblStudymeasGroup smg ON sm.studymeasID = smg.studymeasID

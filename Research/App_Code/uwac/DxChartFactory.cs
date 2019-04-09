@@ -370,7 +370,7 @@ namespace uwac
 							DataSubsets subsets = new DataSubsets(dt, varnames, new List<string> { mysettings.panelvar });
 
 							DxChartBatch batch2 = new DxChartBatch(DxOutputtype.Lineplot, mysettings);
-
+							batch2.vars = mysettings.numvars;
 							foreach (DataSubset subset in subsets.subsets)
 							{
 								DxChartBatch subbatch = new DxChartBatch(mysettings, subset.dt, subset.Cols_and_Vals_ToString());

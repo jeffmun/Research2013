@@ -700,7 +700,18 @@ public partial class Admin_StudyDesign : BasePage
 	}
 
 
+	//protected void btnAssignMtoSA_OnClick(object sender, EventArgs e)
+	//{
+	//	var x = grid_MeasNotInAction.GetSelectedFieldValues("studymeasgroupID");
+	//	int studyactionID = Convert.ToInt32(cboStudyAction_for_Meas.Value);
 
+	//	if(x.Count > 0 & studyactionID > 0)
+	//	{
+	//		int foo = 0;
+	//	}
+
+		
+	//}
 
 	protected void btnBulkAssign2_OnClick(object sender, EventArgs e)
 	{

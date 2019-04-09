@@ -32,7 +32,7 @@ public partial class Library_Measure : BasePage
 			if(!String.IsNullOrEmpty(mID))
 			{
 				FormLayout.Visible = true;
-				Panel_UploadDocs.Visible = true;
+				Panel_UploadDocs.Visible = false; // true;
 				lblDocs.Visible = true;
 				btnShowUploadDocPanel.Visible = true;
 				gridDocs.Visible = true;

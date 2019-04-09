@@ -192,7 +192,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 		GetCurrentDefaultStudyID();
 
 		PopulateStudyDDL();
-
+		SetTitles();
 		colorlevel = uwac.trk.color.GetColorLevel();
 
 		NReco.PivotData.License.SetLicenseKey(
@@ -258,6 +258,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 		lblDate.Text = System.DateTime.Today.ToLongDateString();
 
 
+
 		bool isactive = true;
 		if (isactive)
 		{
@@ -284,7 +285,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 
 		ASPxSiteMapDataSource1.SiteMapFileName = "~/" + sitemap;
 
-		SetTitles();
+
 
 
 
@@ -296,19 +297,17 @@ public partial class UWAC : System.Web.UI.MasterPage
 		string subtitle = ConfigurationManager.AppSettings["MasterSubtitle"];
 		//title += " [backend=" + ConfigurationManager.ConnectionStrings["TRACKING_CONN_STRING"] + "]";
 
+		SQL_utils sql = new SQL_utils("backend");
+		title = sql.StringScalar_from_SQLstring("select mastertitle from vwStudyMastertitle where studyID=" + Master_studyID.ToString());
 
-		if (master_studyname == "AVH")
-		{
-			title = "BRITE Center Study DB";
-		}
-
-
+		placeholderMasterTitle.Controls.Clear();
 
 		Literal litTitle = new Literal { Text = title };
 		Label lblSubtitle = new Label { Text = String.Format("&nbsp;&nbsp;{0}", subtitle), ForeColor = System.Drawing.Color.Gray };
 		placeholderMasterTitle.Controls.Add(litTitle);
 		placeholderMasterTitle.Controls.Add(lblSubtitle);
 
+		sql.Close();
 	}
 
 
@@ -354,7 +353,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 		GetCurrentDefaultStudyID();
 
 		ddl_Master_SelectStudyID.SelectedIndex = 0;
-
+		SetTitles();
 		//masterINFO.Text += "{" + master_studyID.ToString() + "}";
 
 	}
@@ -438,9 +437,11 @@ public partial class UWAC : System.Web.UI.MasterPage
 		//DataTable dt = oSQL.DataTable_from_ProcName("spSEC_GetStudies_CanView_OR_Acess_by_User__Short__with_SelectStudy");
 
 		SQL_utils sql = new SQL_utils("backend");
-		DataTable dt = sql.DataTable_from_SQLstring("select -1 as studyID, ' <select new study>' as StudyName " +
+
+		string sqlcode = "select -1 as studyID, ' <select new study>' as StudyName " +
 		"union select a.studyID, StudyName " +
-		"from tblstudy a  order by 2");
+		"from tblstudy a  order by 2";
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
 		sqluser.Text = String.Format("instantiate as:{0}<br/>viewable:{1}<br/>msg:{2}"
 			, sql.InstantiateAs
@@ -555,20 +556,25 @@ public partial class UWAC : System.Web.UI.MasterPage
 	{
 		var itm = e.Item;
 
-		if(master_studyname == "AVH")
+		SQL_utils sql = new SQL_utils("backend");
+
+		int mastertitleID = sql.IntScalar_from_SQLstring("select mastertitleID from vwStudyMastertitle where studyID = " + Master_studyID.ToString());
+		sql.Close();
+
+		List<string> nodes_to_hide = new List<string>();
+
+		if (mastertitleID != 1)
 		{
-			List<string> nodes_to_hide = new List<string> { "Clinic", "Calendar", "Other ID's", "Bernier Lab", "Tadpole","PATH","IBIS","ESS"
-				, "(old) Data Projects", "IntHx Data Summary", "IntHx Tx Types & Categories", "Reliability Tracking"};
-
-
-			itm.Visible = (nodes_to_hide.Contains(itm.Text)) ? false : true ;
-
+			nodes_to_hide.AddRange( new List<string> { "Clinic", "Calendar", "Other ID's", "Bernier Lab", "Tadpole","PATH","IBIS","ESS"
+				,"Sleep Pilot", "(old) Data Projects", "IntHx Data Summary", "IntHx Tx Types & Categories", "Reliability Tracking"} );
 		}
-		else 
+
+		if (mastertitleID != 2)
 		{
-			itm.Visible = true;
-
+			nodes_to_hide.Add("AVH");
 		}
+
+		itm.Visible = (nodes_to_hide.Contains(itm.Text)) ? false : true;
 
 	}
 

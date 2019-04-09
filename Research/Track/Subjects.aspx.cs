@@ -279,8 +279,9 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 		if (ViewState["needBind"].ToString() == "true")
 		{
 
-			UpdateSelectParameters();
-
+			//UpdateSelectParameters();
+			group_csv = "";
+			subjstatus_csv = "";
 			DataTable dt = ENT_GetData("gvENT", group_csv.ToString(), subjstatus_csv.ToString());
 
 			if (dt != null)
@@ -417,7 +418,7 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 		//if (ViewState["needBind"] != null && (bool)ViewState["needBind"])
 		if (ViewState["needBind"].ToString() == "true")
 		{
-			UpdateSelectParameters();
+			//UpdateSelectParameters();
 
 			DataTable dt = ENT_GetData("pivotENT",  group_csv, subjstatus_csv);
 
@@ -497,12 +498,12 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 
 	#region Get Data from DB
 
-	protected void UpdateSelectParameters()
-	{
-		group_csv = tokGroup.Value.ToString();
-		subjstatus_csv = tokSubjStatus.Value.ToString();
+	//protected void UpdateSelectParameters()
+	//{
+	//	//group_csv = tokGroup.Value.ToString();
+	//	//subjstatus_csv = tokSubjStatus.Value.ToString();
 
-	}
+	//}
 
 
 	protected DataTable ENT_GetData(string obj, string group_csv, string subjstatus_csv)

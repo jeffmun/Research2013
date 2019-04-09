@@ -41,10 +41,10 @@
 
 			</td>
 			<td>
-				<dx:ASPxTrackBar ID="trkColorCorrectionFactor" runat="server" MinValue="0" MaxValue="100" Width="100px" ShowChangeButtons="false"
+<%--				<dx:ASPxTrackBar ID="trkColorCorrectionFactor" runat="server" MinValue="0" MaxValue="100" Width="100px" ShowChangeButtons="false"
 					Caption="Color Level" ForeColor="Silver" ValueChangedDelay="600" PositionStart="50">
 					<ClientSideEvents ValueChanged="UpdateColor"   />
-				</dx:ASPxTrackBar>
+				</dx:ASPxTrackBar>--%>
 			</td>
 		</tr>
 	</table>
@@ -217,24 +217,26 @@
 
 								</td>
 								<td style="padding:10px; vertical-align:top">
-									<dx:ASPxButton ID="btnLoadStaff" ClientInstanceName="btnLoadStaff" runat="server" Text="Load Staff" Visible="false" OnClick="btnLoadStaff_OnClick"></dx:ASPxButton>
+									<dx:ASPxButton ID="btnLoadStaff" ClientInstanceName="btnLoadStaff" runat="server" Text="Load Staff Grid" Visible="true" OnClick="btnLoadStaff_OnClick"></dx:ASPxButton>
 								</td>
 							</tr>
 						</table>
 
 						<br/><br/>
-							<dx:ASPxPivotGrid ID="pivotStaff" ClientInstanceName="pivotStaff" runat="server" Visible="true" 
-							 OptionsView-ShowFilterHeaders="false" 
+							<dx:ASPxPivotGrid ID="pivotStaff" ClientInstanceName="pivotStaff" runat="server" Visible="false"  Width="95%" Height="700px"
+							 OptionsView-ShowFilterHeaders="false"
 								OptionsView-HorizontalScrollBarMode="Auto" OptionsView-VerticalScrollBarMode="Auto">
 								<OptionsView ShowColumnGrandTotals="false" ShowColumnTotals="false" ShowRowGrandTotals="false" ShowRowTotals="false" />
 								<Fields>
+									<dx:PivotGridField FieldName="DBrole" ID="fDBrole" Caption="DB role"  Area="RowArea" Options-ShowTotals="false" Options-ShowGrandTotal="false"  />
 									<dx:PivotGridField FieldName="StaffName" ID="fStaffName" Caption="Staff"  Area="RowArea" Options-ShowTotals="false" Options-ShowGrandTotal="false"  />
 									<dx:PivotGridField FieldName="StudyName" ID="fStudyName" Caption="Study"  Area="ColumnArea"  Options-ShowTotals="false" Options-ShowGrandTotal="false"  />
 									<dx:PivotGridField FieldName="allowed_groups" ID="fallowed_groups" Caption="Allow Groups"  Area="DataArea" SummaryType="Max" Options-ShowGrandTotal="false"  />
 								</Fields>
-								<OptionsPager   RowsPerPage="50" Position="Bottom" >
-								<PageSizeItemSettings Visible="true" ShowAllItem="true" Items="20,50,200"></PageSizeItemSettings>
-							</OptionsPager>
+								<OptionsView HorizontalScrollBarMode="Visible" VerticalScrollBarMode="Visible" />
+								<OptionsPager   RowsPerPage="50" Position="Bottom"  >
+									<PageSizeItemSettings Visible="true" ShowAllItem="true" Items="20,50,200"></PageSizeItemSettings>
+								</OptionsPager>
 							</dx:ASPxPivotGrid>
 
 						</dx:ContentControl>
@@ -246,7 +248,7 @@
 					<dx:ContentControl>
 						<dx:ASPxGridView ID="gridLabEditing" ClientInstanceName="gridLabEditing" runat="server" DataSourceID="Sql_Study_with_Groups" KeyFieldName="studyID"
 							  OnDataBound="gridLabEditing_DataBound" OnCustomButtonInitialize="gridLabEditing_OnCustomButtonInitialize"
-							OnCustomButtonCallback="gridLabEditing_CustomButtonCallback" >
+							OnCustomButtonCallback="gridLabEditing_CustomButtonCallback"   >
 							<Columns>
 								<dx:GridViewDataColumn FieldName="studyID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="isActive" Caption="Active?" ReadOnly="true"></dx:GridViewDataColumn>
@@ -254,7 +256,6 @@
 								<dx:GridViewDataColumn FieldName="hasparentstudy" Caption="Has Parent Study?" ReadOnly="true"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="parentstudyname" Caption="Parent Study" ReadOnly="true"></dx:GridViewDataColumn>
 								
-
 							</Columns>
 						</dx:ASPxGridView>
 					</dx:ContentControl>

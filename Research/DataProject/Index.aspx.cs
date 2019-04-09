@@ -62,7 +62,10 @@ public partial class DataProject_Index : BasePage
 	#endregion
 
 
-
+	protected void gridProjects_OnRowCommand(object sender, EventArgs e)
+	{
+		int foo = 0;
+	}
 
 	protected void gridProjects_HtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
 	{

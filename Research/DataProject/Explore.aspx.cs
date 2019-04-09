@@ -715,6 +715,12 @@ public partial class DataProject_Explore : BasePage
 				gridOrders.DataBind();
 				gridOrders.Visible = true;
 			}
+			else
+			{
+				gridOrders.DataSource = null;
+				gridOrders.DataBind();
+				gridOrders.Visible = true;
+			}
 
 		}
 	}
@@ -1778,7 +1784,9 @@ public partial class DataProject_Explore : BasePage
 	protected void HandleOrders(string p)
 	{
 		log(String.Format("-------------------- HandleOrders [{0}]--------------------", p));
-		string path = @"c:\_temp\factory\";
+		//string path = @"c:\_temp\factory\";
+		string path = Server.MapPath("~/App_Data/factory/");
+
 		if (sessionorders == null) sessionorders = new SessionOrders();
 
 		if (p == "SaveNewOrder")
@@ -1857,14 +1865,14 @@ public partial class DataProject_Explore : BasePage
 		log(String.Format("-------------------- CreateOutput [{0}]--------------------", p));
 		if (sessionorders == null) sessionorders = new SessionOrders();
 
-		string path = @"c:\_temp\factory\";
+		string path = Server.MapPath("~/App_Data/factory/");
 		string outputstatus = "ok";
 		if (p == "clear")
 		{
 
 		}
 		//else if (p.StartsWith("OldOrder") | p == "NewOrder" | p == "SaveNewOrder")
-		else if (p.Contains("Order"))
+		else if (p.Contains("Order") | p == "Docx")
 		{
 			List<DxChartOrder> ordersC = new List<DxChartOrder>();
 			List<DxTableOrder> ordersT = new List<DxTableOrder>();
@@ -1907,19 +1915,17 @@ public partial class DataProject_Explore : BasePage
 
 			}
 			
-			else if (p.StartsWith("DisplayAllOrders"))
+			else if (p.StartsWith("DisplayAllOrders") | p == "Docx")
 			{
 				ordersC = PlaceOrders(sessionorders.chartorders);
 				ordersT = PlaceOrders(sessionorders.tableorders);
 			}
 
-
 			List<string> outputerrors = new List<string>();
 			bool delivertopage = true;
 			//Check for errors
 			foreach(DxChartOrder orderC in ordersC)
-			{
-				
+			{				
 				if(orderC.errors.Count > 0)
 				{
 					outputerrors.AddRange(orderC.errors);
@@ -1927,58 +1933,54 @@ public partial class DataProject_Explore : BasePage
 				}
 			}
 
-
 			if (delivertopage)
 			{
 				DeliverOutputToPage(ordersC, ordersT);
-
-				
-				//if (p == "RemoveOrder")
-				//{
-				//	//Now that the charts are populated, save them to disk OR delete them
-				//	foreach (DxChartOrder order in ordersC)
-				//	{
-				//		if (order.orderSaveState == OrderSaveState.ReadyToDelete)
-				//		{
-				//			order.DeleteChartsOnDisk(path);
-				//		}
-				//	}
-				//}
 			}
 			else
 			{
 				DeliverOutputToPage(outputerrors);
 			}
 
-
-
-
-
-		}
-
-		else if (p == "Docx")
-		{
-			List<DxChartOrder> ordersC = new List<DxChartOrder>();
-			List<DxTableOrder> ordersT = new List<DxTableOrder>();
-
-			ordersC = PlaceOrders(sessionorders.chartorders);
-			ordersT = PlaceOrders(sessionorders.tableorders);
-
-			//Do the saving here??
-			//Now that the charts are populated, save them to disk OR delete them
-			foreach (DxChartOrder order in ordersC)
+			if(p=="Docx")
 			{
-				if (order.orderSaveState == OrderSaveState.ReadyToSave)
+				foreach (DxChartOrder order in ordersC)
 				{
-					order.ChartsToDisk(path);
+					if (order.orderSaveState == OrderSaveState.ReadyToSave)
+					{
+						order.ChartsToDisk(path);
+					}
 				}
+
+
+				DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid);
+
 			}
-			
-
-			DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); //MakeDocx																									   //DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-
 
 		}
+
+		//else if (p == "Docx")
+		//{
+		//	List<DxChartOrder> ordersC = new List<DxChartOrder>();
+		//	List<DxTableOrder> ordersT = new List<DxTableOrder>();
+
+		//	ordersC = PlaceOrders(sessionorders.chartorders);
+		//	ordersT = PlaceOrders(sessionorders.tableorders);
+
+		//	//Do the saving here??
+		//	//Now that the charts are populated, save them to disk OR delete them
+		//	foreach (DxChartOrder order in ordersC)
+		//	{
+		//		if (order.orderSaveState == OrderSaveState.ReadyToSave)
+		//		{
+		//			order.ChartsToDisk(path);
+		//		}
+		//	}
+			
+		//	DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); 
+		//	//MakeDocx																									   
+		//	//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
+		//}
 
 		return outputstatus;
 
@@ -2301,7 +2303,8 @@ public partial class DataProject_Explore : BasePage
 
 	protected void btnPDF_OnClick(object source, EventArgs e)
 	{
-		string path = @"c:\_temp\factory\";
+		//string path = @"c:\_temp\factory\";
+		string path = Server.MapPath("~/App_Data/factory/");
 		List<string> files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly).ToList();
 
 		for (int i = 0; i < files.Count; i++)
@@ -2405,7 +2408,8 @@ public partial class DataProject_Explore : BasePage
 						scalex = 0.5f;
 						x = imageLocationX;
 						tmpy = ypos_last_chart;
-						string path = @"c:\_temp\factory\";
+						string path = Server.MapPath("~/App_Data/factory/");
+						//string path = @"c:\_temp\factory\";
 
 
 						//WebChartControl chart = new WebChartControl();
@@ -2481,7 +2485,7 @@ public partial class DataProject_Explore : BasePage
 				//bookmarks.Add(new PdfBookmark() { Title = employee.FirstName + " " + employee.LastName, Destination = destination });
 			}
 			//DevExpress.Web.Demos.
-			documentProcessor.SaveDocument(@"c:\_temp\foo.pdf");
+			documentProcessor.SaveDocument(Server.MapPath("~/App_Data/factoryoutput/huzzah.pdf"));
 
 			MemoryStream ms = new MemoryStream();
 			documentProcessor.SaveDocument(ms);

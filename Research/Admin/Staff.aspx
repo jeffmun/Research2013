@@ -47,11 +47,11 @@
 								<dx:GridViewDataColumn FieldName="staffID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver" 
 									EditFormSettings-Visible="false" Settings-AllowAutoFilter="false"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="active" Caption="Active?" EditFormSettings-Visible="false" ></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="firstname" Caption="First Name" ></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="firstname" Caption="First Name"     ></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="lastname" Caption="Last Name" ></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="actdirID" Caption="UW NETID" CellStyle-Font-Bold="true" ></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="actdirID" Caption="UW NETID" CellStyle-Font-Bold="true"    ></dx:GridViewDataColumn>
 								<dx:GridViewDataComboBoxColumn FieldName="stafftypeID" Caption="Staff Type"  >
-									<PropertiesComboBox TextField="stafftype" ValueField="stafftypeID" DataSourceID='Sql_StaffType'  />
+									<PropertiesComboBox TextField="stafftype" ValueField="stafftypeID" DataSourceID='Sql_StaffType' ValidationSettings-RequiredField-IsRequired="true"  />
 								</dx:GridViewDataComboBoxColumn>
 								<dx:GridViewDataColumn FieldName="email" Caption="email" ></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="phone_work" Caption="Work phone" ></dx:GridViewDataColumn>

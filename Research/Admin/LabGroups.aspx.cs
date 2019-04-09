@@ -333,7 +333,8 @@ public partial class Admin_LabGroups : BasePage
 				string colorname = GetDBroleIDColor(e.CellValue.ToString());
 				Color colorbase = Color.FromName(colorname);
 
-				var x = (100 - Convert.ToSingle(trkColorCorrectionFactor.Value)) / 100f;
+				//var x = (100 - Convert.ToSingle(trkColorCorrectionFactor.Value)) / 100f;
+				var x = (100 - Master.Colorlevel) / 100f;
 				Color color = ChangeColorBrightness(colorbase, x);
 
 				e.Cell.BackColor = color;
@@ -428,6 +429,11 @@ public partial class Admin_LabGroups : BasePage
 
 		e.TextCell.ForeColor = Color.FromName(GetDBroleColor(e.Item.Text));
 	}
+
+
+
+
+
 
 	protected void cboDBrole_ItemTextCellPrepared(object sender, ListBoxItemTextCellPreparedEventArgs e)
 	{
@@ -641,7 +647,7 @@ public partial class Admin_LabGroups : BasePage
 
 		if (isNew)
 		{
-			string insert = String.Format("insert into tblLabGroup(groupID, labID) values({0},{1})", groupID, labID);
+			string insert = String.Format("insert into tblLabGroup(groupID, labID, labgroup_enabled) values({0},{1},1)", groupID, labID);
 			try
 			{
 				sql.NonQuery_from_SQLstring(insert);
@@ -688,7 +694,8 @@ public partial class Admin_LabGroups : BasePage
 		string studyIDs_csv = uwac.trk.dataops.GetCSV(gridStudies.GridView.GetSelectedFieldValues("studyID"));
 
 
-		string sqlcode = String.Format("select * from vwSEC_AllowedGroups_By_StaffID where studyID in ({0}) and StaffName not in ('{1}','{2}')", studyIDs_csv, "aut user", "autsys TestAcct");
+		//string sqlcode = String.Format("select * from vwSEC_AllowedGroups_By_StaffID where studyID in ({0}) and StaffName not in ('{1}','{2}')", studyIDs_csv, "aut user", "autsys TestAcct");
+		string sqlcode = String.Format("select * from vwSEC_AllowedGroups_By_StaffID where labID in ({0}) and StaffName not in ('{1}','{2}')", labID, "aut user", "autsys TestAcct");
 
 
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
@@ -698,7 +705,7 @@ public partial class Admin_LabGroups : BasePage
 
 		pivotStaff.DataSource = dt;
 		pivotStaff.DataBind();
-
+		pivotStaff.Visible = true;
 
 
 		sql.Close();

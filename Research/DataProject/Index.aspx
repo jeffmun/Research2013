@@ -76,7 +76,7 @@
 	
 
 	<dx:ASPxGridView ID="gridProjects" runat="server" AutoGenerateColumns="false" ClientInstanceName="gridProjects" 
-		OnHtmlDataCellPrepared="gridProjects_HtmlDataCellPrepared" KeyFieldName="dataproj_pk" >
+		OnHtmlDataCellPrepared="gridProjects_HtmlDataCellPrepared" KeyFieldName="dataproj_pk" OnRowCommand="gridProjects_OnRowCommand" SettingsBehavior-ConfirmDelete="true"  >
 								<Columns>
 <%--									<dx:GridViewDataColumn FieldName="measname" Caption="Measure" GroupIndex="0"></dx:GridViewDataColumn>--%>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Edit" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Edit" PropertiesHyperLinkEdit-NavigateUrlFormatString="Edit.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
@@ -97,9 +97,15 @@
 									<dx:GridViewDataColumn FieldName="since_latestdatafile" Caption="Time since last data file created" VisibleIndex="7"  HeaderStyle-Wrap="true" Width="100px"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="created" Caption="Project Created" VisibleIndex="8"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="createdBy" Caption="Project CreatedBy" VisibleIndex="9"></dx:GridViewDataColumn>
+									
+									<dx:GridViewCommandColumn ShowDeleteButton="true"></dx:GridViewCommandColumn>
+
 								</Columns>
 								<Settings ShowGroupPanel="false"    />
 								<SettingsPager Mode="ShowAllRecords" />
+								
+		
+
 <%--								<SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="true"  />
 								<GroupSummary>
 									<dx:ASPxSummaryItem FieldName="measname" SummaryType="Count" />
