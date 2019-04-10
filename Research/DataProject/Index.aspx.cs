@@ -70,8 +70,23 @@ public partial class DataProject_Index : BasePage
 	protected void gridProjects_HtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
 	{
 		if (e.DataColumn.FieldName == "projTitle")
+		{
 			if (e.CellValue != null)
 				e.Cell.ToolTip = gridProjects.GetRowValues(e.VisibleIndex, "projSummary").ToString() + ": " + e.CellValue.ToString();
+		}
+		else if (e.DataColumn.FieldName == "isDeleted")
+		{
+			//if (e.CellValue.ToString() == "1")
+			//{
+			//	e.Cell.Controls[0].Visible = false;
+			//	e.Cell.Controls[1].Visible = true;
+			//	e.Cell.BackColor = Color.Red;
+			//} else{
+			//	e.Cell.Controls[0].Visible = true;
+			//	e.Cell.Controls[1].Visible = false;
+			//}
+
+		}
 	}
 
 
@@ -85,6 +100,80 @@ public partial class DataProject_Index : BasePage
 		sql.Close();
 
 	}
+
+	protected void gridProjects_OnCustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
+	{
+		if (e.VisibleIndex == -1) return;
+
+		ASPxGridView grid = (ASPxGridView)sender;
+		string isDeleted = grid.GetRowValues(e.VisibleIndex, "isDeleted").ToString();
+
+
+		DevExpress.Utils.DefaultBoolean showDel = (isDeleted == "0") ? DevExpress.Utils.DefaultBoolean.True : DevExpress.Utils.DefaultBoolean.False;
+		DevExpress.Utils.DefaultBoolean showUndel = (isDeleted == "1") ? DevExpress.Utils.DefaultBoolean.True : DevExpress.Utils.DefaultBoolean.False;
+
+		if (e.ButtonID == "btnDelete") e.Visible = showDel;
+		if (e.ButtonID == "btnUndelete") e.Visible = showUndel;
+
+	}
+
+
+	protected void gridProjects_OnCustomButtonCallback(object sender, DevExpress.Web.ASPxGridViewCustomButtonCallbackEventArgs e)
+	{
+		Debug.WriteLine("**** gridProjects_OnCustomButtonCallback");
+
+		ASPxGridView grid = (ASPxGridView)sender;
+		string keyValue = grid.GetRowValues(e.VisibleIndex, "dataproj_pk").ToString();
+		//gv.JSProperties["cpKeyValue"] = keyValue;
+
+		if (e.ButtonID == "btnDelete")
+		{
+
+			SQL_utils sql = new SQL_utils("data");
+			sql.NonQuery_from_SQLstring("update dp.DataProject set IsDeleted=1, deleted=getdate(), deletedBy=sec.systemuser()  where dataproj_pk = " + keyValue);
+			sql.Close();
+
+			DataTable dt = GetProjects();
+			gridProjects.DataSource = dt;
+			gridProjects.DataBind();
+		}
+		else if (e.ButtonID == "btnUndelete")
+		{
+
+			SQL_utils sql = new SQL_utils("data");
+			sql.NonQuery_from_SQLstring("update dp.DataProject set IsDeleted=0, deleted=null, deletedBy=null  where dataproj_pk = " + keyValue);
+			sql.Close();
+
+			DataTable dt = GetProjects();
+			gridProjects.DataSource = dt;
+			gridProjects.DataBind();
+		}
+
+
+	}
+
+	//protected void btnDeleteDataproject_Command(object sender, CommandEventArgs e)
+	//{
+	//	Debug.WriteLine("**** btnDeleteDataproject_Command");
+	//	if (e.CommandName == "DeleteDataproject")
+	//	{
+
+	//		SQL_utils sql = new SQL_utils("data");
+
+	//		string dataproj_pk = e.CommandArgument.ToString();
+
+	//		sql.NonQuery_from_SQLstring("update dp.Datafile set IsDeleted=1, deleted=getdate(), deletedBy=system_user  where dataproj_pk = " + dataproj_pk );
+
+
+	//		sql.Close();
+
+	//		DataTable dt = GetProjects();
+	//		gridProjects.DataSource = dt;
+	//		gridProjects.DataBind();
+	//	}
+
+
+	//}
 
 
 	#region User Controls
@@ -128,12 +217,25 @@ public partial class DataProject_Index : BasePage
 
 	}
 
+	protected void chkShowDeleted_CheckChanged(object sender, EventArgs e)
+	{
 
+		DataTable dt = GetProjects();
+		gridProjects.DataSource = dt;
+		gridProjects.DataBind();
+	}
 
 	protected DataTable GetProjects()
 	{
+
+		bool showdeleted = chkShowDeleted.Checked;
+
+		string sqlcode = (showdeleted) ?
+			"select * from dp.vwDataProject3 where  studyID = " + Master.Master_studyID.ToString() :
+			"select * from dp.vwDataProject3 where isDeleted=0 and studyID = " + Master.Master_studyID.ToString();
+
 		SQL_utils sql = new SQL_utils("data");
-		DataTable dt = sql.DataTable_from_SQLstring("select * from dp.vwDataProject3 where studyID = " + Master.Master_studyID.ToString());
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
 		Session["dataprojects"] = dt;
 		sql.Close();

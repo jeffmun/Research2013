@@ -73,10 +73,15 @@
 	</table>
 
 	<br />	<br />	<br />
-	
+
+	<dx:ASPxCheckBox ID="chkShowDeleted" runat="server" ClientInstanceName="chkShowDeleted" Text="Show deleted projects"
+		 OnCheckedChanged="chkShowDeleted_CheckChanged" AutoPostBack="true"></dx:ASPxCheckBox>	
 
 	<dx:ASPxGridView ID="gridProjects" runat="server" AutoGenerateColumns="false" ClientInstanceName="gridProjects" 
-		OnHtmlDataCellPrepared="gridProjects_HtmlDataCellPrepared" KeyFieldName="dataproj_pk" OnRowCommand="gridProjects_OnRowCommand" SettingsBehavior-ConfirmDelete="true"  >
+		KeyFieldName="dataproj_pk" OnRowCommand="gridProjects_OnRowCommand"
+		 OnCustomButtonInitialize="gridProjects_OnCustomButtonInitialize"
+		OnCustomButtonCallback="gridProjects_OnCustomButtonCallback" SettingsBehavior-ConfirmDelete="true"  
+		OnHtmlDataCellPrepared="gridProjects_HtmlDataCellPrepared" >
 								<Columns>
 <%--									<dx:GridViewDataColumn FieldName="measname" Caption="Measure" GroupIndex="0"></dx:GridViewDataColumn>--%>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Edit" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Edit" PropertiesHyperLinkEdit-NavigateUrlFormatString="Edit.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
@@ -97,10 +102,20 @@
 									<dx:GridViewDataColumn FieldName="since_latestdatafile" Caption="Time since last data file created" VisibleIndex="7"  HeaderStyle-Wrap="true" Width="100px"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="created" Caption="Project Created" VisibleIndex="8"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="createdBy" Caption="Project CreatedBy" VisibleIndex="9"></dx:GridViewDataColumn>
+									<dx:GridViewDataColumn FieldName="isDeleted" Caption="Is Deleted" Visible="false"  ></dx:GridViewDataColumn>
 									
-									<dx:GridViewCommandColumn ShowDeleteButton="true"></dx:GridViewCommandColumn>
+
+
+									<dx:GridViewCommandColumn >
+										<CustomButtons>
+											<dx:GridViewCommandColumnCustomButton ID="btnDelete" Text="Delete" ></dx:GridViewCommandColumnCustomButton>
+											<dx:GridViewCommandColumnCustomButton ID="btnUndelete" Text="Undelete" ></dx:GridViewCommandColumnCustomButton>
+										</CustomButtons>
+									</dx:GridViewCommandColumn>
 
 								</Columns>
+							<%--	<ClientSideEvents CustomButtonClick="function (s, e) { if (e.buttonID == 'btnDelete') e.processOnServer = confirm('Do you really want to delete this project?'); }" />--%>
+
 								<Settings ShowGroupPanel="false"    />
 								<SettingsPager Mode="ShowAllRecords" />
 								
