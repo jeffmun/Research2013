@@ -1,11 +1,15 @@
 <%@ Page language="c#" Inherits="GenericDataEntryForms.csh.csh" CodeFile="csh.aspx.cs"  MasterPageFile="~/UWAC.master" %>
 
-<%@ Register TagPrefix="def" Namespace="DataEntryFramework" %>
+<%@ Register TagPrefix="def" Namespace="DataEntryFramework3" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
-						<def:dataentrycontroller id="DataEntryController1" runat="server" DatabaseTable="all_csh" LookupField1="id"
+						<def:dataentrycontroller id="DataEntryController1" runat="server" DatabaseTable="all_csh" PrimaryKeyField="csh_pk" 
+							></def:dataentrycontroller><br>
+	<asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+	
+	<%--                        LookupField1="id"
 							LookupTextBox2Visible="False" LookupTextBox1LabelText="Subject ID:" MeasureName="Child Sleep Habits Questionnaire"
-							PrimaryKeyField="csh_pk" VerifiedField="verified" LookupField1DataType="TEXT"
-							AllowedStudyMeasures="748,766,1223,1358,1925"></def:dataentrycontroller><br>
+							 VerifiedField="verified" LookupField1DataType="TEXT"--%>
+
 						<table class="layout" id="table_insert">
 							<tr>
 								<td><def:datafieldcontrol id="id" runat="server" DatabaseField="id" FieldTextBoxTabIndex="4" FieldLabelText="ID"
@@ -15,6 +19,10 @@
 						</table>
 						<asp:panel id="mainPanel" Runat="server">
 							<BR>
+							
+							<table>
+								<tr>
+									<td>
 							<TABLE class="layout" id="table_entry">
 								<TR>
 									<TD>
@@ -36,6 +44,75 @@
 											IsInsertField="False" FieldDataType="TEXT" FieldLabelWidth="130px"></def:datafieldcontrol></TD>
 								</TR>
 							</TABLE>
+
+
+									</td>
+									<td>
+										<table>
+											<tr>
+												<td style="width:220px"></td>
+												<td style="align-content:center; padding:10px">
+													<b>Avg Scores</b>
+												</td>
+												<td style="align-content:center; padding:10px">
+													<b># missing</b>
+												</td>
+												<td style="align-content:center; padding:10px">
+													<b>Raw Scores</b>
+												</td>
+											</tr>
+										
+											<tr>
+												<td colspan="2">
+													<def:datafieldcontrol id="cshbedresist" runat="server" DatabaseField="cshbedresist"   IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshonsetdelay" runat="server" DatabaseField="cshonsetdelay" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshduration" runat="server" DatabaseField="cshduration" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshanxiety" runat="server" DatabaseField="cshanxiety" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshnitewake" runat="server" DatabaseField="cshnitewake" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshparasom" runat="server" DatabaseField="cshparasom" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshdisordbreathe" runat="server" DatabaseField="cshdisordbreathe" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshsleepy" runat="server" DatabaseField="cshsleepy" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshsleepamount" runat="server" DatabaseField="cshsleepamount" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshtotal" runat="server" DatabaseField="cshtotal" IsReadOnly="True" FieldLabelWidth="280px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+
+												</td>
+												<td>
+													<def:datafieldcontrol id="cshbedresist_mis" runat="server" DatabaseField="cshbedresist_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshonsetdelay_mis" runat="server" DatabaseField="cshonsetdelay_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshduration_mis" runat="server" DatabaseField="cshduration_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshanxiety_mis" runat="server" DatabaseField="cshanxiety_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshnitewake_mis" runat="server" DatabaseField="cshnitewake_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshparasom_mis" runat="server" DatabaseField="cshparasom_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshdisordbreathe_mis" runat="server" DatabaseField="cshdisordbreathe_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshsleepy_mis" runat="server" DatabaseField="cshsleepy_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshsleepamount_mis" runat="server" DatabaseField="cshsleepamount_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshtotal_mis" runat="server" DatabaseField="cshtotal_mis" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+
+												</td>
+												<td>
+													<def:datafieldcontrol id="cshbedresist_raw" runat="server" DatabaseField="cshbedresist_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshonsetdelay_raw" runat="server" DatabaseField="cshonsetdelay_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshduration_raw" runat="server" DatabaseField="cshduration_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshanxiety_raw" runat="server" DatabaseField="cshanxiety_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshnitewake_raw" runat="server" DatabaseField="cshnitewake_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshparasom_raw" runat="server" DatabaseField="cshparasom_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshdisordbreathe_raw" runat="server" DatabaseField="cshdisordbreathe_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshsleepy_raw" runat="server" DatabaseField="cshsleepy_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshsleepamount_raw" runat="server" DatabaseField="cshsleepamount_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+													<def:datafieldcontrol id="cshtotal_raw" runat="server" DatabaseField="cshtotal_raw" IsReadOnly="True" FieldLabelWidth="20px" FieldTextBoxWidth="25px"></def:datafieldcontrol>
+
+												</td>
+											</tr>
+
+										</table>
+										<br />
+										<def:datafieldcontrol id="cshcutoff" runat="server" DatabaseField="cshcutoff" IsReadOnly="True" FieldLabelWidth="330px" FieldTextBoxWidth="250px"></def:datafieldcontrol>
+
+									</td>
+								</tr>
+
+							</table>
+
 							<br />
 							<def:datafieldcontrol id="cshbt" runat="server" DatabaseField="cshbt" FieldTextBoxTabIndex="6" FieldLabelText="Write in child's bedtime. <em>(Use <strong>-9</strong> for Missing Values.)</em>"
 								IsDoubleEntryField="True" IsReadOnly="False" IsEntryValueRequired="True" IsEntryField="True" IsInsertValueRequired="False"
