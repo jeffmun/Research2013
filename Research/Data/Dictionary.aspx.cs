@@ -118,7 +118,7 @@ public partial class Data_Dictionary: BasePage
 		SQL_utils sql = new SQL_utils("data");
 
 		string code = String.Format("select fldpk, a.tblpk, ord_pos, fldname, fielddatatype, fielddatatypelength" + Environment.NewLine +
-			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!!')  else '' end) " + Environment.NewLine +
+			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!! ' + coalesce(cast(character_maximum_length as varchar),'') )  else '' end) " + Environment.NewLine +
 			" + (case  when fielddatatype <> data_type then ' <>TYPE!!' else '' end) " + Environment.NewLine +
 			" + (case  when fielddatatypelength<> character_maximum_length then ' <>' + cast(character_maximum_length as varchar) + ' [in DB]!!' else '' end ) as datatype " + Environment.NewLine +
 			" , fieldlabel, fieldvaluesetID " + Environment.NewLine +

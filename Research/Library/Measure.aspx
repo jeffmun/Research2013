@@ -130,7 +130,7 @@
 								<dx:LayoutItem Caption="Description" FieldName="DescriptionText" >
 									<LayoutItemNestedControlCollection>
 										<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
-											<dx:ASPxMemo ID="ASPxMemo1" ClientInstanceName="DescriptionText" runat="server" Height="80px" Width="100%" Rows="10" />
+											<dx:ASPxMemo ID="ASPxMemo1" ClientInstanceName="DescriptionText" runat="server" Height="90px" Width="100%" Rows="10" />
 										</dx:LayoutItemNestedControlContainer>
 									</LayoutItemNestedControlCollection>
 								</dx:LayoutItem>
@@ -228,10 +228,17 @@
 											</dx:LayoutItemNestedControlContainer>
 										</LayoutItemNestedControlCollection>
 									</dx:LayoutItem>
+									 <dx:LayoutItem Caption="DataEntry Form" FieldName="DEformname">
+										<LayoutItemNestedControlCollection>
+											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
+												<dx:ASPxTextBox ID="ASPxLabel1"  ClientInstanceName="DEformname" runat="server"  Font-Bold="false" />
+											</dx:LayoutItemNestedControlContainer>
+										</LayoutItemNestedControlCollection>
+									</dx:LayoutItem>
 									 <dx:LayoutItem Caption="Scoring proc" FieldName="spname">
 										<LayoutItemNestedControlCollection>
 											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
-												<dx:ASPxLabel ID="ASPxLabel1"  ClientInstanceName="spname" runat="server"  Font-Bold="false" />
+												<dx:ASPxTextBox ID="ASPxLabel3"  ClientInstanceName="spname" runat="server"  Font-Bold="false" />
 											</dx:LayoutItemNestedControlContainer>
 										</LayoutItemNestedControlCollection>
 									</dx:LayoutItem>
