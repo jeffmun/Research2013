@@ -1029,7 +1029,7 @@
 														<dx:ASPxCheckBox ID="chkCorrModeA" runat="server" ClientInstanceName="chkCorrModeA" Text="Same vars ACROSS Time/RptMeas"></dx:ASPxCheckBox>
 														<dx:ASPxCheckBox ID="chkCorrModeB" runat="server" ClientInstanceName="chkCorrModeB" Text="Different vars WITHIN Time/RptMeas"></dx:ASPxCheckBox>
 														<dx:ASPxCheckBox ID="chkCorrModeC" runat="server" ClientInstanceName="chkCorrModeC" Text="Different vars ACROSS Time/RptMeas"></dx:ASPxCheckBox>
-												        <dx:ASPxCheckBox ID="chkCorrModeD" runat="server" ClientInstanceName="chkCorrModeD" Text="All vars IGNORE Time/RptMeas" Checked="true"></dx:ASPxCheckBox>
+														<dx:ASPxCheckBox ID="chkCorrModeD" runat="server" ClientInstanceName="chkCorrModeD" Text="All vars IGNORE Time/RptMeas" Checked="true"></dx:ASPxCheckBox>
 												
 														</td>
 														<td style="vertical-align: top; padding: 5px; width:150px">
@@ -1525,7 +1525,7 @@
 			</dx:TabPage>
 
 			<%--SAVED CHART SETS--%>
-			<dx:TabPage Name="tabChartSets" Text="Saved Chart Sets" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
+			<dx:TabPage Name="tabChartSets" Text="Create a Report" TabStyle-Font-Size="12pt" TabStyle-ForeColor="Silver" >
 					<ContentCollection>
 						<dx:ContentControl ID="ContentControl_Orders"  runat="server">
 							This section lists the sets of charts that you have saved.
@@ -1565,31 +1565,33 @@
 											</td>
 											<td style="width: 50px"></td>
 											<td style="vertical-align: top; padding: 10px">
+												<br />
+												<br />
 												<dx:ASPxButton ID="btnCreateChartsALL" ClientInstanceName="btnCreateChartsALL" runat="server" 
 													Text="Display All Saved Charts" Wrap="true"  Width="150px"
 													ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" >
 													<Image IconID="chart_column2_32x32"></Image>
 													<ClientSideEvents Click="btnCreateChartsALL_ClientClick" />
 												</dx:ASPxButton>
-											</td>
-											<td style="width: 50px"></td>
-											<td style="vertical-align: top; padding: 10px">
+												<br /><br />
 												<dx:ASPxButton ID="btnExportWord" ClientInstanceName="btnExportWord" runat="server" Width="150px"
-													Text="Export All Saved Charts to Word (.docx)" Wrap="true"
+													Text="Create Report (.docx)" Wrap="true"
 													ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px" 
 													>
 													<Image IconID="export_exporttodocx_32x32"></Image>
 													<ClientSideEvents Click="btnExportDocx_ClientClick" />
 												</dx:ASPxButton>
-												<br/><br/>
-								<dx:ASPxButton ID="btnExportPDF" ClientInstanceName="btnExportPDF" runat="server" Width="150px" Wrap="true"
-									Text="Export All Saved Charts to PDF (.pdf)" Visible="false"
-									ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false" Paddings-Padding="2px"
-									OnClick="btnPDF_OnClick">
-									<Image IconID="export_exporttopdf_32x32"></Image>
-						<%-- <ClientSideEvents Click="btnViewMissing_ClientClick" />--%>
-								</dx:ASPxButton>
-											</td>										
+
+											</td>
+											<td style="vertical-align: top; padding: 10px">
+												<dx:ASPxTextBox ID="txtReportTitle" runat="server" Width="600px"
+													Caption="Report Title:" CaptionSettings-Position="Top" CaptionStyle-Font-Size="Small" CaptionStyle-ForeColor="Silver"
+													Font-Size="Medium" ></dx:ASPxTextBox>
+												<br />
+												<dx:ASPxMemo ID="txtReportDesc" runat="server" Width="600px" Height="120px"
+													Caption="Report Description:" CaptionSettings-Position="Top" CaptionStyle-Font-Size="Small" CaptionStyle-ForeColor="Silver"
+													Font-Size="Small" ></dx:ASPxMemo>
+											</td>
 										</tr>
 										</table>
 

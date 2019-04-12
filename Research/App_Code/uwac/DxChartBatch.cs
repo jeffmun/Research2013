@@ -16,8 +16,8 @@ namespace uwac
 	public class DxChartBatch
 	{
 
-		private DxChartSettings _settings;
-		public DxChartSettings settings { get { return _settings; } set { _settings = value; } }
+		private DxChartSettings _batchsettings;
+		public DxChartSettings batchsettings { get { return _batchsettings; } set { _batchsettings = value; } }
 
 		private List<DxChart> _charts = new List<DxChart>();
 		public List<DxChart> charts { get { return _charts; } set { _charts = value; } }
@@ -55,7 +55,7 @@ namespace uwac
 		{
 			Initialize();
 			outputtype = mycharttype;  //turned on Apr8 2019
-			_settings = mysettings;
+			_batchsettings = mysettings;
 		}
 
 
@@ -63,7 +63,7 @@ namespace uwac
 		public DxChartBatch(DxHistogramSettings mysettings, DataTable dt)
 		{
 			Initialize();
-			_settings = (DxChartSettings)mysettings;
+			_batchsettings = (DxChartSettings)mysettings;
 			outputtype = DxOutputtype.Histogram;
 			layout = mysettings.chartlayout;
 			_vars = mysettings.numvars;
@@ -97,7 +97,7 @@ namespace uwac
 				{
 					foreach (string v in mysettings.numvars)
 					{
-						settings.xaxisvar = v;
+						_batchsettings.xaxisvar = v;
 						DxChart chart = new DxHistogram(mysettings, subset.dt, v, 0);
 						chart.AddTitles(subset.Cols_and_Vals_ToString());
 						charts.Add(chart);
@@ -114,7 +114,7 @@ namespace uwac
 		{
 			Initialize();
 
-			_settings = (DxChartSettings)mysettings;
+			_batchsettings = (DxChartSettings)mysettings;
 
 			outputtype = DxOutputtype.Actogram;
 			layout = mysettings.chartlayout;
@@ -144,7 +144,7 @@ namespace uwac
 		{
 			Initialize();
 
-			_settings = (DxChartSettings)mysettings;
+			_batchsettings = (DxChartSettings)mysettings;
 
 			outputtype = DxOutputtype.Lineplot;
 			layout = mysettings.chartlayout;
@@ -192,7 +192,7 @@ namespace uwac
 		{
 			Initialize();
 
-			_settings = (DxChartSettings)mysettings;
+			_batchsettings = (DxChartSettings)mysettings;
 
 			outputtype = DxOutputtype.Barchart;
 			layout = mysettings.chartlayout;
@@ -238,7 +238,7 @@ namespace uwac
 		{
 			Initialize();
 
-			_settings = (DxChartSettings)mysettings;
+			_batchsettings = (DxChartSettings)mysettings;
 
 			outputtype = DxOutputtype.Scatterplot;
 			layout = mysettings.chartlayout;
@@ -342,8 +342,8 @@ namespace uwac
 			{
 				if (mychart.chart != null & mychart.isdiag == false)
 				{
-					mychart.xydiagram.AxisY.WholeRange.SetMinMaxValues(_settings.miny, _settings.maxy);
-					mychart.xydiagram.AxisY.VisualRange.SetMinMaxValues(_settings.miny, _settings.maxy);
+					mychart.xydiagram.AxisY.WholeRange.SetMinMaxValues(_batchsettings.miny, _batchsettings.maxy);
+					mychart.xydiagram.AxisY.VisualRange.SetMinMaxValues(_batchsettings.miny, _batchsettings.maxy);
 				}
 			}
 		}

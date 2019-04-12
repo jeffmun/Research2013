@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Debug="true"  MasterPageFile="~/UWAC.master"  AutoEventWireup="true" CodeFile="Index.aspx.cs" Inherits="DataProject_Index" 
-	 EnableEventValidation="false" Title="Data Projects"%>
+	 EnableEventValidation="false" Title="Data Reports"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 <%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
@@ -86,7 +86,8 @@
 <%--									<dx:GridViewDataColumn FieldName="measname" Caption="Measure" GroupIndex="0"></dx:GridViewDataColumn>--%>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Edit" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Edit" PropertiesHyperLinkEdit-NavigateUrlFormatString="Edit.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
 									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Explore" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Explore" PropertiesHyperLinkEdit-NavigateUrlFormatString="Explore.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
-									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Files" VisibleIndex="0" PropertiesHyperLinkEdit-DisplayFormatString="Files" PropertiesHyperLinkEdit-NavigateUrlFormatString="Files.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
+									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Files" VisibleIndex="0" PropertiesHyperLinkEdit-TextField="nFiles" PropertiesHyperLinkEdit-DisplayFormatString="Files({0})" PropertiesHyperLinkEdit-NavigateUrlFormatString="Files.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
+									<dx:GridViewDataHyperLinkColumn FieldName="dataproj_pk" Caption="Reports" VisibleIndex="0" PropertiesHyperLinkEdit-TextField="nReports" PropertiesHyperLinkEdit-DisplayFormatString="Reports({0})" PropertiesHyperLinkEdit-NavigateUrlFormatString="Reports.aspx?pk={0}"></dx:GridViewDataHyperLinkColumn>
 									<dx:GridViewDataColumn FieldName="dataproj_pk" Caption="Proj #" VisibleIndex="0" ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="projTitle" Caption="Title" VisibleIndex="1"  ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn Caption="Details" VisibleIndex="2" >
@@ -98,7 +99,6 @@
 									<dx:GridViewDataColumn FieldName="TimePoints" Caption="Time Points" VisibleIndex="4" ></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="nMeas" Caption="# Measures" VisibleIndex="5"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="nVars" Caption="# Variables" VisibleIndex="6"></dx:GridViewDataColumn>
-									<dx:GridViewDataColumn FieldName="nFiles" Caption="# Data Files" VisibleIndex="7"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="since_latestdatafile" Caption="Time since last data file created" VisibleIndex="7"  HeaderStyle-Wrap="true" Width="100px"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="created" Caption="Project Created" VisibleIndex="8"></dx:GridViewDataColumn>
 									<dx:GridViewDataColumn FieldName="createdBy" Caption="Project CreatedBy" VisibleIndex="9"></dx:GridViewDataColumn>

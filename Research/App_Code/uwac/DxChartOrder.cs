@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Reflection;
+using System.Xml.Serialization;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -21,6 +22,7 @@ using uwac.trk;
 using System.Text;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace uwac
 {
@@ -177,7 +179,32 @@ namespace uwac
 		}
 
 
-	
+		public void SaveToDB(int dataproj_pk)
+		{
+			byte[] result;
+			using (var stream = new MemoryStream())
+			{
+				var ser = new BinaryFormatter();
+				ser.Serialize(stream, this);
+				stream.Flush();
+				result = stream.ToArray();
+
+				SQL_utils sql = new SQL_utils("data");
+				//sql.SaveChartOrder(dataproj_pk, result);
+				sql.Close();
+			}
+
+			Debug.WriteLine(String.Format("This order is {0} bytes long", result.Length));
+
+			DxChartOrder neworderC = new DxChartOrder();
+			using (MemoryStream ms = new MemoryStream(result))
+			{
+				var ser2 = new BinaryFormatter();
+				neworderC = (DxChartOrder)(ser2.Deserialize(ms));
+			}
+
+
+		}
 
 	}
 

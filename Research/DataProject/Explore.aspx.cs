@@ -25,6 +25,7 @@ using DevExpress.XtraRichEdit.API.Native;
 
 using NReco.PivotData.Output;
 using uwac.data;
+using System.Runtime.Serialization.Formatters.Binary;
 
 //public partial class PointSeries : ChartBasePage{
 public partial class DataProject_Explore : BasePage
@@ -47,10 +48,11 @@ public partial class DataProject_Explore : BasePage
 	//List<DxChartOrder> orders;
 	Dataproject dataproject;
 	DPData dpdata;
-	SessionOrders sessionorders;
+	//TEST REMOVING THIS SessionOrders sessionorders;
 	string selectedsheet;
 	bool printDebug = true;
 	List<string> dummydata;
+	DxReport dataproject_rpt;
 
 	#region Page Setup
 	protected void Page_Init(object sender, EventArgs e)
@@ -117,8 +119,12 @@ public partial class DataProject_Explore : BasePage
 		if (dataproj_pk > 0)
 		{
 			BIND_gridFiles();
+			dataproject_rpt = new DxReport(dataproj_pk);
 
+			txtReportTitle.Text = dataproject_rpt.rpttitle;
+			txtReportDesc.Text = "";
 
+			Session["dataproject_rpt"] = dataproject_rpt;
 		}
 
 
@@ -185,6 +191,10 @@ public partial class DataProject_Explore : BasePage
 			);
 		log(state);
 		
+		if(Session["dataproject_rpt"] != null)
+		{
+			dataproject_rpt = (DxReport)Session["dataproject_rpt"];
+		}
 
 		if (Session["dataproject"] != null)
 		{
@@ -225,11 +235,11 @@ public partial class DataProject_Explore : BasePage
 		}
 
 
-		if (Session["sessionorders"] != null)
-		{
-			sessionorders = (SessionOrders)Session["sessionorders"];
-			//BIND_orders();
-		}
+		//if (Session["sessionorders"] != null)
+		//{
+		//	sessionorders = (SessionOrders)Session["sessionorders"];
+		//	//BIND_orders();
+		//}
 
 		if (Session["allvars"] != null)
 		{
@@ -258,6 +268,8 @@ public partial class DataProject_Explore : BasePage
 		Session["sessionorders"] = null;
 
 		Session["datafilter"] = "";
+
+		Session["dataproject_rpt"] = null;
 	}
 
 
@@ -419,7 +431,7 @@ public partial class DataProject_Explore : BasePage
 
 	protected void ReInitialize()
 	{
-
+		Debug.WriteLine("****** !!!! ****** Here in ReInitialize()  ******** !!!!!!! ******* ");
 		//List<string> selected_allvars = dataops.GetListString(gridSelVars.GetSelectedFieldValues("varname"));
 		//List<string> selected_allvars = dataops.GetListString(gridSelVars.GridView.GetSelectedFieldValues("varname"));
 
@@ -703,11 +715,12 @@ public partial class DataProject_Explore : BasePage
 	{
 
 		Debug.WriteLine("@@@ BIND_orders @@@");
-		if (sessionorders != null)
+		if (dataproject_rpt.orders != null)
 		{
 
-			DataTable orders = new InvoiceSummary(sessionorders);
-			Debug.WriteLine("orders.Rows.Count={0}", orders.Rows.Count);
+			DataTable orders = dataproject_rpt.InvoiceSummary();
+				//DataTable orders = new InvoiceSummary(dataproject_rpt.orders);
+				Debug.WriteLine("orders.Rows.Count={0}", orders.Rows.Count);
 
 			if (orders.HasRows())
 			{
@@ -1787,51 +1800,76 @@ public partial class DataProject_Explore : BasePage
 		//string path = @"c:\_temp\factory\";
 		string path = Server.MapPath("~/App_Data/factory/");
 
-		if (sessionorders == null) sessionorders = new SessionOrders();
+		//if (sessionorders == null) sessionorders = new SessionOrders();
 
 		if (p == "SaveNewOrder")
 		{
 
+			//HERE Thu Apr 11 2019!!
+			// Serialize stuff now in 
+			//DxChartOrder cloneneworderC = GatherChartOrder();
+
+			//byte[] result;
+			//using (var stream = new MemoryStream())
+			//{
+			//	var ser = new BinaryFormatter();
+			//	ser.Serialize(stream, cloneneworderC);
+			//	stream.Flush();
+			//	result = stream.ToArray();
+
+			//	SQL_utils sql = new SQL_utils("data");
+			//	sql.SaveChartOrder(1, result);
+			//}
+
+			//Debug.WriteLine(String.Format("This order is {0} bytes long", result.Length));
+
+			//DxChartOrder neworderC = new DxChartOrder();
+			//using (MemoryStream ms = new MemoryStream(result))
+			//{
+			//	var ser2 = new BinaryFormatter();
+			//	neworderC = (DxChartOrder)(ser2.Deserialize(ms));
+			//}
+
+
+
 
 			DxChartOrder neworderC = GatherChartOrder();
 
-			//???
-
 			if (neworderC.list_settings.Count > 0)
-			{
-				log(String.Format(" - yes there are orders with [{0}] list_settings ", neworderC.list_settings.Count));
-
-				neworderC.orderSaveState = OrderSaveState.ReadyToSave;
-				List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworderC });
-
-				int numorders = sessionorders.NumSavedOrders();
-				for (int i = 0; i < completedneworders.Count; i++)
 				{
-					completedneworders[i].ordernum = numorders + 1 + i;
-					sessionorders.SaveOrder(completedneworders[i]);
-				}
+					log(String.Format(" - yes there are orders with [{0}] list_settings ", neworderC.list_settings.Count));
 
-			}
-			else
-			{
-				log("  - NO ORDERS!");
-			}
+					neworderC.orderSaveState = OrderSaveState.ReadyToSave;
+					List<DxChartOrder> completedneworders = PlaceOrders(new List<DxChartOrder>() { neworderC });
+
+					int numorders = dataproject_rpt.orders.NumSavedOrders();
+					for (int i = 0; i < completedneworders.Count; i++)
+					{
+						completedneworders[i].ordernum = numorders + 1 + i;
+						dataproject_rpt.orders.SaveOrder(completedneworders[i]);
+					}
+
+				}
+				else
+				{
+					log("  - NO ORDERS!");
+				}
 
 			DxTableOrder neworderT = GatherTableOrder();
 			if (neworderT.list_settings.Count > 0)
 			{
 				List<DxTableOrder> completedneworders = PlaceOrders(new List<DxTableOrder>() { neworderT });
 
-				int numorders = sessionorders.NumSavedOrders();
+				int numorders = dataproject_rpt.orders.NumSavedOrders();
 				for (int i = 0; i < completedneworders.Count; i++)
 				{
 					completedneworders[i].ordernum = numorders + 1 + i;
-					sessionorders.SaveOrder(completedneworders[i]);
+					dataproject_rpt.orders.SaveOrder(completedneworders[i]);
 				}
 
 			}
 
-			Session["sessionorders"] = sessionorders;
+			Session["sessionorders"] = dataproject_rpt.orders;
 
 			BIND_orders();
 		}
@@ -1841,10 +1879,10 @@ public partial class DataProject_Explore : BasePage
 			List<string> ps = p.Split('|').ToList();
 			int idx = Convert.ToInt32(ps[1]);
 
-			sessionorders.DeleteOrder(idx);
+			dataproject_rpt.orders.DeleteOrder(idx);
 
 			//Delete from Disk
-			foreach(DxChartOrder orderc in sessionorders.chartorders)
+			foreach(DxChartOrder orderc in dataproject_rpt.orders.chartorders)
 			{
 				if(orderc.ordernum == idx)
 				{
@@ -1852,7 +1890,7 @@ public partial class DataProject_Explore : BasePage
 				}
 			}
 
-			Session["sessionorders"] = sessionorders;
+			Session["sessionorders"] = dataproject_rpt.orders;
 			
 			BIND_orders();
 
@@ -1863,9 +1901,10 @@ public partial class DataProject_Explore : BasePage
 	protected string CreateOutput(string p)
 	{
 		log(String.Format("-------------------- CreateOutput [{0}]--------------------", p));
-		if (sessionorders == null) sessionorders = new SessionOrders();
+		//if (sessionorders == null) sessionorders = new SessionOrders();
 
 		string path = Server.MapPath("~/App_Data/factory/");
+		string rptpath = Server.MapPath("~/App_Data/DataReports/");
 		string outputstatus = "ok";
 		if (p == "clear")
 		{
@@ -1900,9 +1939,9 @@ public partial class DataProject_Explore : BasePage
 
 				int idx = Convert.ToInt32(ps[1]);
 
-				var orders = sessionorders;
+				var orders = dataproject_rpt.orders;
 
-				DxOrder oldorder = sessionorders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
+				DxOrder oldorder = dataproject_rpt.orders.orders.AsEnumerable().Where(o => o.ordernum == idx).First();
 
 				if (oldorder.ordertype == OrderType.chart)
 				{
@@ -1917,8 +1956,12 @@ public partial class DataProject_Explore : BasePage
 			
 			else if (p.StartsWith("DisplayAllOrders") | p == "Docx")
 			{
-				ordersC = PlaceOrders(sessionorders.chartorders);
-				ordersT = PlaceOrders(sessionorders.tableorders);
+				dataproject_rpt.rpttitle = txtReportTitle.Text;
+				dataproject_rpt.rptdesc = txtReportDesc.Text;
+
+
+				ordersC = PlaceOrders(dataproject_rpt.orders.chartorders);
+				ordersT = PlaceOrders(dataproject_rpt.orders.tableorders);
 			}
 
 			List<string> outputerrors = new List<string>();
@@ -1944,6 +1987,8 @@ public partial class DataProject_Explore : BasePage
 
 			if(p=="Docx")
 			{
+				dataproject_rpt.SaveToDB();
+
 				foreach (DxChartOrder order in ordersC)
 				{
 					if (order.orderSaveState == OrderSaveState.ReadyToSave)
@@ -1952,36 +1997,13 @@ public partial class DataProject_Explore : BasePage
 					}
 				}
 
-
-				DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid);
+				DxDoc doc = new DxDoc(dataproject_rpt, rptpath, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid);
+				//DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid);
 
 			}
 
 		}
-
-		//else if (p == "Docx")
-		//{
-		//	List<DxChartOrder> ordersC = new List<DxChartOrder>();
-		//	List<DxTableOrder> ordersT = new List<DxTableOrder>();
-
-		//	ordersC = PlaceOrders(sessionorders.chartorders);
-		//	ordersT = PlaceOrders(sessionorders.tableorders);
-
-		//	//Do the saving here??
-		//	//Now that the charts are populated, save them to disk OR delete them
-		//	foreach (DxChartOrder order in ordersC)
-		//	{
-		//		if (order.orderSaveState == OrderSaveState.ReadyToSave)
-		//		{
-		//			order.ChartsToDisk(path);
-		//		}
-		//	}
-			
-		//	DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid); 
-		//	//MakeDocx																									   
-		//	//DeleteChartsOnDisk(factory, @"c:\_temp\factory\");
-		//}
-
+		
 		return outputstatus;
 
 	}

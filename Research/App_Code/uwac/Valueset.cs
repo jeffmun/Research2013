@@ -10,7 +10,7 @@ namespace uwac
 	/// Summary description for Valueset
 	/// </summary>
 
-
+	[Serializable]
 	public class Valueset
 	{
 		public int localvaluesetid { get; set; }

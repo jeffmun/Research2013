@@ -658,6 +658,7 @@ namespace uwac
 		CorrWithPValue = 2
 	}
 
+	[Serializable]
 	public class DxScatterplotSettings : DxChartSettings, ICloneable
 	{
 		private List<string> _xvars;

@@ -18,7 +18,8 @@ using uwac;
 /// </summary>
 public class DxDoc
 {
-	private string _path;
+	private string _savepath;
+	private string _temppath;
 	private string _projtitle;
 	private string _datafile;
 	private string _filename;
@@ -33,67 +34,71 @@ public class DxDoc
 		// TODO: Add constructor logic here
 		//
 	}
-
-	public DxDoc(DxChartFactory factory, string projtitle, string datafile, string netid)
+	public DxDoc(DxReport rpt, string savepath, string temppath, string projtitle, string datafile, string netid)
 	{
 		_creator_netid = netid;
+		_savepath = savepath;
+		_temppath = temppath;
+		_projtitle = projtitle;
+		_datafile = datafile;
+		//_filename = String.Format("Rpt_{0}_dp{1}_{2}.docx", rpt.rptnum, rpt.dataproj_pk, DateTime_Helper.DateTime_for_filename()); // filename;
+
+		MakeDocx(rpt);
+
 		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
 	}
-	//public DxDoc(DxChartFactory factory, string path, string filename, string projtitle, string datafile, string netid)
+
+
+	#region older versions of the constructor
+	//public DxDoc(DxChartFactory factory, string projtitle, string datafile, string netid)
 	//{
 	//	_creator_netid = netid;
-	//	_path = path;
+	//	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	//}
+
+
+
+	//public DxDoc(List<DxChartOrder> ordersC, string path, string projtitle, string datafile, string netid)
+	//{
+	//	_creator_netid = netid;
+	//	_temppath = path;
+	//	_projtitle = projtitle;
+	//	_datafile = datafile;
+	//	_filename = "test.docx"; // filename;
+
+	//	MakeDocx(ordersC);
+
+	//	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	//}
+
+
+
+	//public DxDoc(DataTable dt_plots, List<string> htmltables, string path, string filename, string projtitle, string datafile, string netid)
+	//{
+	//	_creator_netid = netid;
+	//	_temppath = path;
 	//	_projtitle = projtitle;
 	//	_datafile = datafile;
 	//	_filename = filename;
 
-	//	MakeDocx(factory);
+	//	MakeDocx(dt_plots, htmltables);
 
-	////Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	//	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
 	//}
 
-	//public DxDoc(List<DxChartOrder> ordersC, string path, string filename, string projtitle, string datafile, string netid)
-	public DxDoc(List<DxChartOrder> ordersC, string path, string projtitle, string datafile, string netid)
-	{
-		_creator_netid = netid;
-		_path = path;
-		_projtitle = projtitle;
-		_datafile = datafile;
-		_filename = "test.docx"; // filename;
+	//public DxDoc(DataTable dt_plots, DataTable dt_tables, string path, string filename, string projtitle, string datafile, string netid)
+	//{
+	//	_creator_netid = netid;
+	//	_temppath = path;
+	//	_projtitle = projtitle;
+	//	_datafile = datafile;
+	//	_filename = filename;
 
-		MakeDocx(ordersC);
+	//	MakeDocx(dt_plots, dt_tables);
 
-		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
-	}
-
-
-
-	public DxDoc(DataTable dt_plots, List<string> htmltables, string path, string filename, string projtitle, string datafile, string netid)
-	{
-		_creator_netid = netid;
-		_path = path;
-		_projtitle = projtitle;
-		_datafile = datafile;
-		_filename = filename;
-
-		MakeDocx(dt_plots, htmltables);
-
-		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
-	}
-
-	public DxDoc(DataTable dt_plots, DataTable dt_tables, string path, string filename, string projtitle, string datafile, string netid)
-	{
-		_creator_netid = netid;
-		_path = path;
-		_projtitle = projtitle;
-		_datafile = datafile;
-		_filename = filename;
-
-		MakeDocx(dt_plots, dt_tables);
-
-		//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
-	}
-
+	//	//Document doc = new DevExpress.XtraRichEdit.API.Native.Document();
+	//}
+	#endregion
 
 
 	protected void DocxHeader(DevExpress.XtraRichEdit.API.Native.Document doc, string s1, string s2)
@@ -124,145 +129,8 @@ public class DxDoc
 
 	}
 
-	protected void MakeDocx(DataTable dt_plotfiles, DataTable dt_output) //, string path, string projtitle, string datafile)
-	{
-		log(" ====== MakeDocx (DataTable dt_plotfiles, DataTable dt_tables) ======");
 
-
-		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
-		{
-
-			DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
-			doc.Unit = DevExpress.Office.DocumentUnit.Inch;
-			doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
-			doc.Sections[0].Margins.Left = 0.5f;
-			doc.Sections[0].Margins.Right = 0.5f;
-			doc.Sections[0].Margins.Top = 0.5f;
-			doc.Sections[0].Margins.Bottom = 0.5f;
-
-
-			DocxHeader(doc, _projtitle, _datafile);
-
-			DocumentPosition pos = doc.Range.Start;
-			//New Section
-
-			doc.Paragraphs.Append();
-
-			doc.AppendHtmlText("<h3>Plots</h3>");
-			doc.Paragraphs.Append();
-			foreach (DataRow row in dt_plotfiles.Rows)
-			{
-
-				doc.AppendSingleLineText(String.Format("#{0}",row["index"].ToString()));
-				doc.Paragraphs.Append();
-
-				AppendChart(doc, _path, row["filename"].ToString());
-
-				doc.Paragraphs.Append();
-			}
-
-			if (dt_output.HasRows())
-			{
-				doc.AppendHtmlText("<br/><br/><h3>Tables</h3>");
-				doc.Paragraphs.Append();
-				foreach (DataRow row in dt_output.Rows)
-				{
-					doc.AppendSingleLineText(String.Format("#{0}", row["index"].ToString()));
-					doc.Paragraphs.Append();
-
-					doc.AppendHtmlText(row["contents"].ToString());
-
-					doc.Paragraphs.Append();
-				}
-			}
-
-			doc.InsertSection(doc.Range.End);
-
-
-			try
-			{
-				srv.SaveDocument(_filename, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
-			}
-			catch(Exception ex)
-			{
-
-			}
-		}
-
-
-
-	}
-
-
-	protected void MakeDocx(DataTable dt_plotfiles, List<string> htmltables) //, string path, string projtitle, string datafile)
-	{
-		log(" ====== MakeDocx (DataTable dt_plotfiles, List<string> htmltables) ======");
-
-
-		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
-		{
-
-			DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
-			doc.Unit = DevExpress.Office.DocumentUnit.Inch;
-			doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
-			doc.Sections[0].Margins.Left = 0.5f;
-			doc.Sections[0].Margins.Right = 0.5f;
-			doc.Sections[0].Margins.Top = 0.5f;
-			doc.Sections[0].Margins.Bottom = 0.5f;
-
-
-			DocxHeader(doc, _projtitle, _datafile);
-
-			DocumentPosition pos = doc.Range.Start;
-			//New Section
-
-			doc.Paragraphs.Append();
-
-			doc.AppendSingleLineText("The start of it all!");
-			doc.Paragraphs.Append();
-
-
-			foreach (DataRow row in dt_plotfiles.Rows)
-			{
-
-				doc.AppendSingleLineText(String.Format("#{0}", row["index"].ToString()));
-				doc.Paragraphs.Append();
-
-				AppendChart(doc, _path, row["filename"].ToString());
-
-				doc.Paragraphs.Append();
-			}
-
-
-			doc.AppendHtmlText("<br/><br/><h3>Tables</h3>");
-			foreach (string t in htmltables)
-			{
-				doc.AppendHtmlText(t);
-				doc.Paragraphs.Append();
-			}
-
-			doc.InsertSection(doc.Range.End);
-
-
-			try
-			{
-				srv.SaveDocument(_filename, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
-			}
-			catch (Exception ex)
-			{
-
-			}
-		}
-
-
-
-	}
-
-
-
-	//protected void MakeDocx(DxChartFactory factory) //, string path, string projtitle, string datafile)
-
-	protected void MakeDocx(List<DxChartOrder> ordersC) //, string path, string projtitle, string datafile)
+	protected void MakeDocx(DxReport rpt) //, string path, string projtitle, string datafile)
 	{
 		log(" ====== MakeDocx (DxChartFactory factory) ======");
 		//const float imageLocationX = 40;
@@ -270,8 +138,8 @@ public class DxDoc
 		//int counter = 0;
 		//string path = @"C:\_temp\factory\";
 
-	
-		string fileName = String.Format(@"{0}{1}", _path, _filename);
+
+		//string fileName_with_savepath = String.Format(@"{0}{1}", _savepath, _filename);
 
 
 		using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
@@ -285,43 +153,48 @@ public class DxDoc
 			doc.Sections[0].Margins.Top = 0.5f;
 			doc.Sections[0].Margins.Bottom = 0.5f;
 
+			string subtitle = String.Format("Data Proj: {0}{1}Data file: {2}", _projtitle, Environment.NewLine, _datafile);
 
-			DocxHeader(doc, _projtitle, _datafile);
+			DocxHeader(doc, rpt.rpttitle, subtitle);
 
 			DocumentPosition pos = doc.Range.Start;
 			//New Section
 
-			foreach (DxChartOrder order in ordersC)
+			if(rpt.rptdesc.Length > 2)
 			{
-				doc.Paragraphs.Append(); 
+				doc.AppendText("Report Description:");
+				doc.Paragraphs.Append();
+				doc.AppendText(rpt.rptdesc);
+				doc.Paragraphs.Append();
+			}
 
-				if(order.dt_selectedvars != null)
+
+
+			//foreach (DxChartOrder order in rpt.orders.chartorders)
+			for (int c = 0; c < rpt.orders.chartorders.Count; c++)
+			{
+				DxChartOrder order = rpt.orders.chartorders[c];
+				doc.Paragraphs.Append();
+
+				bool hassameasPrev = rpt.orders.HasSameWkshtFilterVars(c, "chart", -1);
+				bool hassameasNext = rpt.orders.HasSameWkshtFilterVars(c, "chart", 1);
+
+				if (order.dt_selectedvars != null & hassameasPrev == false)
 				{
 					AppendDataTable(doc, order.dt_selectedvars);
 					doc.Paragraphs.Append();
 				}
+
+				Debug.WriteLine(order.InvoiceToString());
 				doc.AppendSingleLineText(order.InvoiceToString());
 				doc.Paragraphs.Append();
 
-
-				foreach (DxChartBatch batch in order.batches)
+				for (int b = 0; b < order.batches.Count; b++)
 				{
-					//foreach (DxChart chart in batch.charts)
-					//{
-					//	string chartfile = String.Format(@"{0}{1}.png", _path, chart.guid);
-					//	log(chartfile);
-					//	//MemoryStream s = new MemoryStream();
-					//	//chart.chart.ExportToImage(s, System.Drawing.Imaging.ImageFormat.Png);
+					DxChartBatch batch = order.batches[b];
 
-					//	doc.Images.Insert(pos, DocumentImageSource.FromFile(chartfile));
-
-					//	doc.Images[doc.Images.Count - 1].ScaleX = 0.5f;
-					//	doc.Images[doc.Images.Count - 1].ScaleY = 0.5f;
-
-					//}
 					if (batch.charts.Count > 0)
 					{
-
 						doc.AppendSingleLineText(batch.batchtitle);
 						doc.Paragraphs.Append();
 
@@ -330,18 +203,223 @@ public class DxDoc
 					}
 				}
 
-
-				doc.InsertSection(doc.Range.End);
+				if (hassameasNext == false)
+				{
+					doc.InsertSection(doc.Range.End);
+				}
 			}
 
-
-
-			srv.SaveDocument(fileName, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+			
+			srv.SaveDocument(String.Format(@"{0}{1}", _savepath, _filename), DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
 		}
 
 
 	}
 
+
+
+
+	#region older versions of MakeDocx
+	//protected void MakeDocx(DataTable dt_plotfiles, DataTable dt_output) //, string path, string projtitle, string datafile)
+	//{
+	//	log(" ====== MakeDocx (DataTable dt_plotfiles, DataTable dt_tables) ======");
+
+
+	//	using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
+	//	{
+
+	//		DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+	//		doc.Unit = DevExpress.Office.DocumentUnit.Inch;
+	//		doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+	//		doc.Sections[0].Margins.Left = 0.5f;
+	//		doc.Sections[0].Margins.Right = 0.5f;
+	//		doc.Sections[0].Margins.Top = 0.5f;
+	//		doc.Sections[0].Margins.Bottom = 0.5f;
+
+
+	//		DocxHeader(doc, _projtitle, _datafile);
+
+	//		DocumentPosition pos = doc.Range.Start;
+	//		//New Section
+
+	//		doc.Paragraphs.Append();
+
+	//		doc.AppendHtmlText("<h3>Plots</h3>");
+	//		doc.Paragraphs.Append();
+	//		foreach (DataRow row in dt_plotfiles.Rows)
+	//		{
+
+	//			doc.AppendSingleLineText(String.Format("#{0}",row["index"].ToString()));
+	//			doc.Paragraphs.Append();
+
+	//			AppendChart(doc, _temppath, row["filename"].ToString());
+
+	//			doc.Paragraphs.Append();
+	//		}
+
+	//		if (dt_output.HasRows())
+	//		{
+	//			doc.AppendHtmlText("<br/><br/><h3>Tables</h3>");
+	//			doc.Paragraphs.Append();
+	//			foreach (DataRow row in dt_output.Rows)
+	//			{
+	//				doc.AppendSingleLineText(String.Format("#{0}", row["index"].ToString()));
+	//				doc.Paragraphs.Append();
+
+	//				doc.AppendHtmlText(row["contents"].ToString());
+
+	//				doc.Paragraphs.Append();
+	//			}
+	//		}
+
+	//		doc.InsertSection(doc.Range.End);
+
+
+	//		try
+	//		{
+	//			srv.SaveDocument(_filename, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+	//		}
+	//		catch(Exception ex)
+	//		{
+
+	//		}
+	//	}
+
+
+
+	//}
+
+
+	//protected void MakeDocx(DataTable dt_plotfiles, List<string> htmltables) //, string path, string projtitle, string datafile)
+	//{
+	//	log(" ====== MakeDocx (DataTable dt_plotfiles, List<string> htmltables) ======");
+
+
+	//	using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
+	//	{
+
+	//		DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+	//		doc.Unit = DevExpress.Office.DocumentUnit.Inch;
+	//		doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+	//		doc.Sections[0].Margins.Left = 0.5f;
+	//		doc.Sections[0].Margins.Right = 0.5f;
+	//		doc.Sections[0].Margins.Top = 0.5f;
+	//		doc.Sections[0].Margins.Bottom = 0.5f;
+
+
+	//		DocxHeader(doc, _projtitle, _datafile);
+
+	//		DocumentPosition pos = doc.Range.Start;
+	//		//New Section
+
+	//		doc.Paragraphs.Append();
+
+	//		doc.AppendSingleLineText("The start of it all!");
+	//		doc.Paragraphs.Append();
+
+
+	//		foreach (DataRow row in dt_plotfiles.Rows)
+	//		{
+
+	//			doc.AppendSingleLineText(String.Format("#{0}", row["index"].ToString()));
+	//			doc.Paragraphs.Append();
+
+	//			AppendChart(doc, _temppath, row["filename"].ToString());
+
+	//			doc.Paragraphs.Append();
+	//		}
+
+
+	//		doc.AppendHtmlText("<br/><br/><h3>Tables</h3>");
+	//		foreach (string t in htmltables)
+	//		{
+	//			doc.AppendHtmlText(t);
+	//			doc.Paragraphs.Append();
+	//		}
+
+	//		doc.InsertSection(doc.Range.End);
+
+
+	//		try
+	//		{
+	//			srv.SaveDocument(_filename, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+	//		}
+	//		catch (Exception ex)
+	//		{
+
+	//		}
+	//	}
+
+
+
+	//}
+
+	
+	//protected void MakeDocx(List<DxChartOrder> ordersC) //, string path, string projtitle, string datafile)
+	//{
+	//	log(" ====== MakeDocx (DxChartFactory factory) ======");
+	//	//const float imageLocationX = 40;
+	//	//const float imageLocationY = 40;
+	//	//int counter = 0;
+	//	//string path = @"C:\_temp\factory\";
+
+	
+	//	string fileName = String.Format(@"{0}{1}", _temppath, _filename);
+
+
+	//	using (DevExpress.XtraRichEdit.RichEditDocumentServer srv = new DevExpress.XtraRichEdit.RichEditDocumentServer())
+	//	{
+
+	//		DevExpress.XtraRichEdit.API.Native.Document doc = srv.Document;
+	//		doc.Unit = DevExpress.Office.DocumentUnit.Inch;
+	//		doc.Sections[0].Page.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+	//		doc.Sections[0].Margins.Left = 0.5f;
+	//		doc.Sections[0].Margins.Right = 0.5f;
+	//		doc.Sections[0].Margins.Top = 0.5f;
+	//		doc.Sections[0].Margins.Bottom = 0.5f;
+
+	//		DocxHeader(doc, _projtitle, _datafile);
+
+	//		DocumentPosition pos = doc.Range.Start;
+	//		//New Section
+
+	//		foreach (DxChartOrder order in ordersC)
+	//		{
+	//			doc.Paragraphs.Append(); 
+
+	//			if(order.dt_selectedvars != null)
+	//			{
+	//				AppendDataTable(doc, order.dt_selectedvars);
+	//				doc.Paragraphs.Append();
+	//			}
+	//			doc.AppendSingleLineText(order.InvoiceToString());
+	//			doc.Paragraphs.Append();
+
+	//			foreach (DxChartBatch batch in order.batches)
+	//			{
+	//				if (batch.charts.Count > 0)
+	//				{
+	//					doc.AppendSingleLineText(batch.batchtitle);
+	//					doc.Paragraphs.Append();
+
+	//					AppendCharts(pos, batch, doc);
+	//					doc.Paragraphs.Append();
+	//				}
+	//			}
+
+
+	//			doc.InsertSection(doc.Range.End);
+	//		}
+
+
+
+	//		srv.SaveDocument(fileName, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+	//	}
+
+
+	//}
+
+	#endregion
 
 	private void AppendCharts(DocumentPosition pos, DxChartBatch batch, Document doc)
 	{
@@ -398,7 +476,7 @@ public class DxDoc
 
 
 
-						string chartfile = String.Format(@"{0}{1}.png", _path, batch.charts[counter].guid);
+						string chartfile = String.Format(@"{0}{1}.png", _temppath, batch.charts[counter].guid);
 						counter++;
 
 						DevExpress.XtraRichEdit.API.Native.TableCell cell = t.Cell(r + bumprow, c);
@@ -420,7 +498,7 @@ public class DxDoc
 		{
 			foreach (DxChart chart in batch.charts)
 			{
-				string chartfile = String.Format(@"{0}{1}.png", _path, chart.guid);
+				string chartfile = String.Format(@"{0}{1}.png", _temppath, chart.guid);
 				log(chartfile);
 				//MemoryStream s = new MemoryStream();
 				//chart.chart.ExportToImage(s, System.Drawing.Imaging.ImageFormat.Png);
@@ -523,15 +601,22 @@ public class DxDoc
 		CharacterProperties cp = document.BeginUpdateCharacters(table.FirstRow.Range);
 		//cp.FontName = "Courier New";
 		cp.Bold = true;
-		cp.ForeColor = Color.DarkGreen;
+		cp.ForeColor = Color.Gray;
+		cp.FontSize = 9f;
 		document.EndUpdateCharacters(cp);
+
+		CharacterProperties cp2 = document.BeginUpdateCharacters(table.Range);
+		//cp.FontName = "Courier New";
+		cp2.FontSize = 9f;
+		document.EndUpdateCharacters(cp2);
+
 
 		//for (int i = 0; i < table.FirstRow.Cells.Count; i++)
 		//{
 		//	table.FirstRow.Cells[i].HeightType = HeightType.Auto;
 		//	table.FirstRow.Cells[i].VerticalAlignment = TableCellVerticalAlignment.Top;
-			//table.FirstRow.Cells[i].BackgroundColor = Color.DarkBlue;
-			//table.FirstRow.Cells[i].VerticalAlignment = TableCellVerticalAlignment.Center;
+		//table.FirstRow.Cells[i].BackgroundColor = Color.DarkBlue;
+		//table.FirstRow.Cells[i].VerticalAlignment = TableCellVerticalAlignment.Center;
 		//}
 
 		// Fill table header with column names

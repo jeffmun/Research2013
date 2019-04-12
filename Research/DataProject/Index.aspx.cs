@@ -12,6 +12,7 @@ using DevExpress.Web.ASPxPivotGrid;
 using DevExpress.XtraPivotGrid;
 using DevExpress.Web.Data;
 using uwac;
+using uwac.data;
 
 public partial class DataProject_Index : BasePage  
 {

@@ -83,6 +83,8 @@ namespace uwac
 	public class InvoiceSummary : DataTable
 	{
 
+		public InvoiceSummary() { }
+
 		public InvoiceSummary(List<DxChartOrder> orders)
 		{
 			CreateTable();

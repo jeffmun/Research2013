@@ -323,11 +323,11 @@ namespace uwac
 						DxChart thisdxchart = batch.charts[counter];
 						if (thisdxchart.chart == null  | thisdxchart.chart.Series.Count == 0)
 						{
-							addcell = !batch.settings.hideEmptyCharts;
+							addcell = !batch.batchsettings.hideEmptyCharts;
 							//if we want to hideEmptyCharts (=T, that is Not Show It) then we don't want to add the cell.
 							//if we don't want to hideEmptyCharts (=F, that is Show It) then we do want to add the cell.
 							string thisdxchart_info = String.Format("# series={0}   # vars={1}   emptymsg={2} "
-								, thisdxchart.chart.Series.Count, batch.settings.numvars.Count, thisdxchart.emptymsg);
+								, thisdxchart.chart.Series.Count, batch.batchsettings.numvars.Count, thisdxchart.emptymsg);
 
 							PlaceTextInCell(c, thisdxchart_info);
 						}

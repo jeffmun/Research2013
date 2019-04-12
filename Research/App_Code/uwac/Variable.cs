@@ -9,6 +9,8 @@ namespace uwac
 	/// <summary>
 	/// Summary description for Variable
 	/// </summary>
+	
+	[Serializable]
 	public class Variable
 	{
 	
@@ -24,7 +26,13 @@ namespace uwac
 			}
 		}
 
-public Variable(string myvarname, string myvarlabel, Datatype mydatatype)
+		public Variable()
+		{
+
+		}
+
+
+		public Variable(string myvarname, string myvarlabel, Datatype mydatatype)
 		{
 			varname = myvarname;
 			varlabel = myvarlabel;
@@ -92,12 +100,15 @@ public Variable(string myvarname, string myvarlabel, Datatype mydatatype)
 		}
 	}
 
-	
 
+	[Serializable]
 	public class Valuesetitem
 	{
 		public double value { get; set; }
 		public string label { get; set; }
+		public Valuesetitem()
+		{ }
+
 		public Valuesetitem(KeyValuePair<double, string> input)
 		{
 			value = input.Key;
@@ -110,11 +121,15 @@ public Variable(string myvarname, string myvarlabel, Datatype mydatatype)
 		}
 	}
 
+	[Serializable]
 	public class Datatype
 	{
 
 		private SqlDatatype _sqldatatype;
 		public SqlDatatype SqlDatatype { get { return _sqldatatype; } }
+
+		public Datatype()
+		{ }
 
 		public Datatype(SqlDatatype mySqlDatatype)
 		{
@@ -177,12 +192,14 @@ public Variable(string myvarname, string myvarlabel, Datatype mydatatype)
 		}
 	}
 
+	[Serializable]
 	public enum Datatypesource
 	{
 		REDCap = 0,
 		DxChartsettings = 1
 	}
 
+	[Serializable]
 	public enum Vartype
 	{
 
@@ -191,6 +208,7 @@ public Variable(string myvarname, string myvarlabel, Datatype mydatatype)
 		date = 2
 	}
 
+	[Serializable]
 	public enum SqlDatatype
 	{
 		Integer = 0,

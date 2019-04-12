@@ -75,6 +75,31 @@ namespace uwac
 			tableorders = new List<DxTableOrder>();
 		}
 
+		public bool HasSameWkshtFilterVars(int idx1, string type, int offset)
+		{
+			if (type == "chart") return HasSameCharts(idx1, idx1 + offset);
+			else return true;
+
+		}
+
+		public bool HasSameCharts(int idx1, int idx2)
+		{
+			if (idx1 == 0 & idx2 < idx1) return false; //first one needs to be printed so false
+			if (chartorders.Count > idx1 & chartorders.Count > idx2)
+			{
+				DxChartOrder o1 = chartorders[idx1];
+				DxChartOrder o2 = chartorders[idx2];
+
+				bool b_vars = (o1.dt_selectedvars == o2.dt_selectedvars) ? true : false;
+				bool b_worksheet = (o1.worksheet == o2.worksheet) ? true : false;
+				bool b_filter = (o1.filter == o2.filter) ? true : false;
+				bool hassame = (b_vars & b_worksheet & b_filter) ? true : false;
+				return hassame;
+			}
+			else return false;
+		}
+
+
 		public void SaveOrder(DxChartOrder order)
 		{
 			order.ordernum = orders.Count + 1;

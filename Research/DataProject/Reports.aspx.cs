@@ -22,7 +22,9 @@ using uwac.trk;
 using System.ComponentModel;
 
 
-public partial class DataProject_Files : BasePage
+
+
+public partial class DataProject_Reports : BasePage
 {
 
 	private bool dataproject_initialized = false;
@@ -83,7 +85,7 @@ public partial class DataProject_Files : BasePage
 				//Load the Datafiles
 				LoadDatafiles(Convert.ToInt32(Request.QueryString["pk"]));
 
-				lbl0.Text = "Files for Data Project";
+				lbl0.Text = "Reports for Data Project";
 				lblPK.Text = "#" + Request.QueryString["pk"];
 
 				SQL_utils sql = new SQL_utils("data");
@@ -184,11 +186,12 @@ public partial class DataProject_Files : BasePage
 	protected void LoadDatafiles(int pk)
 	{
 		SQL_utils sql = new SQL_utils("data");
-		string sqlcode = "select filename, N_subjects, N_measures, N_studymeas, N_datarows, N_other_datarows, N_datacols, N_data_dups, created, TimeSinceCreated, createdBy " +
-			" from dp.vwDatafile where dataproj_pk = " + pk.ToString() + " and isDeleted=0 order by created";
+		string sqlcode = "select rpttitle, rptdesc, rptnum, created, dbo.fnElapTime_text(created, getdate()) TimeSinceCreated, createdBy " +
+			" , 'Rpt_' + cast(rptnum as varchar) + '_' + cast(dataproj_pk as varchar) + 'docx' as filename " + 
+			" from dp.Report where dataproj_pk = " + pk.ToString() + " and isDeleted=0 order by rptnum";
 		DataTable dt3 = sql.DataTable_from_SQLstring(sqlcode);
-		gvViewDatafiles.DataSource = dt3;
-		gvViewDatafiles.DataBind();
+		gvViewDatareports.DataSource = dt3;
+		gvViewDatareports.DataBind();
 
 		sql.Close();
 	}

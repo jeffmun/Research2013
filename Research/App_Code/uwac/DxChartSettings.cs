@@ -28,7 +28,7 @@ namespace uwac
 	/// Summary description for DxChartSettings
 	/// </summary>
 
-
+	[Serializable]
 	public abstract class DxChartSettings : IOutputtype
 	{
 		private DxOutputtype _outputtype;

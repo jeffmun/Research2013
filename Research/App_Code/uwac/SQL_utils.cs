@@ -1127,7 +1127,40 @@ namespace uwac
 
 		}
 
+		public void SaveChartOrder(int rptpk, string worksheet, string filter, string vars, string objects, byte[] input)
+		{
+			const string sSQL =
+				"Insert into dp.ReportOrder(rptpk, orderbinary) values (@rptpk, @worksheet, @filter, @vars, @objects, @order_byte_array)";
 
+			//SqlTransaction transaction = null; //wherever you get the transaction obj from.
+
+			var rptpkParam = new SqlParameter("@rptpk", SqlDbType.Int, 4)
+			{
+				Direction = ParameterDirection.Input,
+				Value = rptpk
+			}; //change the data type to whatever data type you are expecting
+
+			var byteParam = new SqlParameter("@order_byte_array", SqlDbType.VarBinary)
+			{
+				Direction = ParameterDirection.Input,
+				Size = input.Length,
+				Value = input
+			}; //change the data type to whatever data type you are expecting
+
+
+			List<SqlParameter> ps = new List<SqlParameter>();
+
+			ps.Add(rptpkParam);
+			ps.Add(byteParam);
+			ps.Add(CreateParam("worksheet", worksheet, "text"));
+			ps.Add(CreateParam("filter", filter, "text"));
+			ps.Add(CreateParam("vars", vars, "text"));
+			ps.Add(CreateParam("objects", objects, "text"));
+
+
+			NonQuery_from_SQLstring(sSQL, ps);
+
+		}
 
 
 		public void NonQuery_from_ProcName(string sProc, SqlParameter myp)
