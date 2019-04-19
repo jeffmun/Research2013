@@ -33,7 +33,7 @@ public partial class Library_Doc : BasePage
 				}
 			}
 			else{
-				richeditDoc.Visible = false;
+				//richeditDoc.Visible = false;
 			}
 		}
 
@@ -50,7 +50,7 @@ public partial class Library_Doc : BasePage
 		{
 			SQL_utils sql = new SQL_utils("backend");
 			string fileext = sql.StringScalar_from_SQLstring("Select fileext from tbldocvers where docversID=" + docversID.ToString());
-			string file = Server.MapPath(String.Format("~/webdocs/DocVersID_{0}{1}", docversID, fileext));
+			string file = Server.MapPath(String.Format("~/webdocs/DocVersID{0}{1}", docversID, fileext));
 
 			if(fileext == ".doc" )
 			{
@@ -62,6 +62,7 @@ public partial class Library_Doc : BasePage
 			}
 			else if (fileext == ".docx")
 			{
+
 				richeditDoc.Open(file, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
 			}
 			else if (fileext == ".pdf")

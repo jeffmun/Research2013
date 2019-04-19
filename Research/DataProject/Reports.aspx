@@ -5,6 +5,7 @@
 <%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 <%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 <%@ Register Assembly="DevExpress.Web.ASPxSpreadsheet.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSpreadsheet" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.ASPxRichEdit.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxRichEdit" TagPrefix="dx" %>
 
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
@@ -14,7 +15,17 @@
 	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery-1.9.0.min.js"></script>
 	<script type="text/javascript" src="<% =HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath %>/js/jquery-ui.min.js"></script>
 
+	 <script type="text/javascript">
+		function OnExceptionOccurred(s, e) {
+			e.handled = true;
+			alert(e.message);
+			window.location.reload();
+			}
 
+		function OnInit(s, e) { 
+			//s.SetFullscreenMode(true); 
+	 }
+	</script>
 </asp:Content>
 
 <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server" >
@@ -189,20 +200,16 @@
 	<asp:GridView ID="gvViewDatareports" runat="server"   AutoGenerateColumns="false" CellPadding="5" CellSpacing="5" BorderStyle="Solid" 
 							BorderColor="Silver" EmptyDataText="No data reports created yet." >
 						<Columns>
-							<asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Download Data File">
+
+							<asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="View Report" Visible="true">
 								<ItemTemplate>
-									<asp:Button ID="btnDownloadExistingFile" runat="server" Text=".docx" Font-Size="XX-Small" OnCommand="btnDownloadExistingFile_Command" 
-										  CommandName="DownloadExistingFile"  CommandArgument='<%#  DataBinder.Eval(Container.DataItem, "[filename]") %>' />
-								</ItemTemplate>
-							</asp:TemplateField>
-							<asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="View Docx" Visible="true">
-								<ItemTemplate>
-									<asp:Button ID="btnLoadRPT" runat="server" Text="View file" Font-Size="XX-Small" OnCommand="btnDownloadExistingFile_Command" 
-										  CommandName="LoadRPT"  CommandArgument='<%#  DataBinder.Eval(Container.DataItem, "[filename]").ToString() %>' />
+									<asp:Button ID="btnLoadRPT" runat="server" Text="View report" Font-Size="XX-Small" OnCommand="btnDownloadExistingFile_Command" 
+										  CommandName="LoadRPT"  CommandArgument='<%#  DataBinder.Eval(Container.DataItem, "[rptfilename]").ToString() %>' />
 								</ItemTemplate>
 							</asp:TemplateField>
 									<asp:BoundField HeaderText="Report Number" DataField="rptnum" />
 									<asp:BoundField HeaderText="Report Title" DataField="rpttitle" />
+									<asp:BoundField HeaderText="Report FileName" DataField="rptfilename" />
 									<asp:BoundField HeaderText="Report Description" DataField="rptdesc" />
 
 									<asp:BoundField HeaderText="created" DataField="created" DataFormatString="{0:g}" />
@@ -212,7 +219,7 @@
 							<asp:TemplateField HeaderText="Delete report">
 								<ItemTemplate>
 									<asp:Button ID="btnDeleteDatafile" runat="server" Text="Delete" Font-Size="XX-Small" OnCommand="btnDeleteDatafile_Command"
-										  CommandName="DeleteDatafile"  CommandArgument='<%#  DataBinder.Eval(Container.DataItem, "[filename]") %>' />
+										  CommandName="DeleteDatafile"  CommandArgument='<%#  DataBinder.Eval(Container.DataItem, "[rptfilename]") %>' />
 								</ItemTemplate>
 							</asp:TemplateField>
 							
@@ -225,6 +232,12 @@
 			ShowConfirmOnLosingChanges="false">
 		
 		</dx:ASPxSpreadsheet>
+
+	
+ <dx:ASPxRichEdit ID="richeditDoc" runat="server" Width="100%" Height="700px"  Visible="false" 
+		ActiveTabIndex="0" >
+		<ClientSideEvents CallbackError="OnExceptionOccurred" Init="OnInit" ></ClientSideEvents>
+	</dx:ASPxRichEdit>
 
 	<br />
 	<br />

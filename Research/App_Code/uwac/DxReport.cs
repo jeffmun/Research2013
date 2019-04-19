@@ -51,6 +51,16 @@ namespace uwac
 			return nextrptnum;
 		}
 
+		public string RptFilename()
+		{
+			string filename = "none";
+			if (rptnum>0 & dataproj_pk>0)
+			{
+				filename = String.Format("Rpt{0}_dataproj{1}_{2}.docx", rptnum, dataproj_pk, DateTime_Helper.DateTime_for_filename());
+			}
+			return filename;
+		}
+
 		public DataTable InvoiceSummary()
 		{
 			DataTable dt_orders = new InvoiceSummary(orders);
@@ -68,8 +78,8 @@ namespace uwac
 				SQL_utils sql = new SQL_utils("data");
 
 				string sqlinsert = String.Format("insert into dp.Report (dataproj_pk, rptnum, rpttitle, rptdesc, rptfilename, created, createdBy) " + 
-					" values({0},{1},'{2}','{3}', {4},getdate(), sec.systemuser())"
-					, dataproj_pk, rptnum, rpttitle, rptdesc);
+					" values({0},{1},'{2}','{3}', '{4}',getdate(), sec.systemuser())"
+					, dataproj_pk, rptnum, rpttitle, rptdesc, RptFilename());
 
 				sql.NonQuery_from_SQLstring(sqlinsert);
 
@@ -86,6 +96,12 @@ namespace uwac
 
 			return result;
 		}
+
+		///HERE THU 4/18
+		//public string SaveOrdersToDB()
+		//{
+		//	foreach(DxOrder order in order)
+		//}
 
 	}
 

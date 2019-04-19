@@ -210,7 +210,7 @@ public class DxDoc
 			}
 
 			
-			srv.SaveDocument(String.Format(@"{0}{1}", _savepath, _filename), DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+			srv.SaveDocument(String.Format(@"{0}{1}", _savepath, rpt.RptFilename()), DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
 		}
 
 

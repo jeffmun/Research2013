@@ -183,20 +183,52 @@ public partial class Admin_StudyDesign : BasePage
 		e.NewValues.Add("HouseholdID", Request.QueryString["hhID"]);
 		e.NewValues.Add("studyID", Master.Master_studyID.ToString());
 
+		int newgroupID=-1;
+		int staffID=-1;
+		int labID=-1;
+		SQL_utils sql = new SQL_utils("backend");
+
 		if (gv.ClientInstanceName == "grid_tblgroup")
 		{
-			SQL_utils sql = new SQL_utils("backend");
-			int newgroupID = sql.IntScalar_from_SQLstring("select max(groupID) + 1 from tblGroup");
+			newgroupID = sql.IntScalar_from_SQLstring("select max(groupID) + 1 from tblGroup");
+			staffID = sql.IntScalar_from_SQLstring("select sec.systemuser_staffID()");
+			labID = sql.IntScalar_from_SQLstring("select labID from tblStudy where studyID=" + Master.Master_studyID.ToString());
 			e.NewValues["groupID"] = newgroupID;
 		}
 
 		DxDbOps.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
+
+
+		if (gv.ClientInstanceName == "grid_tblgroup")
+		{
+			if(newgroupID > 0 & staffID > 0 & labID > 0)
+			{
+				// Add the group to this lab
+				string sqlcode = String.Format("insert into tbllabgroup(groupID, labID, labgroup_enabled) values({0},{1},{2})"
+					, newgroupID.ToString(), labID, "1");
+				sql.NonQuery_from_SQLstring(sqlcode);
+
+				int labgroupID = sql.IntScalar_from_SQLstring(String.Format("select labgroupID from tbllabgroup where groupID={0} and labID={1}", newgroupID, labID));
+
+				if (labgroupID > 0)
+				{
+					// Add the group to this staff
+					string sqlcode2 = String.Format("insert into tbllabgroup_staff(StaffID, LabGroupID , DBroleID) values({0}, {1}, {2})"
+						, staffID, labgroupID, "1");
+					sql.NonQuery_from_SQLstring(sqlcode2);
+				}
+
+			}
+		}
+
 
 		((ASPxGridView)sender).JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 		gv.CancelEdit();
 		e.Cancel = true;
 
 		RefreshGrids();
+
+
 	}
 
 	protected void dxgrid_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)

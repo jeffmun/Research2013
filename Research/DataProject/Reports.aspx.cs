@@ -20,9 +20,7 @@ using uwac;
 using uwac.data;
 using uwac.trk;
 using System.ComponentModel;
-
-
-
+using DevExpress.Web.ASPxRichEdit;
 
 public partial class DataProject_Reports : BasePage
 {
@@ -73,6 +71,7 @@ public partial class DataProject_Reports : BasePage
 		if (!IsPostBack)
 		{
 
+			richeditDoc.WorkDirectory = Server.MapPath("~/App_Data/DataReports/");
 
 			Debug.Print("--- is NOT Postback " + System.DateTime.Now.ToString());
 
@@ -187,7 +186,7 @@ public partial class DataProject_Reports : BasePage
 	{
 		SQL_utils sql = new SQL_utils("data");
 		string sqlcode = "select rpttitle, rptdesc, rptnum, created, dbo.fnElapTime_text(created, getdate()) TimeSinceCreated, createdBy " +
-			" , 'Rpt_' + cast(rptnum as varchar) + '_' + cast(dataproj_pk as varchar) + 'docx' as filename " + 
+			" , rptfilename " + 
 			" from dp.Report where dataproj_pk = " + pk.ToString() + " and isDeleted=0 order by rptnum";
 		DataTable dt3 = sql.DataTable_from_SQLstring(sqlcode);
 		gvViewDatareports.DataSource = dt3;
@@ -303,14 +302,18 @@ public partial class DataProject_Reports : BasePage
 			}
 
 		}
-		else if (e.CommandName == "LoadXLSX")
+		else if (e.CommandName == "LoadRPT")
 		{
 			string filename = e.CommandArgument.ToString();
 
-			if (File.Exists(HttpContext.Current.Server.MapPath("~/App_Data/DataDownloads/" + filename)))
+			string file = Server.MapPath(String.Format("~/App_Data/DataReports/{0}", filename));
+
+			if (File.Exists(file))
+			//if(true)
 			{
-				ASPxSpreadsheet.Open(HttpContext.Current.Server.MapPath("~/App_Data/DataDownloads/" + filename));
-				ASPxSpreadsheet.Visible = true;
+				richeditDoc.Open(file, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+				richeditDoc.Open(file);
+				richeditDoc.Visible = true;
 			}
 			else
 			{
