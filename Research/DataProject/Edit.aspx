@@ -220,22 +220,27 @@
 								 <Image IconID="actions_viewsetting_16x16devav"></Image>
 							</dx:ASPxButton>							&nbsp;&nbsp;&nbsp;&nbsp;
 						<td style="vertical-align: top; padding: 5px">
-								<dx:ASPxButton ID="btnFiles" runat="server" Text="Create & View Data Files" OnClick="btnFiles_OnClick" ClientInstanceName="btnFiles">
+								<dx:ASPxButton ID="btnFiles" runat="server" Text="Create/View Data Files" OnClick="btnFiles_OnClick" ClientInstanceName="btnFiles" Width="180px">
 									<Image IconID="save_saveall_16x16office2013"></Image>
+								</dx:ASPxButton>
+							<br />
+								<dx:ASPxButton ID="btnReports" runat="server" Text="View Data Reports" OnClick="btnReports_OnClick" ClientInstanceName="btnReports" Width="180px">
+									<Image IconID="print_profilereport_16x16devav"></Image>
 								</dx:ASPxButton>
 						</td>
 						<td style="vertical-align: top; padding: 5px">
-							<dx:ASPxButton ID="btnProjects" runat="server" Text="Return To All Data Projects"   ClientInstanceName="btnSets" AutoPostBack="False">
-								 <clientsideevents click="function(s, e) {document.location.href = 'Index.aspx';}"></clientsideevents>
-								<Image IconID="actions_changeview_16x16devav"></Image>
-							</dx:ASPxButton>
-						</td>
-						<td style="width: 50px; padding: 5px">
 							<dx:ASPxButton ID="btnClone" runat="server" Text="Clone this Data Project"   ClientInstanceName="btnSets" AutoPostBack="true"
 								 OnClick="btnClone_OnClick">
 								 <clientsideevents click="function(s, e) {document.location.href = 'Index.aspx';}"></clientsideevents>
 								<Image IconID="actions_converttorange_16x16"></Image>
 							</dx:ASPxButton>
+						</td>
+						<td style="vertical-align: top; width: 50px; padding: 5px">
+							<dx:ASPxButton ID="btnProjects" runat="server" Text="Return To All Data Projects"   ClientInstanceName="btnSets" AutoPostBack="False">
+								 <clientsideevents click="function(s, e) {document.location.href = 'Index.aspx';}"></clientsideevents>
+								<Image IconID="actions_changeview_16x16devav"></Image>
+							</dx:ASPxButton>
+		
 						</td>
 
 												

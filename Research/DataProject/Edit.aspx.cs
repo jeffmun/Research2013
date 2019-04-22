@@ -918,6 +918,11 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 		Debug.Print("btnFiles_OnClick " + System.DateTime.Now.ToString());
 		Response.Redirect("Files.aspx?pk=" + Request.QueryString["pk"]);
 	}
+	protected void btnReports_OnClick(object sender, EventArgs e)
+	{
+		Debug.Print("btnReports_OnClick " + System.DateTime.Now.ToString());
+		Response.Redirect("Reports.aspx?pk=" + Request.QueryString["pk"]);
+	}
 
 
 	protected void btnView_OnClick(object sender, EventArgs e)
