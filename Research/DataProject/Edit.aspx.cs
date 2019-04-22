@@ -643,17 +643,19 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 		List<int> selmeasID = dataops.GetListInt(gridSelMeas.GetSelectedFieldValues("measureID")).Distinct().ToList();
 		List<int> measID_of_selvars = dataops.GetListInt(gridSelVars.GetSelectedFieldValues("measureID")).Distinct().ToList();
 
-		var MeasNoVars = selmeasID.Except(measID_of_selvars);
+		List<int> MeasNoVars = selmeasID.Except(measID_of_selvars).ToList();
+
+		if (MeasNoVars.Count > 0)
+		{
+			SQL_utils sql = new SQL_utils("backend");
+			string code = String.Format("select measname from tblMeasure where measureID in ({0})", String.Join(",", MeasNoVars));
+			DataTable dt_MeasNoVar = sql.DataTable_from_SQLstring(code);
+			sql.Close();
 
 
-		SQL_utils sql = new SQL_utils("backend");
-		string code = String.Format("select measname from tblMeasure where measureID in ({0})", String.Join(",", MeasNoVars));
-		DataTable dt_MeasNoVar = sql.DataTable_from_SQLstring(code);
-		sql.Close();
-
-
-		gridMeasWithNoVars.DataSource = dt_MeasNoVar;
-		gridMeasWithNoVars.DataBind();
+			gridMeasWithNoVars.DataSource = dt_MeasNoVar;
+			gridMeasWithNoVars.DataBind();
+		}
 
 		//RefreshSession_selinthx();
 		//PivotSelIntHx.DataSource = (DataTable)Session["proj_inthx"];
