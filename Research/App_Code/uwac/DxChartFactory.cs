@@ -100,9 +100,9 @@ namespace uwac
 				order.batches.Clear();
 			}
 
-			//Skip the_dpdata stuff if _dt is already populated
-			if (_dt == null)
-			{
+			////Skip the_dpdata stuff if _dt is already populated
+			//if (_dt == null)
+			//{
 				bool hassameworksheet = order.HasSameWorksheet(_dpdata);
 
 				if (!hassameworksheet)
@@ -121,7 +121,7 @@ namespace uwac
 				}
 
 				_dt = _dpdata.dt;
-			}
+			//}
 
 			//Each order will result in a list of batches
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
@@ -159,9 +159,30 @@ namespace uwac
 
 						if (mysettings.repeatedmeasVarname == "none")
 						{
-							DxChartBatch batch = new DxChartBatch(mysettings, dt);
-							PrepareBatch(batch, settings);
-							batchlist.Add(batch);
+							//DxChartBatch batch = new DxChartBatch(mysettings, dt);
+							//PrepareBatch(batch, settings);
+							//batchlist.Add(batch);
+
+							foreach (XYpairType mode in mysettings.xypairtypes)
+							{
+								if (mode == XYpairType.AllVars_IgnoreLevelsOfRptMeas)
+								{
+
+									mysettings.current_xypairtype = mode;
+									//mysettings.maxCol = ncol1;
+									//mysettings.maxRow = tmpvars.Count;
+									mysettings.chartlayout = DxLayout.Horizontal;
+									mysettings.repeatedmeasVarname = "none";
+
+									DxChartBatch batch1 = new DxChartBatch(mysettings, dt);
+									PrepareBatch(batch1, (DxChartSettings)mysettings);
+									batch1.batchtitle = String.Format("All variables (IGNORE Time/RptMeas)");
+									batch1.maxCol = batch1.charts.Count;
+									batchlist.Add(batch1);
+
+								}
+							}
+							
 						}
 						else if (mysettings.repeatedmeasVarname != "none")
 						{
@@ -181,6 +202,7 @@ namespace uwac
 							List<string> tmpvarsX = mysettings.analysisvarsX();
 							List<string> tmpvarsY = mysettings.analysisvarsY();
 
+
 							#region Process By Mode
 							foreach (XYpairType mode in mysettings.xypairtypes)
 							{
@@ -188,31 +210,19 @@ namespace uwac
 								{
 
 									mysettings.current_xypairtype = mode;
-									mysettings.maxCol = ncol1;
+									//mysettings.maxCol = ncol1;
 									//mysettings.maxRow = tmpvars.Count;
 									mysettings.chartlayout = DxLayout.Horizontal;
 									mysettings.repeatedmeasVarname = "none";
 
 									DxChartBatch batch1 = new DxChartBatch(mysettings, dt);
 									PrepareBatch(batch1, (DxChartSettings)mysettings);
-									batch1.batchtitle = String.Format("All variables IGNORE Time/RptMeas");
+									batch1.batchtitle = String.Format("All variables (IGNORE Time/RptMeas)");
 									batch1.maxCol = batch1.charts.Count;
 									batchlist.Add(batch1);
 
-									////Loop over vars, make a batch for each one
-									//foreach (string v in tmpvars)
-									//{
-									//	mysettings.manualXandYvars = true;
-									//	mysettings.xvars = new List<string> { v };
-									//	mysettings.yvars = new List<string> { v };
-									//	DxChartBatch batch1 = new DxChartBatch(mysettings, dt);
-									//	PrepareBatch(batch1, (DxChartSettings)mysettings);
-									//	batch1.batchtitle = String.Format("{0} ACROSS levels of {1}", v, mysettings.repeatedmeasVarname);
-									//	batch1.maxCol = batch1.charts.Count;
-									//	batchlist.Add(batch1);
-									//}
-
 								}
+
 								if (mode == XYpairType.SameVar_AcrossLevelsOfRptMeas)
 								{
 
@@ -300,12 +310,13 @@ namespace uwac
 										}
 									}
 
-
-
 								}
+
 							}
-							#endregion
 						}
+						#endregion
+
+						
 					}
 					#endregion
 

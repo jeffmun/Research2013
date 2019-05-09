@@ -41,6 +41,7 @@ public partial class DataProject_Explore : BasePage
 	int chartHline;
 	int movavg;
 	int dataproj_pk;
+	int rptpk;
 	string filename;
 	string projTitle;
 	//DxCharts dxchart;
@@ -116,7 +117,18 @@ public partial class DataProject_Explore : BasePage
 
 		ProcessQueryStringParams();
 
-		if (dataproj_pk > 0)
+		if (dataproj_pk > 0 & rptpk > 0)
+		{
+			BIND_gridFiles();
+			
+			txtReportTitle.Text = dataproject_rpt.rpttitle;
+			txtReportDesc.Text = dataproject_rpt.rptdesc;
+
+			BIND_orders();
+
+			Session["dataproject_rpt"] = dataproject_rpt;
+		}
+		else if (dataproj_pk > 0)
 		{
 			BIND_gridFiles();
 			dataproject_rpt = new DxReport(dataproj_pk);
@@ -149,6 +161,7 @@ public partial class DataProject_Explore : BasePage
 	protected void ProcessQueryStringParams()
 	{
 
+
 		if (Request.QueryString["pk"] != null)
 		{
 			Int32.TryParse(Request.QueryString["pk"], out dataproj_pk);
@@ -180,6 +193,20 @@ public partial class DataProject_Explore : BasePage
 			}
 		}
 
+
+		if(Request.QueryString["rptpk"] != null)
+		{
+			Int32.TryParse(Request.QueryString["rptpk"], out rptpk);
+
+			if(rptpk > 0 & dataproj_pk > 0)
+			{
+				dataproject_rpt = new DxReport(dataproj_pk, rptpk);
+
+				string rpttitle = String.Format(" & Report #{0}: {1}", dataproject_rpt.rptnum, dataproject_rpt.rpttitle);
+
+				lblProjTitle.Text += rpttitle;
+			}
+		}
 	}
 
 
@@ -908,19 +935,6 @@ public partial class DataProject_Explore : BasePage
 	{
 		log("  ======= DisplaySelectedVarInfo ======= ");
 
-		//List<string> numvars = dataops.GetListString(gridVarsNum.GridView.GetSelectedFieldValues("varname"));
-		//List<string> txtvars = dataops.GetListString(gridVarsText.GridView.GetSelectedFieldValues("varname"));
-		//List<string> datevars = dataops.GetListString(gridVarsDate.GridView.GetSelectedFieldValues("varname"));
-		//List<string> agevars = dataops.GetListString(gridVarsAge.GridView.GetSelectedFieldValues("varname"));
-
-
-		//List<string> allvars = new List<string>();
-		//allvars.AddRange(numvars);
-		//allvars.AddRange(txtvars);
-		//allvars.AddRange(datevars);
-		//allvars.AddRange(agevars);
-
-		//List<string> allvars = dataops.GetListString(gridVarsAll.GridView.GetSelectedFieldValues("varname"));
 		List<string> allvars = dataops.GetListString(gridSelVars.GetSelectedFieldValues("varname"));
 
 
@@ -932,73 +946,51 @@ public partial class DataProject_Explore : BasePage
 		{
 			log("  ======= allvars.Count > 0 ======= ");
 
-			string selectedsheet = dpdata.selectedsheet;
+			if (dpdata != null)
+			{
+				string selectedsheet = dpdata.selectedsheet;
 
-			DataView dv = new DataView();
-			//DataTable dt_dict = dataproject.DataDictionaryForSheet(selectedsheet);
-			DataTable dt_dict = dataproject.datadict_subtype("all");
-			dv = dt_dict.AsDataView();
-
-
-			string notDataSheet = (selectedsheet != "Data") ?
-				String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
+				DataView dv = new DataView();
+				//DataTable dt_dict = dataproject.DataDictionaryForSheet(selectedsheet);
+				DataTable dt_dict = dataproject.datadict_subtype("all");
+				dv = dt_dict.AsDataView();
 
 
-			string filter = String.Format("varname in ('{0}') {1}"
-				, String.Join("','", allvars)
-				, notDataSheet);
-			dv.RowFilter = filter;
-			DataTable dt = dv.ToTable();
+				string notDataSheet = (selectedsheet != "Data") ?
+					String.Format(" and measname='{0}'", selectedsheet.Replace("Data_", "")) : "";
 
 
-			//dt.Columns.Add(new DataColumn("vartype", typeof(string)));
+				string filter = String.Format("varname in ('{0}') {1}"
+					, String.Join("','", allvars)
+					, notDataSheet);
+				dv.RowFilter = filter;
+				DataTable dt = dv.ToTable();
 
 
-			//foreach (DataRow row in dt.Rows)
-			//{
-			//	string v = row["varname"].ToString();
-			//	string vt = "";
-			//	if (numvars.Contains(v)) vt = "numeric";
-			//	else if (txtvars.Contains(v)) vt = "categorical";
-			//	else if (datevars.Contains(v)) vt = "date";
-			//	else if (agevars.Contains(v)) vt = "age";
-			//	row["vartype"] = vt;
-			//}
+				var x = from f in dt.AsEnumerable()
+						select new
+						{
+							measname = f.Field<string>("measname"),
+							varname = f.Field<string>("varname"),
+							fldlabel = f.Field<string>("FieldLabel"),
+							datatype = f.Field<string>("DataType"),
+							vartype = f.Field<string>("vartype")
 
-			//var x = from f in dt.AsEnumerable()
-			//		select new
-			//		{
-			//			Measure = f.Field<string>("measname"),
-			//			Variable = f.Field<string>("varname"),
-			//			Label = f.Field<string>("FieldLabel"),
-			//			DataType = f.Field<string>("DataType"),
-			//			VarType = f.Field<string>("vartype")
+						};
 
-			//		};
-
-			var x = from f in dt.AsEnumerable()
-					select new
-					{
-						measname= f.Field<string>("measname"),
-						varname = f.Field<string>("varname"),
-						fldlabel = f.Field<string>("FieldLabel"),
-						datatype = f.Field<string>("DataType"),
-						vartype = f.Field<string>("vartype")
-
-					};
-
-			DataTable dtvars = x.CustomCopyToDataTable();
+				DataTable dtvars = x.CustomCopyToDataTable();
 
 
-			Session["selectedvars"] = dtvars;
-			gvSelectedVars.DataSource = dtvars;
-			gvSelectedVars.DataBind();
+				Session["selectedvars"] = dtvars;
+				gvSelectedVars.DataSource = dtvars;
+				gvSelectedVars.DataBind();
 
-			gvSelectedVars.Visible = true;
-			lblVarLabels.Visible = true;
-			btnVarLabelsHide.Visible = true;
-			btnVarLabelsShow.Visible = true;
-			//btnVarLabelsShow.Enabled = false;
+				gvSelectedVars.Visible = true;
+				lblVarLabels.Visible = true;
+				btnVarLabelsHide.Visible = true;
+				btnVarLabelsShow.Visible = true;
+				//btnVarLabelsShow.Enabled = false;
+			}
 		}
 		else
 		{
@@ -1232,6 +1224,9 @@ public partial class DataProject_Explore : BasePage
 		Session["datafilter"] = ConstructFilter();
 
 	}
+
+
+
 
 
 	protected void callbackSelectedDataInfo_OnCallback(object sender, CallbackEventArgsBase e)
@@ -1637,7 +1632,8 @@ public partial class DataProject_Explore : BasePage
 		settings.colorvar = cboColorsvarSCAT.Value.ToString();
 		settings.panevar = cboPanevarSCAT.Value.ToString();
 		settings.panelvar = cboPanelvarSCAT.Value.ToString();
-		settings.repeatedmeasVarname = "timept";
+
+		settings.repeatedmeasVarname = dpdata.dt.ContainsColumnName("timept") ? "timept" : "none";
 
 		//settings.widemode = (DxWideMode)Convert.ToInt32(cboWideMode.Value.ToString());
 
@@ -1959,7 +1955,6 @@ public partial class DataProject_Explore : BasePage
 				dataproject_rpt.rpttitle = txtReportTitle.Text;
 				dataproject_rpt.rptdesc = txtReportDesc.Text;
 
-
 				ordersC = PlaceOrders(dataproject_rpt.orders.chartorders);
 				ordersT = PlaceOrders(dataproject_rpt.orders.tableorders);
 			}
@@ -1976,6 +1971,7 @@ public partial class DataProject_Explore : BasePage
 				}
 			}
 
+
 			if (delivertopage)
 			{
 				DeliverOutputToPage(ordersC, ordersT);
@@ -1987,18 +1983,21 @@ public partial class DataProject_Explore : BasePage
 
 			if(p=="Docx")
 			{
-				dataproject_rpt.SaveToDB();
-
 				foreach (DxChartOrder order in ordersC)
 				{
-					if (order.orderSaveState == OrderSaveState.ReadyToSave)
-					{
-						order.ChartsToDisk(path);
-					}
+					order.ChartsToDisk(path);
 				}
 
 				DxDoc doc = new DxDoc(dataproject_rpt, rptpath, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid);
 				//DxDoc doc = new DxDoc(ordersC, path, lblProjTitle.Text, gridFile.Value.ToString(), Master.Master_netid);
+
+				
+				foreach (DxChartOrder order in ordersC)
+				{
+					order.DeleteChartsOnDisk(path);
+				}
+
+				dataproject_rpt.SaveToDB();
 
 			}
 

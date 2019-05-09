@@ -45,8 +45,9 @@ public partial class Admin_NewStudy: BasePage
 	{
 		//CHeck who this is:
 
+		GetLabs();
 
-	
+
 		if (!IsPostBack)
 		{
 			//lblStudyname.Text = Master.Master_studyname;
@@ -55,6 +56,14 @@ public partial class Admin_NewStudy: BasePage
 
 	}
 
+	protected void GetLabs()
+	{
+		SQL_utils sql = new SQL_utils("backend");
+		DataTable dt = sql.DataTable_from_SQLstring("select * from tbllab where labID in (select * from dbo.fn_AllowedLabs_by_User())");
+
+		cboLab.DataSource = dt;
+		cboLab.DataBind();
+	}
 
 	protected void btnNew_OnCLick(object sender, EventArgs e)
 	{
@@ -69,14 +78,16 @@ public partial class Admin_NewStudy: BasePage
 
 			int newstudyID = sql.IntScalar_from_SQLstring("select max(studyID) + 1 from tblStudy");
 			int newgroupID = sql.IntScalar_from_SQLstring("select max(groupID) + 1 from tblGroup");
-			int labID = sql.IntScalar_from_SQLstring("select coalesce(defaultlabid, 1) from tblstaff where staffID = sec.systemuser_staffID()");
+
+			//int labID = sql.IntScalar_from_SQLstring("select coalesce(defaultlabid, 1) from tblstaff where staffID = sec.systemuser_staffID()");
+			int labID = Convert.ToInt32(cboLab.SelectedItem.Value.ToString());
 
 			string studyname = txtName.Value.ToString();
 			string studyfullname = txtNameFull.Value.ToString();
 
-			if (newstudyID > 0)
+			if (newstudyID > 0 & labID > 0)
 			{
-				string code0 = String.Format("insert into dbo.tblstudy(studyID, studyname, studyfullname, active) values({0}, '{1}', '{2}', 1);", newstudyID, studyname, studyfullname);
+				string code0 = String.Format("insert into dbo.tblstudy(studyID, studyname, studyfullname, active, labID) values({0}, '{1}', '{2}', 1, {3});", newstudyID, studyname, studyfullname, labID);
 				string code1 = String.Format("insert into dbo.tblgroup(groupID, studyID, groupname, groupabbr, goaln, siteID, sortorder) values({0}, {1}, 'Group 1', 'Grp1', 0, 3, 1);", newgroupID, newstudyID);
 				string code2 = String.Format("insert into dbo.tblLabGroup(groupid, labid, labgroup_enabled)  values({0}, {1}, 1 )", newgroupID, labID);
 

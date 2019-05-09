@@ -74,6 +74,17 @@ namespace uwac
 
 		}
 
+		public string ObjectsFromInvoice()
+		{
+			string charts = String.Format("{0}{1}{2}{3}"
+				, (this.numHist > 0) ? String.Format("Hist({0})",  this.numHist) : ""
+				, (this.numBar > 0)  ? String.Format(" Bar({0})",  this.numBar) : ""
+				, (this.numLine > 0) ? String.Format(" Line({0})", this.numLine) : ""
+				, (this.numScat > 0) ? String.Format(" Scat({0})", this.numScat) : ""
+				);
+
+			return charts;
+		}
 
 
 	}
@@ -120,13 +131,8 @@ namespace uwac
 					if (order.invoice != null)
 					{
 
-						string charts = String.Format("{0}{1}{2}{3}"
-							, (order.invoice.numHist > 0) ? String.Format("Hist({0})", order.invoice.numHist) : ""
-							, (order.invoice.numBar > 0) ? String.Format(" Bar({0})", order.invoice.numBar) : ""
-							, (order.invoice.numLine > 0) ? String.Format(" Line({0})", order.invoice.numLine) : ""
-							, (order.invoice.numScat > 0) ? String.Format(" Scat({0})", order.invoice.numScat) : ""
-							);
-
+						string charts = order.invoice.ObjectsFromInvoice();
+						
 						string myvars = (order.invoice.processedvars != null) ? String.Join(",", order.invoice.processedvars) : "NONE(?)";
 
 						DataRow row = this.NewRow();
@@ -141,6 +147,10 @@ namespace uwac
 				}
 			}
 		}
+
+
+
+
 
 		public void AddTables(List<DxTableOrder> orders)
 		{

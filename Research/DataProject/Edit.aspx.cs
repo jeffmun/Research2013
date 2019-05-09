@@ -728,7 +728,18 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 		gridProjVars.DataBind();
 
 	}
-	
+
+
+	protected void callbackNewVar_OnCallback(object sender, CallbackEventArgsBase e)
+	{
+		Debug.WriteLine(String.Format(">>> callbackNewVar_OnCallback {0}", e.Parameter.ToString()));
+		Debug.WriteLine(" HERE WE CREATE A NEW VARIABLE!!");
+
+
+
+	}
+
+
 
 	//Update the Session variable based on what is currently selected
 	//Call right before we bind the PivotTable 

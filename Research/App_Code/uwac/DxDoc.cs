@@ -217,6 +217,16 @@ public class DxDoc
 	}
 
 
+	private void FormatTableBorders(DevExpress.XtraRichEdit.API.Native.Table t)
+	{
+		t.Borders.Top.LineColor = Color.White;
+		t.Borders.Bottom.LineColor = Color.White;
+		t.Borders.Left.LineColor = Color.White;
+		t.Borders.Right.LineColor = Color.White;
+
+		t.Borders.InsideHorizontalBorder.LineStyle = TableBorderLineStyle.None;
+		t.Borders.InsideVerticalBorder.LineStyle = TableBorderLineStyle.None;
+	}
 
 
 	#region older versions of MakeDocx
@@ -435,26 +445,27 @@ public class DxDoc
 		if (batch.layout == DxLayout.Upper)
 		{
 
-			int numrows = (addHeaderRow) ? batch.maxRow + 1 : batch.maxRow;
+			int numcols = LayoutOutput.NCols(batch.charts.Count);
+			int numrows = (addHeaderRow) ? numcols + 1 : numcols;
+
+			//int numrows = (addHeaderRow) ? batch.maxRow + 1 : batch.maxRow;
+
 
 
 			doc.BeginUpdate();
-			DevExpress.XtraRichEdit.API.Native.Table t = doc.Tables.Create(doc.Range.End, numrows, batch.maxCol, AutoFitBehaviorType.AutoFitToContents);
+			DevExpress.XtraRichEdit.API.Native.Table t = doc.Tables.Create(doc.Range.End, numrows, numcols, AutoFitBehaviorType.AutoFitToContents);
 
-			t.Borders.Top.LineColor = Color.White;
-			t.Borders.Bottom.LineColor = Color.White;
-			t.Borders.Left.LineColor = Color.White;
-			t.Borders.Right.LineColor = Color.White;
+			FormatTableBorders(t);
 
-			t.Borders.InsideHorizontalBorder.LineStyle = TableBorderLineStyle.None;
-			t.Borders.InsideVerticalBorder.LineStyle = TableBorderLineStyle.None;
 
 			if (addHeaderRow)
 			{
-				for(int h=0; h < batch.maxCol; h++)
+				for(int h=0; h < numcols; h++)
 				{
-					if(h>0) doc.InsertText(t[0, h].Range.Start, batch.vars[h]);
-					if(h>0) doc.InsertText(t[h, 0].Range.Start, batch.vars[h-1]);
+					doc.InsertText(t[0, h].Range.Start, batch.vars[h]);
+					doc.InsertText(t[h, 0].Range.Start, batch.vars[h-1]);
+					//if (h > 0 & h < batch.vars.Count) doc.InsertText(t[0, h].Range.Start, batch.vars[h]);
+					//if (h > 0 & h < batch.vars.Count) doc.InsertText(t[h, 0].Range.Start, batch.vars[h - 1]);
 
 					t.Cell(h, 0).VerticalAlignment = TableCellVerticalAlignment.Center;
 				}
@@ -463,16 +474,17 @@ public class DxDoc
 
 			//t.Rows.Add(CreateHeaderRow(batch.vars, ncols));
 			int counter = 0;
-			for (int r = 0; r < batch.maxRow; r++)
+			for (int r = 0; r < numrows; r++)
 			{
-				for (int c = r; c < batch.maxCol; c++)
-				{
-					if (c > r)
+				//for (int c = r; c < batch.maxCol; c++)
+				for (int c = r; c < numcols; c++)
+					{
+						if (c > r)
 					{
 
 						int bumprow = (addHeaderRow) ? 1 : 0;
 
-						int idx = GetDiagIndex(r, c, batch.maxRow);
+						int idx = LayoutOutput.GetDiagIndex(r, c, batch.maxRow);
 
 
 
@@ -551,16 +563,13 @@ public class DxDoc
 		}
 	}
 
-	public int GetDiagIndex(int r, int c, int n)
-	{
-		//k = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1
-		int idx = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1;
-		return idx;
+	//public static int GetDiagIndex(int r, int c, int n)
+	//{
+	//	//k = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1
+	//	int idx = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1;
+	//	return idx;
 
-
-
-
-	}
+	//}
 
 
 	private void AppendDataTable(Document document, DataTable dataTable)

@@ -154,16 +154,19 @@ namespace uwac
 
 			else if (type == XYpairType.SameVar_AcrossLevelsOfRptMeas)
 			{
-				for (int i = 0; i < vars.Count; i++)
+				if (rptmeas != null)
 				{
-					for (int j = 0; j < (rptmeas.Count - 1); j++)
+					for (int i = 0; i < vars.Count; i++)
 					{
-						for (int k = j + 1; k < rptmeas.Count; k++)
+						for (int j = 0; j < (rptmeas.Count - 1); j++)
 						{
-							x = String.Format("{0}_{1}", rptmeas[j], vars[i]);
-							y = String.Format("{0}_{1}", rptmeas[k], vars[i]);
-							XYpair pair = new XYpair { xvar = x, yvar = y };
-							_pairs.Add(pair);
+							for (int k = j + 1; k < rptmeas.Count; k++)
+							{
+								x = String.Format("{0}_{1}", rptmeas[j], vars[i]);
+								y = String.Format("{0}_{1}", rptmeas[k], vars[i]);
+								XYpair pair = new XYpair { xvar = x, yvar = y };
+								_pairs.Add(pair);
+							}
 						}
 					}
 				}

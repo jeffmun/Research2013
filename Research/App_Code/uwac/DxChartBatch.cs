@@ -301,7 +301,7 @@ namespace uwac
 
 
 				List<string> keepvars = new List<string>();
-				keepvars.Add(mysettings.repeatedmeasVarname);
+				if(mysettings.repeatedmeasVarname != "none") keepvars.Add(mysettings.repeatedmeasVarname);
 				keepvars.AddRange(mysettings.analysisvars());
 				keepvars.AddRange(idvars);
 

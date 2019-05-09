@@ -33,6 +33,8 @@ namespace uwac
 		public DataImportSettings settings { get; set; }
 		public List<string> results { get; set; }
 		public DataTable dtLinkedImportTbls { get; set; }
+
+		public DataUpload dataupload { get; set; }
 		private DataTable _imported_dt;
 		public DataTable imported_dt { get { return _imported_dt; } set { _imported_dt = value; } }
 
@@ -160,7 +162,7 @@ namespace uwac
 		/* BUILD THE DataTable To Import */
 
 
-		#region Create Empty DataTable
+		#region Create Empty DataTable based on a table defined in the DB
 		public static DataTable EmptyDataTable(string tblname)
 		{
 			return EmptyDataTable(tblname, "dbo");
@@ -298,7 +300,7 @@ namespace uwac
 			if (_imported_dt.HasRows())
 			{
 				string tblinfo = String.Format("local DataTable with {0} rows from a total of {1} rows processed. {2} rows marked as 'NoData'"
-					, _imported_dt.Rows.Count, inputfile_rowcounter,  nrecs_nodata);
+					, _imported_dt.Rows.Count, inputfile_rowcounter, nrecs_nodata);
 				results.Add(tblinfo);
 			}
 			else
@@ -1192,7 +1194,6 @@ namespace uwac
 		}
 
 
-
 		public static DataTable LinkedImports(int studyID)
 		{
 			SQL_utils sql = new SQL_utils("data");
@@ -1207,6 +1208,8 @@ namespace uwac
 			sql.Close();
 			return dt;
 		}
+		
+		
 		public static DataTable LinkedImportTbls(int studyID)
 		{
 			SQL_utils sql = new SQL_utils("data");

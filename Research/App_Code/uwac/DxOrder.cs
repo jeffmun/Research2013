@@ -120,6 +120,11 @@ namespace uwac
 			try
 			{
 				order_to_del = this.orders.Where(o => o.ordernum == ordernum_todelete).First();
+
+				foreach(DxOrder ord in this.orders)
+				{
+					if (ord.ordernum > ordernum_todelete) ord.ordernum--;
+				}
 			}
 			catch (Exception ex) { }
 

@@ -299,7 +299,9 @@ public partial class DataProject_AnalysisSession : BasePage
 		{
 			if(dt_plots.Rows.Count > 1)
 			{
-				DxDoc doc = new DxDoc(dt_plots, dt_output, serverpath, savefile, outputtitle, Session["analysissessionfile"].ToString(), Master.Master_userfullname); //MakeDocx
+				//DxDoc doc = new DxDoc(dt_plots, dt_output, serverpath, savefile, outputtitle, Session["analysissessionfile"].ToString(), Master.Master_userfullname); //MakeDocx
+
+				//DxDoc doc = new DxDoc(dt_plots, dt_output, serverpath, savefile, outputtitle, Session["analysissessionfile"].ToString(), Master.Master_userfullname); //MakeDocx
 
 			}
 		}

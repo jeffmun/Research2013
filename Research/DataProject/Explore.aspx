@@ -104,7 +104,8 @@
 				callbackSelectedDataInfo.PerformCallback(currdatasheet);
 			}
 
-			
+
+
 			////
 			////
 			////
@@ -705,6 +706,19 @@
 										</dx:PanelContent>
 									</PanelCollection>
 								</dx:ASPxCallbackPanel>
+
+										<%--NEW VARS--%>
+<%--									<dx:ASPxCallbackPanel ID="callbackNewVar" runat="server"  ClientInstanceName="callbackNewVar" 
+										OnCallback="callbackNewVar_OnCallback" ClientVisible="false"  >
+										<SettingsLoadingPanel Text="Loading New Variable Controls..." />
+										<PanelCollection>
+											<dx:PanelContent ID="panelcontent8" runat="server" >
+
+												
+
+										</dx:PanelContent>
+									</PanelCollection>
+								</dx:ASPxCallbackPanel>--%>
 								</td>
 
 								<%--COLUMN 2--%>

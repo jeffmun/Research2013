@@ -53,6 +53,7 @@ public partial class Library_MeasureList : BasePage //System.Web.UI.Page
 	//If the master page default study is changed, update the Measure DDL
 	protected void Master_Study_Changed(object sender, EventArgs e)
 	{
+		Response.Redirect("MeasureList.aspx");
 		//GetCurrentDefaultStudyID();
 	}
 

@@ -170,6 +170,15 @@
 			}
 		}
 
+
+			function btnCreateNewVar_ClientClick() {
+				var currdatasheet = gridDataSheets.GetValue().toString();
+				//var filtertext = "filter!" + txtFilter.GetValue();
+				callbackFilter.PerformCallback(currdatasheet);
+				callbackSelectedDataInfo.PerformCallback(currdatasheet);
+			}
+
+
 	</script>
 
 	
@@ -793,6 +802,45 @@
 				</ContentCollection>
 			</dx:TabPage>
 			
+			<dx:TabPage Text="Create New Variables">
+				<ContentCollection>
+					<dx:ContentControl>
+						<b>Create new calculated variables.</b><br /><br />
+
+						<table>
+							<tr>
+								<td style="padding: 10px" >
+									Var
+									</td>
+								<td style="padding: 10px" >
+									Cutpoints
+								</td>
+							</tr>
+							<tr>
+								<td style="padding: 10px" >
+									<dx:ASPxTextBox ID="txtVarforNew" runat="server" Width="150px"   NullText="Enter var name here..." ClientInstanceName="txtFilter"></dx:ASPxTextBox>
+								</td>
+								<td style="padding: 10px" >
+									<dx:ASPxLabel ID="lblCut" runat="server"   ForeColor="Silver"  ClientInstanceName="lblCut"
+										Text="E.g, 70,85 will result in 3 categories: <=70, <=85, >85" Font-Size="XX-Small"></dx:ASPxLabel>
+															
+									<dx:ASPxTextBox ID="txtCutpoints" runat="server" Width="150px"   NullText="Enter cutpoints here..." ClientInstanceName="txtFilter"></dx:ASPxTextBox>
+
+															
+									<dx:ASPxButton ID="btnCreateNewVar" runat="server" Text="Create"  Font-Size="XX-Small" 
+										ClientEnabled="true" EnableClientSideAPI="true" AutoPostBack="false">
+										<ClientSideEvents Click="btnCreateNewVar_ClientClick" />
+									</dx:ASPxButton>
+														
+														
+														
+								</td>
+							</tr>
+						</table>
+							
+					</dx:ContentControl>
+				</ContentCollection>
+			</dx:TabPage>
 
 		</TabPages>
 	</dx:ASPxPageControl>

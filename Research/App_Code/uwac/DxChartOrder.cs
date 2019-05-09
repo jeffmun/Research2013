@@ -206,6 +206,34 @@ namespace uwac
 
 		}
 
+		public byte[] ToByteArray()
+		{
+			List<DxChartBatch> saved_batches = this.batches;
+
+			//we need to remove the charts and datatables because they are not serializable
+			foreach(DxChartBatch batch in this.batches)
+			{
+				batch.charts = null;
+				batch.datatables = null;
+			}
+
+
+			byte[] result;
+			using (var stream = new MemoryStream())
+			{
+				var ser = new BinaryFormatter();
+				ser.Serialize(stream, this);
+				stream.Flush();
+				result = stream.ToArray();
+
+			}
+
+			//try to readd them
+			this.batches = saved_batches;
+			return result;
+		}
+
+
 	}
 
 

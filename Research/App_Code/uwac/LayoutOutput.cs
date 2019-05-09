@@ -719,6 +719,15 @@ namespace uwac
 		#endregion
 
 
+		public static int GetDiagIndex(int r, int c, int n)
+		{
+			//k = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1
+			int idx = (n * (n - 1) / 2) - (n - r) * ((n - r) - 1) / 2 + c - r - 1;
+			return idx;
+
+		}
+
+
 		//Function that returns the number of cols/rows for a square table of all pairs
 		public static int NCols(int x)
 		{

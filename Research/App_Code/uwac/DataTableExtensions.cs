@@ -346,6 +346,44 @@ namespace uwac
 
 		}
 
+		public static void NewColumnByCutpoints(this DataTable dt, string columnName, string cuts)
+		{
+			List<string> cutpoints = cuts.Split(',').ToList();
+
+			using (DataColumn dc = new DataColumn(columnName + "_cut", typeof(string)))
+			{
+				// Add the new column 
+				dt.Columns.Add(dc);
+
+				// Get and convert the values of the old column, and insert them into the new
+				foreach (DataRow dr in dt.Rows)
+				{
+					double orig = Convert.ToDouble(dr[columnName]);
+					string newval = "unassigned";
+
+					foreach(string s in cutpoints)
+					{
+						double x = Convert.ToDouble(s);
+						if (orig <= x) newval = String.Format("<={0}", x);
+					}
+					if(newval == "unassigned" & orig > Convert.ToDouble(cutpoints[cutpoints.Count]))
+					{
+						newval = String.Format("> {0}", cutpoints[cutpoints.Count]);
+					}
+
+
+					dr[dc.ColumnName] = newval;
+				}
+				// Remove the old column
+				dt.Columns.Remove(columnName);
+
+				// Give the new column the old column's name
+				dc.ColumnName = String.Format("{0}_cut",columnName);
+			}
+
+		}
+
+
 
 		#endregion
 

@@ -298,7 +298,11 @@ public partial class UWAC : System.Web.UI.MasterPage
 		//title += " [backend=" + ConfigurationManager.ConnectionStrings["TRACKING_CONN_STRING"] + "]";
 
 		SQL_utils sql = new SQL_utils("backend");
-		title = sql.StringScalar_from_SQLstring("select mastertitle from vwStudyMastertitle where studyID=" + Master_studyID.ToString());
+
+
+		title = (Master_studyID > 0) ?
+			sql.StringScalar_from_SQLstring("select coalesce(mastertitle, 'UWAC DB') mastertitle from vwStudyMastertitle where studyID=" + Master_studyID.ToString()) :
+				"UWAC DB (no default study selected)";
 
 		placeholderMasterTitle.Controls.Clear();
 
@@ -404,7 +408,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 		//2del
 		//SqlDataAdapter sqlAdapter = new SqlDataAdapter(sqlCmd);
 		//sqlAdapter.Fill(dt);
-		if (dt != null)
+		if(dt.HasRows())
 		{
 			foreach (DataRow row in dt.Rows)
 			{
@@ -417,14 +421,18 @@ public partial class UWAC : System.Web.UI.MasterPage
 			lblDefaultStudy.Text = master_studyname;
 			lblMasterStudyID.Text = master_studyID.ToString();
 			lblMasterStudyIDfull.Text = master_studyIDfull.ToString();
+
+			Session["master_studyID"] = master_studyID.ToString();
+
+
+			string theme = oSQL.StringScalar_from_SQLstring("exec spSEC_Get_Default_theme_for_User");
+			Session["master_theme"] = theme.ToString();
 		}
-		//ViewState["studyID"] = master_studyID;
-		Session["master_studyID"] = master_studyID.ToString();
-
-
-		string theme = oSQL.StringScalar_from_SQLstring("exec spSEC_Get_Default_theme_for_User");
-		Session["master_theme"] = theme.ToString();
-
+		else
+		{
+			Session["master_studyID"] = "0";
+			Session["master_theme"] = "Glass";
+		}
 
 	}
 

@@ -174,6 +174,10 @@ namespace uwac
 			{
 				//Connections strings managed in Web.Config and the various publishing profile transforms
 
+				case "vtj":
+					connstring = ConfigurationManager.ConnectionStrings["ValantTJ"].ToString();
+					break;
+
 				case "uwacdb":
 					connstring = ConfigurationManager.ConnectionStrings["TRACKING_CONN_STRING"].ToString();
 					break;
@@ -858,7 +862,8 @@ namespace uwac
 				}
 				else
 				{
-					throw new System.Exception("An Error!13 ", exc);
+					//throw new System.Exception("An Error!13 ", exc);
+					return -1;
 				}
 			}
 		}
@@ -1127,10 +1132,18 @@ namespace uwac
 
 		}
 
-		public void SaveChartOrder(int rptpk, string worksheet, string filter, string vars, string objects, byte[] input)
+		public void SaveChartOrder(int rptpk, DxChartOrder chartorder)
 		{
-			const string sSQL =
-				"Insert into dp.ReportOrder(rptpk, orderbinary) values (@rptpk, @worksheet, @filter, @vars, @objects, @order_byte_array)";
+			byte[] orderbytes = chartorder.ToByteArray();
+			int ordernum = chartorder.ordernum;
+			string worksheet = chartorder.worksheet;
+			string filter = chartorder.filter;
+			string vars = String.Join(",", chartorder.invoice.processedvars);
+			string ordertype = chartorder.ordertype.ToString();
+			string objects = chartorder.invoice.ObjectsFromInvoice();
+
+			string sSQL =
+				"Insert into dp.ReportOrder(rptpk, ordernum, ordertype, worksheet, filter, vars, objects, orderbinary) values (@rptpk, @ordernum, @ordertype, @worksheet, @filter, @vars, @objects, @order_byte_array)";
 
 			//SqlTransaction transaction = null; //wherever you get the transaction obj from.
 
@@ -1143,8 +1156,8 @@ namespace uwac
 			var byteParam = new SqlParameter("@order_byte_array", SqlDbType.VarBinary)
 			{
 				Direction = ParameterDirection.Input,
-				Size = input.Length,
-				Value = input
+				Size = orderbytes.Length,
+				Value = orderbytes
 			}; //change the data type to whatever data type you are expecting
 
 
@@ -1152,16 +1165,19 @@ namespace uwac
 
 			ps.Add(rptpkParam);
 			ps.Add(byteParam);
+			ps.Add(CreateParam("ordernum", ordernum.ToString(), "int"));
+			ps.Add(CreateParam("ordertype", ordertype, "text"));
 			ps.Add(CreateParam("worksheet", worksheet, "text"));
 			ps.Add(CreateParam("filter", filter, "text"));
 			ps.Add(CreateParam("vars", vars, "text"));
 			ps.Add(CreateParam("objects", objects, "text"));
 
 
-			NonQuery_from_SQLstring(sSQL, ps);
 
+			NonQuery_from_SQLstring(sSQL, ps);
 		}
 
+		
 
 		public void NonQuery_from_ProcName(string sProc, SqlParameter myp)
 		{
