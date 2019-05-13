@@ -35,19 +35,21 @@
 <br />
 <br />
 
-<dx:ASPxGridView ID="grid" runat="server" DataSourceID="sqlValantTJ" AutoGenerateColumns="false" KeyFieldName="num" SettingsBehavior-AllowGroup="true"
-	 Settings-ShowGroupPanel="true">
+<dx:ASPxGridView ID="grid" runat="server" DataSourceID="sqlValantTJ" AutoGenerateColumns="false" KeyFieldName="rownames" SettingsBehavior-AllowGroup="true"
+	 Settings-ShowGroupPanel="true"  >
 	<TotalSummary>
-		<dx:ASPxSummaryItem ValueDisplayFormat="c2" FieldName="amount" SummaryType="Sum" />
+		<dx:ASPxSummaryItem ValueDisplayFormat="c2" FieldName="amtowed" SummaryType="Sum" />
 	</TotalSummary>
 	<GroupSummary>
-		<dx:ASPxSummaryItem SummaryType="Sum" FieldName="amount"  ValueDisplayFormat="c2"  />
+		<dx:ASPxSummaryItem SummaryType="Sum" FieldName="amtowed"  ValueDisplayFormat="c2"  />
 	</GroupSummary>
 	<Columns>
-		<dx:GridViewDataColumn FieldName="num" ReadOnly="true"></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="rownames" Caption="Num" ReadOnly="true"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="client" ReadOnly="true"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="payor" ReadOnly="true"></dx:GridViewDataColumn>
-		<dx:GridViewDataTextColumn FieldName="amount" ReadOnly="true" ><PropertiesTextEdit DisplayFormatString="c" /></dx:GridViewDataTextColumn>
+		<dx:GridViewDataTextColumn FieldName="amtowed" ReadOnly="true" ><PropertiesTextEdit DisplayFormatString="c" /></dx:GridViewDataTextColumn>
+		<dx:GridViewDataTextColumn FieldName="costperunit" ReadOnly="true" ><PropertiesTextEdit DisplayFormatString="c" /></dx:GridViewDataTextColumn>
+		<dx:GridViewDataColumn FieldName="apparentunits" ReadOnly="true"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="dos" ReadOnly="true"> <Settings GroupInterval="DateMonth" /></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="billed" ReadOnly="true"><Settings GroupInterval="DateMonth" /></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="cpt" ReadOnly="true"></dx:GridViewDataColumn>
@@ -66,8 +68,8 @@
 	
 	<asp:SqlDataSource ID="sqlValantTJ" runat="server" ConnectionString="<%$ ConnectionStrings:ValantTJ %>"
 		SelectCommandType="text"
-		SelectCommand="select num, payor, client, amount, dos, billed, cpt, status, notes from  InsuranceAging"
-		UpdateCommand="update InsuranceAging set status=@status, notes=@notes where num=@num"
+		SelectCommand="select rownames, payor, client, amtowed, costperunit, round(apparentunits, 2) apparentunits, dos, billed, cpt, status, notes from  IA"
+		UpdateCommand="update IA set status=@status, notes=@notes where rownames=@rownames"
 		>
 	</asp:SqlDataSource>
 	
