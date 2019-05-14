@@ -72,8 +72,7 @@
 	<asp:SqlDataSource ID="sqlValantTJ" runat="server" ConnectionString="<%$ ConnectionStrings:ValantTJ %>"
 		SelectCommandType="text"
 		SelectCommand="select rownames, payor, client, amtowed, costperunit, round(apparentunits, 2) apparentunits, dos, billed, cpt, provider, dx, datefrom, dateto, status, notes from vwValantTracking"
-		UpdateCommand="update IA set status=@status, notes=@notes where rownames=@rownames"
-		>
+		UpdateCommand="update IA set status=@status, notes=@notes where rownames=@rownames"	>
 	</asp:SqlDataSource>
 	
 
