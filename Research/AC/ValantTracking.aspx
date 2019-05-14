@@ -51,8 +51,11 @@
 		<dx:GridViewDataTextColumn FieldName="costperunit" ReadOnly="true" ><PropertiesTextEdit DisplayFormatString="c" /></dx:GridViewDataTextColumn>
 		<dx:GridViewDataColumn FieldName="apparentunits" ReadOnly="true"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="dos" ReadOnly="true"> <Settings GroupInterval="DateMonth" /></dx:GridViewDataColumn>
-		<dx:GridViewDataColumn FieldName="billed" ReadOnly="true"><Settings GroupInterval="DateMonth" /></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="provider" ReadOnly="true"><Settings GroupInterval="DateMonth" /></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="cpt" ReadOnly="true"></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="dx" ReadOnly="false"></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="datefrom" ReadOnly="false"></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="dateto" ReadOnly="false"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="status" ReadOnly="false"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="notes" ReadOnly="false"></dx:GridViewDataColumn>
 	</Columns>
@@ -68,7 +71,7 @@
 	
 	<asp:SqlDataSource ID="sqlValantTJ" runat="server" ConnectionString="<%$ ConnectionStrings:ValantTJ %>"
 		SelectCommandType="text"
-		SelectCommand="select rownames, payor, client, amtowed, costperunit, round(apparentunits, 2) apparentunits, dos, billed, cpt, status, notes from  IA"
+		SelectCommand="select rownames, payor, client, amtowed, costperunit, round(apparentunits, 2) apparentunits, dos, billed, cpt, provider, dx, datefrom, dateto, status, notes from vwValantTracking"
 		UpdateCommand="update IA set status=@status, notes=@notes where rownames=@rownames"
 		>
 	</asp:SqlDataSource>
