@@ -352,47 +352,7 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 
 
 	#region 2) Display the Chart
-	//protected void PopulateChart(string id) {
-	//    if (id == "" | id == null)
-	//    {
-	//        id = Request.QueryString["id"];
-	//    }
-	//    int getall = 1;
-
-	//    if (id != null & id != "")
-	//    {
-
-	//        panelChart.Controls.Clear();
-
-	//        Literal lit = new Literal();
-
-	//        SQL_utils sql = new SQL_utils();
-
-	//        int studyID = Master.Master_studyID;
-
-	//        DataTable dt_vertlines = sql.DataTable_from_SQLstring("exec uwautism_research_backend..spGetTimepointSubj_periods " + studyID.ToString() + ", " + id);
-
-
-
-	//        DataTable dt_colors0 = sql.DataTable_from_SQLstring("select txtype group_var, txtypecolor group_color from const_MIND_IntHXv2_TxType");
-
-	//        //DataSet ds = utilIntHx.Get_MIND_IntHx_v2_Data_by_ID(studyID, id);
-
-	//        //System.Web.UI.DataVisualization.Charting.Chart chart = utilMSCharts.MSStackedColumn(
-	//        //    utilMSCharts.Sort(ds.Tables[0], "wkdatebeg", "txtype"), "wkdatebeg", "ihhrsperwk", "txtype", "date", dt_colors0,
-	//        //    "chartname" + id, id + ": Week by TYPE", "xaxis label", "Hrs per week", -999, -999, -999, -999, 800, 400);
-
-	//        //chart = utilMSCharts.AddVertLines(chart, dt_vertlines, "dateSUN", "period_age", "date");
-
-	//        //panelChart2.Controls.Add(chart);
-
-
-	//        sql.Close();
-	//    }
-
-	//}
-
-
+	
 	protected void DisplayIntHxCharts(int studyID, string id)
 	{
 
@@ -410,24 +370,7 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 					   .ToList();
 
 		string path = ("~/stats/Charts/");
-//		string path = ("../../../stats/Charts/");
 
-		//Table t = new Table();
-		//TableRow r = new TableRow();
-
-		//foreach (string f in selectedCharts)
-		//{
-		//    string chartfile = @"~/stats/Charts/ih" + studyID.ToString().ToLower() + id + f;
-
-		//    System.Web.UI.WebControls.Image img = GetIntHxChart(chartfile);
-
-		//    TableCell cell = new TableCell();
-		//    cell.Controls.Add(img);
-		//    r.Cells.Add(cell);
-		//}
-		//t.Rows.Add(r);
-		
-		//panelChart.Controls.Add(t);
 
 		string periodtype = rblPeriodType.SelectedValue;
 
@@ -546,7 +489,7 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 			sql.NonQuery_from_ProcName("spSCORE_All_Mind_IntHx_vers2_STACKED", p);
 
 			string id = ddlNewID.SelectedValue.ToString();
-			utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "Timepoint", 60);
+			utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "Timepoint", 110);
 
 			if (Master.Master_studyIDfull == 90000)
 			{
@@ -782,7 +725,7 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 		string id = ddlNewID.SelectedValue.ToString();
 
 		string path = Server.MapPath("~/stats/charts/");
-		utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "Timepoint", 60);
+		utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "Timepoint", 65);
 
 		if(Master.Master_studyIDfull==90000)
 		{

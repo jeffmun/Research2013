@@ -55,6 +55,7 @@ namespace uwac
 		}
 		public bool HasSameWorksheet(DPData dpdata)
 		{
+			if (dpdata == null) return false;
 			bool hassameworksheet = (this.worksheet == dpdata.selectedsheet) ? true : false;
 			return hassameworksheet;
 		}

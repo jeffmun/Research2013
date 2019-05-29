@@ -366,55 +366,7 @@ public partial class DataProject_Files : BasePage
 			string pageurl = "DataProjectStats.aspx";
 			pageurl += "?filename=" + e.CommandArgument.ToString() + "&pk=" + Request.QueryString["pk"];
 			Response.Redirect(pageurl);
-
-
-
-			//if (File.Exists(HttpContext.Current.Server.MapPath("~/App_Data/DataDownloads/" + filename)))
-			//{
-			//    //convert to .xls here
-			//    try
-			//    {
-			//        DataSet dset_descstats = SpreadsheetGearUtils.GetDataSet(filename);
-
-			//        int g = 0;
-
-			//    }
-			//    catch (Exception ex)
-			//    {
-			//        string result = "Sorry, the file [" + filename + "] was unable to load.  Create a new Excel file to generate the latest descriptive stats.";
-			//        ClientScript.RegisterStartupScript(GetType(), "alert", "alert('" + result + "');", true);
-
-			//    }
-			//}
-			//else
-			//{
-
-			//    string data_filename = filename.Replace("DescStats","Data");
-
-			//    DataSet dset = SpreadsheetGearUtils.GetDataSet(data_filename);
-			//    int dataproj_pk = Convert.ToInt32(Request.QueryString["pk"]);
-			//    if(dataproj_pk > 0 & dset != null & dset.Tables.Count > 0 )
-			//    {
-			//        string result = "Sorry, the file [" + filename + "] was not found.  Attempting to create file now...";
-			//        ClientScript.RegisterStartupScript(GetType(), "alert", "alert('" + result + "');", true);
-
-			//        DataSet dset_descstats = utilDataProject.DataProject_Descstats(dataproj_pk, dset);
-
-			//        SpreadsheetGearUtils.SaveDataSetToExcel(dset_descstats, filename);
-
-			//        int g = 0;
-			//    }
-			//    else
-			//    {
-			//        string result = "Sorry, the file [" + filename + "] was not found.";
-			//        ClientScript.RegisterStartupScript(GetType(), "alert", "alert('" + result + "');", true);
-
-			//    }
-
-			//}
-
-
-
+		   
 
 		}
 
@@ -448,23 +400,5 @@ public partial class DataProject_Files : BasePage
 
 
 	
-
-
-	//when saving, I may need to update
-	//
-	//select val as var_pk, 0 as compvar_pk , 0 as dataproj_pk
-	//from[dbo].[fnSplitCSV_int] ('1,2,3')
-	//
-	//
-	// once I have the DF
-	//
-	// make a new datatable of M,SD,N, reference timepoint_text for each var
-	//
-	// ? pivot the data -> then calc the Z for each var by joining on varname
-	//
-
-
-
-
 	
 }

@@ -100,9 +100,9 @@ namespace uwac
 				order.batches.Clear();
 			}
 
-			////Skip the_dpdata stuff if _dt is already populated
-			//if (_dt == null)
-			//{
+			//Skip the_dpdata stuff if _dt is already populated
+			if (_dt == null)
+			{
 				bool hassameworksheet = order.HasSameWorksheet(_dpdata);
 
 				if (!hassameworksheet)
@@ -121,7 +121,7 @@ namespace uwac
 				}
 
 				_dt = _dpdata.dt;
-			//}
+			}
 
 			//Each order will result in a list of batches
 			//List<DxBatchOcharts> batchlist = new List<DxBatchOcharts>();
