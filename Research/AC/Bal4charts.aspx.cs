@@ -34,6 +34,10 @@ public partial class AC_Bal4charts : BasePage
 	{
 		SQL_utils sql = new SQL_utils("FinMart");
 
+		string importDate = sql.StringScalar_from_SQLstring("select convert(varchar,min(imported_from_EDW),0)  from fin.tblEDWData ");
+
+		lblImportDate.Text = String.Format("Imported on {0}", importDate);
+
 		DataTable dt_bnums = sql.DataTable_from_SQLstring(
 
 			"select 'a' orderer, budgetNumber,  " +

@@ -2,11 +2,6 @@
 
 <%@ Register Assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" Namespace="System.Web.UI.DataVisualization.Charting" TagPrefix="asp" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.Web.ASPxSpreadsheet.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSpreadsheet" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraCharts.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts" TagPrefix="dx" %> 
-<%@ Register Assembly="DevExpress.XtraCharts.v18.2.Web, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.XtraCharts.Web" TagPrefix="dx" %> 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="Server">
 
@@ -32,16 +27,12 @@
 	<br />
 
 	<asp:Label ID="importDate" runat="server" Text="Imported on " Font-Size="Medium" Font-Bold="true"></asp:Label>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<asp:HyperLink ID="hyp1" runat="server" Text="Go to Charts" NavigateUrl="bal4charts.aspx"></asp:HyperLink>
 
 	<div style="background-color: #f8f8ff; border: 2px solid black; margin: 10px">
 				<asp:Label ID="l1" runat="server" Text="Core Clinic" Font-Size="Medium" Font-Bold="true">              </asp:Label>
-
-		
-	<dx:ASPxCallbackPanel ID="callbackCharts" runat="server"></dx:ASPxCallbackPanel>   
-	 
-<br />
-
-
+			
 		<asp:Panel ID="panel1" runat="server"></asp:Panel>
 	</div>
 
@@ -49,7 +40,7 @@
 	<br />
 	<br />
 
-	
+
 
 
 	<%--<asp:SqlDataSource ID="sql_mv_months" runat="server"
@@ -117,6 +108,10 @@
 
 
 
+
+   
+
+	 
 
 
 		<div style="background-color: #f8fff8; border: 2px solid black; margin: 10px">

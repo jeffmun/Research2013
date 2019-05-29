@@ -13,7 +13,12 @@
 
 	<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true" EnablePartialRendering="true" />
 
+	<br />
 
+	<asp:Label ID="lblImportDate" runat="server" Text="" Font-Size="Medium" Font-Bold="true"></asp:Label>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<asp:HyperLink ID="hyp1" runat="server" Text="Go to Tables" NavigateUrl="bal4.aspx"></asp:HyperLink>
+	<br />
 	<asp:Label ID="lblN" runat="server"></asp:Label>
 	<br />
 	<br />
