@@ -41,14 +41,14 @@ public partial class AC_CHDDrpt : BasePage //System.Web.UI.Page
 	}
 
 
-	protected DataTable GetValantData_by_Dates(string d1, string d2)
+	protected DataTable GetValantData_by_Dates(string d1, string d2, int age1, int age2)
 	{
 
 		//Note that this stored proc will create a single record for each patientID and determine the minimum agegroup and the dx for the period requested.
 		SQL_utils sql = new SQL_utils("backend");
 
 		DataTable dt = new DataTable();
-		string sqlcode = String.Format("exec vtj.spCHDDrpt '{0}', '{1}'", d1, d2);
+		string sqlcode = String.Format("exec vtj.spCHDDrpt '{0}', '{1}', {2}, {3}", d1, d2, age1, age2);
 
 		dt = sql.DataTable_from_SQLstring(sqlcode);
 
@@ -249,8 +249,10 @@ public partial class AC_CHDDrpt : BasePage //System.Web.UI.Page
 
 		List<string> cols = new List<string> { ddlMode.SelectedValue.ToString() };
 
+		int age1 = Convert.ToInt32(txtminage.Text);
+		int age2 = Convert.ToInt32(txtmaxage.Text);
 
-		DataTable dt = GetValantData_by_Dates( txtDate1.Text, txtDate2.Text);
+		DataTable dt = GetValantData_by_Dates( txtDate1.Text, txtDate2.Text, age1, age2);
 
 		LoadYr2(dt, panel1, new List<string> { "ptSex" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Sex", false, useFromTo);
 		LoadYr2(dt, panel1, new List<string> { "agegroup" }, cols, new List<string> { "N Patients", "N Visits", "N Patients Dx", "N Visits Dx", "N Patients Tx", "N Visits Tx" }, "by Age Group", false, useFromTo);

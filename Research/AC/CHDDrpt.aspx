@@ -19,13 +19,19 @@
 
     <asp:TextBox ID="txtYr" runat="server" Text="" Width="80px" Visible="false"></asp:TextBox><br />
     From:
-    <asp:TextBox ID="txtDate1" runat="server" Text="2016-05-01" Width="80px"></asp:TextBox>
+    <asp:TextBox ID="txtDate1" runat="server" Text="2018-05-01" Width="80px"></asp:TextBox>
     &nbsp;&nbsp;To:
-    <asp:TextBox ID="txtDate2" runat="server" Text="2017-04-30" Width="80px"></asp:TextBox>
+    <asp:TextBox ID="txtDate2" runat="server" Text="2019-04-30" Width="80px"></asp:TextBox>
     &nbsp;&nbsp;&nbsp;&nbsp;
 <%--    <asp:Button ID="btnLoad" runat="server" Text="Load" OnClick="btnLoad_Click" Visible="false"/>--%>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <asp:Button ID="btnLoad2" runat="server" Text="Load" OnClick="btnLoad2_Click" />
+    <br />  <br />  <br />
+    Min Age (leave 0 for all):
+    <asp:TextBox ID="txtminage" runat="server" Text="0" Width="80px"></asp:TextBox>
+    &nbsp;&nbsp;Max Age (leave 0 for all):
+    <asp:TextBox ID="txtmaxage" runat="server" Text="0" Width="80px"></asp:TextBox>
+    
     <br />  <br />  <br />
 
     <asp:Label ID="info" runat="server" Text="To determine the # of patients with both Dx & Tx visits: (N pts DX + N pts TX) - (N pts)"></asp:Label>
