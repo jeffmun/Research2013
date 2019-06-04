@@ -49,7 +49,7 @@
 	</tr>
 	<tr>
 		<td style="width: 50%;">
-			<asp:Label AssociatedControlID="txtSubjectID" runat="server">Subject ID</asp:Label><br/>
+			<asp:Label AssociatedControlID="txtSubjectID" runat="server">Subject ID</asp:Label><asp:Label ID="l2" runat="server" Text=" (partial matches now included)" Font-Italic="true" Font-Size="smaller" ForeColor="Gray" ></asp:Label><br/>
 			<asp:TextBox ID="txtSubjectID" runat="server" style="width: 200px;" />
 		</td>
 		<td style="width: 50%;">
@@ -123,6 +123,8 @@
 		<asp:BoundColumn HeaderText="Gender" DataField="Sex" />
 		<asp:BoundColumn HeaderText="Locality" DataField="State" />
 		<asp:BoundColumn HeaderText="# Studies" DataField="StudyCount" />
+		<asp:BoundColumn HeaderText="min ID" DataField="ID1" />
+		<asp:BoundColumn HeaderText="max ID" DataField="ID2" />
 <%--		<asp:HyperLinkColumn HeaderText="&nbsp;" DataNavigateUrlFormatString="~/Measures/ActionsByHousehold.aspx?HouseholdID={0}" DataNavigateUrlField="HouseholdID" Text="Actions" />
 		<asp:HyperLinkColumn HeaderText="&nbsp;" DataNavigateUrlFormatString="~/Household/AppendLog.aspx?HouseholdID={0}" DataNavigateUrlField="HouseholdID" Text="Append Log" />
 		<asp:HyperLinkColumn HeaderText="&nbsp;" DataNavigateUrlFormatString="~/Household/CreateSubject.aspx?PersonID={0}" DataNavigateUrlField="PersonID" Text="Create Subject" />--%>

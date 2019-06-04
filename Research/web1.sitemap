@@ -8,8 +8,8 @@
     </siteMapNode>
     <siteMapNode url="" title="Participants">
       <siteMapNode url="~/Household/" title="Search for Household" description="" menuitem="true" />
-      <siteMapNode url="~/Measures/" title="Search" description="" menuitem="true" />
-      <siteMapNode url="~/Measures/Search.aspx" title="Advanced Search" description="" menuitem="true" />
+      <!--<siteMapNode url="~/Measures/" title="Search" description="" menuitem="true" />
+      <siteMapNode url="~/Measures/Search.aspx" title="Advanced Search" description="" menuitem="true" />-->
       <siteMapNode url="~/Tracking/Household2.aspx" title="Household Info" description="" menuitem="true" />
       <siteMapNode url="~/Tracking/CreateHousehold.aspx" title="Create New Household" description="" menuitem="true" />
     </siteMapNode>

@@ -37,7 +37,7 @@ namespace Household
 			{
 				string sLastName = txtLastName.Text;
 				string sFirstName = txtFirstName.Text;
-				string sID = txtSubjectID.Text;
+				string sID = (txtSubjectID.Text=="" || txtSubjectID.Text == null) ?  "" : String.Format("%{0}%",txtSubjectID.Text);
 				int nStudyID = Convert.ToInt32(selStudyID.SelectedValue);
 				string sSex = selSex.SelectedValue;
 				int nEthnicityID = Convert.ToInt32(selEthnicity.SelectedValue);
@@ -74,7 +74,7 @@ namespace Household
 
 				SQL_utils sql = new SQL_utils("backend");
 
-				string sql_study = "Select -1 StudyID,  '--Select Study--' StudyName  UNION Select StudyID, StudyName from tblstudy order by studyID";
+				string sql_study = "Select -1 StudyID,  '--Select Study--' StudyName  UNION Select StudyID, StudyName from tblstudy order by studyname";
 
 				//DataTable dt_study = sql.DataTable_from_ProcName("spSEC_GetStudies_CanView_by_User__Short_and_FullName");
 				DataTable dt_study = sql.DataTable_from_SQLstring(sql_study);
