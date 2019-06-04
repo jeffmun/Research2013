@@ -10,7 +10,7 @@ using DevExpress.Web;
 using uwac;
 using uwac.trk;
 
-public partial class Track_otherID : System.Web.UI.Page
+public partial class Track_otherID : BasePage
 {
 	protected void Page_Load(object sender, EventArgs e)
 	{
@@ -90,7 +90,7 @@ public partial class Track_otherID : System.Web.UI.Page
 		Session["otherID_by_person"] = dt;
 
 
-		string sqlcode2 = String.Format("select studyname, ID, groupname, otherID, sitename, code6, a.personID, a.lastname, a.firstname, sex, ethnicitydesc as race, hispanicdesc as ethnicity, personRole " +
+		string sqlcode2 = String.Format("select studyname, ID, groupname, otherID, sitename, code6, a.personID, a.lastname, a.firstname, a2.sex, a2.ethnicitydesc as race, a2.hispanicdesc as ethnicity, personRole " +
 			" from vwOTherID2 a" +
 			" join vwPerson a2 ON a.personID = a2.personID" +
 			" join vwMasterStatus_S b ON a.personID = b.personID" +
