@@ -31,19 +31,15 @@ namespace uwac_REDCap
 		public DataTable dt_metadata { get; set; }
 		private string idfld;
 		public string dataheader { get; set; }
+		private int _studyID;
 
 		public REDCap(int studyID)
 		{
+			_studyID = studyID;
 			idfld = "id";
-			SQL_utils sql = new SQL_utils("data");
-
-			//string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s LEFT JOIN def.REDCapToken_Study a ON s.studyID=a.studyID LEFT JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
-			string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s JOIN def.REDCapToken_Study a ON s.studyID=a.studyID JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
-			dt_tokens = sql.DataTable_from_SQLstring(code);
-			sql.Close();
 
 
-
+			LoadTokens();
 			GetAPIInfo();
 
 			//DataRow row = dt.Rows[0];
@@ -54,30 +50,46 @@ namespace uwac_REDCap
 
 		}
 
+		public void LoadTokens()
+		{
+			if (_studyID > 0)
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+				//string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s LEFT JOIN def.REDCapToken_Study a ON s.studyID=a.studyID LEFT JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
+				string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s JOIN def.REDCapToken_Study a ON s.studyID=a.studyID JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + _studyID.ToString();
+				dt_tokens = sql.DataTable_from_SQLstring(code);
+				sql.Close();
+			}
+		}
+
 		public void GetAPIInfo()
 		{
-			int counter = 0;
-			foreach (DataRow row in dt_tokens.Rows)
+			if (dt_tokens.HasRows())
 			{
-				RedcapAPI api = new RedcapAPI(row["url"].ToString(), row["token"].ToString());
+				int counter = 0;
+				foreach (DataRow row in dt_tokens.Rows)
+				{
+					api = new RedcapAPI(row["url"].ToString(), row["token"].ToString());
 
-				if (counter == 0)
-				{
-					dt_redcapforms = api.InstrumentDataTable;
-					dt_metadata = api.MetaDataTable;
-				}
-				else
-				{
-					foreach (DataRow row2 in api.InstrumentDataTable.Rows)
+					if (counter == 0)
 					{
-						dt_redcapforms.ImportRow(row2);
+						dt_redcapforms = api.InstrumentDataTable;
+						dt_metadata = api.MetaDataTable;
 					}
-					foreach (DataRow row2m in api.MetaDataTable.Rows)
+					else
 					{
-						dt_metadata.ImportRow(row2m);
+						foreach (DataRow row2 in api.InstrumentDataTable.Rows)
+						{
+							dt_redcapforms.ImportRow(row2);
+						}
+						foreach (DataRow row2m in api.MetaDataTable.Rows)
+						{
+							dt_metadata.ImportRow(row2m);
+						}
 					}
+					counter++;
 				}
-				counter++;
 			}
 		}
 
@@ -348,6 +360,11 @@ namespace uwac_REDCap
 
 		public ASPxGridView gridDataFromForm(List<string> formnames)
 		{
+			if (api == null)
+			{
+				GetAPIInfo();
+			}
+
 			if (api != null)
 			{
 				DataTable dt = DataFromForms(formnames);

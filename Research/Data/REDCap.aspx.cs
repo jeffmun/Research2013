@@ -394,7 +394,7 @@ public partial class Data_REDCap : BasePage
 	#region RED Cap
 	protected void btnShowMeta_OnClick(object sender, EventArgs e)
 	{
-		Debug.WriteLine("*************** btnLoadFormData_OnClick");
+		Debug.WriteLine("*************** btnShowMeta_OnClick");
 
 		List<string> formnames = GetSelectedFormnames();
 
@@ -408,7 +408,7 @@ public partial class Data_REDCap : BasePage
 
 	protected void btnImportMeta_OnClick(object sender, EventArgs e)
 	{
-		Debug.WriteLine("*************** btnImportFormData_OnClick");
+		Debug.WriteLine("*************** btnImportMeta_OnClick");
 
 		List<string> formnames = GetSelectedFormnames();
 
@@ -438,7 +438,7 @@ public partial class Data_REDCap : BasePage
 
 		List<string> formnames = GetSelectedFormnames();
 
-		ASPxGridView grid = redcap.gridDataFromForm(formnames);
+		ASPxGridView grid = redcap.gridDataFromForm(formnames[0]);
 		if (grid != null)
 		{
 			placeholder_gridMeta.Controls.Clear();

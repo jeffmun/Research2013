@@ -142,13 +142,6 @@ public partial class stats_IntHxCharts : System.Web.UI.Page
 		}
 
 
-
-		//string sqlSMS = "select * from vwTadpole_IntHx_Tracking_Summary order by ID";
-		//DataTable dtSMS = sql.DataTable_from_SQLstring(sqlSMS);
-		//gvSMS.DataSource = dtSMS;
-		//gvSMS.DataBind();
-
-
 		sql.Close();
 	}
 
@@ -460,213 +453,11 @@ public partial class stats_IntHxCharts : System.Web.UI.Page
 
 		panelMS2.Controls.Add(t2);
 
-		//foreach(DataTable dt in ds.Tables)
-		//{
 
-		//    DataTable dtout = utilStats.DataTable_DescStats(dt, false);
-
-		//    GridView gv = new GridView();
-		//    gv.DataSource = dtout;
-		//    gv.DataBind();
-
-		//    panelStats.Controls.Add(gv);
-		//}
 
 	}
 
-
-	//public static DataTable NullToZero(DataTable dt)
-	//{
-
-	//    for (int i = 0; i < dt.Rows.Count; i++)
-	//    {
-	//        for (int j = 0; j < dt.Columns.Count; j++)
-	//        {
-	//            if (string.IsNullOrEmpty(dt.Rows[i][j].ToString()))
-	//            {
-
-	//                dt.Rows[i][j] = 0;
-	//            }
-	//        }
-	//    }
-	//    return dt;
-	//}
-
-
-
-
-
-	//protected void savepdf(DataTable dt)
-	//{
-
-	//	////using (HighChartsRenderServer server = new HighChartsRenderServer())
-	//	////{
-	//	////    var response = server.ProcessHighChartsRequest(highChartsData);
-	//	////    return File(response, "image.png");
-	//	////}
-
-
-	//	MemoryStream ms = new MemoryStream();
-
-
-	//	string filename = "IntHx_graphs.pdf";
-
-	//	// Send the data and the appropriate headers to the browser
-	//	Response.Clear();
-	//	Response.AddHeader("content-disposition", "attachment;filename=" + filename);
-	//	Response.ContentType = "application/pdf";
-
-	//	Response.Cache.SetCacheability(HttpCacheability.NoCache);
-	//	StringWriter sw = new StringWriter();
-	//	HtmlTextWriter hw = new HtmlTextWriter(sw);
-	//	panelChart.RenderControl(hw);
-	//	StringReader sr = new StringReader(sw.ToString());
-
-	//	iTextSharp.text.Rectangle page_rect = new iTextSharp.text.Rectangle(850f, 612f);
-	//	Document pdfDoc = new Document(page_rect, 10f, 10f, 20f, 20f);
-	//	//Document pdfDoc = new Document(PageSize.LETTER_LANDSCAPE, 10f, 10f, 20f, 20f);
-
-
-	//	HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-	//	PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
-	//	pdfDoc.Open();
-
-	//	//List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
-	//	//for (int i = 0; i < list_svg.Count; i++)
-	//	//{
-	//	//    Server.HtmlDecode(list_svg[i], hw);  
-	//	//}
-
-	//	//htmlparser.Parse(sr);
-	//	foreach (DataRow row in dt.Rows)
-	//	{
-
-	//		string id = row["id"].ToString();
-	//		PdfPTable table = AddIntHxCharts(id);
-
-	//		pdfDoc.Add(table);
-	//	}
-
-
-
-	//	pdfDoc.Close();
-	//	Response.Write(pdfDoc);
-	//	Response.End();
-
-	//}
-
-
-	//protected void testpdf(DataTable dt)
-	//{
-
-	//	////using (HighChartsRenderServer server = new HighChartsRenderServer())
-	//	////{
-	//	////    var response = server.ProcessHighChartsRequest(highChartsData);
-	//	////    return File(response, "image.png");
-	//	////}
-
-
-	//	MemoryStream ms = new MemoryStream();
-
-
-	//	string filename = "IntHx_graphs.pdf";
-
-	//	// Send the data and the appropriate headers to the browser
-	//	Response.Clear();
-	//	Response.AddHeader("content-disposition", "attachment;filename=" + filename);
-	//	Response.ContentType = "application/pdf";
-
-	//	Response.Cache.SetCacheability(HttpCacheability.NoCache);
-	//	StringWriter sw = new StringWriter();
-	//	HtmlTextWriter hw = new HtmlTextWriter(sw);
-	//	panelChart.RenderControl(hw);
-	//	StringReader sr = new StringReader(sw.ToString());
-
-	//	iTextSharp.text.Rectangle page_rect = new iTextSharp.text.Rectangle(850f, 612f); 
-	//	Document pdfDoc = new Document(page_rect, 10f, 10f, 20f, 20f);
-	//	//Document pdfDoc = new Document(PageSize.LETTER_LANDSCAPE, 10f, 10f, 20f, 20f);
-
-		
-	//	HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-	//	PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
-	//	pdfDoc.Open();
-
-	//	//List<string> list_svg = JsonConvert.DeserializeObject<List<string>>(hidSVG.Value).ToList<string>();   //.DeserializeObject<name>(jsonData);
-	//	//for (int i = 0; i < list_svg.Count; i++)
-	//	//{
-	//	//    Server.HtmlDecode(list_svg[i], hw);  
-	//	//}
-		
-	//	//htmlparser.Parse(sr);
-	//	foreach  (DataRow row in dt.Rows)
-	//	{
-
-	//		string id = row["id"].ToString();
-	//		//PdfPTable table = AddIntHxCharts(id);
-
-	//		//pdfDoc.Add(table);
-	//	}
-
 	
-
-	//	pdfDoc.Close();
-	//	Response.Write(pdfDoc);
-	//	Response.End();
-
-	//}
-
-	//protected static PdfPTable AddIntHxCharts(string id)
-	//{
-
-	//	string f0 = id + "c0.png";
-	//	string f2 = id + "c2.png";
-	//	string f3 = id + "c3.png";
-	//	string f4 = id + "c4.png";
-
-	//	string g0 = @"c:/code/Source/research/stats/Charts/" + f0;
-	//	string g2 = @"c:/code/Source/research/stats/Charts/" + f2;
-	//	string g3 = @"c:/code/Source/research/stats/Charts/" + f3;
-	//	string g4 = @"c:/code/Source/research/stats/Charts/" + f4;
-
-	//	float resize = 30f;
-
-	//	iTextSharp.text.Image png0 = iTextSharp.text.Image.GetInstance(g0);
-	//	png0.ScalePercent(resize);
-	//	iTextSharp.text.Image png2 = iTextSharp.text.Image.GetInstance(g2);
-	//	png2.ScalePercent(resize);
-	//	iTextSharp.text.Image png3 = iTextSharp.text.Image.GetInstance(g3);
-	//	png3.ScalePercent(resize);
-	//	iTextSharp.text.Image png4 = iTextSharp.text.Image.GetInstance(g4);
-	//	png4.ScalePercent(resize);
-
-	//	float[] cellwidths = new float[] { 40f, 20f, 20f, 20f };
-
-	//	PdfPTable table = new PdfPTable(cellwidths);
-	//	table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-	//	PdfPCell cell0 = new PdfPCell(png0);
-	//	PdfPCell cell2 = new PdfPCell(png2);
-	//	PdfPCell cell3 = new PdfPCell(png3);
-	//	PdfPCell cell4 = new PdfPCell(png4);
-
-
-	//	cell0.Border = iTextSharp.text.Rectangle.NO_BORDER;
-	//	cell2.Border = iTextSharp.text.Rectangle.NO_BORDER;
-	//	cell3.Border = iTextSharp.text.Rectangle.NO_BORDER;
-	//	cell4.Border = iTextSharp.text.Rectangle.NO_BORDER;
-
-	//	table.AddCell(cell0);
-	//	table.AddCell(cell2);
-	//	table.AddCell(cell3);
-	//	table.AddCell(cell4);
-
-	//	return table;
-
-	//}
-
-
-
-
-
 
 	protected void Button_Command(object sender, CommandEventArgs e)
 	{
@@ -698,10 +489,10 @@ public partial class stats_IntHxCharts : System.Web.UI.Page
 			//following is run:
 			//
 
-			// spSCORE_All_Mind_IntHx_vers2_STACKED ... 
-			// spSCORE_All_Mind_IntHx_vers2_STACKED__Process ... 
-			// spSCORE_All_Mind_IntHx_vers2_STACKED__Process_step0_by_wk ... 
-			// spSCORE_ALL_MIND_IntHx_vers2_STACKED__Process_step1_AGGREGATE/_TxStart
+			// spSCORE_All_Mind_ IntHx_vers2_STACKED ... 
+			// spSCORE_All_Mind_ IntHx_vers2_STACKED__Process ... 
+			// spSCORE_All_Mind_ IntHx_vers2_STACKED__Process_step0_by_wk ... 
+			// spSCORE_ALL_MIND_ IntHx_vers2_STACKED__Process_step1_AGGREGATE/_TxStart
 
 			//Here. the last step is called directly to redo the aggregation.
 			// For PATH this is done also based on the TxStart periods.
@@ -736,10 +527,7 @@ public partial class stats_IntHxCharts : System.Web.UI.Page
 	}
 
 
-
-
-
-
+	
 
 
 	protected void btnRecreate_Click(object sender, EventArgs e)

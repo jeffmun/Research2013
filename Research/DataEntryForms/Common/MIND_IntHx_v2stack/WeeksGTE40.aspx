@@ -13,13 +13,15 @@
         <Columns>
             <asp:TemplateField HeaderText="ID">
                 <ItemTemplate>
-                    <asp:LinkButton ID="LinkButton1" runat="server"   Text='<%#  DataBinder.Eval(Container.DataItem, "[ID]") %>' 
-                        PostBackUrl='<%#  DataBinder.Eval(Container.DataItem, "[link]") %>' ></asp:LinkButton>
+                    <asp:Hyperlink ID="hyplink1" runat="server"   Text='<%#  DataBinder.Eval(Container.DataItem, "[ID]") %>' 
+                         Target="_blank" NavigateUrl='<%#  DataBinder.Eval(Container.DataItem, "[link]") %>' ></asp:Hyperlink>
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="# Weeks" DataField="Nwks" />
             <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="# Weeks >= 40 hrs" DataField="NwksGTE40" />
             <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="# Weeks >= 60 hrs" DataField="NwksGTE60" />
+            <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="% Weeks >= 40 hrs" DataField="PctNwksGTE40" DataFormatString="{0:p}" />
+            <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="% Weeks >= 60 hrs" DataField="PctNwksGTE60" DataFormatString="{0:p}" />
             <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="Avg hrs/wk" DataField="AvgHrsPerWk" />
             <asp:BoundField ItemStyle-HorizontalAlign="Center" HeaderText="Range hrs/wk" DataField="RangeHrsPerWk" />
         </Columns>

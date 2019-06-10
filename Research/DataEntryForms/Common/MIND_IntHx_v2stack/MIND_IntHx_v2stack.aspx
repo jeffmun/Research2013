@@ -16,7 +16,7 @@
 					<asp:Label ID="Label1" runat="server" Text="MIND Intervention History vers 2" Font-Bold="true" Font-Size="12"></asp:Label>
 			</td>
 			<td style="width:300px">
-				<asp:LinkButton ID="LinkButton1" runat="server" PostBackUrl="../Mind_IntHx_v2stack/WeeksGTE40.aspx">View List of ID's with weeks >= 40 hrs</asp:LinkButton>
+				<asp:HyperLink ID="LinkButton1" runat="server" Target="_blank" NavigateUrl="../Mind_IntHx_v2stack/WeeksGTE40.aspx" Text="View List of ID's with weeks >= 40 hrs"></asp:HyperLink>
 			</td>
 			<td>
 				<asp:HyperLink ID="HyperLink1" runat="server" Target="_blank" NavigateUrl="../Mind_IntHx_v2stack/IntHxCat.aspx" Text="IntHx Category Definitions"></asp:HyperLink>

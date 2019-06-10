@@ -756,9 +756,9 @@ C:.
 |   |   |       MedPsychHx.aspx.cs
 |   |   |       MedPsychHx_old.aspx
 |   |   |       
-|   |   +---MIND_IntHx
-|   |   |       MIND_IntHx.aspx
-|   |   |       MIND_IntHx.aspx.cs
+|   |   +---MIND_ IntHx
+|   |   |       MIND_ IntHx.aspx
+|   |   |       MIND_ IntHx.aspx.cs
 |   |   |       
 |   |   +---MRICheck
 |   |   |       MRICheck.aspx

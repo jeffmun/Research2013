@@ -423,6 +423,15 @@ namespace uwac.trk {
 				blue = (255 - blue) * correctionFactor + blue;
 			}
 
+
+			red = (red > 255) ? 255 : red;
+			green = (green > 255) ? 255 : green;
+			blue = (blue > 255) ? 255 : blue;
+
+			red = (red < 0) ? 0 : red;
+			green = (green < 0) ? 0 : green;
+			blue = (blue < 0) ? 0: blue;
+
 			return Color.FromArgb(color.A, (int)red, (int)green, (int)blue);
 		}
 

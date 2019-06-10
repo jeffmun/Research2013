@@ -35,33 +35,7 @@ namespace uwac
 
 
 		#region Get IntHx Data from the SQL DB
-		//public static DataSet Get_MIND_IntHx_v2_Data_by_DataProject(SQL_utils sql,  int dataproj_pk)
-		//{
-		//    List<SqlParameter> ps = new List<SqlParameter>();
-
-		//    ps.Add(sql.CreateParam("dataproj_pk", dataproj_pk.ToString(), "int"));
-
-		//    //DataSet ds = sql.DataSet_from_ProcName("dp.spMIND_IntHx_vers2_EXTRACT", ps);
-		//    DataSet ds = sql.DataSet_from_ProcName("dp.spALL_MIND_IntHx_vers2_STACKED__getdata_for_EXPORT", ps);
-
-		//    List<string> tblnames = new List<string> {
-		//            "IntHx_weeks",
-		//            "IntHx_by_CAT", 
-		//            "IntHx_by_ALL" 
-		//    };
-
-		//    int counter = 0;
-		//    foreach (DataTable dt in ds.Tables)
-		//    {
-		//        dt.TableName = tblnames[counter];
-		//        counter++;
-		//    }
-
-		//    sql.Close();
-
-		//    return ds;
-
-		//}
+		
 
 
 		public static DataSet Get_MIND_IntHx_v2_Data_by_ID(SQL_utils sql, int studyID, string id)
@@ -81,7 +55,7 @@ namespace uwac
 			ps.Add(sql.CreateParam("periodtype", periodtype, "text"));
 
 
-			DataSet ds = sql.DataSet_from_ProcName("spSCORE_ALL_MIND_IntHx_vers2_STACKED__getdata_for_CHARTS", ps);
+			DataSet ds = sql.DataSet_from_ProcName("spSCORE_ALL_MIND_IntHx_vers2_STACKED__getdata_for_CHARTS_2018", ps);
 			
 
 			List<string> tblnames = new List<string> {"Weekly by TYPE",

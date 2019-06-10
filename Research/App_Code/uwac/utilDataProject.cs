@@ -108,15 +108,7 @@ namespace uwac
 			DataTable dt = new DataTable();
 			DataTable dt_REL = new DataTable();
 
-			//REMOVED OCT 2017 - new method of summarizing IntHx data: see GetIntHxData method
-			//List<string> inthx_measIDs = new List<string> { "815", "816", "817", "819" };
-			//if (inthx_measIDs.Contains(measureID.ToString()))
-			//{
-			//	dt = sql.DataTable_from_SQLstring("exec dp.spALL_MIND_IntHx_vers2_STACKED__getdata_for_EXPORT " + dataproj_pk.ToString() + ", " + measureID.ToString());
-			//}
-			//else
-			//{
-
+		
 
 			string datevar = sql.StringScalar_from_SQLstring("select fldname  from uwautism_research_data.def.Fld where fieldcodeID = 2 " +
 						" and tblpk in (select tblpk from uwautism_research_data.def.Tbl where measureID = " + measureID.ToString() + " ) ");

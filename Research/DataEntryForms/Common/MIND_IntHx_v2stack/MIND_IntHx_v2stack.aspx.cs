@@ -10,11 +10,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Configuration;
-//using DotNet.Highcharts;
-//using DotNet.Highcharts.Options;
-//using DotNet.Highcharts.Helpers;
-//using DotNet.Highcharts.Enums;
-//using SelectPdf;
 using System.IO;
 using uwac;
 
@@ -25,15 +20,19 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 	public string id;
 
 
+	/// SQL TABLES USED:
+	///  t1) ALL_MIND_IntHx_vers2_stacked 
+	/// 
+	/// 
 	/// SQL PROCS USED:
 	/// 
 	/// **Editing/Viewing a single subject**
 	///     page: /dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack.aspx
 	/// 
 	/// 1) Load data for display
-	///     spALL_MIND_IntHx_vers2_stacked_for_display
+	///     spALL_MIND_IntHx_vers2_stacked_for_display  (t1)
 	///     spHaveUWmethodRawScan
-	///     vwALL_MIND_IntHx_vers2_Stacked__IDlist          get ID's to select a new subject
+	///     vwALL_MIND_IntHx_vers2_Stacked__IDlist   (t1)       get ID's to select a new subject
 	///      
 	/// 2) Display the Chart
 	/// 
