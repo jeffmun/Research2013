@@ -11,7 +11,7 @@
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor" TagPrefix="obout" %>
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor.ToolbarButton" TagPrefix="obout" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <!DOCTYPE html>
@@ -146,7 +146,7 @@
 					<dx:ListEditItem Value="Material" />
 					<dx:ListEditItem Value="MaterialCompact" />
 					<dx:ListEditItem Value="Metropolis" />
-					<dx:ListEditItem Value="MetropolisBlue" />
+<%--					<dx:ListEditItem Value="MetropolisBlue" />--%>
 					<dx:ListEditItem Value="Moderno" Selected="true" />
 					<dx:ListEditItem Value="Office2003Olive" />
 					<dx:ListEditItem Value="Office2010Silver" />
@@ -180,7 +180,7 @@
 			<asp:Label ID="lblCurrentUser_title" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Size="8pt"  ></asp:Label>
 			<asp:Label ID="lblCurrentUser" runat="server" Text="Current User: " Visible="true" ForeColor="White" Font-Bold="true" Font-Size="8pt"  ></asp:Label>
 			<br />
-			<asp:Label ID="sqluser" runat="server" Text="" Visible="true" ForeColor="Yellow" Font-Size="9pt"  ></asp:Label>
+			<asp:Label ID="sqluser" runat="server" Text="" Visible="true" ForeColor="Gold" Font-Size="9pt"  ></asp:Label>
 			
 <%--            You are currently logged in as: <span id="spnSessionInfo" runat="server" style="font-weight: bold;"></span>
 			&nbsp;&nbsp;<a id="oHelpLink" runat="server" class="whitetext" />--%>

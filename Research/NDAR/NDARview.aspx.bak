@@ -5,7 +5,7 @@
 <%@ Register TagPrefix="obout" Namespace="Obout.Grid" Assembly="obout_Grid_NET" %>
 
 
-<%@ Register Assembly="DevExpress.Web.v17.2, Version=17.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
@@ -60,10 +60,17 @@
             <td><asp:Label ID="v4" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
         </tr>
         <tr>
-            <td><asp:Label ID="l5" runat="server" Text ="N Records:"></asp:Label></td>
+            <td><asp:Label ID="l5" runat="server" Text ="N Total Records:"></asp:Label></td>
             <td><asp:Label ID="v5" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
         </tr>
-
+         <tr>
+            <td><asp:Label ID="l6" runat="server" Text ="N Recs valid:"></asp:Label></td>
+            <td><asp:Label ID="v6" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
+        </tr>
+        <tr>
+            <td><asp:Label ID="l7" runat="server" Text ="N Recs w/Reason Excl:"></asp:Label></td>
+            <td><asp:Label ID="v7" runat="server"  Font-Bold="true" Font-Size="Small"></asp:Label></td>
+        </tr>
     </table>
         </asp:Panel>
 

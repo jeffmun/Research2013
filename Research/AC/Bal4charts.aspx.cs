@@ -70,8 +70,11 @@ public partial class AC_Bal4charts : BasePage
 
 			List<DxChartOrder> orders = new List<DxChartOrder>();
 
+			int counter = 0;
+
 			foreach (DataRow row in dt_bnums.Rows)
 			{
+				counter++;
 				string bname = row["budgetName"].ToString();
 				string bnum = row["budgetNumber"].ToString();
 
@@ -106,21 +109,8 @@ public partial class AC_Bal4charts : BasePage
 
 				decimal maxbal = dt.AsEnumerable().Select(f => f.Field<decimal>("balance")).Max();
 
-				if (maxbal != 0)
-				{
-					DxLineplotSettings settings = new DxLineplotSettings();
 
-					List<string> yvars = new List<string> { 
-						  "RevenueAmount"
-						, "REV_Endowment"
-						, "REV_Other"
-						, "ExpenseAmount"
-						, "EXP_SALARY"
-						, "EXP_Non_SALARY"
-						, "balance" 
-					};
-
-					List<Color> mycolors = new List<Color> { 
+				List<Color> mycolors = new List<Color> {
 						 Color.DarkBlue //balance
 						,Color.Red //exp non-sal
 						,Color.Red //exp sal
@@ -129,6 +119,7 @@ public partial class AC_Bal4charts : BasePage
 						,Color.Green //rev other
 						,Color.Green //rev tot
 
+						#region old colors
 						// Color.Red //balance
 						//,Color.Orange //exp non-sal
 						//,Color.Yellow //exp sal
@@ -146,9 +137,10 @@ public partial class AC_Bal4charts : BasePage
 						//,Color.Orange
 						//,Color.DarkOrange
 						//,Color.Olive
+						#endregion 
 					};
 
-					List<DashStyle> mydashstyles = new List<DashStyle> {
+				List<DashStyle> mydashstyles = new List<DashStyle> {
 						 DashStyle.Solid
 						,DashStyle.Dash
 						,DashStyle.Dot
@@ -157,6 +149,23 @@ public partial class AC_Bal4charts : BasePage
 						,DashStyle.Dash
 						,DashStyle.Solid
 					};
+
+
+				if (maxbal != 0)
+				{
+					DxLineplotSettings settings = new DxLineplotSettings();
+
+					List<string> yvars = new List<string> {
+						  "RevenueAmount"
+						, "REV_Endowment"
+						, "REV_Other"
+						, "ExpenseAmount"
+						, "EXP_SALARY"
+						, "EXP_Non_SALARY"
+						, "balance"
+					};
+
+
 
 					settings.maxCol = 2;
 					settings.W = 1100;
@@ -171,11 +180,11 @@ public partial class AC_Bal4charts : BasePage
 					settings.legend_pos_h = "RightOutside";
 					settings.legend_pos_v = "Top";
 					//settings.ChartType = DxChartType.Lineplot;
-					
+
 
 					DxChartOrder order = new DxChartOrder();
 					order.list_settings.Add(settings);
-					///orders.Add(order);
+					//orders.Add(order);
 
 					DxChartFactory factory = new DxChartFactory(dt, new List<DxChartOrder> { order });
 
@@ -214,14 +223,15 @@ public partial class AC_Bal4charts : BasePage
 
 							System.Web.UI.WebControls.Table t = LayoutOutput.LayoutBatch(batch);
 							Literal lit = new Literal();
-							lit.Text = String.Format("<b>{0} {1}</b>", bnum, bname);
+							lit.Text = String.Format("<b>{2}.  {0} {1}</b>", bnum, bname, counter);
 							panel.Controls.Add(lit);
 							panel.Controls.Add(t);
 						}
 
 					}
-
 				}
+
+				
 			}
 
 

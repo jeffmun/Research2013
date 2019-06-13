@@ -1,9 +1,9 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="NDARapi.aspx.cs" Inherits="NDAR_NDARapi"
+﻿<%@ Page Title="NDAR API" Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="NDARapi.aspx.cs" Inherits="NDAR_NDARapi"
 	EnableEventValidation="false"  %>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
@@ -30,9 +30,10 @@
 				<asp:CheckBox ID="chkUWview" runat="server" Checked="true" Text="Only those with UW table" /><br />
 				<asp:CheckBox ID="chkInStudy" runat="server" Checked="true" Text="Only those this study" />
 			</td>
-			<td style="width: 250px">
-					<asp:Button ID="btnSave" runat="server" Text="Re-import NDAR Data Structures" OnClick="btnSave_Click" Enabled="false" />
-
+			<td style="width: 250px; padding:10px">
+					<asp:Button ID="btnSave" runat="server" Text="Re-import NDAR Data Structures" OnClick="btnSave_Click" Enabled="false"  Visible="false"/>
+				<dx:ASPxTextBox ID="txtShortName" runat="server" Caption="NDAR Short Name:" CaptionSettings-Position="Top" Text=""></dx:ASPxTextBox>
+					<asp:Button ID="btnManualImport" runat="server" Text="Import NDAR Data Structure" OnClick="btnManualImport_Click" Enabled="true" />
 			</td>
 			<td>
 				<asp:Label ID="lblInstructions" runat="server" Text="Instructions:" Font-Bold="true" Font-Size="XX-Small"></asp:Label>
@@ -48,74 +49,26 @@
 
 	<br /><br />
 	<asp:Panel ID="Panel_DataStructureList" runat="server">
-		<asp:Label ID="lblN" runat="server" Text="" Font-Bold="true" Font-Size="Medium"></asp:Label>
-	<%--	 <asp:GridView ID="gvScroll" runat="server"  Width="80%" AutoGenerateColumns="false" OnRowCommand="gvScroll_RowCommand" OnRowDataBound="gvScroll_RowDataBound"  
-		HeaderStyle-CssClass="GridviewScrollHeader" RowStyle-CssClass="GridviewScrollItem" PagerStyle-CssClass="GridviewScrollPager" >
-			 <Columns>
-				 <asp:BoundField  HeaderText="# Fields" DataField="n_flds" />
-				 <asp:BoundField  HeaderText="# UW Fields" DataField="n_uwflds" />
-				 <asp:TemplateField>
-					 <HeaderTemplate>Import Fields</HeaderTemplate>
-					 <ItemTemplate>                    
-						 <asp:Button ID="btnImportFlds" runat="server" Text="Import flds" Font-Size="XX-Small" CommandName="Import flds"
-							 CommandArgument='<%# Eval("shortName") %>'  />
-					 </ItemTemplate>
-				 </asp:TemplateField>
-				 <asp:BoundField  HeaderText="UW Table" DataField="uwtable" />
+		<asp:Label ID="lblN" runat="server" Text="" Font-Bold="true" Font-Size="Medium"></asp:Label> &nbsp;&nbsp;&nbsp;&nbsp;
+		<dx:ASPxButton ID="btnAllViewdata" runat="server" Text="Open View Data for All Measures"  OnClick="OpenAllViewdataTabs" Font-Size="Smaller" AutoPostBack="true" />
 
-				 <asp:TemplateField  HeaderText="View Data">
-					 <ItemTemplate>
-						 <asp:HyperLink ID="linkView" runat="server" NavigateUrl='<%# "NDARview.aspx?shortName=" + Eval("shortName")%>' Text="view" Target="_blank"></asp:HyperLink>
-					 </ItemTemplate>                     
-				 </asp:TemplateField>
-				 <asp:TemplateField  HeaderText="Define flds">
-					 <ItemTemplate>
-						<asp:HyperLink ID="linkDict" runat="server" NavigateUrl='<%# "NDARdict.aspx?shortName=" + Eval("shortName")%>' Text="define" Target="_blank"></asp:HyperLink>
-
-					 </ItemTemplate>                     
-				 </asp:TemplateField>
-
-				 <asp:BoundField  HeaderText="shortName" DataField="shortName" />
-				 <asp:BoundField  HeaderText="Title" DataField="title" />
-				 <asp:BoundField  HeaderText="Data Type" DataField="datatype" />
-				 <asp:BoundField  HeaderText="Status" DataField="status" />
-				 <asp:BoundField  HeaderText="Published" DataField="publishDate" />
-
-			 </Columns>
-
-		</asp:GridView>--%>
+			<br />
 
 
 
 		 <dx:ASPxGridView ID="grid" runat="server"  Width="80%" AutoGenerateColumns="false" SettingsDataSecurity-AllowEdit="true" 
 			  KeyFieldName="shortName"  OnRowUpdating="dxgrid_OnRowUpdating" OnDataBound="grid_DataBound"
-			  OnCustomButtonInitialize="grid_CustomButtonInitialize">
+			  OnCustomButtonInitialize="grid_CustomButtonInitialize"   OnCustomButtonCallback="grid_CustomButtonCallback" 
+			 >
 		
 			 <SettingsPager PageSize="20"></SettingsPager>
 			 <Columns>
+				 
 				 <dx:GridViewDataColumn FieldName="n_flds" Caption="# Flds" EditFormSettings-Visible="false"> </dx:GridViewDataColumn>
 				 <dx:GridViewDataColumn FieldName="n_uwflds" Caption="# UW Flds"  EditFormSettings-Visible="false"></dx:GridViewDataColumn>
 				 
-<%--				 <asp:TemplateField>
-					 <HeaderTemplate>Import Fields</HeaderTemplate>
-					 <ItemTemplate>                    
-						 <asp:Button ID="btnImportFlds" runat="server" Text="Import flds" Font-Size="XX-Small" CommandName="Import flds"
-							 CommandArgument='<%# Eval("shortName") %>'  />
-					 </ItemTemplate>
-				 </asp:TemplateField>--%>
 				<dx:GridViewDataColumn  Caption="UW Table" FieldName="uwtable"  ></dx:GridViewDataColumn>
 
-
-<%--				 <asp:TemplateField  HeaderText="View Data">
-					 <ItemTemplate>
-						 <asp:HyperLink ID="linkView" runat="server" NavigateUrl='<%# "NDARview.aspx?shortName=" + Eval("shortName")%>' Text="view" Target="_blank"></asp:HyperLink>
-					 </ItemTemplate>                     
-				 </asp:TemplateField>
-				 <asp:TemplateField  HeaderText="Define flds">
-					 <ItemTemplate>
-						<asp:HyperLink ID="linkDict" runat="server" NavigateUrl='<%# "NDARdict.aspx?shortName=" + Eval("shortName")%>' Text="define" Target="_blank"></asp:HyperLink>
-					 </ItemTemplate>                     
-				 </asp:TemplateField>--%>
 				
 				 <dx:GridViewDataHyperLinkColumn FieldName="shortName" Caption="View Data" EditFormSettings-Visible="false"
 								 PropertiesHyperLinkEdit-Text="View Data"
@@ -143,12 +96,15 @@
 		 <dx:ASPxGridView ID="gridNoNDAR" runat="server"   AutoGenerateColumns="false" 
 			  KeyFieldName="measureID"  >
 		
-			 
-			 <Columns>
+			<SettingsPager Mode="ShowAllRecords"></SettingsPager>	 
+			<Columns>
 				 <dx:GridViewDataColumn FieldName="measureID" Caption="mID"  CellStyle-ForeColor="Silver"> </dx:GridViewDataColumn>
 				 <dx:GridViewDataColumn FieldName="measname" Caption="Measure" > </dx:GridViewDataColumn>
-				 </Columns>
-			 </dx:ASPxGridView>
+				 <dx:GridViewDataHyperLinkColumn FieldName="measureID" Caption="Data Dictionary"
+					 PropertiesHyperLinkEdit-Text="View data dictionary" PropertiesHyperLinkEdit-Target="blank"
+					 PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Data/Dictionary.aspx?mID={0}"></dx:GridViewDataHyperLinkColumn>
+			</Columns>
+			</dx:ASPxGridView>
 
 	</asp:Panel>
 
@@ -176,36 +132,7 @@
 	<asp:Panel ID="Panel_dataElements" runat="server"></asp:Panel>  
 
 
-	
-	<%--    Added for GridViewScroll    see  http://gridviewscroll.aspcity.idv.tw/     
-	Note that the other javascript refs are placed in UWAutism.master  --%>
-<%--<script type="text/javascript">
-	$(document).ready(function () {
-		gridviewScroll();
-	});
 
-	function gridviewScroll() {
-		$('#< %=gvScroll.ClientID%>').gridviewScroll({
-			width: $(window).width() - 10,
-			height: 800,
-			freezesize: 2,
-			railcolor: "#F0F0F0",
-			barcolor: "#CDCDCD",
-			barhovercolor: "#606060",
-			bgcolor: "#F0F0F0",
-			arrowsize: 30,
-			varrowtopimg: "Images/arrowvt.png",
-			varrowbottomimg: "Images/arrowvb.png",
-			harrowleftimg: "Images/arrowhl.png",
-			harrowrightimg: "Images/arrowhr.png",
-			headerrowcount: 1,
-			railsize: 16,
-			barsize: 8
-
-		});
-	}
-	</script>--%>
-<%--end GridViewScroll--%>
 
 </asp:Content>
 

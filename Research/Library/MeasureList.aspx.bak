@@ -2,7 +2,7 @@
  Inherits="Library_MeasureList" Title="Measure List" %>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
  <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
@@ -46,6 +46,10 @@
      </td>
      <td style="width:200px">
          <dx:ASPxButton ID="btnToggleGrid" runat="server" ClientInstanceName="btnToggleGrid" Text="Hide Measures" ClientSideEvents-Click="ToggleGrid" AutoPostBack="false" ></dx:ASPxButton>
+     </td>
+     <td style="width:200px">
+         <dx:ASPxButton ID="btnExportDict" runat="server" ClientInstanceName="btnExportDict" Text="Export Data Dictionaries to Excel" OnClick="btnExportDict_OnClick"
+               Image-IconID="export_exporttoxlsx_32x32office2013"></dx:ASPxButton>
      </td>
  </tr>
  </table>

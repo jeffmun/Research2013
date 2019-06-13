@@ -3,7 +3,7 @@
 
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 <asp:Content ID="HeadContent" runat="server" ContentPlaceHolderID="headContent" Visible="true">
  
@@ -60,7 +60,7 @@
 		<dx:ASPxLabel ID="ASPxLabel2" runat="server" Font-Size="Medium" Text="Measure Library: Details" Font-Bold="true"></dx:ASPxLabel>
 
 	<br />
-		<div class="buttonContainer">
+		<div id="btnDiv" runat="server" class="buttonContainer">
 			<table>
 				<tr>
 					<td style="width: 700px;"></td>
@@ -92,6 +92,16 @@
 			</table>
 	</div>
 
+	<asp:Panel ID="panelNoMeasure" runat="server" Visible="false">
+	<asp:Label ID="lblNoMeasure" runat="server"  Text="No Measure was selected." Font-Size="Medium"></asp:Label>
+		<br />
+	<asp:Label ID="Label3" runat="server"  Text="Select a specific measure from the " Font-Size="Medium"></asp:Label>
+	<asp:HyperLink ID="hyp1" runat="server" NavigateUrl="MeasureList.aspx" Text="Measures for this Study" Font-Size="Medium"></asp:HyperLink>
+	<asp:Label ID="Label2" runat="server"  Text=" or the " Font-Size="Medium"></asp:Label>
+	<asp:HyperLink ID="hyp2" runat="server" NavigateUrl="MeasureLibrary.aspx" Text="Measure Library" Font-Size="Medium"></asp:HyperLink>
+	<asp:Label ID="Label1" runat="server"  Text=" pages." Font-Size="Medium"></asp:Label>
+		</asp:Panel>
+
 	<dx:ASPxFormLayout ID="FormLayout" ClientInstanceName="FormLayout" runat="server"  AlignItemCaptionsInAllGroups="True" UseDefaultPaddings="false"
 			EnableViewState="true">
 		<SettingsAdaptivity AdaptivityMode="SingleColumnWindowLimit" SwitchToSingleColumnAtWindowInnerWidth="600" />
@@ -120,7 +130,7 @@
 								<dx:LayoutItem Caption="Description" FieldName="DescriptionText" >
 									<LayoutItemNestedControlCollection>
 										<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
-											<dx:ASPxMemo ID="ASPxMemo1" ClientInstanceName="DescriptionText" runat="server" Height="80px" Width="100%" Rows="10" />
+											<dx:ASPxMemo ID="ASPxMemo1" ClientInstanceName="DescriptionText" runat="server" Height="90px" Width="100%" Rows="10" />
 										</dx:LayoutItemNestedControlContainer>
 									</LayoutItemNestedControlCollection>
 								</dx:LayoutItem>
@@ -218,10 +228,17 @@
 											</dx:LayoutItemNestedControlContainer>
 										</LayoutItemNestedControlCollection>
 									</dx:LayoutItem>
+									 <dx:LayoutItem Caption="DataEntry Form" FieldName="DEformname">
+										<LayoutItemNestedControlCollection>
+											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
+												<dx:ASPxTextBox ID="ASPxLabel1"  ClientInstanceName="DEformname" runat="server"  Font-Bold="false" />
+											</dx:LayoutItemNestedControlContainer>
+										</LayoutItemNestedControlCollection>
+									</dx:LayoutItem>
 									 <dx:LayoutItem Caption="Scoring proc" FieldName="spname">
 										<LayoutItemNestedControlCollection>
 											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
-												<dx:ASPxLabel ID="ASPxLabel1"  ClientInstanceName="spname" runat="server"  Font-Bold="false" />
+												<dx:ASPxTextBox ID="ASPxLabel3"  ClientInstanceName="spname" runat="server"  Font-Bold="false" />
 											</dx:LayoutItemNestedControlContainer>
 										</LayoutItemNestedControlCollection>
 									</dx:LayoutItem>
@@ -237,6 +254,13 @@
 											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
 												 <dx:ASPxComboBox ID="ASPxComboBox1" ClientInstanceName="importfiletype" runat="server" DataSourceID="sqlImportFileType" TextField="importfiletype_txt" ValueField="importfiletype"
 													ValueType="System.Int32" AutoPostBack="false"  ></dx:ASPxComboBox>
+											</dx:LayoutItemNestedControlContainer>
+										</LayoutItemNestedControlCollection>
+									</dx:LayoutItem>
+									 <dx:LayoutItem Caption="First row fldnames? (0=N,1=Y)" FieldName="firstrowcontainsfldnames">
+										<LayoutItemNestedControlCollection>
+											<dx:LayoutItemNestedControlContainer runat="server" SupportsDisabledAttribute="True">
+												<dx:ASPxTextBox ID="ASPxTextBox3" ClientInstanceName="firstrowcontainsfldnames" runat="server"  Font-Bold="true" />
 											</dx:LayoutItemNestedControlContainer>
 										</LayoutItemNestedControlCollection>
 									</dx:LayoutItem>
