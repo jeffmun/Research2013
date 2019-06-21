@@ -19,11 +19,12 @@
 				<asp:HyperLink ID="LinkButton1" runat="server" Target="_blank" NavigateUrl="../Mind_IntHx_v2stack/WeeksGTE40.aspx" Text="View List of ID's with weeks >= 40 hrs"></asp:HyperLink>
 			</td>
 			<td>
-				<asp:HyperLink ID="HyperLink1" runat="server" Target="_blank" NavigateUrl="../Mind_IntHx_v2stack/IntHxCat.aspx" Text="IntHx Category Definitions"></asp:HyperLink>
+
+				<asp:HyperLink ID="HyperLink1" runat="server" Target="_blank" NavigateUrl="~/DataProject/IntHxTxCat.aspx" Text="IntHx Category Definitions"></asp:HyperLink>
 			</td>
 			<td style="width:30px"></td>
 			<td>
-				<asp:HyperLink ID="HyperLink3" runat="server" Target="_blank" NavigateUrl="~/stats/IntHxCharts.aspx" Text="IntHx Charts for All Subjects"></asp:HyperLink>
+				<asp:HyperLink ID="HyperLink3" runat="server" Target="_blank" NavigateUrl="~/stats/IntHxSummary.aspx" Text="IntHx Summary & Charts for All Subjects"></asp:HyperLink>
 			</td>
 			<td style="width:30px"></td>
 			<td>

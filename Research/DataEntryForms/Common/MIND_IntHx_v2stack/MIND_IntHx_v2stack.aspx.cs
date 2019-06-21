@@ -20,34 +20,60 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 	public string id;
 
 
-	/// SQL TABLES USED:
-	///  t1) ALL_MIND_IntHx_vers2_stacked 
+
+
+	/// MASTER LIST JUNE 17, 2019
 	/// 
+	/// ===CLASSES===
+	/// DataProject.cs
+	//		ALL_MIND_IntHx_vers2_STACKED_TIMEPT_2018
 	/// 
-	/// SQL PROCS USED:
-	/// 
-	/// **Editing/Viewing a single subject**
-	///     page: /dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack.aspx
+	/// utilIntHx.cs
+	/// (41):		public static DataSet Get_MIND_IntHx_v2_Data_by_ID(SQL_utils sql, int studyID, string id)
+	/// (43):		DataSet ds = Get_MIND_IntHx_v2_Data_by_ID(sql, studyID, id, "Timepoint");
+	/// (47):		public static DataSet Get_MIND_IntHx_v2_Data_by_ID(SQL_utils sql, int studyID, string id, string periodtype)
+	// (58):		DataSet ds = sql.DataSet_from_ProcName("spSCORE_ALL_MIND_IntHx_vers2_STACKED__getdata_for_CHARTS_2018", ps);
+	/// (96):		DataSet ds = Get_MIND_IntHx_v2_Data_by_ID(sql, studyID, id, periodtype);
+
+
+	/// ===PAGES===
+	////////////////////////////////////////////////////////////////////////////////////// 
+	///
+	///   \Common\MIND_IntHx_v2stack\MIND_IntHx_v2stack.aspx  (This Page)
+	///   
 	/// 
 	/// 1) Load data for display
-	///     spALL_MIND_IntHx_vers2_stacked_for_display  (t1)
-	///     spHaveUWmethodRawScan
-	///     vwALL_MIND_IntHx_vers2_Stacked__IDlist   (t1)       get ID's to select a new subject
+	//     spALL_MIND_IntHx_vers2_stacked_2018_for_display  (t1)
+	//     spHaveUWmethodRawScan
+	//     vwALL_MIND_IntHx_vers2_Stacked__IDlist   (t1)       get ID's to select a new subject
 	///      
 	/// 2) Display the Chart
-	/// 
 	///     -- just displays the chart images already created
 	///     
-	/// 
 	/// 3) Modify Data
-	///     spSCORE_All_Mind_IntHx_vers2_STACKED
-	///		  -- this proc calls "spSCORE_All_Mind_IntHx_vers2_STACKED__Process" at the end of it, for the person and TYPE
-	///       -- when data is modified, charts are automatically updated by code called by this page
-	///     
-	/// ----------------------------------------------------------------------------
+	//     3a. spSCORE_All_Mind_IntHx_vers2_STACKED_2018
+	//			-- updates the specific record or inserts a new one into [All_Mind_IntHx_vers2_STACKED]
+	//			-- then inserts into [ALL_MIND_IntHx_vers2_STACKED_by_wk_2018] from [vwALL_MIND_IntHx_vers2_STACKED_by_wk_2018] for this personID
+	//			-- then rescores/aggregates via [spSCORE_ALL_MIND_IntHx_vers2_STACKED_TIMEPT_TXCAT_2018_all] for this personID
+	///    3b. once data is modified, charts are automatically updated by code called by this page
+	///       
+	///	4) Recreate Charts 
+	//			utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "TxStart", 60);
+	///				if (Master.Master_studyIDfull == 90000)
+	///				{
+	//						utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "TxStart", 60);
+	///				}
+	///
+	/// 
+	////////////////////////////////////////////////////////////////////////////////////// 
+	///
+	///   \stats\IntHxSummary.aspx
+	///			Summary of Weeks of IntHx Data
+	//			!!		vwIntHx_weeks_by_year 
+	//			!!		spIntHx_weeks_by_year_TOTALS
+	///			
 	/// 
 	/// **Displaying charts for a whole study**
-	///    page:   /stats/IntHxCharts.aspx
 	/// 
 	/// A) Load the data for creating the chart
 	///     spSCORE_ALL_MIND_IntHx_vers2_STACKED__getdata_for_CHARTS                {gets the raw data (dataset with 6 tables & admin dates & color info)}
@@ -60,13 +86,42 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 	/// 
 	///     -- Rescore all the weekly data and then aggregate
 	///         spSCORE_All_Mind_IntHx_vers2_STACKED__Process     {includes a parameter which allows you to rescore by record, ID, or WHOLESTUDY
+	///     
 	/// 
-	/// ----------------------------------------------------------------------------
+	///			Recreate Charts
+	///				utilIntHx.SaveIntHxCharts  (see above)
+	///			Display Charts
+	///				utilIntHx.DisplayIntHxCharts   (see above)
+	///			Display Summary Stats
+	//				spSCORE_ALL_MIND_IntHx_vers2_STACKED__getdata_for_DESCSTATS
+	///				utilStats.DataTable_DescStats_ByGroup(ds.Tables[dt_to_use], "ALL_MIND_IntHx_vers2_STACKED_by_PERIOD_CAT", vars, "stacked", true);
+	///				Table t2 = utilCharts.Histograms_byRowLevel_byColLevel_Facet (ds.Tables[dt_to_use], "avgPER_ihhrsperwk", "txgrp","period",rblLevel.SelectedValue, 150, 150, "color", "");
+	///				
 	/// 
+	////////////////////////////////////////////////////////////////////////////////////// 
+	///
+	///		\DataProject\IntHxTxCat.aspx
+	//			SelectCommand="select * from const_MIND_IntHXv2_TxCat"
+	//			SelectCommand="select a.txtypeID, txtype, txcat, txtypecolor from const_MIND_IntHXv2_TxType a join const_MIND_IntHXv2_TxCat b ON a.txcatID = b.txcatID
+	///		
+	///		
+	////////////////////////////////////////////////////////////////////////////////////// 
+	///
 	/// **Exporting data**
 	/// 
 	/// dp.spALL_MIND_IntHx_vers2_STACKED__getdata_for_EXPORT
 	///  
+
+
+
+
+
+
+	/// TO UPDATE THE CONTROLS:
+	///  \DataEntryForms\Common\MIND_IntHx_v2stack\IntHxCat.aspx
+	///  \DataEntryForms\Common\MIND_IntHx_v2stack\WeeksGTE40.aspx
+	///  \Analysis\ScoringErrors.aspx
+
 
 
 
@@ -171,7 +226,7 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 		int getall = 1;  //adjust this if needed.
 
 		SQL_utils sql = new SQL_utils();
-		DataTable dt = sql.DataTable_from_SQLstring("exec spALL_MIND_IntHx_vers2_stacked_for_display " + Master.Master_studyID.ToString() + ",'" + id + "'," + getall.ToString());
+		DataTable dt = sql.DataTable_from_SQLstring("exec spALL_MIND_IntHx_vers2_stacked_2018_for_display " + Master.Master_studyID.ToString() + ",'" + id + "'," + getall.ToString());
 		sql.Close();
 
 		ViewState["dt"] = dt;
@@ -485,7 +540,7 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 
 
 
-			sql.NonQuery_from_ProcName("spSCORE_All_Mind_IntHx_vers2_STACKED", p);
+			sql.NonQuery_from_ProcName("spSCORE_All_Mind_IntHx_vers2_STACKED_2018", p);
 
 			string id = ddlNewID.SelectedValue.ToString();
 			utilIntHx.SaveIntHxCharts(sql, Master.Master_studyID, id, Server.MapPath("~/stats/charts/"), "Timepoint", 110);

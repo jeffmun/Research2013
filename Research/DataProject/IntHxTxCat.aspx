@@ -21,20 +21,20 @@
 		<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true"  EnablePartialRendering="true"></asp:ScriptManager>
 
 
-    <br />
-    <asp:Label ID="Label1" runat="server" Text="Intervention History: Tx Types and Categories" Font-Bold="true" Font-Size="Medium"></asp:Label>
-    <br />
-    <br />
-    <asp:Label ID="lbl" runat="server" Text="The following tables display the various treatment types recorded in the Intervention History measure. The ~27 types are categorized at various levels of granularity.  When creating a Data Project you have the ability to select any of the TxCat vars that you wish to use."
-        width ="700px"></asp:Label>
-    <br />
-    <br />
-    <asp:Label ID="Label2" runat="server" Text="For example, you may want the broadest category (A1_) as well as just the Child Education types by themselves (A3c)."
-        width ="700px"></asp:Label>
-    <br />
-    <asp:Label ID="Label3" runat="server" Text="Note that A2b & A3c as well as B1_, B2_, & B3_ will yield the same values" Font-Italic="true"></asp:Label>
-    <br />
-    <br />
+	<br />
+	<asp:Label ID="Label1" runat="server" Text="Intervention History: Tx Types and Categories" Font-Bold="true" Font-Size="Medium"></asp:Label>
+	<br />
+	<br />
+	<asp:Label ID="lbl" runat="server" Text="The following tables display the various treatment types recorded in the Intervention History measure. The ~27 types are categorized at various levels of granularity.  When creating a Data Project you have the ability to select any of the TxCat vars that you wish to use."
+		width ="700px"></asp:Label>
+	<br />
+	<br />
+	<asp:Label ID="Label2" runat="server" Text="For example, you may want the broadest category (A1_) as well as just the Child Education types by themselves (A3c)."
+		width ="700px"></asp:Label>
+	<br />
+	<asp:Label ID="Label3" runat="server" Text="Note that A2b & A3c as well as B1_, B2_, & B3_ will yield the same values" Font-Italic="true"></asp:Label>
+	<br />
+	<br />
 <table>
 	<tr>
 		<td><b>Tx Types</b></td>
@@ -60,7 +60,7 @@
 		<td style="vertical-align: top">
 			<dx:ASPxGridView ID="gridTxCat" runat="server"   AutoGenerateColumns="false" ClientInstanceName="gridTxCat"
 					KeyFieldName="txcatID" >
-				<SettingsPager PageSize="11"></SettingsPager>
+				<SettingsPager PageSize="15"></SettingsPager>
 				<Columns>
 					<dx:GridViewDataColumn FieldName="txcat1" Caption="TxCat1" VisibleIndex="0" Width="160px"></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="txcat2" Caption="TxCat2" VisibleIndex="1" Width="160px"></dx:GridViewDataColumn>
@@ -72,5 +72,35 @@
 	</tr>
 </table>
 
+
+	<br />
+	<br />
+	<b>TO DO: these grids could be updated to allow editing, including colors using ASPXColorEdit</b>
+	<table>
+		<tr>
+			<td style="vertical-align:top; padding:10px">
+				<dx:ASPxGridView ID="gType" runat="server" DataSourceID="sqlTYPE" AutoGenerateColumns="true" ClientInstanceName="gType"
+					KeyFieldName="txtypeID" >
+					</dx:ASPxGridView>
+			</td>
+			<td style="vertical-align:top; padding:10px">
+				<dx:ASPxGridView ID="gCat" runat="server"  DataSourceID="sqlCAT" AutoGenerateColumns="true" ClientInstanceName="gCat"
+					KeyFieldName="txcatID" >
+					</dx:ASPxGridView>
+			
+			</td>
+		</tr>
+	</table>
+
+
+
+	<asp:SqlDataSource ID="sqlTYPE" runat="server" SelectCommandType="Text"   
+		SelectCommand="select * from const_MIND_IntHXv2_TxType"
+		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
+	</asp:SqlDataSource>
+	<asp:SqlDataSource ID="sqlCAT" runat="server" SelectCommandType="Text"   
+		SelectCommand="select * from const_MIND_IntHXv2_TxCat"
+		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
+	</asp:SqlDataSource>
 
 </asp:Content>

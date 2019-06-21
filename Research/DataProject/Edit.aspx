@@ -943,28 +943,7 @@
 	 </asp:SqlDataSource> 
 
 
-<%--	<asp:SqlDataSource ID="sqlTxAll" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
-		SelectCommandType="text"
-		SelectCommand="select txallID, txall from ALL_MIND_IntHx_vers2_STACKED_by_PERIOD_ALL where studyIDfull = @studyIDfull group by txallID, txall order by 1">
-		<SelectParameters>
-			<asp:SessionParameter SessionField="studyIDfull" Name="studyIDfull" />
-		 </SelectParameters>
-	</asp:SqlDataSource>--%>
-	<%--<asp:SqlDataSource ID="sqlTxCat" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
-		SelectCommandType="text"
-		SelectCommand="select txcatID, left(txall, (CHARindex(')', txall)-1)) txall, txcat from ALL_MIND_IntHx_vers2_STACKED_by_PERIOD_CAT where studyIDfull = @studyIDfull group by txcatID, txall, txcat order by 1">
-		<SelectParameters>
-			 <asp:SessionParameter SessionField="studyIDfull" Name="studyIDfull" />
-		 </SelectParameters>
-	</asp:SqlDataSource>--%>
 
-	<asp:SqlDataSource ID="sqlTxCat" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
-		SelectCommandType="text"
-		SelectCommand="select  txcat1, txcat2, txcat3, txcat4 from vwconst_MIND_IntHXv2_TxTypeCat group by  txcat1, txcat2, txcat3, txcat4 order by txcat1, txcat2, txcat3 ">
-		<SelectParameters>
-			 <asp:SessionParameter SessionField="studyIDfull" Name="studyIDfull" />
-		 </SelectParameters>
-	</asp:SqlDataSource>
 
 	<asp:SqlDataSource ID="sqlTimept" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
 		SelectCommandType="text"
@@ -974,31 +953,6 @@
 		 </SelectParameters>
 	</asp:SqlDataSource>
 	
-
-	<asp:SqlDataSource ID="sqlTxType" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
-		SelectCommandType="text"
-		SelectCommand="select txtypeID, left(txcat4,3) txcat4, txtype from vwconst_MIND_IntHXv2_TxTypeCat order by txcat4, txtype">
-		<SelectParameters>
-			 <asp:SessionParameter SessionField="studyIDfull" Name="studyIDfull" />
-		 </SelectParameters>
-	</asp:SqlDataSource>
-
-
-
-	<asp:SqlDataSource ID="sqlPeriods" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
-		SelectCommandType="text"
-		SelectCommand="select period from ALL_MIND_IntHx_vers2_STACKED_by_PERIOD_ALL where studyIDfull = @studyIDfull group by period order by 1">
-		<SelectParameters>
-			 <asp:SessionParameter SessionField="studyIDfull" Name="studyIDfull" />
-		 </SelectParameters>
-	</asp:SqlDataSource>
-
-
-
-
-
-
-
 
 </asp:Content>
 

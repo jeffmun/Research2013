@@ -79,7 +79,7 @@ public partial class Admin_StudyDesign : BasePage
 
 	protected void LoadHypterlinks_for_new_entities()
 	{
-		hypSubjStatus.NavigateUrl="~/admin/editentity.aspx?tbl=" + utilCrypt.Encrypt("tblSS")+"&detail=" + utilCrypt.Encrypt("tblSSD") +"&usestudy=" + utilCrypt.Encrypt("y");
+		//hypSubjStatus.NavigateUrl="~/admin/editentity.aspx?tbl=" + utilCrypt.Encrypt("tblSS")+"&detail=" + utilCrypt.Encrypt("tblSSD") +"&usestudy=" + utilCrypt.Encrypt("y");
 
 		hypNEW_ActionType.NavigateUrl = "~/admin/editentity.aspx?tbl=" + utilCrypt.Encrypt("tblActionType_lkup") + "&detail=" + utilCrypt.Encrypt("tblActionTypeStatus_lkup");
 
@@ -195,6 +195,13 @@ public partial class Admin_StudyDesign : BasePage
 			labID = sql.IntScalar_from_SQLstring("select labID from tblStudy where studyID=" + Master.Master_studyID.ToString());
 			e.NewValues["groupID"] = newgroupID;
 		}
+
+		if (gv.ClientInstanceName == "grid_tblSSD")
+		{
+			int ssID = Convert.ToInt32(gv.GetMasterRowFieldValues("ssID").ToString());
+			if(ssID > 0) e.NewValues["ssID"] = ssID;
+		}
+
 
 		DxDbOps.BuildInsertSqlCode(e, GridnameToTable(gv.ClientInstanceName), "backend");
 
@@ -403,6 +410,12 @@ public partial class Admin_StudyDesign : BasePage
 
 		return prefix;
 
+	}
+
+
+	protected void detailGrid_DataSelect(object sender, EventArgs e)
+	{
+		Session["ssID"] = (sender as ASPxGridView).GetMasterRowKeyValue();
 	}
 
 
@@ -688,7 +701,8 @@ public partial class Admin_StudyDesign : BasePage
 		else if (grid == "grid_tblgroup") return "tblgroup";
 		else if (grid == "grid_MeasInAction") return "tblStudyMeasGroup";
 		else if (grid == "grid_MeasNotInAction") return "tblStudyMeasGroup";
-		else if (grid == "grid_tblsubjstatus") return "tblss";
+		else if (grid == "grid_tblsubjstatus") return "tblSS";
+		else if (grid == "grid_tblSSD") return "tblSSD";
 
 		else return "";
 	}

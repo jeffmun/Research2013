@@ -147,8 +147,8 @@
 
 				<asp:Label ID="lbl_study_subjstatus" runat="server" Text="Subject Status" Font-size="Medium"  Font-Bold="true"></asp:Label>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-				<asp:HyperLink ID="hypSubjStatus" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
-						Text="Create New Subj Status" Target="_blank"></asp:HyperLink>
+<%--				<asp:HyperLink ID="hypSubjStatus" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
+						Text="Create New Subj Status" Target="_blank"></asp:HyperLink>--%>
 				<asp:Literal id="tblstudy_subjstatus_msg" runat="server" />
 
 			</td>
@@ -184,7 +184,7 @@
 
 			</td>
 			<td style="width: 50px"></td>
-			<td style="vertical-align:top" style="width: 400px">
+			<td style="vertical-align:top; width: 400px">
 				<asp:Panel ID="panel_tbltimepoint" runat="server">
 
 
@@ -216,8 +216,54 @@
 			<td style="width: 50px"></td>
 			<td style="vertical-align:top; width: 400px">
 				<asp:Panel ID="panel1" runat="server">
+					<asp:Panel ID="panel2" runat="server">
 					<dx:ASPXGridView ID="grid_tblsubjstatus" runat="server" ClientInstanceName="grid_tblsubjstatus"    DataSourceID="sql_SubjStatus"
 						AutoGenerateColumns="false"  
+						AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" KeyFieldName="ssID" 
+						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+						<ClientSideEvents EndCallback="OnEndCallBack" />
+						<SettingsEditing Mode="Inline"></SettingsEditing>
+
+						<Columns>
+							<dx:GridViewDataColumn FieldName="objtype" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataTextColumn FieldName="ssID" Caption="ssID" Width="50" ReadOnly="true" CellStyle-ForeColor="Silver" >
+								 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit></dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="subjstatus" Caption="Subject Status" Width="120" ></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="ss" Caption="ss (abbr.)" Width="60" ></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd" Width="50" ></dx:GridViewDataColumn>
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
+						</Columns>
+
+						<Templates>
+							<DetailRow>
+								<dx:ASPxGridView ID="grid_tblSSD" ClientInstanceName="grid_tblSSD" runat="server" DataSourceID="sql_SubjStatusDetail" AutoGenerateColumns="false" 
+									AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" KeyFieldName="ssID;ssdID" OnBeforePerformDataSelect="detailGrid_DataSelect" 
+									  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
+									<Columns>
+										<dx:GridViewDataColumn FieldName="ssID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+										<dx:GridViewDataColumn FieldName="objtype" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+										<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+										<dx:GridViewDataTextColumn FieldName="ssdID" Caption="ssdID" Width="50" ReadOnly="true" CellStyle-ForeColor="Silver" >
+											 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit></dx:GridViewDataTextColumn>
+										<dx:GridViewDataColumn FieldName="subjstatusdetail" Caption="Subject Status Detail" Width="150" >
+											<%--<TemplateSettings TemplateID="grid_tblsubjstatus_tmp0" EditTemplateId="grid_tblsubjstatus_tmp1" />--%>
+										</dx:GridViewDataColumn>
+										<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd" Width="50" ></dx:GridViewDataColumn>
+										<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
+									</Columns>
+									<SettingsEditing Mode="Inline"></SettingsEditing>
+								</dx:ASPxGridView>
+							</DetailRow>
+						</Templates>
+						<SettingsDetail ShowDetailRow="true" />
+					</dx:ASPXGridView>
+				</asp:Panel>
+
+
+
+					<dx:ASPXGridView ID="xgrid_tblsubjstatus" runat="server" ClientInstanceName="grid_tblsubjstatus"    DataSourceID="sql_SubjStatus"
+						AutoGenerateColumns="false"  Visible="false"
 						AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" KeyFieldName="ssID" 
 						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting">
 						<ClientSideEvents EndCallback="OnEndCallBack" />
@@ -850,12 +896,28 @@
 			</SelectParameters> 
 	</asp:SqlDataSource>
 
-	<asp:SqlDataSource ID="sql_SubjStatus" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+<%--	<asp:SqlDataSource ID="sql_SubjStatus" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
 				SelectCommand="select ssID, subjstatus, sortorder from uwautism_research_backend..tblSS where studyID = @studyID">
 			<SelectParameters>
 				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
 			</SelectParameters> 
+	</asp:SqlDataSource>--%>
+	<asp:SqlDataSource ID="sql_SubjStatus" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select ssID, subjstatus, ss, sortorder from tblSS where studyID = @studyID">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
 	</asp:SqlDataSource>
+
+
+	<asp:SqlDataSource ID="sql_SubjStatusDetail" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select ssID, ssdID, subjstatusdetail, sortorder from tblSSD where studyID = @studyID and ssID=@ssID">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+				<asp:SessionParameter SessionField="ssID" Name="ssID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
 
 
 	<asp:SqlDataSource ID="sql_Actiontype" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"

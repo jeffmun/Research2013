@@ -726,8 +726,9 @@ namespace uwac.data
 		private void CreateSqlForIntHx()
 		{
 			SQL_utils sql = new SQL_utils("data");
-			int studyIDfull = _studyID;
-			studyIDfull = sql.IntScalar_from_SQLstring("select coalesce(fullstudyID * 10000, studyID) from uwautism_research_backend..tblstudy where studyID = " + _studyID.ToString());
+
+			int studyIDfull = sql.IntScalar_from_SQLstring(String.Format("select dbo.fnstudyIDfull({0})", studyID));
+
 
 
 			DataTable dtvars = sql.DataTable_from_SQLstring("select * from[dp].[Var] where varname != 'nwks_in_tp' and  measureID = 749 and dataproj_pk = " + _dataproj_pk.ToString());
@@ -735,6 +736,10 @@ namespace uwac.data
 
 			if (dtvars.Rows.Count > 0)
 			{
+				//Rescores the aggregated data if an individual's data has been updated more recently
+				utilIntHx.RescoreIntHx(sql, studyID);
+
+
 				#region IntHx vars by TimePt
 				List<string> inthx_vars = dtvars.AsEnumerable().Select(f => f.Field<string>("varname")).ToList();
 
