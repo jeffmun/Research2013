@@ -5,7 +5,7 @@
 	void Application_Start(object sender, EventArgs e)
 	{
 		// Code that runs on application startup
-		 DevExpress.Web.BinaryStorageConfigurator.Mode = DevExpress.Web.BinaryStorageMode.Session; 
+		DevExpress.Web.BinaryStorageConfigurator.Mode = DevExpress.Web.BinaryStorageMode.Session;
 	}
 
 	void Application_End(object sender, EventArgs e)
@@ -69,19 +69,21 @@
 			string lastErrorMessage = lastError.Message;
 			string lastErrorStackTrace = lastError.StackTrace;
 
+			string user = HttpContext.Current.User.Identity.Name;
+			string user_netid = String.Format("{0}@uw.edu", user.Replace(@"NETID\", ""));
+
+
 			const string ToAddress = "jeffmun@uw.edu";
 			const string FromAddress = "authelp@u.washington.edu";
-			const string Subject = "UWAC DB ERROR!";
+			string tmpSubject = String.Format("UWAC DB ERROR!  from  {0} [{1}]", user, user_netid);
+			string Subject = tmpSubject;
 
-			string user = HttpContext.Current.User.Identity.Name;
-
-			string user_netid = String.Format("{0}@uw.edu", user.Replace(@"NETID\", ""));
 
 			////
 			System.Net.Mail.MailMessage msg = new System.Net.Mail.MailMessage(FromAddress, ToAddress);
 
 			msg.Subject = Subject;
-			msg.CC.Add(user_netid);
+			if (user != "") msg.CC.Add(user_netid);
 			msg.IsBodyHtml = true;
 			msg.Priority = System.Net.Mail.MailPriority.High;
 			msg.Body = string.Format(@"
