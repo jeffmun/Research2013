@@ -91,7 +91,7 @@
         <siteMapNode url="~/Tracking/DATAdates.aspx" title="Plots of Data Collection Dates" description="" menuitem="true" />
         <siteMapNode url="~/stats/DATAvalues.aspx" title="Plots of Longitudinal Data" description="" menuitem="true" />
       </siteMapNode>
-      <siteMapNode url="~/stats/IntHxCharts.aspx" title="IntHx Data Summary" description="" menuitem="true" />
+      <siteMapNode url="~/stats/IntHxSummary.aspx" title="IntHx Data Summary" description="" menuitem="true" />
       <siteMapNode url="~/DataProject/IntHxTxCat.aspx" title="IntHx Tx Types &amp; Categories" description="" menuitem="true" />
       <siteMapNode url="~/Reliability/Rel_Tracking.aspx" title="Reliability tracking" description="" menuitem="true" />
       <siteMapNode url="" title="Importing Data">

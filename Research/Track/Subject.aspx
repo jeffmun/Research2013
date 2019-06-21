@@ -280,23 +280,24 @@
 	</tr>
 
 	<tr>
-		<td style="width: 180px; vertical-align:top">
-			<dx:ASPxComboBox ID="cboID" runat="server" DataSourceID="sqlS" TextField="ID" ValueField="ID" Font-Size="14" Font-Bold="true" width="160px"
-				  DropDownStyle="DropDownList">
+		<td style="width: 220px; vertical-align:top">
+			<dx:ASPxLabel ID="lblID" runat="server" Text=""  Font-Size="14" Font-Bold="true" Visible="true"></dx:ASPxLabel>
+			<br />
+			<dx:ASPxComboBox ID="cboID" runat="server" DataSourceID="sqlS" TextField="ID" ValueField="ID" Font-Size="12" Font-Bold="true" width="200px"
+				  DropDownStyle="DropDownList" ForeColor="Silver" NullText="-select a subject-">
 				<ClientSideEvents SelectedIndexChanged="newID"   />
 			</dx:ASPxComboBox>
 			<br />
-			<dx:ASPxLabel ID="lblID" runat="server" Text=""  Font-Size="18" Font-Bold="true" Visible="false"></dx:ASPxLabel>
-			
+
 			<asp:HiddenField ID="hidSubjID" runat="server" />
 		</td>
 		<td style="width: 150px; vertical-align:top">
 			<dx:ASPxLabel ID="lblGroup" runat="server" Text=""  Font-Size="14" Font-Bold="true"></dx:ASPxLabel>
 		</td>
 		<td style="width: 200px; vertical-align:top">
-			<dx:ASPxLabel ID="lblSS" runat="server" Text=""  Font-Size="14" Font-Bold="true" ClientInstanceName="lblss"></dx:ASPxLabel>
-				<dx:ASPxComboBox ID="CboSS" runat="server" ValueType="System.String" ClientInstanceName="cboSS" Font-Size="Larger"  ClientVisible="false" 
-					DataSourceID="sqlSS" TextField="subjstatus" ValueField="subjstatusID" DropDownStyle="DropDown" >
+			<dx:ASPxLabel ID="lblSS" runat="server" Text=""  Font-Size="12" Font-Bold="true" ClientInstanceName="lblss"></dx:ASPxLabel>
+				<dx:ASPxComboBox ID="cboSS" runat="server" ValueType="System.String" ClientInstanceName="cboSS" Font-Size="Larger"  ClientVisible="false" 
+					DataSourceID="sqlSS" TextField="subjstatus" ValueField="ssID" DropDownStyle="DropDown" >
 					<ClientSideEvents SelectedIndexChanged="function(s, e) { OnSSChanged(s, e); }"></ClientSideEvents>
 					<ValidationSettings>
 						<RequiredField IsRequired="True" ErrorText="Subject Status is Required." />
@@ -304,9 +305,9 @@
 				</dx:ASPxComboBox>
 		</td>
 		<td style="width: 200px; vertical-align:top">
-			<dx:ASPxLabel ID="lblSSD" runat="server" Text=""  Font-Size="14" Font-Bold="true" ClientInstanceName="lblssd"></dx:ASPxLabel>
-				<dx:ASPxComboBox ID="CboSSD" runat="server" ValueType="System.String" ClientInstanceName="cboSSD"  Font-Size="Larger"  ClientVisible="false"
-					DataSourceID="sqlSSD" TextField="subjstatusdetail" ValueField="subjstatusdetailID" OnCallback="CboSSD_Callback" DropDownStyle="DropDown">
+			<dx:ASPxLabel ID="lblSSD" runat="server" Text=""  Font-Size="12" Font-Bold="true" ClientInstanceName="lblssd"></dx:ASPxLabel>
+				<dx:ASPxComboBox ID="cboSSD" runat="server" ValueType="System.String" ClientInstanceName="cboSSD"  Font-Size="Larger"  ClientVisible="false"
+					DataSourceID="sqlSSD" TextField="subjstatusdetail" ValueField="ssdID" OnCallback="cboSSD_Callback" DropDownStyle="DropDown" >
 					<ClientSideEvents EndCallback="OnSSEndCallback"/>
 					<ValidationSettings>
 						<RequiredField IsRequired="True" ErrorText="Subject Status Detail is Required." />
@@ -335,8 +336,7 @@
 			</dx:ASPxValidationSummary>
 		</td>
 		<td style="vertical-align: top">
-			 <dx:ASPxButton ID="btnHousehold" runat="server" Text="Go to Household" AutoPostBack="true" OnClick="btnHousehold_Click">
-			</dx:ASPxButton>
+			 <dx:ASPxButton ID="btnHousehold" runat="server" Text="Go to Household" AutoPostBack="true" OnClick="btnHousehold_Click"></dx:ASPxButton>
 		</td>
 	</tr>
 </table>
@@ -564,30 +564,44 @@
 
 	<%--SQL Data Sources--%>
 	<asp:SqlDataSource ID="sqlS" runat="server" SelectCommandType="Text"  
-		SelectCommand="EXEC sec.spSetUserContext @netid; select '-select ID-' as ID union select ID from trk.vwMasterStatus_S2 where studyID=@studyID"
-		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
-		<SelectParameters>
-			<asp:SessionParameter SessionField="netid" Name="netid" DbType="string" />
-			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
-		</SelectParameters>
-	</asp:SqlDataSource>
-	
-	<asp:SqlDataSource ID="sqlSS" runat="server" SelectCommandType="StoredProcedure"  
-		SelectCommand="trk.spTracking_GetSubjStatus_byStudy"
+		SelectCommand="select ID from trk.vwMasterStatus_S2 where studyID=@studyID order by 1"
 		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
 		<SelectParameters>
 			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
 		</SelectParameters>
 	</asp:SqlDataSource>
 
-	<asp:SqlDataSource ID="sqlSSD" runat="server" SelectCommandType="StoredProcedure"  
+		<asp:SqlDataSource ID="sqlSS" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select ssID, subjstatus, ss, sortorder from tblSS where studyID = @studyID order by sortorder">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+		<asp:SqlDataSource ID="sqlSSD" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select ssID, ssdID, subjstatusdetail, sortorder from tblSSD where studyID = @studyID and ssID=@ssID order by sortorder">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+				<asp:SessionParameter SessionField="ssID" Name="ssID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+<%--	<asp:SqlDataSource ID="sqlSS" runat="server" SelectCommandType="StoredProcedure"  
+		SelectCommand="trk.spTracking_GetSubjStatus_byStudy"
+		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
+		<SelectParameters>
+			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
+		</SelectParameters>
+	</asp:SqlDataSource>--%>
+
+<%--	<asp:SqlDataSource ID="sqlSSD" runat="server" SelectCommandType="StoredProcedure"  
 		SelectCommand="trk.spTracking_GetSubjStatusDetail_byStudy"
 		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
 		<SelectParameters>
 			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
 			<asp:Parameter Name="subjstatusID"  DbType="Int32" />
 		</SelectParameters>
-	</asp:SqlDataSource>
+	</asp:SqlDataSource>--%>
 
 	<asp:SqlDataSource ID="sqlAS" runat="server" SelectCommandType="Text"  
 		SelectCommand="select * from tblActionStatus_lkup"

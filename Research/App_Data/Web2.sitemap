@@ -112,7 +112,6 @@
 <!--			<siteMapNode url="~/Data/SubjectSummary.aspx" title="Subject Summary" description="" menuitem="true" />  -->
 		<!--  <siteMapNode url="~/Data/GetData.aspx" title="Get Data Files" description="" menuitem="true" /> -->
 
-				<!--https://uwac.autism.washington.edu/research/dataentryforms/common/MIND_IntHx_v2stack/MIND_IntHx_v2stack_all.aspx-->
 				
 				<siteMapNode url="~/Stats/DataProject.aspx" title="Data Projects" description="" menuitem="true" />
 				<siteMapNode url="~/Tracking/DATAdates.aspx" title="Review Data Dates" description="" menuitem="true" />

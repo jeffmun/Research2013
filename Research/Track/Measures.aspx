@@ -308,7 +308,7 @@
                         <SettingsFilterControl ViewMode="Visual" ShowAllDataSourceColumns="true" ></SettingsFilterControl>
                         <SettingsPager PageSize="20"></SettingsPager>
                       <Toolbars>
-                        <dx:GridViewToolbar EnableAdaptivity="true">
+                        <dx:GridViewToolbar>
                             <Items>
                                 <dx:GridViewToolbarItem Text="Export" Image-IconID="export_export_16x16">
                                     <Items>

@@ -46,8 +46,10 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 			SQL_utils sql = new SQL_utils("backend");
 			string theID =  sql.StringScalar_from_SQLstring("select id from tblsubject where subjID=" + Request.QueryString["subjID"]);
 			Session["ID"] = theID;
-			cboID.Value = theID;
+			//cboID.Value = theID;
 			ID = theID;
+
+			lblID.Text = theID;
 
 			int newstudyID = sql.IntScalar_from_SQLstring("select studyID from vwMasterStatus_S where subjID=" + Request.QueryString["subjID"]);
 
@@ -64,30 +66,17 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 		{
 			ID = Request.QueryString["ID"];
 			Session["ID"] = ID;
-			cboID.Value = ID;
+			lblID.Text = ID;
+
+			//cboID.Value = ID;
 		} 
 		else 
 		{
 			Session["ID"] = "";
-			cboID.SelectedIndex = 0;
+			
 		}
 
-		//SQL_utils sql2 = new SQL_utils("backend");
-		//string sqlcode = "Select * from trk.vwMasterStatus_A where subjID = " + hidSubjID.Value;
-		//DataTable dtA = sql2.DataTable_from_SQLstring(sqlcode);
-		//gvA.DataSource = dtA;
-		//gvA.DataBind();
-		//sql2.Close();
 
-		//	< asp:SqlDataSource ID = "sqlA" runat = "server" SelectCommandType = "Text"
-		//SelectCommand = "Select * from trk.vwMasterStatus_A where subjID = @subjID"
-		//ConnectionString = "<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
-		//< SelectParameters >
-		//	< asp:ControlParameter ControlID = "hidSubjID" Name = "subjID" DbType = "Int32" />
-
-		//	 </ SelectParameters >
-
-		// </ asp:SqlDataSource >
 
 		if (!IsCallback && !IsPostBack)
 		{
@@ -116,16 +105,11 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 
 
 
-	protected void CboSSD_Callback(object source, CallbackEventArgsBase e)
+	protected void cboSSD_Callback(object source, CallbackEventArgsBase e)
 	{
-		FillCboSSD(e.Parameter);
-	}
-
-	protected void FillCboSSD(string ss)
-	{
-		if (string.IsNullOrEmpty(ss)) return;
-		sqlSSD.SelectParameters[1].DefaultValue = ss;
-		CboSSD.DataBind();
+		Session["ssID"] = e.Parameter;
+		cboSSD.DataBind();
+		//FillCboSSD(e.Parameter);
 	}
 
 
@@ -242,7 +226,7 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 
 		SQL_utils sql = new SQL_utils("backend");
 
-		DataTable dt = sql.DataTable_from_SQLstring(String.Format("select * from vwMasterStatus_S where studyID={0} and ID = '{1}'", Master.Master_studyID.ToString(), myID));
+		DataTable dt = sql.DataTable_from_SQLstring(String.Format("select * from trk.vwMasterStatus_S where studyID={0} and ID = '{1}'", Master.Master_studyID.ToString(), myID));
 
 		if (dt.Rows.Count > 0)
 		{
@@ -251,12 +235,15 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 			string ss = dt.AsEnumerable().Select(t => t.Field<string>("subjstatus")).First().ToString();
 			string ssd = dt.AsEnumerable().Select(t => t.Field<string>("subjstatusdetail") == null ? string.Empty : t.Field<string>("subjstatusdetail")).First().ToString();
 
+			
 			//string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("Notes")).First().ToString();
-			string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("Notes") == null ? string.Empty : t.Field<string>("Notes")).First().ToString();
-			string groupname = dt.AsEnumerable().Select(t => t.Field<string>("Groupname")).First().ToString();
+			string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("notes") == null ? string.Empty : t.Field<string>("notes")).First().ToString();
+			string groupname = dt.AsEnumerable().Select(t => t.Field<string>("groupname")).First().ToString();
 
-			string ssID = dt.AsEnumerable().Select(t => t.Field<int>("subjstatusID")).First().ToString();
-			string ssdID = dt.AsEnumerable().Select(t => t.Field<int>("subjstatusdetailID")).First().ToString();
+			string ssID = dt.AsEnumerable().Select(t => t.Field<int>("ssID")).First().ToString();
+			string ssdID = dt.AsEnumerable().Select(t => t.Field<int>("ssdID")).First().ToString();
+
+			Session["ssID"] = ssID;
 
 			hidSubjID.Value = subjid;
 			lblID.Text = id;
@@ -266,9 +253,10 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 			txtNotes.Text = ssnotes;
 			lblGroup.Text = groupname;
 
-			var x = CboSS.Items.FindByText(ss);
+			var x = cboSS.Items.FindByText(ss);
 
-			FillCboSSD(ssID);
+			//is this needed?
+			//FillCboSSD(ssID);
 			sql.Close();
 
 		}
@@ -308,10 +296,10 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 		List<SqlParameter> ps = new List<SqlParameter>();
 		ps.Add(sql.CreateParam("subjID", hidSubjID.Value.ToString(), "int"));
 		ps.Add(sql.CreateParam("Notes", txtNotes.Text.ToString(), "text"));
-		ps.Add(sql.CreateParam("subjstatusID", CboSS.Value.ToString(), "int"));
-		ps.Add(sql.CreateParam("subjstatusdetailID", CboSSD.Value.ToString(), "int"));
+		ps.Add(sql.CreateParam("ssID", cboSS.Value.ToString(), "int"));
+		ps.Add(sql.CreateParam("ssdID", cboSSD.Value.ToString(), "int"));
 
-		sql.NonQuery_from_ProcName("spSubject_Update", ps);
+		sql.NonQuery_from_ProcName("trk.spSubject_Update", ps);
 
 		sql.Close();
 
@@ -372,20 +360,6 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 				if (!pkvals.Contains(ikey)) pkvals.Add( ikey);
 			}
 		}
-
-		////Get the data from the ComboBoxes
-		//ASPxComboBox cboMS = (ASPxComboBox)gvM.FindEditFormLayoutItemTemplateControl(  "CboMS");
-		//ASPxComboBox cboMSD = (ASPxComboBox)gvM.FindEditFormLayoutItemTemplateControl(  "CboMSD");
-
-		//e.NewValues["MeasStatusID"] = cboMS.Value;
-		//e.NewValues["MeasStatusDetailID"] = cboMSD.Value;
-
-		//ASPxMemo notes = (ASPxMemo)gvM.FindEditFormLayoutItemTemplateControl("notesEditor");
-		//e.NewValues["Notes"] = notes.Value;
-
-		////string result = dxGrid_UpdateData(e.Keys, e.NewValues, "backend", "dbo", "tblStudyMeasSubj");
-		//string result = dataops.dxGrid_UpdateData("studymeassubjID", pkvals, e.NewValues, "backend", "dbo", "tblStudyMeasSubj");
-
 
 
 		popupdata.AddField(e.NewValues, gvM, "MeasStatusID", "CboMS", DevExpress.Web.ControlType.ASPxComboBox);

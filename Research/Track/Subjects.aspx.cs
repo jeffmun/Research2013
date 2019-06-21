@@ -59,52 +59,52 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 
 	#region Setup Controls 
 
-	protected void CboSS_Init(object sender, EventArgs e)
+	protected void cboSS_Init(object sender, EventArgs e)
 	{
-		ASPxComboBox CboSS = (ASPxComboBox)sender;
+		ASPxComboBox cboSS = (ASPxComboBox)sender;
 		//GridViewDataItemTemplateContainer templateContainer = (GridViewDataItemTemplateContainer)CboMS.NamingContainer;
-		GridViewEditFormLayoutItemTemplateContainer templateContainer = (GridViewEditFormLayoutItemTemplateContainer)CboSS.NamingContainer;
+		GridViewEditFormLayoutItemTemplateContainer templateContainer = (GridViewEditFormLayoutItemTemplateContainer)cboSS.NamingContainer;
 
-		CboSS.ClientInstanceName = string.Format("cboSS_{0}", templateContainer.VisibleIndex);
-		CboSS.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e) {{ OnSelectedIndexChanged(s, e, {0}); }}", templateContainer.VisibleIndex);
+		cboSS.ClientInstanceName = string.Format("cboSS_{0}", templateContainer.VisibleIndex);
+		cboSS.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e) {{ OnSelectedIndexChanged(s, e, {0}); }}", templateContainer.VisibleIndex);
 
-		CboSS.DataSourceID = "sqlSS";
-		CboSS.TextField = "SubjStatus";
-		CboSS.ValueField = "SubjStatusID";
-		CboSS.DataBind();
+		cboSS.DataSourceID = "sqlSS";
+		cboSS.TextField = "subjstatus";
+		cboSS.ValueField = "ssID";
+		cboSS.DataBind();
 
-		CboSS.Value = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "SubjStatusID");
+		cboSS.Value = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "ssID");
 
 	}
 
 
 
 
-	protected void CboSSD_Init(object sender, EventArgs e)
+	protected void cboSSD_Init(object sender, EventArgs e)
 	{
-		ASPxComboBox CboSSD = (ASPxComboBox)sender;
-		GridViewEditFormLayoutItemTemplateContainer templateContainer = (GridViewEditFormLayoutItemTemplateContainer)CboSSD.NamingContainer;
-		CboSSD.ClientInstanceName = string.Format("cboSSD_{0}", templateContainer.VisibleIndex);
-		CboSSD.Callback += CboSSD_Callback;
+		ASPxComboBox cboSSD = (ASPxComboBox)sender;
+		GridViewEditFormLayoutItemTemplateContainer templateContainer = (GridViewEditFormLayoutItemTemplateContainer)cboSSD.NamingContainer;
+		cboSSD.ClientInstanceName = string.Format("cboSSD_{0}", templateContainer.VisibleIndex);
+		cboSSD.Callback += cboSSD_Callback;
 
-		string str_ssID = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "SubjStatusID").ToString();
-		string str_ssdID = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "SubjStatusDetailID").ToString();
+		string str_ssID = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "ssID").ToString();
+		string str_ssdID = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "ssdID").ToString();
 
 
-		CboSSD.DataSourceID = "sqlSSD_by_SS";
-		CboSSD.TextField = "SubjStatusDetail";
-		CboSSD.ValueField = "SubjStatusDetailID";
+		cboSSD.DataSourceID = "sqlSSD_by_SS";
+		cboSSD.TextField = "subjstatusdetail";
+		cboSSD.ValueField = "ssdID";
 
 
 		int ssID; int ssdID;
 		bool ssID_is_int = int.TryParse(str_ssID, out ssID);
-		if (ssID_is_int) FillCboSSD(CboSSD, ssID.ToString());
+		if (ssID_is_int) FillCboSSD(cboSSD, ssID.ToString());
 
 		bool ssdID_is_int = int.TryParse(str_ssdID, out ssdID);
-		if (ssdID_is_int) CboSSD.Value = ssdID;
+		if (ssdID_is_int) cboSSD.Value = ssdID;
 	}
 
-	private void CboSSD_Callback(object sender, CallbackEventArgsBase e)
+	private void cboSSD_Callback(object sender, CallbackEventArgsBase e)
 	{
 		ASPxComboBox cbossd = (ASPxComboBox)sender;
 		string ssd = e.Parameter;
@@ -113,6 +113,40 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 
 		FillCboSSD(cbossd, ssd);
 	}
+
+
+	//protected void Grid_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
+	//{
+	//	if (e.Column.FieldName == "CityID")
+	//	{
+	//		var combo = (ASPxComboBox)e.Editor;
+	//		combo.Callback += new CallbackEventHandlerBase(combo_Callback);
+
+	//		var grid = e.Column.Grid;
+	//		if (!combo.IsCallback)
+	//		{
+	//			var countryID = -1;
+	//			if (!grid.IsNewRowEditing)
+	//				countryID = (int)grid.GetRowValues(e.VisibleIndex, "CountryID");
+	//			FillCitiesComboBox(combo, countryID);
+	//		}
+	//	}
+	//}
+
+	//private void combo_Callback(object sender, CallbackEventArgsBase e)
+	//{
+	//	var countryID = -1;
+	//	Int32.TryParse(e.Parameter, out countryID);
+	//	FillCitiesComboBox(sender as ASPxComboBox, countryID);
+	//}
+
+	//protected void FillCitiesComboBox(ASPxComboBox combo, int countryID)
+	//{
+	//	combo.DataSourceID = "Cities";
+	//	Cities.SelectParameters["CountryID"].DefaultValue = countryID.ToString();
+	//	combo.DataBindItems();
+	//	combo.Items.Insert(0, new ListEditItem("", null)); // Null Item
+	//}
 
 
 	protected void FillCboSSD(ASPxComboBox cbo, string ssID)
@@ -311,7 +345,7 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 
 		//Get and Process the list of selected records in order to populate the list of pkvals
 		#region process selected records
-		var selected_keys = gvENT.GetSelectedFieldValues("SubjID");
+		var selected_keys = gvENT.GetSelectedFieldValues("subjID");
 
 
 		ASPxCheckBox chkAllSelected = gv.FindEditFormLayoutItemTemplateControl("chkUpdateAllSelected") as ASPxCheckBox;
@@ -342,11 +376,11 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 
 		//Custom: retrieve specific data from the grid
 		//Get the data from the ComboBoxes
-		ASPxComboBox cboSS = (ASPxComboBox)gvENT.FindEditFormLayoutItemTemplateControl("CboSS");
-		e.NewValues["subjstatusID"] = cboSS.Value;
+		ASPxComboBox cboSS = (ASPxComboBox)gvENT.FindEditFormLayoutItemTemplateControl("cboSS");
+		e.NewValues["ssID"] = cboSS.Value;
 
-		ASPxComboBox cboSSD = (ASPxComboBox)gvENT.FindEditFormLayoutItemTemplateControl("CboSSD");
-		e.NewValues["subjstatusdetailID"] = cboSSD.Value;
+		ASPxComboBox cboSSD = (ASPxComboBox)gvENT.FindEditFormLayoutItemTemplateControl("cboSSD");
+		e.NewValues["ssdID"] = cboSSD.Value;
 
 		ASPxMemo notes = (ASPxMemo)gvENT.FindEditFormLayoutItemTemplateControl("notesEditor");
 		e.NewValues["Notes"] = notes.Value;
@@ -387,11 +421,11 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 	protected void gvENT_HtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
 	{
 		
-		if (e.DataColumn.FieldName == "SubjStatusID")
+		if (e.DataColumn.FieldName == "ssID")
 		{
 
 			SQL_utils sql = new SQL_utils("backend");
-			string subjstatus = sql.StringScalar_from_SQLstring("select subjstatus from tblSubjectStatus_lkup where subjstatusID=" + e.CellValue.ToString());
+			string subjstatus = sql.StringScalar_from_SQLstring("select subjstatus from tblSS where ssID=" + e.CellValue.ToString());
 			sql.Close();
 
 			int colorlevel = uwac.trk.color.GetColorLevel();
@@ -430,6 +464,8 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 				}
 			}
 
+			group_csv = (group_csv == null) ? "" : group_csv;
+			subjstatus_csv = (subjstatus_csv == null) ? "" : subjstatus_csv;
 
 			if ( group_csv.ToString() +   subjstatus_csv.ToString() == "")
 			{ btnLoad.Text = "Load Subjects"; }
@@ -508,7 +544,8 @@ public partial class Tracking_Subjects : System.Web.UI.Page
 
 	protected DataTable ENT_GetData(string obj, string group_csv, string subjstatus_csv)
 	{
-
+		group_csv = (group_csv == null) ? "" : group_csv;
+		subjstatus_csv = (subjstatus_csv == null) ? "" : subjstatus_csv;
 
 		SQL_utils sql = new SQL_utils("backend");
 		List<SqlParameter> ps = new List<SqlParameter>();

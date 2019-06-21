@@ -14,6 +14,16 @@
 <h2>Updates to the UWAC Research DB</h2>
 	<asp:Label ID="lblNew" runat="server" ForeColor="ForestGreen" Text="New changes will be noted here.  Check back periodically!"></asp:Label>
 <br /><br />
+<h4 style="color: gray">June 2019</h4>
+<h3>Subject Status</h3>
+<div style="width: 900px">
+1. You can edit Subject Status & Detail directly on the <a href="/Research/Track/Subjects.aspx"><b>Subject Tracking > Subjects</b></a> page.  This enables you to edit multiple subjects at once.  Just ctl-click to select multiple rows individually, or shift-click to select a range of rows.
+<br /><br />
+2. Subject status and subject status detail are now customiziable within each study.  Go to <a href="/Research/Admin/StudyDesign.aspx"><b>Study Design > Edit Study Design</b></a> to edit the available status categories for your study.
+</div>
+	<br />
+	<hr />
+<br /><br />
 <h4 style="color: gray">Sept 2018</h4>
 <h3>Themes</h3>
 <div style="width: 900px">
