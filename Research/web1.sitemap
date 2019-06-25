@@ -4,6 +4,7 @@
     <siteMapNode url="" title="Clinic" description="" menuitem="true" roles="Autism&#x20;Clinic&#x20;Operations&#x20;Group">
       <siteMapNode url="~/AC/CHDDrpt.aspx" title="CHDD report" description="CHDD report based on Valant data" menuitem="true" />
       <siteMapNode url="~/AC/ValantTracking.aspx" title="Valant tracking" description="Valant tracking" menuitem="true" />
+      <siteMapNode url="~/AC/ValantDoc.aspx" title="Valant documents" description="Valant documents" menuitem="true" />
       <siteMapNode url="https://uwac.autism.washington.edu/Clinic/" title="Go Here For Clinic DB" menuitem="true" />
     </siteMapNode>
     <siteMapNode url="" title="Participants">

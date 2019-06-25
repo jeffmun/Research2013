@@ -174,6 +174,9 @@ namespace uwac
 			{
 				//Connections strings managed in Web.Config and the various publishing profile transforms
 
+				case "ValantTJ":
+					connstring = ConfigurationManager.ConnectionStrings["ValantTJ"].ToString();
+					break;
 				case "vtj":
 					connstring = ConfigurationManager.ConnectionStrings["ValantTJ"].ToString();
 					break;
