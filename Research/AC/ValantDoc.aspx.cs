@@ -14,6 +14,28 @@ public partial class AC_ValantDoc : BasePage //System.Web.UI.Page
 	protected void Page_Load(object sender, EventArgs e)
 	{
 
+		int x = 0;
+
+		string netid = Master.Master_netid;
+		string user = HttpContext.Current.User.Identity.Name.ToString().Replace(@"NETID\","");
+
+		string errormsg = String.Format("Sorry, {0} you do not have permission for this page.  Contact Kathryn Larson with questions.", user);
+
+		List<string> allowedusers = new List<string> { "jeffmun", "freitz", "larsonk", "greenson", "eskandar","ykv", "granathk","sharim2","cathek","matestic" };
+
+		if(allowedusers.Contains(user))
+		{
+			grid.Visible = true;
+			lblPerm.Visible = false;
+
+		}
+		else
+		{
+			grid.Visible = false;
+			lblPerm.Text = errormsg;
+			lblPerm.Visible = true;
+		}
+
 	}
 
 

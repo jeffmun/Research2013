@@ -33,7 +33,8 @@
 
 <dx:ASPxLabel ID="lbl1" runat="server" Text="Valant Documents" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
 <br />
-<br />.
+<br />
+<dx:ASPxLabel ID="lblPerm" runat="server" Text="You do not have permission for this page." Font-Size="Medium" Font-Bold="false"></dx:ASPxLabel>
 
 
 <dx:ASPxGridView ID="grid" runat="server" DataSourceID="sqlValantDoc" AutoGenerateColumns="false" KeyFieldName="valdocID" SettingsBehavior-AllowGroup="true"
@@ -44,6 +45,8 @@
 		<dx:GridViewCommandColumn ShowEditButton="true" Width="60"></dx:GridViewCommandColumn>
 		<dx:GridViewDataColumn FieldName="valdocID" ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="client"  ReadOnly="true" Width="80"></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="lastname"  ReadOnly="true" Width="100"></dx:GridViewDataColumn>
+		<dx:GridViewDataColumn FieldName="firstname"  ReadOnly="true" Width="100"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="doctype" ReadOnly="true" Width="150"></dx:GridViewDataColumn>
 		<dx:GridViewDataColumn FieldName="docdate" ReadOnly="true" Width="120"></dx:GridViewDataColumn>
 		<dx:GridViewDataHyperLinkColumn FieldName="docparams" PropertiesHyperLinkEdit-EnableClientSideAPI="true"
@@ -67,7 +70,7 @@
 	
 	<asp:SqlDataSource ID="sqlValantDoc" runat="server" ConnectionString="<%$ ConnectionStrings:ValantTJ %>"
 		SelectCommandType="text"
-		SelectCommand="select * ,  folder + '\' + client + '\' + doctype + '@!@' + docname as docparams from valantdocdump where docname not like '%.sig'">
+		SelectCommand="select a.*, lastname, firstname ,  folder + '\' + client + '\' + doctype + '@!@' + docname as docparams from valantdocdump a left join ClientMaster b ON a.client = b.patientID where docname not like '%.sig'">
 	</asp:SqlDataSource>
 	
 
