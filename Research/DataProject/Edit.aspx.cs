@@ -699,13 +699,19 @@ public partial class DataProject_Edit : BasePage //System.Web.UI.Page
 		{
 			bool include_inthx_vars = (Session["selected_inthxlist"] != null) ? true : false;
 
-			DataTable dtv = uwac.trk.dataops.GetVarsForDataproject(Convert.ToInt32(Request.QueryString["pk"]),  smID_csv, include_inthx_vars);
-			Session["vars"] = dtv;
+			if (smID_csv != null)
+			{
+				DataTable dtv = uwac.trk.dataops.GetVarsForDataproject(Convert.ToInt32(Request.QueryString["pk"]), smID_csv, include_inthx_vars);
+				Session["vars"] = dtv;
+			}
 		}
 
-		gridSelVars.DataSource = Session["vars"];
-		gridSelVars.DataBind();
-
+		if (Session["vars"] != null)
+		{
+			DataTable dtvars = (DataTable)Session["vars"];
+			gridSelVars.DataSource = dtvars;
+			gridSelVars.DataBind();
+		}
 	}
 
 	protected void pivotIntHxCallback_OnCallback(object sender, EventArgs e)
