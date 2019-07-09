@@ -47,7 +47,7 @@ public partial class Data_Import : BasePage
 	{
 		Debug.WriteLine(String.Format("Page_Load  IsPostBack:{0}  IsCallback:{1}", IsPostBack, IsCallback));
 
-
+		LoadInstructions();
 		LoadSubjects();
 		LoadDatatypes();
 		
@@ -64,13 +64,38 @@ public partial class Data_Import : BasePage
 
 	}
 
+	protected void LoadInstructions()
+	{
+		string info = "";
+		if (Master.Master_studyID==1110) //AVH
+		{
+			info += "<b><u>Instructions</u></b></br>";
+			info += "A. Create a.tsv file with account_id (4 digit number from Uid column), and startdate from the table displayed on the <a href=\"https://hippo.cs.dartmouth.edu/dashboard/compliance/avh\">dashboard</a>. </br></br>";
+			info += "B. Download the survey data from the <a href=\"https://hippo.cs.dartmouth.edu/dashboard/compliance/avh\">dashboard</a>.</br></br>"; 
+			info += "C. Import the AVH_startdate measure using the file created in A and the controls below.</br></br>";
+			info += "D. Import the survey data downloaded in B and the controls below.</br>By selecting any of the measures, the system will import the survey data and insert records in the appropriate table.</br></br>";
+			info += "<i>When asked, delete the existing records.  The info downloaded from the dashboard will completely replace what has been previously imported. </i><br/>";
+			}
+
+		lblInstructions.ForeColor = Color.Blue;
+		lblInstructions.EncodeHtml = false;
+		lblInstructions.Text = info;
+	}
 
 	protected void LoadSubjects()
 	{
 		SQL_utils sql = new SQL_utils("backend");
 
-		string sqlcode = String.Format("select 0 subjID, 'Multiple {0} subjects' ID union select subjID, ID from trk.vwMasterStatus_S where studyID={1}"
-			, Master.Master_studyname, Master.Master_studyID.ToString());
+		string sqlcode = "";
+		if (Master.Master_studyID == 1110)
+		{
+			sqlcode = String.Format("select 0 subjID, 'Multiple {0} subjects' ID ", Master.Master_studyname);
+		}
+		else
+		{
+			sqlcode = String.Format("select 0 subjID, 'Multiple {0} subjects' ID union select subjID, ID from trk.vwMasterStatus_S where studyID={1}"
+				, Master.Master_studyname, Master.Master_studyID.ToString());
+		}
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 
 		cboSubject.DataSource = dt;

@@ -102,9 +102,15 @@ namespace uwac
 		{
 			foreach (Valuesetitem itm in valitems)
 			{
-				if (itm.label.ToLower() == mylabel.ToLower()) return (int)itm.value;
+				string mylabel_fixed = FixForwardSlash(mylabel);
+				if (itm.label.ToLower() == mylabel_fixed.ToLower()) return (int)itm.value;
 			}
 			return -9876;
+		}
+
+		public string FixForwardSlash(string txt)
+		{
+			return txt.Replace(" / ", "/").Replace(" /", "/").Replace("/ ", "/");
 		}
 
 	}

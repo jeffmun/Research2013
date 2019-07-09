@@ -42,12 +42,13 @@
 	<table>
 		<tr>
 			<td style="vertical-align: top; padding: 5px">
+					<dx:ASPxLabel ID="lblInstructions" ClientInstanceName="lblInstructions" runat="server" ></dx:ASPxLabel>
+					<br />
 				<dx:ASPxComboBox ID="cboSubject" ClientInstanceName="cboSubject" runat="server" Caption="Subject:" CaptionCellStyle-Width="90px" NullText="select subject"
 					 OnSelectedIndexChanged="cboSubject_OnSelectedIndexChanged" AutoPostBack="true"></dx:ASPxComboBox>
 
 				<dx:ASPxComboBox ID="cboStudymeas" ClientInstanceName="cboStudymeas" runat="server" Caption="Measure:" CaptionCellStyle-Width="90px" NullText="select measure"
 						 AutoPostBack="true" OnSelectedIndexChanged="cboStudymeas_OnSelectedIndexChanged" ></dx:ASPxComboBox>
-
 
 					<dx:ASPxLabel ID="lblNrecs" ClientInstanceName="lblNrecs" runat="server" ></dx:ASPxLabel>
 					<br />

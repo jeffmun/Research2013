@@ -880,7 +880,7 @@ namespace uwac
 
 								string hhname = String.Format("Imported_stuydyID_{0}", studyid);
 								int anon_hhid = sql.IntScalar_from_SQLstring("exec hh.spHousehold_INSERT '" + hhname + "'");
-								sql.Close();
+								//sql.Close();
 
 
 								string newpersoncode = String.Format("insert into tblPerson(householdID, sex, firstname, lastname, ethnicityID, hispanicID) values ( {0}, 'U','{1}','studyid={2}', 7, 3 )"
@@ -933,12 +933,16 @@ namespace uwac
 							}
 						}
 					}
+
+					sql.Close();
 					return String.Format("Created {0} new subjects.<br/>", numnewsubjects);
 				}
 				else
 				{
+					sql.Close();
 					return "Table does not contain 'id' and 'studymeasid' fields.";
 				}
+				
 			}
 			else
 			{
