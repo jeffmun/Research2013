@@ -48,7 +48,7 @@
 					 OnSelectedIndexChanged="cboSubject_OnSelectedIndexChanged" AutoPostBack="true"></dx:ASPxComboBox>
 
 				<dx:ASPxComboBox ID="cboStudymeas" ClientInstanceName="cboStudymeas" runat="server" Caption="Measure:" CaptionCellStyle-Width="90px" NullText="select measure"
-						 AutoPostBack="true" OnSelectedIndexChanged="cboStudymeas_OnSelectedIndexChanged" ></dx:ASPxComboBox>
+						 AutoPostBack="true" OnSelectedIndexChanged="cboStudymeas_OnSelectedIndexChanged" DropDownRows="12" ></dx:ASPxComboBox>
 
 					<dx:ASPxLabel ID="lblNrecs" ClientInstanceName="lblNrecs" runat="server" ></dx:ASPxLabel>
 					<br />

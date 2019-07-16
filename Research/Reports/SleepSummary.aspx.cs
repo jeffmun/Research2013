@@ -165,7 +165,7 @@ public partial class Reports_SleepSummary : BasePage
 		{
 			foreach (DxChartBatch batch in myorder.batches)
 			{
-				if (batch.settings.outputtype == DxOutputtype.Actogram)
+				if (batch.batchsettings.outputtype == DxOutputtype.Actogram)
 				{
 
 

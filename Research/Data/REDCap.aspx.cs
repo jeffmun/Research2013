@@ -246,9 +246,9 @@ public partial class Data_REDCap : BasePage
 	{
 		ASPxGridView gv = (ASPxGridView)sender;
 		SQL_utils sql = new SQL_utils("data");
-
-		int tokenid = sql.IntScalar_from_SQLstring(String.Format("select min(tokenID) from def.vwREDCap_Form where studyID={0} and measureID={1}",
-			Session["studyID"].ToString(), cboMeas.Value.ToString()));
+		string sqlcode = String.Format("select min(tokenID) from def.vwREDCap_Form where studyID={0} and measureID={1}",
+			Session["studyID"].ToString(), cboMeas.Value.ToString());
+		int tokenid = sql.IntScalar_from_SQLstring(sqlcode);
 		sql.Close();
 
 		int measureID = Convert.ToInt32(cboMeas.Value.ToString());
@@ -398,12 +398,21 @@ public partial class Data_REDCap : BasePage
 
 		List<string> formnames = GetSelectedFormnames();
 
-		placeholder_gridMeta.Controls.Add(redcap.gridMetaData(formnames));
-
-		if(cboMeas.Value != null)
+		if (formnames.Count > 0)
 		{
-			btnImportMeta.Visible = true;
+			placeholder_gridMeta.Controls.Add(redcap.gridMetaData(formnames));
+
+			if (cboMeas.Value != null)
+			{
+				btnImportMeta.Visible = true;
+			}
+			lblNoneSelected.Text = "";
 		}
+		else
+		{
+			lblNoneSelected.Text = "Select a REDCap form.";
+		}
+
 	}
 
 	protected void btnImportMeta_OnClick(object sender, EventArgs e)
@@ -438,11 +447,19 @@ public partial class Data_REDCap : BasePage
 
 		List<string> formnames = GetSelectedFormnames();
 
-		ASPxGridView grid = redcap.gridDataFromForm(formnames[0]);
-		if (grid != null)
+		if (formnames.Count > 0)
 		{
-			placeholder_gridMeta.Controls.Clear();
-			placeholder_gridMeta.Controls.Add(grid);
+			ASPxGridView grid = redcap.gridDataFromForm(formnames[0]);
+			if (grid != null)
+			{
+				placeholder_gridMeta.Controls.Clear();
+				placeholder_gridMeta.Controls.Add(grid);
+			}
+			lblNoneSelected.Text = "";
+		}
+		else
+		{
+			lblNoneSelected.Text = "Select a REDCap form.";
 		}
 
 	}

@@ -169,7 +169,8 @@
 				</dx:ASPxButton>
 				   <br /><br />
 				<dx:ASPxButton ID="btnShowMeta" runat="server" Text="Display REDCap Meta-Data from Selected Forms" OnClick="btnShowMeta_OnClick"></dx:ASPxButton>
-
+				<br />
+				<dx:ASPxLabel ID="lblNoneSelected" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
 				   <br /><br />
 				<dx:ASPxButton ID="btnImportMeta" runat="server" Text="Import this meta data" Visible="false" OnClick="btnImportMeta_OnClick"></dx:ASPxButton>
 
@@ -227,6 +228,14 @@
 		</SelectParameters>
 	</asp:SqlDataSource>
 
+
+			<asp:SqlDataSource ID="sql_RedcapTokens" runat="server" SelectCommandType="Text"  
+		SelectCommand="select tblpk as _tblpk, measname as _measname from def.Tbl a JOIN uwautism_research_backend..tblmeasure  b ON a.measureID=b.measureID where a.measureID in (select measureID from uwautism_research_backend..tblstudymeas where studyID= @studyID) "
+		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
+		<SelectParameters>
+			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
+		</SelectParameters>
+	</asp:SqlDataSource>
 
 
 </asp:Content>

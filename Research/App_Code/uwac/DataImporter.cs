@@ -71,7 +71,9 @@ namespace uwac
 			Initialize();
 			settings = new DataImportSettings(ID, main_studymeasID);
 			ExtractREDCapTableForImport();
-			results.Add(CheckSubjects(_imported_dt));
+
+			results.Add("Skpped 'CheckSubjects' for now.");
+			//results.Add(CheckSubjects(_imported_dt));
 
 			FixIndexnum(_imported_dt, settings.tblname);
 
@@ -407,6 +409,91 @@ namespace uwac
 
 
 		public DataTable GetDataTableFromText(string text, DataImportSettings settings)
+		{
+			DataTable dt = EmptyDataTable(settings.tblname);
+
+			bool has_id = dt.ColumnNames().Contains("id");
+
+			using (GenericParser parser = new GenericParser())
+			{
+				parser.SetDataSource(new StringReader(text));
+
+				parser.ColumnDelimiter = settings.delimiter;   //= "\t".ToCharArray();
+				parser.FirstRowHasHeader = settings.firstRowContainsFieldnames;
+				parser.SkipStartingDataRows = settings.skipstartingrows;
+				parser.MaxBufferSize = 4096;
+				parser.MaxRows = settings.rowstoprocess;
+				parser.TextQualifier = settings.textqualifier;
+
+				int counter = 0;
+				DateTime? basedate = null;
+
+				bool usebasedate = false;
+				int basedate_importpos = 0;
+				foreach (Importfield fld in settings.fields)
+				{
+					if (fld.mode == FieldExtractionMode.calcDayNum)
+					{
+						usebasedate = true;
+						basedate_importpos = fld.importposition;
+					}
+				}
+
+				int error_counter = 0;
+
+				while (parser.Read()) //& counter < 100)
+				{
+					if (error_counter > 1000000)
+					{
+						parser.Close();
+					}
+					else
+					{
+
+						//CONDITIONS IN WHICH WE NEED TO TO SKIP THE ROW
+						bool isSummaryRow = CheckForSummaryRow(parser, 0, settings.measureID);
+
+						if (!isSummaryRow)
+						{
+							//Debug.WriteLine(counter);
+							DataRow row = PopulateRow(dt, parser, settings, basedate);
+							if (row == null)
+							{
+								Debug.WriteLine(String.Format("{0} . . . . . . . . . . . . . . . row is null . . . . . . . . . . . . ", error_counter));
+								error_counter++;
+								results.Add("ERROR. GetDataTableFromText: No Row! counter = " + counter.ToString());
+							}
+							else
+							{
+
+								if (usebasedate & basedate == null)
+								{
+									basedate = (DateTime)Convert.ToDateTime(parser[basedate_importpos].ToString());
+								}
+								if (row != null)
+								{
+
+									AddRow(has_id, dt, row);
+								}
+
+							}
+						}
+					}
+					if (counter % 100 == 0) Debug.WriteLine(String.Format("counter: {0}  {1}", counter, settings.tblname));
+					counter++;
+
+				}
+
+				inputfile_rowcounter = counter;
+
+
+			}
+
+			return dt;
+		}
+
+
+		public DataTable GetDataTableFromREDCap(string text, DataImportSettings settings)
 		{
 			DataTable dt = EmptyDataTable(settings.tblname);
 
@@ -1171,23 +1258,29 @@ namespace uwac
 
 			if (dbEntityType == DbEntityType.studymeas)
 			{
-				code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname, studymeasID, studymeasname " + Environment.NewLine +
-				"from def.REDCapToken a " + Environment.NewLine +
-				"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
-				"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
-				"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
-				"join uwautism_research_backend..tblStudyMeas e ON d.measureID = e.measureID " + Environment.NewLine +
-				"where e.studymeasID = {0} and b.studyID={1}", pk, studyID);
+				//code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname, studymeasID, studymeasname " + Environment.NewLine +
+				//"from def.REDCapToken a " + Environment.NewLine +
+				//"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
+				//"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
+				//"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
+				//"join uwautism_research_backend..tblStudyMeas e ON d.measureID = e.measureID " + Environment.NewLine +
+				//"where e.studymeasID = {0} and b.studyID={1}", pk, studyID);
+
+				code = String.Format("select * from def.vwREDCap_LinkedImportTbls where ltpk in " + Environment.NewLine +
+					"(select ltpk from def.vwREDCap_LinkedImportTbls where studymeasID = {0}  and studyID = {1})", pk, studyID);
 
 			}
 			else if (dbEntityType == DbEntityType.measure)
 			{
-				code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname " + Environment.NewLine +
-				"from def.REDCapToken a " + Environment.NewLine +
-				"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
-				"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
-				"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
-				"where d.measureID = {0} and b.studyID={1}", pk, studyID);
+				//code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname " + Environment.NewLine +
+				//"from def.REDCapToken a " + Environment.NewLine +
+				//"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
+				//"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
+				//"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
+				//"where d.measureID = {0} and b.studyID={1}", pk, studyID);
+
+				code = String.Format("select * from def.vwREDCap_LinkedImportTbls where ltpk in " + Environment.NewLine +
+					"(select ltpk from def.vwREDCap_LinkedImportTbls where measureID = {0}  and studyID = {1})", pk, studyID);
 			}
 
 

@@ -13,11 +13,12 @@ using System.Web.UI.HtmlControls;
 using SpreadsheetGear;
 using SpreadsheetGear.Data;
 using uwac;
+using System.Diagnostics;
 
-	/// <summary>
-	/// Summary description for SpreadshetGearUtils
-	/// </summary>
-	public class SpreadsheetGearUtils
+/// <summary>
+/// Summary description for SpreadshetGearUtils
+/// </summary>
+public class SpreadsheetGearUtils
 	{
 		//Sales Receipt #: 00206256 , 10/28/2015 
 		
@@ -701,20 +702,32 @@ using uwac;
 					// Send to output stream
 					HttpContext.Current.Response.Clear();
 					HttpContext.Current.Response.ContentType = "text/csv";
-					HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".csv");
-					HttpContext.Current.Response.Write(csvString);
-					HttpContext.Current.Response.End();
 
-				}
-				
-				else
+					bool hasHeader = HttpContext.Current.Response.HeadersWritten;
+					Debug.WriteLine(String.Format("HttpContext.Current.Response.HeadersWritten = {0}", hasHeader.ToString()));
+
+					if (!hasHeader)
+					{
+						HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".csv");
+					}
+					HttpContext.Current.Response.Write(csvString);
+					HttpContext.Current.Response.Flush();
+					HttpContext.Current.Response.SuppressContent = true;
+					HttpContext.Current.ApplicationInstance.CompleteRequest();
+					//HttpContext.Current.Response.End();
+
+			}
+
+			else
 				{
 				workbook.SaveAs(serverfilename, FileFormat.CSV);
 				HttpContext.Current.Response.Clear();
 				HttpContext.Current.Response.ContentType = "application/vnd.ms-excel";
 				HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".csv");
 				workbook.SaveToStream(HttpContext.Current.Response.OutputStream, SpreadsheetGear.FileFormat.CSV);
-				HttpContext.Current.Response.End();
+
+				HttpContext.Current.ApplicationInstance.CompleteRequest();
+				//HttpContext.Current.Response.End();
 				}
 			}
 			else if (format == "IBISVine" )
@@ -736,7 +749,76 @@ using uwac;
 		}
 
 	
-		public static void Save_xls_from_xlsx(string filexlsx)
+
+	public static string WriteDataTableAsCSV(DataTable dt, string filename, string format, bool isNDARdata)
+	{
+		// Create a new workbook.
+		SpreadsheetGear.IWorkbook workbook = SpreadsheetGear.Factory.GetWorkbook();
+		int counter = 0;
+
+		counter++;
+
+		if (counter > 1)
+
+			workbook.Worksheets.Add();
+
+		IWorksheet worksheet = workbook.Worksheets["Sheet" + counter.ToString()];
+		IRange cells = worksheet.Cells;
+		// Set the worksheet name.
+		if (dt.TableName.Length > 31) worksheet.Name = dt.TableName.Substring(0, 31);
+		else if (dt.TableName != "") worksheet.Name = dt.TableName;
+		else worksheet.Name = "Sheet1";
+
+		// Get the top left cell for the DataTable.
+		SpreadsheetGear.IRange range = worksheet.Cells["A1"];
+
+		// Copy the DataTable to the worksheet range.
+		range.CopyFromDataTable(dt, SpreadsheetGear.Data.SetDataFlags.None);
+
+		cells["1:1"].Font.Bold = true;
+
+
+		string user = System.Security.Principal.WindowsIdentity.GetCurrent().Name.ToString().Replace(@"AUTISM\", "");
+
+		string csvString = "";
+
+		string serverfilename = HttpContext.Current.Server.MapPath(@"~/App_Data/DataDump/" + filename + ".csv");
+			
+
+
+		if (isNDARdata)
+		{
+			//ADD The ShortName in the first row if this is an NDAR data file
+			// Use SaveToMemory(...) to get a byte array copy of the range data in the CSV format.
+			string dataRangeStr = Encoding.ASCII.GetString(workbook.SaveToMemory(FileFormat.CSV));
+
+			string datafileheader = dt.TableName.Substring(0, (dt.TableName.Length - 2)) + "," + dt.TableName.Substring(dt.TableName.Length - 1, 1);
+
+			// Prepend "header" text of the NDAR shortName and a linefeed to the rest of the CSV file.
+			csvString = datafileheader + "\r\n" + dataRangeStr;
+				
+		}
+
+		else
+		{
+			csvString = Encoding.ASCII.GetString(workbook.SaveToMemory(FileFormat.CSV));
+		}
+
+		// Write the text to a new file
+		try
+		{
+			File.WriteAllText(serverfilename, csvString);
+			return serverfilename;
+		}
+		catch(Exception ex)
+		{
+			return String.Format("ERROR_{0}", filename);
+		}
+
+	}
+
+
+	public static void Save_xls_from_xlsx(string filexlsx)
 		{
 
 			IWorkbook wb = SpreadsheetGear.Factory.GetWorkbook(HttpContext.Current.Server.MapPath(@"~/App_Data/DataDownloads/" + filexlsx));
