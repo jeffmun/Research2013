@@ -1521,6 +1521,7 @@ namespace uwac
 							
 							if(dt_dest.ContainsColumnName(sourcecol.ColumnName))
 							{
+								Debug.WriteLine(String.Format(" sourcecol.Columnname: {0} ", sourcecol.ColumnName));
 								SqlBulkCopyColumnMapping bccm = new SqlBulkCopyColumnMapping();
 								bccm.DestinationColumn = sourcecol.ColumnName;
 								bccm.SourceColumn = sourcecol.ColumnName;

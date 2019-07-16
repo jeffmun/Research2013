@@ -127,27 +127,7 @@ public partial class NDAR_NDARview : System.Web.UI.Page
 			DataTable dt = NDAR.GetNDAR_view(shortName, studyID, IDexclude, studymeasIDs);
 			if (dt.Rows.Count > 0)
 			{
-				//gvNDARview.DataSource = dt;
-				//gvNDARview.DataBind();
-				//gvNDARview.Visible = true;
-
-
-				//#region Add Hyperlink column
-				////GridViewDataTextColumn colID = new GridViewDataTextColumn();
-				////colID.FieldName = "rownum";
-				////gridNDARview.Columns.Add(colID);
-
-				//GridViewDataTextColumn colItemTemplate = new GridViewDataTextColumn();
-
-				//MyHyperlinkTemplate delink = new MyHyperlinkTemplate();
-				//colItemTemplate.FieldName = "delink";
-				//colItemTemplate.DataItemTemplate = delink; // Create a template
-				//colItemTemplate.Name = "colItemTemplate";
-				//colItemTemplate.Caption = "Template Column";
-				//gridNDARview.Columns.Add(colItemTemplate);
-				//#endregion
-
-
+			
 				Session["NDARview"] = dt; 
 
 				gridNDARview.DataSource = dt;

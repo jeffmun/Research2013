@@ -2,19 +2,15 @@
 
 using System;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.Configuration;
-using System.Web.Services;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
 
 
 public class DataFileHandler : IHttpHandler {
-    
+
     public void ProcessRequest (HttpContext context) {
 
         string filename = context.Request.QueryString["file"];
+        string folder = "DataDownloads"; 
+        if (context.Request.QueryString["folder"] != null) folder = context.Request.QueryString["folder"] ;
         //Validate the file name and make sure it is one that the user may access
         context.Response.Buffer = true;
         context.Response.Clear();
@@ -23,14 +19,15 @@ public class DataFileHandler : IHttpHandler {
 
         try
         {
-            context.Response.WriteFile(HttpContext.Current.Server.MapPath("~/App_Data/DataDownloads/" + filename));
+            string localfilename = (folder == null | folder == "") ? "DataDownloads" : folder;
+            context.Response.WriteFile(HttpContext.Current.Server.MapPath(String.Format("~/App_Data/{0}/{1}", folder, filename)));
         }
         catch(Exception)
         {
-            
+
         }
     }
- 
+
     public bool IsReusable {
         get {
             return false;

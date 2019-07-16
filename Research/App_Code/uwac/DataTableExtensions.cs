@@ -37,9 +37,12 @@ namespace uwac
 		{
 			bool containsColname = false;
 
-			foreach (DataColumn col in dt.Columns)
+			if (dt != null)
 			{
-				if (col.ColumnName == colname) containsColname = true;
+				foreach (DataColumn col in dt.Columns)
+				{
+					if (col.ColumnName == colname) containsColname = true;
+				}
 			}
 			return containsColname;
 		}
