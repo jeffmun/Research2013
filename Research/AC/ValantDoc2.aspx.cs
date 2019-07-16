@@ -9,7 +9,7 @@ using uwac;
 using uwac.trk;
 using DevExpress.Web;
 
-public partial class AC_ValantDoc : BasePage //System.Web.UI.Page
+public partial class AC_ValantDoc2 : BasePage //System.Web.UI.Page
 {
 	protected void Page_Load(object sender, EventArgs e)
 	{
@@ -24,8 +24,8 @@ public partial class AC_ValantDoc : BasePage //System.Web.UI.Page
 		List<string> allowedusers = new List<string> { "jeffmun", "freitz", "larsonk", "greenson", "eskandar","ykv", "granathk","sharim2","cathek","matestic" };
 
 
-		if (true)
-		//if(allowedusers.Contains(user))
+		//if(true)
+		if(allowedusers.Contains(user))
 		{
 			grid.Visible = true;
 			lblPerm.Visible = false;
