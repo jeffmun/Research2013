@@ -274,7 +274,7 @@
                     <ClientSideEvents EndCallback="function(s, e) {ASPxClientHint.Update();}" />
                                         <SettingsExport EnableClientSideExportAPI="true" FileName="Actions"></SettingsExport>
                       <Toolbars>
-                        <dx:GridViewToolbar EnableAdaptivity="true">
+                        <dx:GridViewToolbar >
                             <Items>
                                 <dx:GridViewToolbarItem Text="Export" Image-IconID="export_export_16x16">
                                     <Items>

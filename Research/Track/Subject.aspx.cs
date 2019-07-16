@@ -232,7 +232,7 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 		{
 			string subjid = dt.AsEnumerable().Select(t => t.Field<int>("subjID")).First().ToString();
 			string id = dt.AsEnumerable().Select(t => t.Field<string>("ID")).First().ToString();
-			string ss = dt.AsEnumerable().Select(t => t.Field<string>("subjstatus")).First().ToString();
+			string ss = dt.AsEnumerable().Select(t => t.Field<string>("subjstatus") == null ? string.Empty : t.Field<string>("subjstatus")).First().ToString();
 			string ssd = dt.AsEnumerable().Select(t => t.Field<string>("subjstatusdetail") == null ? string.Empty : t.Field<string>("subjstatusdetail")).First().ToString();
 
 			
@@ -240,10 +240,16 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 			string ssnotes = dt.AsEnumerable().Select(t => t.Field<string>("notes") == null ? string.Empty : t.Field<string>("notes")).First().ToString();
 			string groupname = dt.AsEnumerable().Select(t => t.Field<string>("groupname")).First().ToString();
 
-			string ssID = dt.AsEnumerable().Select(t => t.Field<int>("ssID")).First().ToString();
-			string ssdID = dt.AsEnumerable().Select(t => t.Field<int>("ssdID")).First().ToString();
+			if (ss != "")
+			{
+				string ssID = dt.AsEnumerable().Select(t => t.Field<int>("ssID")).First().ToString();
+				Session["ssID"] = ssID;
+			}
+			if (ssd != "")
+			{
+				string ssdID = dt.AsEnumerable().Select(t => t.Field<int>("ssdID")).First().ToString();
+			}
 
-			Session["ssID"] = ssID;
 
 			hidSubjID.Value = subjid;
 			lblID.Text = id;
