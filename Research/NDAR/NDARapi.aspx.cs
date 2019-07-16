@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -402,6 +403,16 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 			boolResult = (status == "error") ? false : true;
 			//HttpContext.Current.Response.End();
 		}
+
+		if(boolResult)
+		{
+			//Delete all the individual csv files
+			foreach (string f in files)
+			{
+				File.Delete(f);
+			}
+		}
+
 		return boolResult;
 	}
 
