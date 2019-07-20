@@ -270,7 +270,8 @@ public partial class DataProject_Files : BasePage
 
 		if (has_pk)
 		{
-			Dataproject dataproject = new Dataproject(pk);
+			bool septabs = chkSepTabs.Checked;
+			Dataproject dataproject = new Dataproject(pk, septabs);
 
 			//This saves the dataproject as an Excel file.
 			dataproject.CreateDatafile();

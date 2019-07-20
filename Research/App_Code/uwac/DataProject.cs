@@ -28,6 +28,7 @@ namespace uwac.data
 		private List<string> _ID_list;
 		private List<string> _measureID_list;
 		private List<string> _fldname_list;
+		private bool _separatetabs;
 
 		public DataSet Dataset { get { return _dataset; }  }
 		public int Dataproj_pk { get; set; }
@@ -42,6 +43,7 @@ namespace uwac.data
 		public bool hasSheetNamedData { get; set; }
 		public string loadedfilename { get; set; }
 		public string selectedsheet { get; set; }
+		public bool separatetabs { get; set; }
 
 		//internal vars used to process & generate data
 		private List<string> _tbls_to_process = new List<string>();
@@ -64,13 +66,28 @@ namespace uwac.data
 		{
 			_dataproj_pk = -1;
 			projTitle = "New Project " + System.DateTime.Now.ToString();
-
+			_separatetabs = false;
 
 		}
+
 		//Creates a DataProject
 		public Dataproject(int dataproj_pk)
 		{
+			_separatetabs = false;
 			_dataproj_pk = dataproj_pk;
+			CreateDataproject();
+		}
+		public Dataproject(int dataproj_pk, bool septabs)
+		{
+			_separatetabs = septabs;
+			_dataproj_pk = dataproj_pk;
+			CreateDataproject();
+		}
+
+
+		//Creates a DataProject
+		public void CreateDataproject()
+		{
 			PopulateFiles();
 
 			GetDataprojectComponentsFromDB();
@@ -93,7 +110,7 @@ namespace uwac.data
 		}
 
 
-		public Dataproject(int dataproj_pk, bool getExisting)
+		public Dataproject(int dataproj_pk, bool septabs, bool getExisting)
 		{
 			_dataproj_pk = dataproj_pk;
 
@@ -122,7 +139,7 @@ namespace uwac.data
 			_studyID = studyID;
 			_subjID_list = subjID_list;
 			_studymeasID_list = studymeasID_list;
-
+			_separatetabs = false;
 		}
 
 /*
@@ -708,7 +725,14 @@ namespace uwac.data
 
 				DataRow row = _dataset.Tables["Measures"].Rows[t];
 
-				CreateSqlForMeasure(sql, row, t, counter, msg);
+				if (_separatetabs)
+				{
+					CreateSqlForMeasure_SepTabs(sql, row, t, counter, msg);
+				}
+				else
+				{
+					CreateSqlForMeasure(sql, row, t, counter, msg);
+				}
 
 
 				counter++;
@@ -865,6 +889,329 @@ namespace uwac.data
 
 			sql.Close();
 		}
+
+
+
+		private void CreateSqlForMeasure_SepTabs(SQL_utils sql, DataRow row, int t, int counter, string msg)
+		{
+
+			string tblname = row["tblname"].ToString();
+			string measname = row["measname"].ToString();
+			int measureID = Convert.ToInt32(row["measureID"]);
+			string studymeasID_csv = row["studymeasID_csv"].ToString().Replace(";", "");
+			string fldpk_csv = row["fldpk_csv"].ToString().Replace(";", "");
+			string ID_csv = trk.dataops.GetCSV(_ID_list);
+
+
+			Debug.WriteLine("");
+			Debug.WriteLine("");
+			Debug.WriteLine("==========================CreateSqlForMeasure_SepTabs==========================");
+			Debug.WriteLine(measname);
+			Debug.WriteLine("=======================");
+			Debug.WriteLine("");
+
+
+			int N_vars = (String.IsNullOrEmpty(fldpk_csv)) ? 0 : fldpk_csv.Split(',').Length;
+			int Ns1_N = 0;
+			int Ns1_IDs = 0;
+			int Ns1_TimePts = 0;
+
+			List<int> inthx_measureIDs = new List<int> { 815, 816, 817, 819 };
+			List<int> actigraph_measureIDs = new List<int> { 3842, 4853, 4855 }; //Actigraph measures
+
+
+
+			if (N_vars == 0)
+			{
+				//No Data so don't include
+				msg = String.Format("!!!!!!!! No variables selected for --> ", measname);
+				Debug.WriteLine(msg);
+
+			}
+			else
+			{
+				//Check the N's for the selected studymeas
+
+				string check_Ns1 = String.Format(" select count(*) N, count(distinct(dbo.fnGetTimePoint_text_from_StudymeasID(studymeasID))) N_TimePts " +
+				" , count(distinct(id)) N_IDs  " + Environment.NewLine +
+				" from {0}  " + Environment.NewLine +
+				" where verified in (0,1) and studymeasID in ({1})  " + Environment.NewLine +
+				" and dbo.fnGETPersonID_from_ID_smID(ID, studymeasID) in " + Environment.NewLine +
+				" (select personID from dp.Subj s  join uwautism_research_backend..tblsubject s2 ON s.subjID = s2.subjID where subjset_PK =" + Environment.NewLine +
+				" 	(select subjset_pk from dp.DataProject where dataproj_pk = {2}))"
+				, tblname, studymeasID_csv, _dataproj_pk);
+
+
+
+				Debug.WriteLine("   ----- Check the N's ");
+				Debug.WriteLine("");
+				Debug.WriteLine(check_Ns1);
+				Debug.WriteLine("");
+
+				DataTable Ns1 = sql.DataTable_from_SQLstring(check_Ns1);
+				Ns1_N = Ns1.Rows[0].Field<int>("N");
+				Ns1_TimePts = Ns1.Rows[0].Field<int>("N_TimePts");
+				Ns1_IDs = Ns1.Rows[0].Field<int>("N_IDs");
+
+
+				//Check for Dups by ID within a single studymeas
+				string check_Ns2 = String.Format(" select ID, studymeasID, count(*) n from {0} where verified in (0,1) and studymeasID in ({1}) and ID in ({2}) " +
+					" group by ID, studymeasID  having count(*) > 1 ", tblname, studymeasID_csv, ID_csv);
+				DataTable dups = sql.DataTable_from_SQLstring(check_Ns2);
+				int Ns2 = dups.Rows.Count;
+				string remove_dup_IDs = "";
+				var dupsIDs_csv = "";
+
+
+				// STEP 0 - Actigraph
+				if (actigraph_measureIDs.Contains(measureID))
+				{
+					//Wait until next step
+					Debug.WriteLine(" !!!!! Measure is Actigraph - skip for now ");
+				}
+
+				#region  STEP 1 - check for dups in a studymeas.
+
+				else if (Ns2 > 0)
+				{
+					//IF there are ID's with dups in a studymeas, remove it when checking the next type of dups
+					string plural = (Ns2 > 1) ? "s" : "";
+					var dupsIDs = dups.AsEnumerable().Select(f => f.Field<string>("ID")).ToList();
+					dupsIDs_csv = String.Join("','", dupsIDs);
+					remove_dup_IDs = " and a.ID not in ('" + dupsIDs_csv + "') ";
+
+					Debug.WriteLine(" -- STEP 1  Ns2 > 0 - there are dups in this studymeas ");
+					Debug.WriteLine(String.Format(" --     dupsIDs_csv: '{0}'", dupsIDs_csv));
+				}
+				#endregion
+
+
+				#region STEP 2 - check for measures collected more than once in a given timepoint.
+
+				//Dups by ID within a TimePoint and Measure.
+				//If there are dups here, we don't want to join it with the other measures.
+				//These will be skipped when creating the unified file.
+				string check_Ns3 = String.Format(" select a.ID, measureID, b.timepointID, c.timepoint_text, count(*) n from {0} a " +
+				" join uwautism_research_backend..tblstudymeas b ON a.studymeasID=b.studymeasID " +
+				" join uwautism_research_backend..tbltimepoint c ON b.timepointID=c.timepointID " +
+				" where verified in (0,1) and a.studymeasID in ({1}) and a.ID in ({2}) {3} " +
+				" group by a.ID, measureID, b.timepointID, c.timepoint_text having count(*) > 1 ", tblname, studymeasID_csv, ID_csv, remove_dup_IDs);
+
+
+				DataTable dups3 = sql.DataTable_from_SQLstring(check_Ns3);
+				int Ns3 = dups3.Rows.Count;
+
+				Debug.Print(String.Format("tbl={0} Ns2={1} Ns3={2} sm={3}", tblname, Ns2, Ns3, studymeasID_csv));
+				#endregion
+
+
+				#region STEP 3 - make sure there are at least some records. 
+
+				if (Ns1_N == 0)
+				{
+					//No Data so don't include
+					msg = String.Format("No records for these subjects.", measname);
+
+					Debug.WriteLine(" !!!!!!!!!!  STEP 3 -  Ns1_N == 0   " + msg);
+				}
+
+				//STEP 3b - MULTIPLE, prepare to save this measure as it's own table. 
+				//else if (Ns3 > 0) //REMOVED, for _SepTabs all are on sep tabs
+				else if (Ns1_N > 0 & Ns2 >= 0)
+				{
+					//Collected Multiple Times
+					_meas_to_skip.Add(measureID.ToString());
+					msg = String.Format("{0}  placed on separate worksheet.", measname);
+
+					Debug.WriteLine(" !!!!!!!!!!  STEP 3b - " + msg);
+
+
+					//NEXT get the fieldnames
+					//AND automatically create an "_agemos" variable for every date variable that is selected
+					//  - this is the UNION portion of the query.
+					string sqlcode_flds = String.Format("select fldname, fldname_miss2null, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
+						" UNION " +
+						" select fldname + '_agemos' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') as ' + fldname + '_agemos'" +
+						"   as fldname_agemos, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) "
+						, fldpk_csv, measureID, t);
+					DataTable flds = sql.DataTable_from_SQLstring(sqlcode_flds);
+
+
+					//vars_names   contains the list of var names (without the additional code to recode missing or calculate age)
+					List<string> vars_names = flds.AsEnumerable().Select(f => f.Field<string>("fldname")).ToList();
+
+
+					//Check to see if there any are reliability 
+					int hasREL = sql.IntScalar_from_SQLstring("select  coalesce(sum(dbo.fnStudymeas_IsREL(studymeasID)),0) as hasREL " +
+							" from   dp.Meas where dataproj_pk = " + _dataproj_pk.ToString() + " and measureID = " + measureID.ToString());
+
+					string _sqlcode_calc_REL_vars = "";
+
+					//Add the REL vars if needed
+					// the dp.fnGet_RELKEY function returns the tablePK for the original coding for both the ORIG and the REL so that cases can be matched on this.
+					if (hasREL > 0)
+					{
+						_sqlcode_calc_REL_vars = " , (case when uwautism_research_backend.dbo.fnIsREL(studymeasID) = 1 then 'REL' else '' end) isREL " +
+							", dp.fnGet_RELKEY(id, studymeasID) RELKEY ";
+						vars_names.Add("isREL");
+						vars_names.Add("RELKEY");
+					}
+
+
+					//vars_no_quote  contains the syntax needed recode missing values and calculate ages
+					//  this goes in the body of the LEFT JOIN clause
+					List<string> vars_recode = flds.AsEnumerable().Select(f => f.Field<string>("fldname_miss2null")).ToList();
+
+					//DEL?
+					//_sqlcode_vars_mult.Add(String.Join(",", vars_recode));
+					_sqlcode_vars_mult.Add(String.Join(",", vars_names));
+
+
+					string _sqlcode_final_mult = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine +
+						" {4} " + Environment.NewLine +
+						" from {0} " + Environment.NewLine +
+						" where verified in (0,1) and studymeasID in ({3}) ) t{1} ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})" + Environment.NewLine
+						, tblname, t, String.Join(",", vars_recode), studymeasID_csv, _sqlcode_calc_REL_vars);
+
+					//!!!!
+					_measname_mult.Add(measname);
+					_sqlcode_tbl_mult.Add(_sqlcode_final_mult);
+
+
+				}
+
+				//STEP 3c - Actigraph, prepare to save this measure as it's own table. 
+				else if (actigraph_measureIDs.Contains(measureID))
+				{
+					//Collected Multiple Times
+					_meas_to_skip.Add(measureID.ToString());
+					msg = String.Format("{0} collected multiple times within a timepoint. Placed on separate worksheet.", measname);
+
+
+					//NEXT get the fieldnames
+					//AND automatically create an "_agemos" variable for every date variable that is selected
+					//  - this is the UNION portion of the query.
+					string sqlcode_flds = String.Format("select fldname, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
+						" UNION " +
+						" select fldname + '_agemos' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') as ' + fldname + '_agemos'" +
+						"   as fldname_agemos, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) "
+						, fldpk_csv, measureID, t);
+					DataTable flds = sql.DataTable_from_SQLstring(sqlcode_flds);
+
+
+					//vars_names   contains the list of var names (without the additional code to recode missing or calculate age)
+					List<string> vars_names = flds.AsEnumerable().Select(f => f.Field<string>("fldname")).ToList();
+
+					_sqlcode_vars_mult.Add(String.Join(",", vars_names));
+
+					string _sqlcode_final_mult = "";
+
+					//string _sqlcode_final_mult = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine +
+					//	" from {0} " + Environment.NewLine +
+					//	" where verified in (0,1) and studymeasID in ({3}) ) t{1} " + 
+					//	" ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})" + Environment.NewLine
+					//	, tblname, t, String.Join(",", vars_recode), studymeasID_csv);
+
+					//!!!!
+					_measname_mult.Add(measname);
+					_sqlcode_tbl_mult.Add(_sqlcode_final_mult);
+
+
+				}
+
+				//STEP 4 - final checks 
+
+				//OK so far, try to get the data now...
+				else if (Ns1_N < 0 & Ns2 >= 0)
+				{
+					//Make sure some of these measures are selected
+
+					//NEXT get the fieldnames
+					//AND automatically create an "_agemos" variable for every date variable that is selected
+					//  - this is the UNION portion of the query.
+					string sqlcode_flds = String.Format("select fldname, fldname_miss2null, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and tblpk=(select tblpk from def.tbl where measureID={1} ) " +
+						" UNION " +
+						" select fldname + '_agemos' as fldname, 'dbo.fnDate_AgeMos_from_studymeasID_fromDays(studymeasID,ID,' + fldname + ') as ' + fldname + '_agemos'" +
+						"   as fldname_agemos, flddatatype  from def.vwFld " +
+						" where fldpk in ({0}) and flddatatype='date' and tblpk=(select tblpk from def.tbl where measureID={1} ) "
+						, fldpk_csv, measureID, t);
+					DataTable flds = sql.DataTable_from_SQLstring(sqlcode_flds);
+
+					//vars_names   contains the list of var names (without the additional code to recode missing or calculate age)
+					List<string> vars_names = flds.AsEnumerable().Select(f => f.Field<string>("fldname")).ToList();
+
+					//vars_no_quote  contains the syntax needed recode missing values and calculate ages
+					//  this goes in the body of the LEFT JOIN clause
+					List<string> vars_recode = flds.AsEnumerable().Select(f => f.Field<string>("fldname_miss2null")).ToList();
+
+					_sqlcode_vars.Add(String.Join(",", vars_names));
+
+					string tmp_body = "";
+					msg = "";
+
+					if (Ns2 == 0)
+					{
+						tmp_body = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine + "   FROM {0} " + Environment.NewLine +
+							"    WHERE verified in (0,1) and studymeasID in ({3}) ) t{1} ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})"
+							, tblname, t, String.Join(",", vars_recode), studymeasID_csv);
+
+						msg = String.Format("Yes - data loaded", Ns1);
+					}
+					//Yes, Duplicates!!!!
+					else if (Ns2 > 0)
+					{
+						string plural = (Ns2 > 1) ? "s" : "";
+
+						//Exclude the dups from the main Data
+						tmp_body = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine + "   FROM {0} " + Environment.NewLine +
+								"   WHERE verified in (0,1) and studymeasID in ({3}) and ID not in ('{4}') ) t{1} ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})"
+								, tblname, t, String.Join(",", vars_recode), studymeasID_csv, dupsIDs_csv);
+
+						msg = String.Format("Yes data loaded, DUPS: values for {0} subject{1} excluded, see 'Dups_' worksheets. [{2}]", Ns2, plural, dupsIDs_csv);
+
+
+						string tmp_dupdata = String.Format("select * from {0} " +
+						" where verified in (0,1) and studymeasID in ({3}) and ID in ('{4}') ORDER BY id, studymeasID "
+						, tblname, t, String.Join(",", vars_recode), studymeasID_csv, dupsIDs_csv);
+
+						_sqlcode_tbl_dups.Add(tmp_dupdata);
+						_measname_dups.Add(measname);
+					}
+
+					Debug.WriteLine("");
+					Debug.WriteLine(tmp_body);
+					Debug.WriteLine("");
+
+					_sqlcode_tbl.Add(tmp_body);
+
+					//Add this table to those to be processed
+					_tbls_to_process.Add(tblname);
+
+
+				}
+				else
+				{
+					msg = String.Format("{0} unprocessed.", measname);
+				}
+				#endregion
+			}
+
+			DataRow r = _dataset.Tables["SummaryInfo"].NewRow();
+			r["Measure"] = measname;
+			r["Message"] = msg;
+			r["N_records"] = Ns1_N;
+			r["N_IDs"] = Ns1_IDs;
+			r["N_TimePts"] = Ns1_TimePts;
+			r["N_Vars"] = N_vars;
+
+			_dataset.Tables["SummaryInfo"].Rows.Add(r);
+		}
+
 
 
 		private void CreateSqlForMeasure(SQL_utils sql, DataRow row, int t, int counter, string msg) {
@@ -1297,6 +1644,9 @@ namespace uwac.data
 				{
 					for (int m = 0; m < _sqlcode_tbl_mult.Count(); m++)
 					{
+						Debug.Print("");
+						Debug.Print("");
+						Debug.Print(String.Format(" =====> measname_mult[{0}]: {1}", m, _measname_mult[m]));
 						string sqlcode = string.Format("select a.*, {0} from {1} {2} ",
 							String.Join(", ",_sqlcode_vars_mult[m].ToLower()),
 							_sqlcode_subj,
@@ -1346,8 +1696,10 @@ namespace uwac.data
 
 
 
-					//Need to remove fields for the Skipped measures.
-					string meas_to_skip_csv = String.Join(",", _meas_to_skip);
+						//Need to remove fields for the Skipped measures.
+						string meas_to_skip_csv = String.Join(",", _meas_to_skip);
+						Debug.Print(String.Format("meas_to_skip_csv = '{0}'", meas_to_skip_csv));
+
 						DataTable dt_flds_to_drop = sql.DataTable_from_SQLstring(
 							String.Format("select fldname from def.vwFld where measureID in ({0})",
 								meas_to_skip_csv));

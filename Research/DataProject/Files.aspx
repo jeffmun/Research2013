@@ -163,6 +163,7 @@
 						</dx:ASPxButton>
 
 						<br />
+							<dx:ASPxCheckBox ID="chkSepTabs" runat="server" Text="Measures on separate tabs?"></dx:ASPxCheckBox>
 						</td>
 						<td style="width: 50px"></td>
 						<td style="vertical-align: top">
