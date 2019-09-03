@@ -643,7 +643,7 @@
 							<SettingsPager NumericButtonCount="5"  PageSize="20"  Summary-Visible="true" />
 							<SettingsExport EnableClientSideExportAPI="true"    />
 							 <Toolbars>
-							<dx:GridViewToolbar EnableAdaptivity="true">
+							<dx:GridViewToolbar >
 								<Items>
 									<dx:GridViewToolbarItem Command="ExportToXls"  />
 									<dx:GridViewToolbarItem Command="ExportToXlsx" />

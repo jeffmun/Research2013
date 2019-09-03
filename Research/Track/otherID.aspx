@@ -59,7 +59,7 @@
     <dx:ASPxCheckBox ID="chkIncludeAll" runat="server" Text="Include All? (includes those without an OtherID)"></dx:ASPxCheckBox>
  <dx:ASPxGridView ID="otherID_by_person" ClientInstanceName="grid" runat="server" Width="100%" AutoGenerateColumns="False">
 		<Toolbars>
-			<dx:GridViewToolbar EnableAdaptivity="true">
+			<dx:GridViewToolbar >
 				<Items>
 					<dx:GridViewToolbarItem Command="ExportToXls" />
 					<dx:GridViewToolbarItem Command="ExportToXlsx" />
@@ -91,7 +91,7 @@
 	
  <dx:ASPxGridView ID="otherID_by_subject" ClientInstanceName="grid" runat="server" Width="100%" AutoGenerateColumns="False">
 		<Toolbars>
-			<dx:GridViewToolbar EnableAdaptivity="true">
+			<dx:GridViewToolbar >
 				<Items>
 					<dx:GridViewToolbarItem Command="ExportToXls" />
 					<dx:GridViewToolbarItem Command="ExportToXlsx" />
