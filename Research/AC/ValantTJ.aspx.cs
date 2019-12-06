@@ -21,7 +21,7 @@ public partial class AC_ValantTJ : BasePage //System.Web.UI.Page
 
 		string errormsg = String.Format("Sorry, {0} you do not have permission for this page.  Contact Kathryn Larson with questions.", user);
 
-		List<string> allowedusers = new List<string> { "jeffmun", "freitz", "larsonk", "greenson", "eskandar","ykv", "granathk","sharim2","cathek","matestic" };
+		List<string> allowedusers = new List<string> { "jeffmun", "freitz", "larsonk", "greenson", "eskandar", "amanyesk", "ykv", "granathk","sharim2","cathek","matestic" };
 
 
 		if (true)

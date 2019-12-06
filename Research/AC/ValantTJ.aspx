@@ -37,7 +37,7 @@
 <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server" >
 		<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true"  EnablePartialRendering="true"></asp:ScriptManager>
 
-<dx:ASPxLabel ID="lbl1" runat="server" Text="Valant Documents" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
+<dx:ASPxLabel ID="lbl1" runat="server" Text="Valant Transaction Journal" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
 <br />
 <br />
 <dx:ASPxLabel ID="lblPerm" runat="server" Text="You do not have permission for this page." Font-Size="Medium" Font-Bold="false"></dx:ASPxLabel>
@@ -56,8 +56,15 @@
 	Settings-ShowHeaderFilterButton="false" 
     Settings-ShowFilterRow="true"  
 	OnRowUpdating="grid_RowUpdating" 
-    SettingsEditing-Mode="Inline">
-
+    SettingsEditing-Mode="Inline"
+    Width ="100%">
+        <Toolbars>
+            <dx:GridViewToolbar>
+                <Items>
+                    <dx:GridViewToolbarItem Command="ShowCustomizationWindow" />
+                </Items>
+            </dx:GridViewToolbar>
+        </Toolbars>
 	<Columns>
 
         <dx:GridViewCommandColumn ShowEditButton="true" Width="60"></dx:GridViewCommandColumn>   
@@ -100,7 +107,10 @@
 
 	</Columns>
 
-	<Settings ShowFilterBar="Visible" ShowFooter="true"    />
+	<Settings ShowFilterBar="Visible" ShowFooter="true" ShowGroupPanel="True"  />
+   
+   <SettingsLoadingPanel Mode="ShowOnStatusBar" />
+   <SettingsBehavior EnableCustomizationWindow="true" />
 	<SettingsFilterControl ViewMode="Visual"></SettingsFilterControl> 
 	<SettingsPager PageSize="20">
 		 <PageSizeItemSettings Items="10,20,50,200,500,2000" Visible="true"></PageSizeItemSettings>
