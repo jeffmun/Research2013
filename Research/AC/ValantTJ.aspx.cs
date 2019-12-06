@@ -47,9 +47,7 @@ public partial class AC_ValantTJ : BasePage //System.Web.UI.Page
 
 		//Get and Process the list of selected records in order to populate the list of pkvals
 		#region process selected records
-		var selected_keys = gv.GetSelectedFieldValues("valdocID");
-
-
+		var selected_keys = gv.GetSelectedFieldValues("rownames");
 
 		List<int> pkvals = new List<int>();
 
@@ -74,7 +72,7 @@ public partial class AC_ValantTJ : BasePage //System.Web.UI.Page
 
 
 
-		string result = dataops.dxGrid_UpdateData("valdocID", pkvals, e.NewValues, "ValantTJ", "dbo", "valantdocdump");
+		string result = dataops.dxGrid_UpdateData("rownames", pkvals, e.NewValues, "ValantTJ", "dbo", "ValantTJ");
 		
 		gv.CancelEdit();
 		e.Cancel = true;

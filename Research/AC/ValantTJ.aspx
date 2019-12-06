@@ -48,7 +48,7 @@
     runat="server" 
     DataSourceID="sqlValantTJ" 
     AutoGenerateColumns="false" 
-    KeyFieldName="valdocID" 
+    KeyFieldName="rownames" 
     SettingsBehavior-AllowGroup="true"
 	Settings-ShowGroupPanel="true"  
     Settings-VerticalScrollBarMode="Auto" 
@@ -59,31 +59,33 @@
     SettingsEditing-Mode="Inline">
 
 	<Columns>
-		<dx:GridViewCommandColumn ShowEditButton="true" Width="60"></dx:GridViewCommandColumn>                                                           
-        <dx:GridViewDataColumn FieldName="[PatientName3]                      " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[PatientName]                       " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[GuarantorName]                     " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[BillingId]                         " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[TimeRecordAdded]                   " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[ChargeDateOfService]               " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[PayorAdjDate]                      " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[ProviderId]                        " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[SuperviseeProviderId]              " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[FacilityId]                        " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[Dx1ICDCode]                        " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[Modifier1]                         " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[DetailTransactionCodeId]           " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[DetailTransactionCodeDescription]  " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[CPTCode]                           " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[Units]                             " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[PaymentFrom]                       " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[DetailTotalAmount]                 " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[FeeScheduleAdjustment]             " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[FeeScheduleChargeorRate]           " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[ChargeNote]                        " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[DetailNote]                        " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[Textbox210]                        " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
-        <dx:GridViewDataColumn FieldName="[InsuranceName]                     " ReadOnly="true" Width="60" ></dx:GridViewDataColumn>
+
+        <dx:GridViewCommandColumn ShowEditButton="true" Width="60"></dx:GridViewCommandColumn>   
+        <dx:GridViewDataColumn FieldName="rownames" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="PatientId" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="PatientName" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="GuarantorName" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="BillingId" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="TimeRecordAdded" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="ChargeDateOfService" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="PayorAdjDate" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="ProviderId" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="SuperviseeProviderId" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="FacilityId" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="Dx1ICDCode" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="Modifier1" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="DetailTransactionCodeId" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="DetailTransactionCodeDescription" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="CPTCode" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="Units" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="PaymentFrom" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="DetailTotalAmount" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="FeeScheduleAdjustment" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="FeeScheduleChargeorRate" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="ChargeNote" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="DetailNote" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="Textbox210" ReadOnly="true" ></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="InsuranceName" ReadOnly="true" ></dx:GridViewDataColumn>
 
 
 <%--		<dx:GridViewDataHyperLinkColumn 
@@ -110,7 +112,8 @@
         ConnectionString="<%$ ConnectionStrings:ValantTJ %>"
 		SelectCommandType="text"
         SelectCommand="select
-             [PatientName3]
+             [rownames]
+            ,[PatientId]
             ,[PatientName]
             ,[GuarantorName]
             ,[BillingId]
@@ -134,7 +137,7 @@
             ,[DetailNote]
             ,[Textbox210]
             ,[InsuranceName]
-        FROM [ValantTJ].[dbo].[ValantTJ]">
+        FROM [dbo].[ValantTJ]">
     
     </asp:SqlDataSource>
 	
