@@ -62,6 +62,7 @@
 
         <dx:GridViewCommandColumn ShowEditButton="true" Width="60"></dx:GridViewCommandColumn>   
         <dx:GridViewDataColumn FieldName="rownames" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+        <dx:GridViewDataColumn FieldName="Comments" ReadOnly="false" ></dx:GridViewDataColumn>
         <dx:GridViewDataColumn FieldName="PatientId" ReadOnly="true" ></dx:GridViewDataColumn>
         <dx:GridViewDataColumn FieldName="PatientName" ReadOnly="true" ></dx:GridViewDataColumn>
         <dx:GridViewDataColumn FieldName="GuarantorName" ReadOnly="true" ></dx:GridViewDataColumn>
@@ -113,6 +114,7 @@
 		SelectCommandType="text"
         SelectCommand="select
              [rownames]
+            ,[Comments]
             ,[PatientId]
             ,[PatientName]
             ,[GuarantorName]
