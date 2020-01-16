@@ -16,7 +16,10 @@ public partial class MobileDeviceCheckout : System.Web.UI.Page
 
         if (!IsPostBack)
         {
-            logConfirmation(email, usergroup);
+            if (email != null || usergroup !=null)
+            {
+                logConfirmation(email, usergroup);
+            }
         }
     }
 

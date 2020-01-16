@@ -3,8 +3,8 @@
   <%--Theme="Skin1" EnableEventValidation="true"--%>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 
 
@@ -308,7 +308,7 @@
                         <SettingsFilterControl ViewMode="Visual" ShowAllDataSourceColumns="true" ></SettingsFilterControl>
                         <SettingsPager PageSize="20"></SettingsPager>
                       <Toolbars>
-                        <dx:GridViewToolbar >
+                        <dx:GridViewToolbar>
                             <Items>
                                 <dx:GridViewToolbarItem Text="Export" Image-IconID="export_export_16x16">
                                     <Items>
