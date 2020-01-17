@@ -11,11 +11,11 @@
     <asp:Label ID="lblInfo" runat="server"> </asp:Label>
 
     <asp:GridView ID="GridView1" runat="server" AllowSorting="True"
-        AutoGenerateColumns="False" DataSourceID="SqlDataSource1" ShowFooter="True" >
+        AutoGenerateColumns="False" DataSourceID="SqlDataSource1" ShowFooter="True" DataKeyNames = "Device_ID">
         <%--        OnRowDataBound="GridView1_RowDataBound"--%>
         <Columns>
 
-            <asp:CommandField ShowDeleteButton="False" ShowEditButton="True" />
+            <asp:CommandField ShowDeleteButton="true" ShowEditButton="True" />
                        <asp:TemplateField HeaderText="Device Description" SortExpression="Device_Description">
                 <EditItemTemplate>
                     <asp:TextBox ID="TextBox3" runat="server" Text='<%# Bind("Device_Description") %>'></asp:TextBox>
@@ -116,7 +116,21 @@
         SelectCommand="SELECT [Overdue?] as Overdue,[Last Confirmed] as Last_Confirmed             ,[Checkout Date] as Checkout_Date               ,[User Name] as User_Name                      ,[User/Nav. Email] as Email                   ,[User Type] as User_Type                     ,[Device Description] as Device_Description    ,[Device Model] as Device_Model                ,[Device SN] as Device_SN    , [Device ID] as Device_ID                 
         FROM [mobile_devices].[dbo].[vwAll]"
 
-        UpdateCommand="INSERT INTO [mobile_devices].[dbo].[checkouts] 
+        DeleteCommand="if exists (select * from [mobile_devices].[dbo].[checkouts] where [device] = @Device_ID)
+          begin
+            UPDATE [mobile_devices].[dbo].[checkouts] 
+            set [returned] = getdate()
+            where [device] = @Device_ID
+          end"
+
+        UpdateCommand="
+        if exists (select * from [mobile_devices].[dbo].[checkouts] where [device] = @Device_ID)
+          begin
+            UPDATE [mobile_devices].[dbo].[checkouts] 
+            set [returned] = getdate()
+            where [device] = @Device_ID
+          end
+        INSERT INTO [mobile_devices].[dbo].[checkouts] 
         ( [device]
         , [date]
         , [name] 
