@@ -599,7 +599,8 @@ public partial class DataEntryForms_Common_MIND_IntHx_v2stack : System.Web.UI.Pa
 			{
 				List<SqlParameter> ps = new List<SqlParameter>();
 				ps.Add(sql.CreateParam("mindinthxv2stackPK", e.CommandArgument.ToString(), "int"));
-				sql.NonQuery_from_ProcName("spDELETE_All_Mind_IntHx_vers2_STACKED", ps);
+				//sql.NonQuery_from_ProcName("spDELETE_All_Mind_IntHx_vers2_STACKED", ps);
+				sql.NonQuery_from_ProcName("spDELETE_All_Mind_IntHx_vers2_STACKED_2018", ps);
 
 				//ModifyData("DELETE", e.CommandArgument.ToString());
 

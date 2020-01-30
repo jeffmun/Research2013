@@ -398,9 +398,12 @@ public partial class stats_IntHxSummary : BasePage
 		}
 		else
 		{
-			dt = sql.DataTable_from_SQLstring("select   ID,   txgrp + '...' + ID + '...' + subjstatus as details " +
+
+			string sortexpr = "ID";
+
+				dt = sql.DataTable_from_SQLstring(String.Format("select   ID,   txgrp + '...' + ID + '...' + subjstatus as details " +
 				" from uwautism_research_backend..vwmasterstatus_S_txgrp  where txgrp<>'' and studyID=" +
-				studyID.ToString() + " order by txgrp, ID");
+				studyID.ToString() + " order by {0} ", sortexpr));
 		}
 
 		sql.Close();

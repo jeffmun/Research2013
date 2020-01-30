@@ -62,12 +62,13 @@ namespace uwac
 			DataSet ds = sql.DataSet_from_ProcName("spSCORE_ALL_MIND_IntHx_vers2_STACKED__getdata_for_CHARTS_2018", ps);
 			
 
+
 			List<string> tblnames = new List<string> {"Weekly by TYPE",
 					"Weekly by CAT",
 					"Weekly by ALL",
-					"Period by TYPE",
-					"Period By CAT", 
-					"Period by ALL" ,
+					//"Period by TYPE",
+					//"Period By CAT",
+					//"Period by ALL" ,
 					 "dt_admindates",
 					 "dt_colors0",
 					 "dt_colors1",
@@ -179,57 +180,61 @@ namespace uwac
 				}
 
 
+				bool byperiod = false;
 
-
-				// BY PERIOD
-				System.Web.UI.DataVisualization.Charting.Chart c3 = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[3], "period", "txtype"), "period", "avgPER_ihhrsperwk", "txtype", "string",
-					ds.Tables["dt_colors0"], ds.Tables[3].TableName + " " + id, id + ": " + periodtype + " by TYPE", "Period", "Avg Hrs/wk during period", -999, -999, -999, ymax, 400, 400);
-				if (c3 != null)
+				if (byperiod)
 				{
-					string f3 = filenamebase + "_type_period.png";
-					c3.SaveImage(path + f3);
-				}
 
-				System.Web.UI.DataVisualization.Charting.Chart c4 = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[4], "period", "txcat"), "period", "avgPER_ihhrsperwk", "txcat", "string",
-						ds.Tables["dt_colors1"], ds.Tables[4].TableName + " " + id, id + ": " + periodtype + " by CATEGORY", "Period", "Avg Hrs/wk during period", -999, -999, -999, ymax, 400, 400);
-				if (c4 != null)
-				{
-					string f4 = filenamebase + "_cat_period.png";
-					c4.SaveImage(path + f4);
-				}
+					// BY PERIOD
+					System.Web.UI.DataVisualization.Charting.Chart c3 = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[3], "period", "txtype"), "period", "avgPER_ihhrsperwk", "txtype", "string",
+						ds.Tables["dt_colors0"], ds.Tables[3].TableName + " " + id, id + ": " + periodtype + " by TYPE", "Period", "Avg Hrs/wk during period", -999, -999, -999, ymax, 400, 400);
+					if (c3 != null)
+					{
+						string f3 = filenamebase + "_type_period.png";
+						c3.SaveImage(path + f3);
+					}
 
-				System.Web.UI.DataVisualization.Charting.Chart c5 = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[5], "period", "txall"), "period", "avgPER_ihhrsperwk", "txall", "string",
-						ds.Tables["dt_colors2"], ds.Tables[5].TableName + " " + id, id + ": " + periodtype + " by ALL", "Period", "Avg Hrs/wk during period", -999, -999, -999, ymax, 400, 400);
-				if (c5 != null)
-				{
-					string f5 = filenamebase + "_all_period.png";
-					c5.SaveImage(path + f5);
-				}
+					System.Web.UI.DataVisualization.Charting.Chart c4 = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[4], "period", "txcat"), "period", "avgPER_ihhrsperwk", "txcat", "string",
+							ds.Tables["dt_colors1"], ds.Tables[4].TableName + " " + id, id + ": " + periodtype + " by CATEGORY", "Period", "Avg Hrs/wk during period", -999, -999, -999, ymax, 400, 400);
+					if (c4 != null)
+					{
+						string f4 = filenamebase + "_cat_period.png";
+						c4.SaveImage(path + f4);
+					}
 
-				// BY PERIOD - ACTIVE
-				System.Web.UI.DataVisualization.Charting.Chart c3act = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[3], "period", "txtype"), "period", "avgACT_ihhrsperwk", "txtype", "string",
-						ds.Tables["dt_colors0"], ds.Tables[3].TableName + " " + id, id + ": " + periodtype + " by TYPE *ACTIVE*", "Period", "Avg Hrs/wk during period ACTIVE", -999, -999, -999, ymax, 400, 400);
-				if (c3act != null)
-				{
-					string f3act = filenamebase + "_type_periodACTIVE.png";
-					c3act.SaveImage(path + f3act);
-				}
+					System.Web.UI.DataVisualization.Charting.Chart c5 = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[5], "period", "txall"), "period", "avgPER_ihhrsperwk", "txall", "string",
+							ds.Tables["dt_colors2"], ds.Tables[5].TableName + " " + id, id + ": " + periodtype + " by ALL", "Period", "Avg Hrs/wk during period", -999, -999, -999, ymax, 400, 400);
+					if (c5 != null)
+					{
+						string f5 = filenamebase + "_all_period.png";
+						c5.SaveImage(path + f5);
+					}
+
+					// BY PERIOD - ACTIVE
+					System.Web.UI.DataVisualization.Charting.Chart c3act = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[3], "period", "txtype"), "period", "avgACT_ihhrsperwk", "txtype", "string",
+							ds.Tables["dt_colors0"], ds.Tables[3].TableName + " " + id, id + ": " + periodtype + " by TYPE *ACTIVE*", "Period", "Avg Hrs/wk during period ACTIVE", -999, -999, -999, ymax, 400, 400);
+					if (c3act != null)
+					{
+						string f3act = filenamebase + "_type_periodACTIVE.png";
+						c3act.SaveImage(path + f3act);
+					}
 
 
-				System.Web.UI.DataVisualization.Charting.Chart c4act = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[4], "period", "txcat"), "period", "avgACT_ihhrsperwk", "txcat", "string",
-						ds.Tables["dt_colors1"], ds.Tables[4].TableName + " " + id, id + ": " + periodtype + " by CATEGORY *ACTIVE*", "Period", "Avg Hrs/wk during period ACTIVE", -999, -999, -999, ymax, 400, 400);
-				if (c4act != null)
-				{
-					string f4act = filenamebase + "_cat_periodACTIVE.png";
-					c4act.SaveImage(path + f4act);
-				}
+					System.Web.UI.DataVisualization.Charting.Chart c4act = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[4], "period", "txcat"), "period", "avgACT_ihhrsperwk", "txcat", "string",
+							ds.Tables["dt_colors1"], ds.Tables[4].TableName + " " + id, id + ": " + periodtype + " by CATEGORY *ACTIVE*", "Period", "Avg Hrs/wk during period ACTIVE", -999, -999, -999, ymax, 400, 400);
+					if (c4act != null)
+					{
+						string f4act = filenamebase + "_cat_periodACTIVE.png";
+						c4act.SaveImage(path + f4act);
+					}
 
-				System.Web.UI.DataVisualization.Charting.Chart c5act = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[5], "period", "txall"), "period", "avgACT_ihhrsperwk", "txall", "string",
-						ds.Tables["dt_colors2"], ds.Tables[5].TableName + " " + id, id + ": " + periodtype + " by ALL *ACTIVE*", "Period", "Avg Hrs/wk during period ACTIVE", -999, -999, -999, ymax, 400, 400);
-				if (c5act != null)
-				{
-					string f5act = filenamebase + "_all_periodACTIVE.png";
-					c5act.SaveImage(path + f5act);
+					System.Web.UI.DataVisualization.Charting.Chart c5act = utilMSCharts.MSStackedColumn(utilMSCharts.Sort(ds.Tables[5], "period", "txall"), "period", "avgACT_ihhrsperwk", "txall", "string",
+							ds.Tables["dt_colors2"], ds.Tables[5].TableName + " " + id, id + ": " + periodtype + " by ALL *ACTIVE*", "Period", "Avg Hrs/wk during period ACTIVE", -999, -999, -999, ymax, 400, 400);
+					if (c5act != null)
+					{
+						string f5act = filenamebase + "_all_periodACTIVE.png";
+						c5act.SaveImage(path + f5act);
+					}
 				}
 
 			}
@@ -304,7 +309,7 @@ namespace uwac
 
 			int studyIDfull = sql.IntScalar_from_SQLstring(String.Format("select dbo.fnstudyIDfull({0})", studyID));
 
-			string sqlcode = String.Format("exec spScore_ALL_MIND_IntHx_vers2_2018_ScoreStatus {0}", studyIDfull);
+			string sqlcode = String.Format("exec sec.setusercontext 'jeffmun'; exec spScore_ALL_MIND_IntHx_vers2_2018_ScoreStatus {0}", studyIDfull);
 			string status = sql.StringScalar_from_SQLstring(sqlcode);
 
 			//if the raw data has been updated more recently than the aggregation then rescore

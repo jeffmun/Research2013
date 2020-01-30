@@ -126,15 +126,15 @@ function OnProgress(progressBar) {
 					<asp:ListItem Value="_type_wk.png" Text="Week by TYPE" Selected="True"></asp:ListItem>
 					<asp:ListItem Value="_cat_wk.png" Text="Week by CATEGORY" Selected="False"></asp:ListItem>
 					<asp:ListItem Value="_all_wk.png" Text="Week by ALL" Selected="False"></asp:ListItem>
-					<asp:ListItem Value="_type_period.png" Text="Period by TYPE" Selected="True"></asp:ListItem>
+<%--					<asp:ListItem Value="_type_period.png" Text="Period by TYPE" Selected="False"></asp:ListItem>
 					<asp:ListItem Value="_cat_period.png" Text="Period by CATEGORY" Selected="False"></asp:ListItem>
 					<asp:ListItem Value="_all_period.png" Text="Period by ALL" Selected="False"></asp:ListItem>
-					<asp:ListItem Value="_type_periodACTIVE.png" Text="Period by TYPE *Active*" Selected="True"></asp:ListItem>
+					<asp:ListItem Value="_type_periodACTIVE.png" Text="Period by TYPE *Active*" Selected="False"></asp:ListItem>
 					<asp:ListItem Value="_cat_periodACTIVE.png" Text="Period by CATEGORY *Active*" Selected="False"></asp:ListItem>
-					<asp:ListItem Value="_all_periodACTIVE.png" Text="Period by ALL *Active*" Selected="False"></asp:ListItem>
+					<asp:ListItem Value="_all_periodACTIVE.png" Text="Period by ALL *Active*" Selected="False" ></asp:ListItem>--%>
 
 				</asp:CheckBoxList>
-				<asp:Label ID="Label3" runat="server" Text ="*Active* = avg weekly hrs only when the tx is actively received." Font-Italic="true"></asp:Label><br />
+				<asp:Label ID="Label3" runat="server" Text ="*Active* = avg weekly hrs only when the tx is actively received." Font-Italic="true" Visible="false"></asp:Label><br />
 
 			</td>
 			<td></td>

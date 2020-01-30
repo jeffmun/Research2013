@@ -30,13 +30,13 @@ public partial class _test_dt_tests : BasePage
 
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
 		List<string> vars_to_move = new List<string> { "val", "up" };
-		dt.WidenRelData(vars_to_move, "pk", "isREL", "", "REL", "REL_", "");
+		//dt.WidenRelData(vars_to_move, "pk", "isREL", "", "REL", "REL_", "");
 
-		ASPxGridView g1 = new ASPxGridView();
-		g1.DataSource = dt;
-		g1.DataBind();
-		g1.SettingsPager.PageSize = 50;
-		panel1.Controls.Add(g1);
+		//ASPxGridView g1 = new ASPxGridView();
+		//g1.DataSource = dt;
+		//g1.DataBind();
+		//g1.SettingsPager.PageSize = 50;
+		//panel1.Controls.Add(g1);
 
 		
 		//DataTable dt2 = dt.Wi

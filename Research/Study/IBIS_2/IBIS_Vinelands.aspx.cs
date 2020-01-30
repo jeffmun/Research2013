@@ -11,7 +11,7 @@ using AutismCenterBase.Utilities;
 using uwac;
 
 
-public partial class IBIS_Vinelands : System.Web.UI.Page
+public partial class IBIS_Vinelands : BasePage//System.Web.UI.Page
 {
 	private SqlConnection oConn = new SqlConnection();
 	private SqlConnection oConnData = new SqlConnection();
@@ -118,7 +118,7 @@ public partial class IBIS_Vinelands : System.Web.UI.Page
 
 			string id_nopr = ID.Replace("pr", "").Replace("PR", "");
 			
-			if (dt.Rows.Count >= 1)
+			if (dt.HasRows())
 			{
 				string filename = "vineland_" + subjecttype + "_" + dccID_1 + "_" + id_nopr + "_" + tp_text + ".txt";
 
@@ -145,7 +145,7 @@ public partial class IBIS_Vinelands : System.Web.UI.Page
 
 		DataTable dt = sql.DataTable_from_SQLstring("Select a.studymeasID, studymeasname from all_vineii a " + 
 			" join uwautism_research_backend..tblstudymeas b ON a.studymeasID = b.studymeasID " + 
-			" where ID = '" + ID +  "' and studyID=1071");
+			" where ID = '" + ID +  "' and studyID in (1042,1071)");
 
 		ddlStudymeasID.DataTextField = "studymeasname";
 		ddlStudymeasID.DataValueField = "studymeasID";

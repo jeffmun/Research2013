@@ -124,7 +124,7 @@
     SelectCommand="select '0' as ID, '[select ID]' as IDlabel union select ID, ID as IDlabel 
             from vwMasterStatus_S a 
             join tblOtherID b ON a.subjID = b.subjID
-            where studyID in (1071) 
+            where studyID in (1042,1071) 
             and ID in (select ID from uwautism_research_data..all_vineii) order by ID"
     ConnectionString="<%$ ConnectionStrings: TRACKING_CONN_STRING %>">
     </asp:SqlDataSource>

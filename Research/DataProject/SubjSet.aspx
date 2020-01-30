@@ -63,6 +63,7 @@
 						<dx:GridViewDataTextColumn FieldName="Group" Caption="Group" />
 						<dx:GridViewDataTextColumn FieldName="txgrp" Caption="Tx Group" />
 						<dx:GridViewDataTextColumn FieldName="subjstatus" Caption="Subject Status" />
+						<dx:GridViewDataTextColumn FieldName="subjstatusdetail" Caption="Subject Status Detail" />
 						<dx:GridViewDataTextColumn FieldName="sex" Caption="sex" />
 					</Columns>
 					<GridViewProperties>
@@ -138,6 +139,7 @@
 									<dx:PivotGridField ID="field_subjID" Area="DataArea" AreaIndex="0" 
 										Caption="# Subjects" SummaryType="Count" FieldName="subjID">
 									</dx:PivotGridField>
+									<dx:PivotGridField ID="field_subjstatusdetail"  Caption="Subj Status Detail" FieldName="subjstatusdetail" Area="FilterArea" Visible="false"></dx:PivotGridField>
 									<dx:PivotGridField ID="field_sex"  Caption="Sex" FieldName="sex" Area="FilterArea" Visible="false"></dx:PivotGridField>
 									<dx:PivotGridField ID="field_race"  Caption="Race" FieldName="race"  Area="FilterArea" Visible="false"></dx:PivotGridField>
 									<dx:PivotGridField ID="field_ethn"  Caption="Ethnicity" FieldName="ethnicity"  Area="FilterArea" Visible="false"></dx:PivotGridField>
@@ -169,6 +171,7 @@
 									<dx:PivotGridField ID="unfield_subjID" Area="DataArea" AreaIndex="0" 
 										Caption="# Subjects" SummaryType="Count" FieldName="subjID">
 									</dx:PivotGridField>
+									<dx:PivotGridField ID="unfield_subjstatusdetail"  Caption="Subj Status Detail" FieldName="subjstatusdetail" Area="FilterArea" Visible="false"></dx:PivotGridField>
 									<dx:PivotGridField ID="unfield_sex"  Caption="Sex" FieldName="sex"  Area="FilterArea" Visible="false"></dx:PivotGridField>
 									<dx:PivotGridField ID="unfield_race"  Caption="Race" FieldName="race"  Area="FilterArea" Visible="false"></dx:PivotGridField>
 									<dx:PivotGridField ID="unfield_ethn"  Caption="Ethnicity" FieldName="ethnicity"  Area="FilterArea" Visible="false"></dx:PivotGridField>

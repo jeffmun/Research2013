@@ -303,10 +303,15 @@ public partial class DataProject_SubjSet : System.Web.UI.Page
 	{
 
 
+		//string sqlcode = "select subjID, id, groupname as [Group], coalesce(txgrp, '**NA**') txgrp, subjstatus, subjstatusdetail, sex,  " +
+		//"coalesce(ethnicitydesc, 'UNKNOWN') as race, coalesce(hispanicdesc, 'UNKNOWN') as ethnicity " +
+		//", subjNotes, convert(VARCHAR, txstart, 101) txstart, txstartnote " +
+		//"from uwautism_research_backend.trk.vwMasterStatus_S_txgrp a where studyID = " + Master.Master_studyID.ToString();
+
 		string sqlcode = "select subjID, id, groupname as [Group], coalesce(txgrp, '**NA**') txgrp, subjstatus, subjstatusdetail, sex,  " +
 		"coalesce(ethnicitydesc, 'UNKNOWN') as race, coalesce(hispanicdesc, 'UNKNOWN') as ethnicity " +
 		", subjNotes, convert(VARCHAR, txstart, 101) txstart, txstartnote " +
-		"from uwautism_research_backend..vwMasterStatus_S_txgrp a where studyID = " + Master.Master_studyID.ToString();
+		"from uwautism_research_backend.trk.vwMasterStatus_S a where studyID = " + Master.Master_studyID.ToString();
 
 
 		SQL_utils sql = new SQL_utils("backend");
