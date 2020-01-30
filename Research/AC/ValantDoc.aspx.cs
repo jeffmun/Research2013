@@ -8,7 +8,6 @@ using System.Web.UI.WebControls;
 using uwac;
 using uwac.trk;
 using DevExpress.Web;
-
 public partial class AC_ValantDoc : BasePage //System.Web.UI.Page
 {
 	protected void Page_Load(object sender, EventArgs e)

@@ -2,7 +2,7 @@
   CodeFile="Import.aspx.cs" Inherits="Data_Import"  Title ="Import data"    %>  
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 <%--<%@ Register Assembly="Microsoft.R.Host.Client, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"  Namespace="Microsoft.R.Host.Client" TagPrefix="r"  %>--%>
 
@@ -42,12 +42,13 @@
 	<table>
 		<tr>
 			<td style="vertical-align: top; padding: 5px">
+					<dx:ASPxLabel ID="lblInstructions" ClientInstanceName="lblInstructions" runat="server" ></dx:ASPxLabel>
+					<br />
 				<dx:ASPxComboBox ID="cboSubject" ClientInstanceName="cboSubject" runat="server" Caption="Subject:" CaptionCellStyle-Width="90px" NullText="select subject"
 					 OnSelectedIndexChanged="cboSubject_OnSelectedIndexChanged" AutoPostBack="true"></dx:ASPxComboBox>
 
 				<dx:ASPxComboBox ID="cboStudymeas" ClientInstanceName="cboStudymeas" runat="server" Caption="Measure:" CaptionCellStyle-Width="90px" NullText="select measure"
-						 AutoPostBack="true" OnSelectedIndexChanged="cboStudymeas_OnSelectedIndexChanged" ></dx:ASPxComboBox>
-
+						 AutoPostBack="true" OnSelectedIndexChanged="cboStudymeas_OnSelectedIndexChanged" DropDownRows="12" ></dx:ASPxComboBox>
 
 					<dx:ASPxLabel ID="lblNrecs" ClientInstanceName="lblNrecs" runat="server" ></dx:ASPxLabel>
 					<br />

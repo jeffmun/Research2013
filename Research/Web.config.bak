@@ -2,11 +2,11 @@
 <configuration>
   <configSections>
     <sectionGroup name="devExpress">
-      <section name="themes" type="DevExpress.Web.ThemesConfigurationSection, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-      <section name="compression" type="DevExpress.Web.CompressionConfigurationSection, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-      <section name="settings" type="DevExpress.Web.SettingsConfigurationSection, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-      <section name="errors" type="DevExpress.Web.ErrorsConfigurationSection, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
-      <section name="resources" type="DevExpress.Web.ResourcesConfigurationSection, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="themes" type="DevExpress.Web.ThemesConfigurationSection, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="compression" type="DevExpress.Web.CompressionConfigurationSection, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="settings" type="DevExpress.Web.SettingsConfigurationSection, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="errors" type="DevExpress.Web.ErrorsConfigurationSection, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="resources" type="DevExpress.Web.ResourcesConfigurationSection, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
     </sectionGroup>
   </configSections>
   <appSettings>
@@ -82,8 +82,8 @@
       </controls>
     </pages>
     <httpHandlers>
-      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="DX.ashx" validate="false" />
-      <add type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" validate="false" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="DX.ashx" validate="false" />
+      <add type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" validate="false" />
     </httpHandlers>
     <!--commented out JM DEC2015-->
     <!--<remove verb="*" path="*.asmx" />
@@ -113,53 +113,53 @@
     <!--<add verb="POST" path="HighchartsExport.axd" type="Tek4.Highcharts.Exporting.HttpHandler, Tek4.Highcharts.Exporting"/>-->
     <!--</httpHandlers>-->
     <httpModules>
-      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
     </httpModules>
     <!--    Set compilation debug="true" to insert debugging symbols into the compiled page. Because this 
             affects performance, set this value to true only during development. -->
     <compilation debug="true" strict="false" explicit="true" targetFramework="4.5.2" batch="false">
       <assemblies>
-        <add assembly="DevExpress.Charts.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.CodeConverter.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.CodeParser.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Data.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.DataAccess.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Docs.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <!--<add assembly="DevExpress.Drawing.v18.2, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
-        <add assembly="DevExpress.Office.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Pdf.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Pdf.v18.2.Drawing, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.PivotGrid.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Printing.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.RichEdit.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.RichEdit.v18.2.Export, Version=18.2.3.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
-        <add assembly="DevExpress.Sparkline.v18.2.Core, Version=18.2.3.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
-        <add assembly="DevExpress.SpellChecker.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Spreadsheet.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Utils.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxThemes.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-        <add assembly="DevExpress.Web.ASPxHtmlEditor.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxPivotGrid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxRichEdit.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxScheduler.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxSpellChecker.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxSpreadsheet.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.ASPxTreeList.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.Bootstrap.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.Web.Resources.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <!--<add assembly="DevExpress.Xpo.v18.2, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
-        <add assembly="DevExpress.Xpf.Printing.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraCharts.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraCharts.v18.2.Web, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraGauges.v18.2.Core, Version=18.2.3.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
-        <add assembly="DevExpress.XtraPdfViewer.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraPrinting.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraReports.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraReports.v18.2.Extensions, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraReports.v18.2.Web, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraReports.v18.2.Web.WebForms, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
-        <add assembly="DevExpress.XtraScheduler.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Charts.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.CodeConverter.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.CodeParser.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Data.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.DataAccess.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Docs.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <!--<add assembly="DevExpress.Drawing.v19.1, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
+        <add assembly="DevExpress.Office.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Pdf.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Pdf.v19.1.Drawing, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.PivotGrid.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Printing.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.RichEdit.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.RichEdit.v19.1.Export, Version=19.1.3.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Sparkline.v19.1.Core, Version=19.1.3.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.SpellChecker.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Spreadsheet.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Utils.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxThemes.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Web.ASPxHtmlEditor.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxPivotGrid.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxRichEdit.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxScheduler.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxSpellChecker.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxSpreadsheet.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.ASPxTreeList.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.Bootstrap.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.Web.Resources.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <!--<add assembly="DevExpress.Xpo.v19.1, Version=17.2.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A"/>-->
+        <add assembly="DevExpress.Xpf.Printing.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraCharts.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraCharts.v19.1.Web, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraGauges.v19.1.Core, Version=19.1.3.0, Culture=Neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.XtraPdfViewer.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraPrinting.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v19.1.Extensions, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v19.1.Web, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraReports.v19.1.Web.WebForms, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
+        <add assembly="DevExpress.XtraScheduler.v19.1.Core, Version=19.1.3.0, Culture=neutral, PublicKeyToken=B88D1754D700E49A" />
         <add assembly="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
         <add assembly="System.Data.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
         <add assembly="System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
@@ -185,19 +185,19 @@
     </compilation>
     <authentication mode="Windows" />
     <identity impersonate="true" />
-    <customErrors mode="RemoteOnly" defaultRedirect="~/Error/Defaulterror.aspx">
-      <error statusCode="404" redirect="~/Error/Err404.aspx"/>
-    </customErrors>
+      <customErrors mode="RemoteOnly" defaultRedirect="~/Error/Defaulterror.aspx">
+        <error statusCode="404" redirect="~/Error/Err404.aspx" />
+      </customErrors>
   </system.web>
   <system.webServer>
     <validation validateIntegratedModeConfiguration="false" />
     <handlers>
-      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" name="ASPxHttpHandlerModule" path="DX.ashx" preCondition="integratedMode" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" name="ASPxHttpHandlerModule" path="DX.ashx" preCondition="integratedMode" />
       <add name="ChartImg" verb="*" path="ChartImg.axd" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-      <add name="ASPxUploadProgressHandler" preCondition="integratedMode" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+      <add name="ASPxUploadProgressHandler" preCondition="integratedMode" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     </handlers>
     <modules>
-      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
     </modules>
     <security>
       <requestFiltering>
