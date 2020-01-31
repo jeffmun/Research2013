@@ -1,7 +1,7 @@
 <%@ Page Language="c#"  Debug="true" MasterPageFile="~/UWAC.master" CodeFile="CreateSubject.aspx.cs" AutoEventWireup="True" Inherits="Track_CreateSubject" %>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v19.1, Version=19.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">

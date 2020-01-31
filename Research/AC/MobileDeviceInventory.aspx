@@ -112,25 +112,25 @@
     <asp:ValidationSummary ID="ValidationSummary2" runat="server" ForeColor="Red" />--%>
 
     <asp:SqlDataSource ID="SqlDataSource1" runat="server"
-        ConnectionString="<%$ ConnectionStrings: mobileDeviceConnectionString%>"
+        ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING%>"
         SelectCommand="SELECT [Overdue?] as Overdue,[Last Confirmed] as Last_Confirmed             ,[Checkout Date] as Checkout_Date               ,[User Name] as User_Name                      ,[User/Nav. Email] as Email                   ,[User Type] as User_Type                     ,[Device Description] as Device_Description    ,[Device Model] as Device_Model                ,[Device SN] as Device_SN    , [Device ID] as Device_ID                 
-        FROM [mobile_devices].[dbo].[vwAll]"
+        FROM [mob].[vwAll]"
 
-        DeleteCommand="if exists (select * from [mobile_devices].[dbo].[checkouts] where [device] = @Device_ID)
+        DeleteCommand="if exists (select * from [mob].[checkouts] where [device] = @Device_ID)
           begin
-            UPDATE [mobile_devices].[dbo].[checkouts] 
+            UPDATE [mob].[checkouts] 
             set [returned] = getdate()
             where [device] = @Device_ID
           end"
 
         UpdateCommand="
-        if exists (select * from [mobile_devices].[dbo].[checkouts] where [device] = @Device_ID)
+        if exists (select * from [mob].[checkouts] where [device] = @Device_ID)
           begin
-            UPDATE [mobile_devices].[dbo].[checkouts] 
+            UPDATE [mob].[checkouts] 
             set [returned] = getdate()
             where [device] = @Device_ID
           end
-        INSERT INTO [mobile_devices].[dbo].[checkouts] 
+        INSERT INTO [mob].[checkouts] 
         ( [device]
         , [date]
         , [name] 
