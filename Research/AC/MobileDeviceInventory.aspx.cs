@@ -12,14 +12,14 @@ public partial class MobileDeviceInventory : BasePage //System.Web.UI.Page
         string email = Request.QueryString["email"];
         string usergroup = Request.QueryString["usergroup"];
 
-        oConn.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["mobileDeviceConnectionString"].ConnectionString;
-        oConn.Open();
+        //oConn.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["mobileDeviceConnectionString"].ConnectionString;
+        //oConn.Open();
 
         if (!IsPostBack)
         {
             if (email != null || usergroup !=null)
             {
-                //logConfirmation(email, usergroup);
+                logConfirmation(email, usergroup);
             }
         }
     }

@@ -105,7 +105,7 @@ namespace uwac
 		{
 			string user = HttpContext.Current.User.Identity.Name;
 
-			if (user == "") user = "jeffmun";
+			if (user == "") user = "simardn";
 
 			user = user.ToLower().Replace(@"netid\", "");
 			user = user.ToLower().Replace("@uw.edu", "");

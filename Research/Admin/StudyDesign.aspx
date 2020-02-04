@@ -10,7 +10,7 @@
 <%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
-<%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %>
+<%--<%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %>--%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" Runat="Server">
 	<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true" EnablePartialRendering="true" EnableViewState="true"></asp:ScriptManager>
@@ -318,8 +318,9 @@
 				<td style="vertical-align:top; width: 600px">
 
 
+			<%--		DataSourceID="sql_StudyAction" --%>
 					 <%--OnHtmlCommandCellPrepared="gridSA_HtmlCommandCellPrepared"--%>
-						<dx:ASPXGridView ID="grid_tblstudyaction" runat="server" ClientInstanceName="grid_tblstudyaction"  DataSourceID="sql_StudyAction" 
+						<dx:ASPXGridView ID="grid_tblstudyaction" runat="server" ClientInstanceName="grid_tblstudyaction"  
 							AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" 
 							 AllowGrouping="true" GroupBy="timepoint_text"  HideColumnsWhenGrouping="true" KeyFieldName="studyactionID"
 							 Settings-ShowHeaderFilterButton="true" 
@@ -420,15 +421,20 @@
 
 
 
-
-					<dx:ASPXGridView ID="grid_tblstudymeas" runat="server" ClientInstanceName="grid_tblstudymeas"   DataSourceID="sql_StudyMeas"
+<%--				 
+			 DataSourceID="sql_StudyMeas"
+			
+--%>
+					<dx:ASPXGridView ID="grid_tblstudymeas" runat="server" ClientInstanceName="grid_tblstudymeas"   
 						AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false" 
 							 AllowGrouping="true" GroupBy="timepoint_text" HideColumnsWhenGrouping="true" KeyFieldName="studymeasID"
-						 Settings-ShowHeaderFilterButton="true"  OnHtmlRowPrepared="grid_tblstudymeas_OnHtmlRowPrepared"
-						 OnCustomCallback="gridSM_CustomCallback" Styles-SelectedRow-BackColor="#D4EBD3"
-							OnDataBound="dxgridSAM_DataBound" OnCustomButtonCallback="gridSM_CustomButtonCallback" 
-							 OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
-						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  >
+						 Settings-ShowHeaderFilterButton="true"  
+						OnHtmlRowPrepared="grid_tblstudymeas_OnHtmlRowPrepared"
+						OnCustomCallback="gridSM_CustomCallback" Styles-SelectedRow-BackColor="#D4EBD3"
+						OnDataBound="dxgridSAM_DataBound" OnCustomButtonCallback="gridSM_CustomButtonCallback" 
+						OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
+						OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  
+						>
 						<ClientSideEvents EndCallback="OnEndCallBack" SelectionChanged="ShowBulkAssign" />
 						<SettingsBehavior AllowSelectByRowClick="true"  />
 						<SettingsPager Position="Top" PageSize="10">
@@ -443,20 +449,21 @@
 							<dx:GridViewDataComboBoxColumn FieldName="timepointID" Caption="Timept" Width="60" Visible="true"  >
 								<PropertiesComboBox TextField="timepoint_text" ValueField="timepointID" DataSourceID='sql_Timepoint'  />
 							</dx:GridViewDataComboBoxColumn>
+
 							<dx:GridViewDataHyperLinkColumn FieldName="measureID" Caption="Measure" EditFormSettings-Visible="false"
 								PropertiesHyperLinkEdit-TextField="measname" 
-								PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Library/Measure.aspx?mID={0}" ></dx:GridViewDataHyperLinkColumn>
+								PropertiesHyperLinkEdit-NavigateUrlFormatString="~/Library/Measure.aspx?mID={0}" >
+							</dx:GridViewDataHyperLinkColumn>
+
 							<dx:GridViewDataComboBoxColumn FieldName="measureID" Caption="Measure" Width="60" Visible="false" EditFormSettings-Visible="true" PropertiesComboBox-ClientSideEvents-SelectedIndexChanged="MeasChanged"  >
 								<PropertiesComboBox TextField="measname" ValueField="measureID" DataSourceID='sql_Measure'  >
 									<ClientSideEvents SelectedIndexChanged="OnMeasChanged" />
-									</PropertiesComboBox>
-								 
+								</PropertiesComboBox> 
 							</dx:GridViewDataComboBoxColumn>
 
 							<dx:GridViewDataColumn FieldName="StudyMeasName" Caption="StudyMeas" CellStyle-Font-Bold="true" Width="140"></dx:GridViewDataColumn>
 							<dx:GridViewDataColumn FieldName="sortorder" Caption="SortOrd"  Width="30" Settings-AllowHeaderFilter="false"  ></dx:GridViewDataColumn>
-
-														<dx:GridViewDataColumn FieldName="groupIDs" Width="120"  Visible="false"></dx:GridViewDataColumn>
+							<dx:GridViewDataColumn FieldName="groupIDs" Width="120"  Visible="false"></dx:GridViewDataColumn>
 							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
 
 							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="true"  ShowNewButtonInHeader="true" />
@@ -842,6 +849,8 @@
 	<asp:Panel ID="panel_measure" runat="server"></asp:Panel>
 
 
+	<dx:ASPxGridView ID="testgrid" runat="server" AutoGenerateColumns="true" ></dx:ASPxGridView>
+
 
 	 <dx:ASPxPopupControl ID="popupDeleteInfo" runat="server" ClientInstanceName="popupDeleteInfo" Height="83px" ShowOnPageLoad="false"
 		 Modal="True" CloseAction="CloseButton" Width="207px" AllowDragging="True"
@@ -946,9 +955,13 @@
 	</asp:SqlDataSource>--%>
 
 	<asp:SqlDataSource ID="sql_StudyMeas" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
-		SelectCommand="select 'studymeas' objtype, studymeasID objpk, *
-			, dbo.fnCSV_GetLinkedIDs('studymeas','group',studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas','group',studymeasID, ',') groupabbrs 
-		from vwstudymeas where studyID = @studyID order by timepoint, sortorder">
+		SelectCommand="select 'studymeas' objtype, studymeasID objpk
+				, studyID, studyname, measname, measfullname, studymeasID, measureID, sortorder, StudyMeasName, coremeas, category, cat_sortorder, focusperson, respondant, measmethod
+				, meascat_sortorder, labname, formURL, Flag_SQLdatatable_is_NA, AdminTime, DEesttime, MeasResp_short, MeasMethod_short, MeasFocus_short, timepointID, timepoint, timepoint_text
+				, In_DatData, fullstudyID, fullstudyname, vrpID, vrpInsertText, reliabilityStudymeasID, RelStudymeasName
+				, dbo.fnCSV_GetLinkedIDs('studymeas','group',studymeasID, ',') groupIDs 
+				, dbo.fnCSV_GetLinkedIDs_text('studymeas','group',studymeasID, ',') groupabbrs  
+				from vwstudymeas where studyID = @studyID order by timepoint, sortorder">
 			<SelectParameters>
 				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
 			</SelectParameters> 

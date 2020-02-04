@@ -65,6 +65,14 @@ public partial class Tracking_Measures : BasePage //System.Web.UI.Page
 		{
 			gvM.Visible = true;
 
+
+			SQL_utils sql = new SQL_utils("backend");
+			string sqlcode = String.Format("select count(*) n from uwautism_research_backend..tblstudymeas where studyID = {0} and reliabilityStudymeasID > 0", Master.Master_studyID);
+			int numrel = sql.IntScalar_from_SQLstring(sqlcode);
+
+			rblREL.Visible = (numrel > 0) ? true : false;
+			sql.Close();
+
 		//			LoadEntities();
 		}
 
@@ -231,18 +239,18 @@ public partial class Tracking_Measures : BasePage //System.Web.UI.Page
 
 	#region Main Grid Events
 
-	protected void UpdateSelectParameters()
-	{
-		meas_csv = uwac.trk.dataops.GetCSV(gridLkupMeas.GridView.GetSelectedFieldValues(gridLkupMeas.KeyFieldName));
-		meas_csv = (meas_csv == null) ? "" : meas_csv;
+	//protected void UpdateSelectParameters()
+	//{
+	//	meas_csv = uwac.trk.dataops.GetCSV(gridLkupMeas.GridView.GetSelectedFieldValues(gridLkupMeas.KeyFieldName));
+	//	meas_csv = (meas_csv == null) ? "" : meas_csv;
 
-		tp_csv = (tokTimepoint.Value == null) ? "" : tokTimepoint.Value.ToString();
-		group_csv = tokGroup.Value.ToString();
-		measstatus_csv = tokMeasStatus.Value.ToString();
-		subjstatus_csv = tokSubjStatus.Value.ToString();
-		DEstatus_csv = tokDEStatus.Value.ToString();
-		IncludeREL = rblREL.Value.ToString();
-	}
+	//	tp_csv = (tokTimepoint.Value == null) ? "" : tokTimepoint.Value.ToString();
+	//	group_csv = tokGroup.Value.ToString();
+	//	measstatus_csv = tokMeasStatus.Value.ToString();
+	//	subjstatus_csv = tokSubjStatus.Value.ToString();
+	//	DEstatus_csv = tokDEStatus.Value.ToString();
+	//	IncludeREL = rblREL.Value.ToString();
+	//}
 
 
 

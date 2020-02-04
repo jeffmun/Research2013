@@ -157,7 +157,7 @@
              </Columns>
           </dx:ASPxGridView>
 
-
+     
      <asp:Panel id="sm_panel" runat="server">
      </asp:Panel> 
 
@@ -179,7 +179,6 @@
          <SelectParameters>
              <asp:SessionParameter SessionField="master_studyID" Name="studyID" DbType="Int32" /></SelectParameters>
      </asp:SqlDataSource>
-
 
  
  </asp:Content>
