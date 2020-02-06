@@ -788,6 +788,7 @@ namespace uwac
 						row["id"] = settings.ID;
 					}
 				}
+				Debug.WriteLine(row["id"].ToString());
 				dt.Rows.Add(row);
 			}
 		}

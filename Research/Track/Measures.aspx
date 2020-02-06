@@ -3,8 +3,8 @@
   <%--Theme="Skin1" EnableEventValidation="true"--%>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v19.1, Version=19.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
-<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v19.1, Version=19.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
+<%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxPivotGrid.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPivotGrid" TagPrefix="dx" %> 
 
 
 
@@ -141,13 +141,12 @@
 <asp:HiddenField ID="sliderValue" runat="server"  />
     
 
-<br />
     <div class="right">
         <table style="width: 100%">
             <tr>
                 <td style="text-align: right; padding-right: 25px;">
-                    <asp:Label ID="lblCB" runat="server" Text="Color brightness" ForeColor="Silver" Font-Size="XX-Small" Visible="true"></asp:Label>
-                    <asp:TextBox ID="txtColorLevel" runat="server" ForeColor="Silver" Font-Size="XX-Small" ></asp:TextBox>
+                    <asp:Label ID="lblCB" runat="server" Text="Color brightness" ForeColor="Silver" Font-Size="XX-Small" Visible="false"></asp:Label>
+                    <asp:TextBox ID="txtColorLevel" runat="server" ForeColor="Silver" Font-Size="XX-Small" Visible="false"></asp:TextBox>
                     <div id="slider" style="width: 100px" class="right">
                         <div id="custom-handle" class="ui-slider-handle"></div>
                     </div>
@@ -169,18 +168,21 @@
 
     <dx:ASPxLabel ID="lblTest" runat="server" Text="" ForeColor="Magenta" />
 
-    <dx:ASPxComboBox ID="ddlEntity" runat="server" Font-Bold="true" Font-Size="16" OnSelectedIndexChanged="ddlEntity_OnSelectedIndexChanged" AutoPostBack="true" >
-        <Items>
-            <dx:ListEditItem Value="Subjects" />
-            <dx:ListEditItem Value="Actions" />
-            <dx:ListEditItem Value="Measures" Selected="true"/>
-            <%--<dx:ListEditItem Value="Consents" />--%>
-        </Items>
-    </dx:ASPxComboBox>
         <table>
         <tr>
-            <td style="width: 450px; vertical-align: top">
-                Select Measures:
+            <td style="padding: 20px; vertical-align: top">
+                <dx:ASPxComboBox ID="ddlEntity" runat="server" Font-Bold="true" Font-Size="16" OnSelectedIndexChanged="ddlEntity_OnSelectedIndexChanged" AutoPostBack="true" >
+                    <Items>
+                        <dx:ListEditItem Value="Subjects" />
+                        <dx:ListEditItem Value="Actions" />
+                        <dx:ListEditItem Value="Measures" Selected="true"/>
+                        <%--<dx:ListEditItem Value="Consents" />--%>
+                    </Items>
+                </dx:ASPxComboBox>
+
+            </td>
+            <td style="padding: 20px; vertical-align: top">
+              <%--  Select Measures:
                 <dx:ASPxGridLookup ID="gridLkupMeas" runat="server" DataSourceID="sqlMeas" 
                     KeyFieldName="measureID" SelectionMode="Multiple" MultiTextSeparator=", " Caption=""
                                     TextFormatString="{0}" Width="400px" ClientInstanceName="gridLkupMeas"
@@ -204,7 +206,7 @@
                                     </tr>
                                 </table>
                             </StatusBar>
-                        </Templates>--%>
+                        </Templates>-- %>
                         <Settings ShowFilterRow="true" ShowFilterRowMenu="true" ShowFilterRowMenuLikeItem="true"  ShowStatusBar="Visible"  />
                         <SettingsBehavior AllowDragDrop="False" EnableRowHotTrack="True" />
                         <SettingsPager NumericButtonCount="3"  PageSize="40" Summary-Visible="true" />
@@ -228,12 +230,13 @@
                                     OnItemRowPrepared="tokDEStatus_ItemRowPrepared" >
                                 <ClientSideEvents ValueChanged="SomeSelected" />
                             </dx:ASPxTokenBox>
-<%--                            OnItemTextCellPrepared="tokDEStatus_ItemTextCellPrepared"  EnableCallbackMode="true" --%>
+<% --                            OnItemTextCellPrepared="tokDEStatus_ItemTextCellPrepared"  EnableCallbackMode="true" -- %>
 
                         </td>
                     </tr>
                 </table>
-                <dx:ASPxRadioButtonList ID="rblREL" runat="server" Font-Size="8" Border-BorderStyle="None" RepeatDirection="Horizontal" >
+--%>
+                <dx:ASPxRadioButtonList ID="rblREL" runat="server" Font-Size="8" Caption="Show Reliability Measures?"  Border-BorderStyle="None" RepeatDirection="Horizontal" >
                     <Items>
                         <dx:ListEditItem Text="No REL" Value="No REL" Selected="true" />
                         <dx:ListEditItem Text="Yes REL" Value="Yes REL" Selected="false" />
@@ -245,7 +248,7 @@
                 
 
             </td>
-            <td style="vertical-align: top">
+<%--            <td style="vertical-align: top">
                 Select Timepoints:
                 <dx:ASPxTokenBox ID="tokTimepoint" runat="server" ItemValueType="System.String" DataSourceID="sqlTP" ClientInstanceName="tokTimepoint"
                      TextField="timepoint_text" ValueField="timepointID"   >
@@ -263,8 +266,7 @@
                 </dx:ASPxTokenBox>
 
 
-            </td>
-            <td style="vertical-align: top; width: 50px;"></td>
+            </td>--%>
             <td style="vertical-align: top">
                 <dx:ASPxButton ID="btnLoad" runat="server" Text="Load Measures" OnClick="btnLoad_OnClick" AutoPostBack="false" ClientInstanceName="btnLoad" >
                      <%--<ClientSideEvents Click="foo" />--%>
@@ -275,8 +277,8 @@
                 <br />
                 <dx:ASPxRadioButtonList ID="rblObj" runat="server" Font-Size="9" Border-BorderStyle="None" >
                     <Items>
-                        <dx:ListEditItem Text="Edit in Table" Value="Table" Selected="false" />
-                        <dx:ListEditItem Text="Display Details in Grid" Value="Grid Details" Selected="true" />
+                        <dx:ListEditItem Text="Edit in Table" Value="Table" Selected="true" />
+                        <dx:ListEditItem Text="Display Details in Grid" Value="Grid Details" Selected="false" />
                         <dx:ListEditItem Text="Display Counts in Grid" Value="Grid Counts" Selected="false" />
                     </Items>
                 </dx:ASPxRadioButtonList>

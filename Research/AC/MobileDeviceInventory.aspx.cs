@@ -1,8 +1,9 @@
 ﻿using AutismCenterBase.Utilities;
 using System;
 using System.Data.SqlClient;
+using uwac;
 
-public partial class MobileDeviceInventory : System.Web.UI.Page
+public partial class MobileDeviceInventory : BasePage //System.Web.UI.Page
 {
     private SqlConnection oConn = new SqlConnection();
 
@@ -11,17 +12,48 @@ public partial class MobileDeviceInventory : System.Web.UI.Page
         string email = Request.QueryString["email"];
         string usergroup = Request.QueryString["usergroup"];
 
-        oConn.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["mobileDeviceConnectionString"].ConnectionString;
-        oConn.Open();
+        //oConn.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["mobileDeviceConnectionString"].ConnectionString;
+        //oConn.Open();
 
         if (!IsPostBack)
         {
             if (email != null || usergroup !=null)
             {
-                //logConfirmation(email, usergroup);
+                logConfirmation(email, usergroup);
             }
         }
     }
+
+    //protected void logConfirmation(string email, string usergroup)
+    //{
+    //    string textToShow = "Confirmation successful, thank you!";
+
+    //    email = email ?? "";
+    //    usergroup = usergroup ?? "";
+
+    //    if (email.Length < 5 || usergroup.Length < 5) textToShow = "Confirmation failed, please email authelp@uw.edu.";
+
+    //    SqlCommand sqlCmd = new SqlCommand
+    //    {
+    //        Connection = oConn,
+    //        CommandType = System.Data.CommandType.Text,
+    //        CommandText = "INSERT into confirmations ([email], [usergroup], [datetime]) VALUES ( '" + email + "', '" + usergroup + "', '" + DateTime.Now + "')"
+    //    };
+
+    //    try
+
+    //    {
+    //        sqlCmd.ExecuteNonQuery();
+    //    }
+
+    //    catch(SqlException exc)
+
+    //    {
+    //        textToShow = "Confirmation failed, please email authelp@uw.edu." + exc.Message;
+    //    }
+
+    //    lblInfo.Text = textToShow;
+    //}
 
     protected void logConfirmation(string email, string usergroup)
     {
@@ -30,25 +62,23 @@ public partial class MobileDeviceInventory : System.Web.UI.Page
         email = email ?? "";
         usergroup = usergroup ?? "";
 
-        if (email.Length < 5 || usergroup.Length < 5) textToShow = "Confirmation failed, please email authelp@uw.edu.";
-
-        SqlCommand sqlCmd = new SqlCommand
+        if (email.Length < 5 || usergroup.Length < 5)
         {
-            Connection = oConn,
-            CommandType = System.Data.CommandType.Text,
-            CommandText = "INSERT into confirmations ([email], [usergroup], [datetime]) VALUES ( '" + email + "', '" + usergroup + "', '" + DateTime.Now + "')"
-        };
-
-        try
-
-        {
-            sqlCmd.ExecuteNonQuery();
+            textToShow = "Confirmation failed, please email authelp@uw.edu.";
         }
-
-        catch(SqlException exc)
-
+        else
         {
-            textToShow = "Confirmation failed, please email authelp@uw.edu." + exc.Message;
+            SQL_utils sql = new SQL_utils("backend");
+            string sqlcode = String.Format("INSERT into confirmations ([email], [usergroup], [datetime]) VALUES ( '{0}', '{1}', '{2}')", email, usergroup, DateTime.Now.ToString());
+
+            try
+            {
+                sql.NonQuery_from_SQLstring(sqlcode);
+            }
+            catch (SqlException exc)
+            {
+                textToShow = "Confirmation failed, please email authelp@uw.edu." + exc.Message;
+            }
         }
 
         lblInfo.Text = textToShow;

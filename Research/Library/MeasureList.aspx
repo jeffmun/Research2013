@@ -2,7 +2,7 @@
  Inherits="Library_MeasureList" Title="Measure List" %>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%@ Register Assembly="DevExpress.Web.v19.1, Version=19.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 
  <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
@@ -157,7 +157,7 @@
              </Columns>
           </dx:ASPxGridView>
 
-
+     
      <asp:Panel id="sm_panel" runat="server">
      </asp:Panel> 
 
@@ -179,7 +179,6 @@
          <SelectParameters>
              <asp:SessionParameter SessionField="master_studyID" Name="studyID" DbType="Int32" /></SelectParameters>
      </asp:SqlDataSource>
-
 
  
  </asp:Content>

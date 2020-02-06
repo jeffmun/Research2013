@@ -14,7 +14,7 @@ using DevExpress.Web.Rendering;
 using uwac;
 
 
-public partial class Admin_StudyDesign : BasePage  
+public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
 {
 	private List<string> entities;
 
@@ -25,11 +25,30 @@ public partial class Admin_StudyDesign : BasePage
 		//o = new oboutGrid_utils();
 
 		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
-		LoadHypterlinks_for_new_entities();
+		LoadHyperlinks_for_new_entities();
 
 		if (!IsPostBack)
 		{
 			//LoadTimepoints();
+			LoadSM();
+			LoadSA();
+		} else 
+		{
+			if(Session["studydesign_studymeas"]!=null)
+			{
+				DataTable dt = (DataTable)Session["studydesign_studymeas"];
+
+				grid_tblstudymeas.DataSource = dt;
+				grid_tblstudymeas.DataBind();
+			}
+			if (Session["studydesign_studyaction"] != null)
+			{
+				DataTable dt = (DataTable)Session["studydesign_studyaction"];
+
+				grid_tblstudyaction.DataSource = dt;
+				grid_tblstudyaction.DataBind();
+			}
+
 		}
 
 	}
@@ -77,7 +96,7 @@ public partial class Admin_StudyDesign : BasePage
 		//grid_tblstudymeas.CssSettings.CSSRowEditTemplate = "rowedittemplate_css";
 	}
 
-	protected void LoadHypterlinks_for_new_entities()
+	protected void LoadHyperlinks_for_new_entities()
 	{
 		//hypSubjStatus.NavigateUrl="~/admin/editentity.aspx?tbl=" + utilCrypt.Encrypt("tblSS")+"&detail=" + utilCrypt.Encrypt("tblSSD") +"&usestudy=" + utilCrypt.Encrypt("y");
 
@@ -87,7 +106,37 @@ public partial class Admin_StudyDesign : BasePage
 
 	}
 
-	
+	public void LoadSM()
+	{
+		string sqlcode = String.Format("select 'studymeas' objtype, studymeasID objpk, * , dbo.fnCSV_GetLinkedIDs('studymeas', 'group', studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas', 'group', studymeasID, ',') groupabbrs " +
+			"			from vwstudymeas where studyID = {0}  order by timepoint, sortorder", Master.Master_studyID.ToString());
+		SQL_utils sql = new SQL_utils("backend");
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
+		sql.Close();
+		Session["studydesign_studymeas"] = dt;
+
+		grid_tblstudymeas.DataSource = dt;
+		grid_tblstudymeas.DataBind();
+	}
+
+	public void LoadSA()
+	{
+		string sqlcode = String.Format("select 'studyaction' objtype, studyactionID objpk " + 
+			", studyactionID, studyID, actiontypeID, labID, assignonentry, daysuntildue, actiontext, StaffPosID, sortorder, allowduplicate, numtoaddStart, numtoaddEnd " + 
+			", dateunitsID, datebaseID, timepointID, notes, baseDateStudyActionID, actiontype, studyname, studyfullname, labname, staffshortname " + 
+			", timepoint, timepoint_text " + 
+			", uwautism_research_backend.dbo.fnCSV_GetLinkedIDs('studyaction', 'group', studyactionID, ',') groupIDs " + 
+			", uwautism_research_backend.dbo.fnCSV_GetLinkedIDs_text('studyaction', 'group', studyactionID, ',') groupabbrs " + 
+			"from uwautism_research_backend..vwstudyaction where studyID = {0}  order by timepoint, sortorder " , Master.Master_studyID.ToString());
+		SQL_utils sql = new SQL_utils("backend");
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
+		sql.Close();
+		Session["studydesign_studyaction"] = dt;
+
+		grid_tblstudyaction.DataSource = dt;
+		grid_tblstudyaction.DataBind();
+	}
+
 
 
 	#region Stuff for automatically displaying info messages after insert, update, deletes 
