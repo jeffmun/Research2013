@@ -36,7 +36,7 @@ public partial class MobileDeviceCheckout : System.Web.UI.Page
         {
             Connection = oConn,
             CommandType = System.Data.CommandType.Text,
-            CommandText = "INSERT into confirmations ([email], [usergroup], [datetime]) VALUES ( '" + email + "', '" + usergroup + "', '" + DateTime.Now + "')"
+            CommandText = "INSERT into mob.confirmations ([email], [usergroup], [datetime]) VALUES ( '" + email + "', '" + usergroup + "', '" + DateTime.Now + "')"
         };
 
         try
