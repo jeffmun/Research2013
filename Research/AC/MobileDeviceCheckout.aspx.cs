@@ -12,8 +12,8 @@ public partial class MobileDeviceCheckout : BasePage //System.Web.UI.Page
         string email = Request.QueryString["email"];
         string usergroup = Request.QueryString["usergroup"];
 
-        oConn.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["mobileDeviceConnectionString"].ConnectionString;
-        oConn.Open();
+        //oConn.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["mobileDeviceConnectionString"].ConnectionString;
+        //oConn.Open();
 
         if (!IsPostBack)
         {
@@ -31,26 +31,39 @@ public partial class MobileDeviceCheckout : BasePage //System.Web.UI.Page
         email = email ?? "";
         usergroup = usergroup ?? "";
 
-        if (email.Length < 5 || usergroup.Length < 5) textToShow = "Confirmation failed, please email authelp@uw.edu.";
+        if (email.Length < 1 || usergroup.Length < 1) textToShow = "Confirmation failed, please email authelp@uw.edu.";
 
-        SqlCommand sqlCmd = new SqlCommand
-        {
-            Connection = oConn,
-            CommandType = System.Data.CommandType.Text,
-            CommandText = "INSERT into mob.confirmations ([email], [usergroup], [datetime]) VALUES ( '" + email + "', '" + usergroup + "', '" + DateTime.Now + "')"
-        };
+        SQL_utils sql = new SQL_utils("backend");
+
+        string sqlcode = String.Format("INSERT into mob.confirmations ([email], [usergroup], [datetime]) VALUES ( '{0}', '{1}', getdate())", email, usergroup);
+
+        sql.NonQuery_from_SQLstring(sqlcode);
 
         try
-
         {
-            sqlCmd.ExecuteNonQuery();
+            sql.NonQuery_from_SQLstring(sqlcode);
         }
-
-        catch(SqlException exc)
-
+        catch (Exception exc)
         {
             textToShow = "Confirmation failed, please email authelp@uw.edu." + exc.Message;
         }
+
+
+        //SqlCommand sqlCmd = new SqlCommand
+        //{
+        //    Connection = oConn,
+        //    CommandType = System.Data.CommandType.Text,
+        //    CommandText = "INSERT into mob.confirmations ([email], [usergroup], [datetime]) VALUES ( '" + email + "', '" + usergroup + "', '" + DateTime.Now + "')"
+        //};
+
+        //try
+        //{
+        //    sqlCmd.ExecuteNonQuery();
+        //}
+        //catch(SqlException exc)
+        //{
+        //    textToShow = "Confirmation failed, please email authelp@uw.edu." + exc.Message;
+        //}
 
         lblInfo.Text = textToShow;
     }
