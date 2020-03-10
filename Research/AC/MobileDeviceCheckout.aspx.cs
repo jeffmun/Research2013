@@ -1,8 +1,9 @@
 ﻿using AutismCenterBase.Utilities;
 using System;
 using System.Data.SqlClient;
+using uwac;
 
-public partial class MobileDeviceCheckout : System.Web.UI.Page
+public partial class MobileDeviceCheckout : BasePage //System.Web.UI.Page
 {
     private SqlConnection oConn = new SqlConnection();
 

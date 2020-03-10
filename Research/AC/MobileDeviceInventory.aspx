@@ -25,6 +25,16 @@
                 </ItemTemplate>
             </asp:TemplateField>
 
+  
+                       <asp:TemplateField HeaderText="Device Name" SortExpression="Device_Name">
+                <EditItemTemplate>
+                    <asp:TextBox ID="TextBoxafds" runat="server" Text='<%# Bind("Device_Name") %>'></asp:TextBox>
+                </EditItemTemplate>
+                <ItemTemplate>
+                    <asp:Label ID="Labelafds" runat="server" Text='<%# Bind("Device_Name") %>'></asp:Label>
+                </ItemTemplate>
+            </asp:TemplateField>
+
             <asp:TemplateField HeaderText="Device SN" SortExpression="Device_SN">
                 <EditItemTemplate>
                     <asp:TextBox ID="TextBox4" runat="server" Text='<%# Bind("Device_SN") %>'></asp:TextBox>
@@ -113,7 +123,7 @@
 
     <asp:SqlDataSource ID="SqlDataSource1" runat="server"
         ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING%>"
-        SelectCommand="SELECT [Overdue?] as Overdue,[Last Confirmed] as Last_Confirmed             ,[Checkout Date] as Checkout_Date               ,[User Name] as User_Name                      ,[User/Nav. Email] as Email                   ,[User Type] as User_Type                     ,[Device Description] as Device_Description    ,[Device Model] as Device_Model                ,[Device SN] as Device_SN    , [Device ID] as Device_ID                 
+        SelectCommand="SELECT [Overdue?] as Overdue,[Last Confirmed] as Last_Confirmed ,[Checkout Date] as Checkout_Date ,[User Name] as User_Name ,[User/Nav. Email] as Email ,[User Type] as User_Type ,[Device Description] as Device_Description  ,[devicename] as Device_Name  ,[Device Model] as Device_Model                ,[Device SN] as Device_SN    , [Device ID] as Device_ID                 
         FROM [mob].[vwAll]"
 
         DeleteCommand="if exists (select * from [mob].[checkouts] where [device] = @Device_ID)
