@@ -8,7 +8,7 @@
 
 	<asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true" EnablePartialRendering="true" />
 
-
+	
 
 
 
@@ -191,6 +191,7 @@
 			<asp:Parameter Name="BudgetNumber" Type="String" DefaultValue="633383" />
 		</SelectParameters>
 	</asp:SqlDataSource>
+
 	<asp:SqlDataSource ID="sql_mv_655411" runat="server"
 		SelectCommandType="StoredProcedure"
 		ConnectionString="<%$ ConnectionStrings:FinMart_ConnectionString %>"
@@ -230,6 +231,29 @@
 			<asp:Parameter Name="BudgetNumber" Type="String" DefaultValue="630120" />
 		</SelectParameters>
 	</asp:SqlDataSource>
+
+		<asp:SqlDataSource ID="sql_mv_680774" runat="server"
+		SelectCommandType="StoredProcedure"
+		ConnectionString="<%$ ConnectionStrings:FinMart_ConnectionString %>"
+		SelectCommand="fin.spGetBudgetMonth"
+		UpdateCommand="fin.spGetBudgetMonth">
+		<SelectParameters>
+			<asp:Parameter Name="BudgetNumber" Type="String" DefaultValue="680774" />
+		</SelectParameters>
+	</asp:SqlDataSource>
+
+			<asp:SqlDataSource ID="sql_mv_658853" runat="server"
+		SelectCommandType="StoredProcedure"
+		ConnectionString="<%$ ConnectionStrings:FinMart_ConnectionString %>"
+		SelectCommand="fin.spGetBudgetMonth"
+		UpdateCommand="fin.spGetBudgetMonth">
+		<SelectParameters>
+			<asp:Parameter Name="BudgetNumber" Type="String" DefaultValue="658853" />
+		</SelectParameters>
+	</asp:SqlDataSource>
+
+<%--	add On-Time Intervention 68-0774, Bremner Gift Fund 65-8853; remove fade matc--%>
+
 
 	<asp:SqlDataSource ID="sql_mv_630555" runat="server"
 		SelectCommandType="StoredProcedure"

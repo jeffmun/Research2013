@@ -48,7 +48,7 @@ public partial class AC_Bal4charts : BasePage
 			"union select 'b' orderer, budgetNumber,  " +
 			"[name] budgetName from fin.tblEDWData " +
 			"where bienniumYear >= 2013 and budgetNumber in " +
-			"(640259, 653977, 656876, 658823, 680475)" +
+			"(640259, 653977, 656876, 658853, 680475)" +
 			"group by budgetNumber,  [name] " +
 			"union select 'c' orderer, 'Core Clinic' as budgetNumber,  " +
 			"'Sum' as budgetName " +
@@ -87,7 +87,7 @@ public partial class AC_Bal4charts : BasePage
 					"yrmo, RevenueAmount, REV_Endowment, REV_Other, -ExpenseAmount as ExpenseAmount, " +
 					"-EXP_SALARY as EXP_SALARY, -EXP_Non_SALARY as EXP_Non_SALARY, balance from fin.tblEDWData " +
 					"where bienniumYear >= 2013 and budgetNumber in " +
-					"(095001, 095002, 099877, 653920, 655411, 640259, 653977, 656876, 658823, 680475) " +
+					"(095001, 095002, 099877, 653920, 655411, 640259, 653977, 656876, 658853, 680475) " +
 					"and yrmo <= (select substring(replace(CONVERT(VARCHAR, GETDATE(), 21), '-', '_'), 1, 7)) " +
 					"union select '1' id, 'Core Clinic' as budgetNumber, 'Sum' as budgetName, bienniumYear, " +
 					"yrmo, sum(RevenueAmount) as RevenueAmount, sum(REV_Endowment) as REV_Endowment, " +
@@ -100,7 +100,7 @@ public partial class AC_Bal4charts : BasePage
 					"sum(RevenueAmount) as RevenueAmount ,sum(REV_Endowment) as REV_Endowment ,sum(REV_Other) " +
 					"as REV_Other ,sum(-ExpenseAmount) as ExpenseAmount ,sum(-EXP_SALARY) as EXP_SALARY ," +
 					"sum(-EXP_Non_SALARY) as EXP_Non_SALARY ,sum(balance) as balance from fin.tblEDWData " +
-					"where bienniumYear >= 2013 and budgetNumber in (640259, 653977, 656876, 658823, 680475) " +
+					"where bienniumYear >= 2013 and budgetNumber in (640259, 653977, 656876, 658853, 680475) " +
 					"and yrmo <= (select substring(replace(CONVERT(VARCHAR, GETDATE(), 21), '-', '_'), 1, 7)) " +
 					"group by bienniumYear , yrmo ) a where budgetNumber = '{0}'", bnum);
 
