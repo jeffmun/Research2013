@@ -2,36 +2,47 @@
 using uwac;
 using System.IO;
 using System.Net;
+using uwac;
+using System.Web;
+
 public partial class test_get_BI : BasePage //System.Web.UI.Page
 {
 	protected void Page_Load(object sender, EventArgs e)
 	{
-        Read_Month();
+
+
+
+
     }
     public void Read_Month()
     {
-        //String urlString = "https://edw.washington.edu/ReportServer/Pages/ReportViewer.aspx?"
-        //    + "/Financial/Variable Reporting Period Budget Summary"
-        //    + "&rs:Command=Render"
-        //    + "&rs:format=csv"
-        //    + "&startdate=nov 2019"
-        //    + "&enddate=dec 2019"
-        //    + "&myfdbudlist=N/A"
-        //    + "&encumbrances=True"
-        //    + "&expiredsalary=True"
-        //    + "&inckids=n"
-        //    + "&budgetnbr=65-3920"
-        //    + "&reportby=s";
+        String urlString = "https://edw.washington.edu/ReportServer/Pages/ReportViewer.aspx?"
+            + "/Financial/Variable Reporting Period Budget Summary"
+            + "&rs:Command=Render"
+            + "&rs:format=csv"
+            + "&startdate=nov 2019"
+            + "&enddate=dec 2019"
+            + "&myfdbudlist=N/A"
+            + "&encumbrances=True"
+            + "&expiredsalary=True"
+            + "&inckids=n"
+            + "&budgetnbr=65-3920"
+            + "&reportby=s";
 
 
-        String urlString = "https://ucs.admin.uw.edu/MyFD/UWNetID/BudgetSummary.aspx?"
-            + "FdiNavbar:ViewBudgetNumberTxt=653920"
-            + "&FdiNavbar:TimePeriodList=Feb"
-            + "&FdiNavbar:CalendarYearList=2020";
+        //String urlString = "https://ucs.admin.uw.edu/MyFD/UWNetID/BudgetSummary.aspx?"
+        //    + "FdiNavbar:ViewBudgetNumberTxt=653920"
+        //    + "&FdiNavbar:TimePeriodList=Feb"
+        //    + "&FdiNavbar:CalendarYearList=2020";
 
         WebRequest request = WebRequest.Create(urlString);
 
-        request.Credentials = BuildCredentials(urlString, @"netid\freitz", "Fr1tz007", "OAuth");
+        //request.PreAuthenticate = true;
+
+        request.Credentials = CredentialCache.DefaultCredentials;
+
+
+        //request.Credentials = BuildCredentials(urlString, @"netid\freitz", "Fr1tz007", "OAuth");
 
         WebResponse response = request.GetResponse(); // response is netid sign in page HTML!
 
@@ -44,7 +55,7 @@ public partial class test_get_BI : BasePage //System.Web.UI.Page
             Console.WriteLine(responseFromServer);
             lbl1.Text = responseFromServer;
         }
- 
+
         response.Close();
     }
 
@@ -68,5 +79,11 @@ public partial class test_get_BI : BasePage //System.Web.UI.Page
         }
         cache.Add(new Uri(siteurl), authtype, cred);
         return cache;
+    }
+
+    protected void btn_Click(object sender, EventArgs e)
+    {
+        int x = 0;
+        Read_Month();
     }
 }

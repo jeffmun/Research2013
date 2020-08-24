@@ -67,6 +67,7 @@
       <siteMapNode url="~/Library/DocLibrary.aspx" title="Document Library" />
       <siteMapNode url="~/Data/Dictionary.aspx" title="Data Dictionary" />
       <siteMapNode url="~/Admin/NewMeasure.aspx" title="Create New Measure" menuitem="true" />
+      <siteMapNode url="~/Library/Pub.aspx" title="Publications" menuitem="true" />
     </siteMapNode>
     <siteMapNode url="" title="Study Design">
       <siteMapNode url="~/Admin/NewStudy.aspx" title="Create New Study" menuitem="true" />
@@ -87,6 +88,7 @@
     </siteMapNode>
     <siteMapNode url="" title="Data">
       <siteMapNode url="~/DataProject/Index.aspx" title="Data Projects" description="Define and download subsets of data" menuitem="true" />
+      <siteMapNode url="~/DataProject/SubjSets.aspx" title="Subject Sets" description="View and edit subject sets" menuitem="true" />
       <siteMapNode url="~/Stats/DataProject.aspx" title="(old) Data Projects" description="Define and download subsets of data" menuitem="true" />
       <siteMapNode url="" title="Plots">
         <siteMapNode url="~/Tracking/DATAdates.aspx" title="Plots of Data Collection Dates" description="" menuitem="true" />

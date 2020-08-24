@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Debug="true"  MasterPageFile="~/UWAC.master"  AutoEventWireup="true" CodeFile="test_get_BI.aspx.cs" Inherits="test_get_BI" 
-	 EnableEventValidation="false" Title="Valant Documents"%>
+	 EnableEventValidation="false" Title="test get BI"%>
  <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 <%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
@@ -27,8 +27,10 @@
 
 <asp:Content ID="Content1"  ContentPlaceHolderID="oBodyPlaceHolder" runat="server" >
 
-<dx:ASPxLabel ID="lbl1" runat="server" Text="Valant Documents" Font-Size="Large" Font-Bold="true"></dx:ASPxLabel>
+<dx:ASPxLabel ID="lbl1" runat="server" Text="Label" Font-Size="Large" Font-Bold="true"></dx:ASPxLabel>
 
-	
+	<br />
+	<dx:ASPxButton ID="btn" runat="server" Text="Button" OnClick="btn_Click"></dx:ASPxButton>
+	<br />
 
 </asp:Content>

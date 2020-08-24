@@ -64,11 +64,21 @@ namespace uwac
 		}
 
 
-		public Datadictionary(DataTable dt_meta, List<string> formnames)
+		public Datadictionary(DataTable dt_meta, List<string> formnames, int studyID)
 		{
 			Initialize();
 
 			CreateDatadictionaryFromREDCapMeta(dt_meta, formnames);
+
+			if(formnames.Count==1)
+			{
+				SQL_utils sql = new SQL_utils("data");
+				measureid = sql.IntScalar_from_SQLstring(String.Format("select measureid from def.REDCap_form where form_name='{0}' and tokenid in (select tokenid from def.REDCapToken_study where studyid={1})", formnames[0], studyID));
+				measname = sql.StringScalar_from_SQLstring(String.Format("select measname from uwautism_research_backend..tblmeasure where measureid = {0}", measureid));
+				tblname = sql.StringScalar_from_SQLstring(String.Format("select tblname from def.tbl where measureid={0}", measureid));
+				tblpk = sql.IntScalar_from_SQLstring(String.Format("select tblpk from def.tbl where measureid={0}", measureid));
+				sql.Close();
+			}
 		}
 
 
@@ -430,6 +440,11 @@ namespace uwac
 
 		public string SaveVarsToDB(SQL_utils sql)
 		{
+			return SaveVarsToDB(sql, -1);
+		}
+
+			public string SaveVarsToDB(SQL_utils sql, int extractionmodeID)
+		{
 			string info = "";
 			int num_vars = 0;
 
@@ -446,9 +461,20 @@ namespace uwac
 						if (var_in_flds == 0)
 						{
 
-							string sqlcode = String.Format("insert into def.fld(tblpk, ord_pos, fldname, FieldDataType, FieldLabel, FieldValueSetID) " +
-								" values({0},{1},'{2}','{3}','{4}',{5})"
-								, tblpk, num_vars, v.varname, v.datatype, v.varlabel, v.fieldvaluesetid);
+							string sqlcode;
+							if (extractionmodeID >= 0)
+							{
+								sqlcode = String.Format("insert into def.fld(tblpk, ord_pos, fldname, FieldDataType, FieldLabel, FieldValueSetID, fldextractionmode) " +
+									" values({0},{1},'{2}','{3}','{4}',{5},{6})"
+									, tblpk, num_vars, v.varname, v.datatype, v.varlabel, v.fieldvaluesetid, extractionmodeID);
+							}
+							else
+							{
+								sqlcode = String.Format("insert into def.fld(tblpk, ord_pos, fldname, FieldDataType, FieldLabel, FieldValueSetID) " +
+									" values({0},{1},'{2}','{3}','{4}',{5})"
+									, tblpk, num_vars, v.varname, v.datatype, v.varlabel, v.fieldvaluesetid);
+							}
+
 
 							sql.NonQuery_from_SQLstring(sqlcode);
 

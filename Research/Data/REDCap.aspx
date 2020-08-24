@@ -169,6 +169,8 @@
 				</dx:ASPxButton>
 				   <br /><br />
 				<dx:ASPxButton ID="btnShowMeta" runat="server" Text="Display REDCap Meta-Data from Selected Forms" OnClick="btnShowMeta_OnClick"></dx:ASPxButton>
+				   <br /><br />
+				<dx:ASPxButton ID="btnAddMetaToDB" runat="server" Text="Add REDCap Meta-Data from Selected Forms to DB" OnClick="btnAddMeta_OnClick"></dx:ASPxButton>
 				<br />
 				<dx:ASPxLabel ID="lblNoneSelected" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
 				   <br /><br />
@@ -202,8 +204,9 @@
 				<dx:GridViewDataColumn FieldName="ord_pos" Caption="Pos"></dx:GridViewDataColumn>
 				<dx:GridViewDataColumn FieldName="fldname"></dx:GridViewDataColumn>
 				<dx:GridViewDataColumn FieldName="fldlabel"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="redcap_fldname"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="redcap_fldlabel"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="redcap_formname" CellStyle-BackColor="WhiteSmoke"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="redcap_fldname" CellStyle-BackColor="WhiteSmoke"></dx:GridViewDataColumn>
+				<dx:GridViewDataColumn FieldName="redcap_fldlabel" CellStyle-BackColor="WhiteSmoke"></dx:GridViewDataColumn>
 			</Columns>
 			<SettingsPager PageSize="50"  PageSizeItemSettings-Items="20,50,200" PageSizeItemSettings-Visible="true"></SettingsPager>
 		</dx:ASPxGridView>

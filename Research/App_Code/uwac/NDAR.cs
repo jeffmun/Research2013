@@ -353,6 +353,8 @@ namespace uwac
 			string sql = GetSQL_for_NDAR_view(shortName, studyID, timepointID, ReasonExclude, IDexclude, "NONE SELECTED");
 			return sql;
 		}
+		
+
 
 		public static string GetSQL_for_NDAR_view(string shortName, int studyID, int timepointID, bool ReasonExclude, string IDexclude, string studymeasIDs)
 		{
@@ -367,6 +369,11 @@ namespace uwac
 				//studymeasIDs = GetSQL_for_NDAR_studymeas_to_include(shortName, studyID, timepointID);
 			}
 			string sql_where1 = " where verified in (0,1) and studymeasID in (" + studymeasIDs + ")";
+
+			if(studyID == 1110)
+			{
+				sql_where1 += " and ID in (select ID from uwautism_research_backend.trk.vwMasterStatus_S where studyID=1110 and subjstatus='Finished') ";
+			}
 
 			string sql_where_IDexclude = "";
 
@@ -400,6 +407,9 @@ namespace uwac
 					break;
 
 			}
+
+			string sexvar = (sql_for_NDAR_fields.Contains(" as sex")) ? "sex" : "gender";
+
 			string sql_string;
 			if (ReasonExclude)  // include the reasonExclude field 
 			{
@@ -407,10 +417,9 @@ namespace uwac
 
 				string urlstem = sql.StringScalar_from_SQLstring("select def.fnGetDElink_stem_from_shortname('" + shortName + "')");
 
-
 				//wrap the query as "x" in order to select the parameters needed for the function fnNDAR_ReasonExclude 
 				sql_string = "select FORMAT( row_number() over(order by reason_exclude, src_subject_id) , 'd4') + '|" + urlstem + "' + cast(databasepk as varchar) as rownum, * " + System.Environment.NewLine +
-					" from (select  dbo.fnNDAR_ReasonExclude(" + studyID.ToString() + ",subjectkey, src_subject_id, interview_date, gender) as reason_exclude " + System.Environment.NewLine +
+					" from (select  dbo.fnNDAR_ReasonExclude(" + studyID.ToString() + ",subjectkey, src_subject_id, interview_date, " + sexvar + " ) as reason_exclude " + System.Environment.NewLine +
 					" , * from (" + System.Environment.NewLine + "select " + databasepk + " as databasepk, id, " +
 					sql_for_NDAR_fields + System.Environment.NewLine +
 					sql_from + System.Environment.NewLine +
@@ -422,7 +431,7 @@ namespace uwac
 			else
 			{
 				//exclude those with a ReasonExclude value
-				string sql_where2 = "  where dbo.fnNDAR_ReasonExclude(" + studyID.ToString() + ",subjectkey, src_subject_id, interview_date, gender) = ''";
+				string sql_where2 = "  where dbo.fnNDAR_ReasonExclude(" + studyID.ToString() + ",subjectkey, src_subject_id, interview_date, " + sexvar + ") = ''";
 
 				//wrap the query as "x" in order to select the parameters needed for the function fnNDAR_ReasonExclude 
 				sql_string = "select * from (select " + sql_for_NDAR_fields + sql_from + sql_where1 + sql_where_IDexclude + sql_where_ados + " ) x " + sql_where2 + " order by src_subject_id";

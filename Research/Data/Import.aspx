@@ -103,6 +103,7 @@
 						<Columns>
 								<dx:GridViewDataColumn FieldName="form_name"></dx:GridViewDataColumn>
 						</Columns>
+						<SettingsPager PageSize="50"></SettingsPager>
 					</dx:ASPxGridView>
 
 				</td>

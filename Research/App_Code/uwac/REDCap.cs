@@ -247,13 +247,14 @@ namespace uwac_REDCap
 
 		public Datadictionary Datadictionary(string formname)
 		{
-			return Datadictionary(new List<string> { formname });
+			Datadictionary dict = Datadictionary(new List<string> { formname });
+			return dict;
 		}
 
 		public Datadictionary Datadictionary(List<string> formnames)
 		{
 			DataTable dt_meta = dt_metadata.AsEnumerable().Where(f => formnames.Contains(f.Field<string>("form_name"))).CopyToDataTable();
-			Datadictionary dict = new Datadictionary(dt_meta, formnames);
+			Datadictionary dict = new Datadictionary(dt_meta, formnames, _studyID);
 			return dict;
 		}
 

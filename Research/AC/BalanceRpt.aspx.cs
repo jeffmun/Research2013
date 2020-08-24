@@ -12,6 +12,7 @@ using DotNet.Highcharts.Options;
 using DotNet.Highcharts.Helpers;
 using DotNet.Highcharts.Enums;
 using uwac;
+using System.Diagnostics;
 
 public partial class AC_BalanceRpt : System.Web.UI.Page
 {
@@ -96,8 +97,8 @@ public partial class AC_BalanceRpt : System.Web.UI.Page
 
 		foreach(string s in mos)
 		{
-			GetData(s, "core");
-			GetData(s, "gift");
+			//GetData(s, "core");
+			//GetData(s, "gift");
 		}
 
 
@@ -122,6 +123,8 @@ public partial class AC_BalanceRpt : System.Web.UI.Page
 
 		DataTable dt = sql.DataTable_from_ProcName("ac.spCurrentBal_with_endowment", ps);
 
+
+		Debug.WriteLine(String.Format("mode={0}  mo={1}  nrows in dt = {2}", mode, mo, dt.Rows.Count));
 
 		if (mo == "2016_05")
 		{

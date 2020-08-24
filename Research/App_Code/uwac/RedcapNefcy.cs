@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO; 
 using System.Net;
 using System.Text;
@@ -142,8 +143,13 @@ namespace uwac_REDCap
 			// should return the first field you expect. otherwise it is error
 			string strFirstField = strResponse.Split(',').ToList()[0];
 			string strSecondField = strResponse.Split(',').ToList()[1];
+			string strThirdField = strResponse.Split(',').ToList()[2];
+			string strFourthField = strResponse.Split(',').ToList()[3];
 
-			if (strFirstField != strReturnCheck && strSecondField != strReturnCheck)
+			List<string> response_vars = strResponse.Split(',').ToList();
+
+			//if (strFirstField != strReturnCheck && strSecondField != strReturnCheck)
+			if (!response_vars.Contains(strReturnCheck))
 			{
 				throw new Exception("RC Error: " + strResponse);
 			}

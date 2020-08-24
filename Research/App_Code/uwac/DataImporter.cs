@@ -1259,29 +1259,16 @@ namespace uwac
 
 			if (dbEntityType == DbEntityType.studymeas)
 			{
-				//code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname, studymeasID, studymeasname " + Environment.NewLine +
-				//"from def.REDCapToken a " + Environment.NewLine +
-				//"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
-				//"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
-				//"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
-				//"join uwautism_research_backend..tblStudyMeas e ON d.measureID = e.measureID " + Environment.NewLine +
-				//"where e.studymeasID = {0} and b.studyID={1}", pk, studyID);
 
 				code = String.Format("select * from def.vwREDCap_LinkedImportTbls where ltpk in " + Environment.NewLine +
-					"(select ltpk from def.vwREDCap_LinkedImportTbls where studymeasID = {0}  and studyID = {1})", pk, studyID);
+					"(select distinct ltpk from def.vwREDCap_LinkedImportTbls where studymeasID = {0}  and studyID = {1}) and tokenid in (select tokenid from def.REDCapToken_Study where studyID={1})", pk, studyID);
 
 			}
 			else if (dbEntityType == DbEntityType.measure)
 			{
-				//code = String.Format("select a.*, b.studyID, redcapformID, form_name, form_name2, c.measureID, measname " + Environment.NewLine +
-				//"from def.REDCapToken a " + Environment.NewLine +
-				//"join def.REDCapToken_Study b ON a.tokenID = b.tokenID " + Environment.NewLine +
-				//"join def.REDCAP_Form c ON a.tokenID = c.tokenID " + Environment.NewLine +
-				//"join uwautism_research_backend..tblMeasure d ON c.measureID = d.measureID " + Environment.NewLine +
-				//"where d.measureID = {0} and b.studyID={1}", pk, studyID);
 
 				code = String.Format("select * from def.vwREDCap_LinkedImportTbls where ltpk in " + Environment.NewLine +
-					"(select ltpk from def.vwREDCap_LinkedImportTbls where measureID = {0}  and studyID = {1})", pk, studyID);
+					"(select ltpk from def.vwREDCap_LinkedImportTbls where measureID = {0}  and studyID = {1})  and tokenid in (select tokenid from def.REDCapToken_Study where studyID={1})", pk, studyID);
 			}
 
 

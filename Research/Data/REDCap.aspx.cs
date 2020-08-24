@@ -345,6 +345,8 @@ public partial class Data_REDCap : BasePage
 
 			REDCap redcap = new REDCap(Master.Master_studyID);
 
+			DataTable foo = redcap.dt_metadata;
+
 			var x = 
 			from a in dict.dt_dict.AsEnumerable()
 			join b in redcap.dt_metadata.AsEnumerable() on a.Field<string>("fldname_in_redcap").ToLower() equals b.Field<string>("field_name").ToLower()
@@ -355,6 +357,7 @@ public partial class Data_REDCap : BasePage
 				ord_pos = a.Field<double>("ord_pos"),
 				fldname = a.Field<string>("fldname").ToLower(),
 				fldlabel = a.Field<string>("fieldlabel"),
+				redcap_formname = (b == null) ? null : b.Field<string>("form_name"),
 				redcap_fldname = (b == null) ? null : b.Field<string>("field_name"),
 				redcap_fldlabel = (b == null) ? null : b.Field<string>("field_label")
 			};
@@ -366,6 +369,7 @@ public partial class Data_REDCap : BasePage
 			if(dtMerged.HasRows())
 			{
 				gridMerged.DataSource = dtMerged;
+				gridMerged.SettingsPager.PageSize = 200;
 				gridMerged.DataBind();
 				gridMerged.Caption = "Matched Fields between DB & REDCap: " + cboMeas.Text;
 				panelMerged.Visible = true;
@@ -392,6 +396,42 @@ public partial class Data_REDCap : BasePage
 
 
 	#region RED Cap
+
+	protected void btnAddMeta_OnClick(object sender, EventArgs e)
+	{
+		Debug.WriteLine("*************** btnShowMeta_OnClick");
+
+		List<string> formnames = GetSelectedFormnames();
+
+		if (formnames.Count > 1)
+		{
+			lblNoneSelected.Text = "Select just a single REDCap form.";
+		}
+		else if (formnames.Count == 1)
+		{
+			foreach (string formname in formnames)
+			{
+				Datadictionary dict = redcap.Datadictionary(formname);
+
+				if(dict.tblpk > 0)
+				{
+					SQL_utils sql = new SQL_utils("data");
+					dict.SaveVarsToDB(sql, 0); // 0 = matchfieldname
+					dict.SaveValuesetsToDB(sql);
+					sql.Close();
+
+					lblNoneSelected.Text = "Data dictionary updated.";
+				}
+
+			}
+		}
+		else
+		{
+			lblNoneSelected.Text = "Select a REDCap form.";
+		}
+	}
+		
+
 	protected void btnShowMeta_OnClick(object sender, EventArgs e)
 	{
 		Debug.WriteLine("*************** btnShowMeta_OnClick");
@@ -450,6 +490,7 @@ public partial class Data_REDCap : BasePage
 		if (formnames.Count > 0)
 		{
 			ASPxGridView grid = redcap.gridDataFromForm(formnames[0]);
+			grid.SettingsPager.PageSize = 200;
 			if (grid != null)
 			{
 				placeholder_gridMeta.Controls.Clear();
