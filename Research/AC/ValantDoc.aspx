@@ -70,7 +70,14 @@
 	
 	<asp:SqlDataSource ID="sqlValantDoc" runat="server" ConnectionString="<%$ ConnectionStrings:ValantTJ %>"
 		SelectCommandType="text"
-		SelectCommand="select a.*, lastname, firstname ,  folder + '\' + client + '\' + doctype + '@!@' + docname as docparams from valantdocdump a left join ClientMaster b ON a.client = b.patientID where docname not like '%.sig'">
+		SelectCommand="select a.*, b.lastname, b.firstname , a.folder + '\' + a.client + '\' + a.doctype + '@!@' 
+		+ a.docname as docparams from valantdocdump a left join (
+			SELECT  [PatientId],[firstName],[lastName]
+			FROM [ValantTJ].[dbo].[Facesheets]
+			union
+			SELECT [PatientID],[firstname],[lastname]
+			FROM [ValantTJ].[dbo].ClientMaster
+			where patientID is not NULL ) b ON a.client = b.PatientID where docname not like '%.sig'">
 	</asp:SqlDataSource>
 	
 
