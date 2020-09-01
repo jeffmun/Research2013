@@ -234,7 +234,8 @@ namespace uwac
 			if (n_newvals == n_oldvals && pkvalue != "-1" && pkfld != "")
 			{
 				SQL_utils sql1 = new SQL_utils(db);
-				DataTable flds = sql1.DataTable_from_SQLstring("select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "' and table_schema = '" + schema + "'");
+				string sqlflds = "select lower(column_name) column_name, lower(data_type) data_type from INFORMATION_SCHEMA.columns where table_name='" + tbl + "' and table_schema = '" + schema + "'";
+				DataTable flds = sql1.DataTable_from_SQLstring(sqlflds);
 				sql1.Close();
 
 				List<string> fldnames = flds.AsEnumerable().Select(f => f.Field<string>("column_name")).ToList();
@@ -400,6 +401,7 @@ namespace uwac
 
 
 		#endregion
+
 
 		#region DELETE
 		public static string BuildDeleteSqlCode(ASPxDataDeletingEventArgs e, string tbl, string db)
@@ -604,25 +606,30 @@ namespace uwac
 			}
 
 		}
-		#endregion
+        #endregion
 
 
-		public static List<string> GetUniqueValues (DataTable dt, string colname)
+        #region Various Utilities and Shortcuts
+        public static List<string> GetUniqueValues (DataTable dt, string colname)
 		{
 			List<string> vals = dt.AsEnumerable().Select(f => f.Field<string>(colname)).Distinct().ToList();
 			return vals;
 		}
 
-		//public string CreateValueSet (List<string> vals, string valuesetname)
-		//{
-		//	SQL_utils sql = new SQL_utils("data");
+        #endregion
 
-		//	string code = String.Format("insert into datFieldValueSet {0}")
-		//}
 
-		//public int ConvertToFieldValue()
+        #region ValueSets
+        //public string CreateValueSet (List<string> vals, string valuesetname)
+        //{
+        //	SQL_utils sql = new SQL_utils("data");
 
-		public static int ProcessValueSet(string fldname, string valuesetname, bool createNewSetIfNeeded, List<string> valuelabels)
+        //	string code = String.Format("insert into datFieldValueSet {0}")
+        //}
+
+        //public int ConvertToFieldValue()
+
+        public static int ProcessValueSet(string fldname, string valuesetname, bool createNewSetIfNeeded, List<string> valuelabels)
 		{
 			SQL_utils sql = new SQL_utils("data");
 			string code = String.Format("select fieldvaluesetID from def.fld where fldname = '{0}'", fldname);
@@ -773,8 +780,11 @@ namespace uwac
 				}
 			}
 		}
+        #endregion
 
-		public class FormLayoutNewValues : OrderedDictionary
+
+
+        public class FormLayoutNewValues : OrderedDictionary
 		{
 			public FormLayoutNewValues(ASPxFormLayout form)
 			{

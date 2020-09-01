@@ -100,7 +100,8 @@
       <siteMapNode url="" title="Importing Data">
         <siteMapNode url="~/Data/ImportHelp.aspx" title="Help on Importing Data" description="" menuitem="true" />
         <siteMapNode url="~/Data/Import.aspx" title="Import Data" description="" menuitem="true" />
-        <siteMapNode url="~/Data/REDCap.aspx" title="Linked Import Tables (REDCap, etc.)" description="" menuitem="true" />
+        <siteMapNode url="~/Data/ManageREDCap.aspx" title="Manage REDCap" description="" menuitem="true" />
+        <siteMapNode url="~/Data/REDCap.aspx" title="Linked Import Tables" description="" menuitem="true" />
       </siteMapNode>
     </siteMapNode>
     <siteMapNode url="" title="Admin">

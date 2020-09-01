@@ -23,8 +23,11 @@ namespace uwac_REDCap
 
 		// must be declared somewhere in code, or pulled from config file
 		// RC URI and RC Token
-		string strURI = "YOUR_RC_API_URI";
-		string strPostToken = "YOUR_RC_TOKEN";
+		//string strURI = "YOUR_RC_API_URI";
+		//string strPostToken = "YOUR_RC_TOKEN";
+		public string strURI { get; set; }
+		public string strPostToken { get; set; }
+
 
 		// if pulling from web.config you could use the code below. i do this so i can easily switch between dev and production servers
 		// by just using different config files
@@ -301,7 +304,7 @@ namespace uwac_REDCap
 		}
 
 		// makes the API call and returns response from request
-		private string responseHTTP(byte[] bytePostData)
+		public string responseHTTP(byte[] bytePostData)
 		{
 			Debug.WriteLine("responseHTTP()");
 			string strResponse = "";

@@ -231,7 +231,7 @@ public partial class UWAC : System.Web.UI.MasterPage
 		var x = HttpContext.Current.Server.MachineName.ToString();
 		var contxt = HttpContext.Current;
 
-		List<string> devmachines = new List<string> { "AUTISM-SB205J", "AUTISM-Fritz-PC" };
+		List<string> devmachines = new List<string> { "AUTISM-SB205J", "AUTISM-Fritz-PC", "JEFFHOMEPC2020" };
 
 		string currentuser_identityname = HttpContext.Current.User.Identity.Name;
 		string netid = "";

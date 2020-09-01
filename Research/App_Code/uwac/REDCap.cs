@@ -15,8 +15,7 @@ using RedcapLibrary;
 using DevExpress.Web;
 using Redcap;
 using Redcap.Models;
-
-
+using System.Dynamic;
 
 /// https://github.com/cctrbic/redcap-api
 /// Publications resulting from the use of this software should cite the Wright Center's Clinical and Translational Science Award (CTSA) grant #UL1TR002649, 
@@ -35,12 +34,18 @@ namespace uwac_REDCap
 	public class REDCap
 	{
 		//public RedcapAPI api { get; set; } //this was from RedcapLibrary (nuget package)
-		public RedcapNefcy api { get; set; }
+		public RedcapNefcyExt api { get; set; }
 		public RedcapAPI apiMeta { get; set; }
 
 		private DataTable dt_tokens;
 		public DataTable dt_redcapforms { get; set; }
+		public DataTable dt_redcapevents { get; set; }
 		public DataTable dt_metadata { get; set; }
+		public DataTable dt_formevents { get; set; }
+
+		public DataTable dt_db_formevent_studymeasid { get; set; }
+		public List<string>  redcapevents { get; set; }
+
 		private string idfld;
 		public string dataheader { get; set; }
 		private int _studyID;
@@ -50,16 +55,8 @@ namespace uwac_REDCap
 			_studyID = studyID;
 			idfld = "id";
 
-
 			LoadTokens();
 			GetAPIInfo();
-
-			//DataRow row = dt.Rows[0];
-			//string token = row["token"].ToString();
-			//url = row["url"].ToString();
-			//idfld = row["idfld"].ToString();
-			//if (token != "" & url != "" & idfld != "") api = new RedcapAPI(url, token);
-
 		}
 
 		public void LoadTokens()
@@ -69,8 +66,12 @@ namespace uwac_REDCap
 				SQL_utils sql = new SQL_utils("data");
 
 				//string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s LEFT JOIN def.REDCapToken_Study a ON s.studyID=a.studyID LEFT JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + studyID.ToString();
-				string code = "select coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s JOIN def.REDCapToken_Study a ON s.studyID=a.studyID JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + _studyID.ToString();
+				string code = "select b.tokenid, coalesce(token,'') token, coalesce(url,'') url, coalesce(idfld, '') idfld from uwautism_research_backend..tblstudy s JOIN def.REDCapToken_Study a ON s.studyID=a.studyID JOIN def.REDCapToken b ON a.tokenID=b.tokenID where s.studyID=" + _studyID.ToString();
 				dt_tokens = sql.DataTable_from_SQLstring(code);
+
+				string form_event_code = String.Format("select unique_event_name + form form_and_event, tokenid, studymeasid from def.redcap_formevent where studymeasid in (select studymeasid from uwautism_research_backend..tblstudymeas where studyid={0})", _studyID);
+				dt_db_formevent_studymeasid = sql.DataTable_from_SQLstring(form_event_code);
+
 				sql.Close();
 			}
 		}
@@ -83,13 +84,19 @@ namespace uwac_REDCap
 				foreach (DataRow row in dt_tokens.Rows)
 				{
 					apiMeta = new RedcapAPI(row["url"].ToString(), row["token"].ToString());
-					api = new RedcapNefcy(row["url"].ToString(), row["token"].ToString());
+					api = new RedcapNefcyExt(row["url"].ToString(), row["token"].ToString());
 
+					int tokenid = Convert.ToInt32(row["tokenid"]);
 
 					if (counter == 0)
 					{
-						dt_redcapforms = apiMeta.InstrumentDataTable;
-						dt_metadata = apiMeta.MetaDataTable;
+						redcapevents = api.events;
+
+						dt_redcapforms = AddTokenid(apiMeta.InstrumentDataTable, tokenid);
+						dt_redcapevents = AddTokenid(api.dt_redcapevents, tokenid);
+						dt_metadata = AddTokenid(apiMeta.MetaDataTable, tokenid);
+						dt_formevents = AddTokenid(api.dt_formevents, tokenid);
+
 					}
 					else
 					{
@@ -107,6 +114,320 @@ namespace uwac_REDCap
 			}
 		}
 
+
+		public DataTable AddStudymeasToREDCapFormData(DataTable dt)
+        {
+			string form_name = dt.AsEnumerable().Select(f => f.Field<string>("form_name")).First().ToString();
+			string form_name2 = dt.AsEnumerable().Select(f => f.Field<string>("form_name")).Last().ToString();
+
+			if(form_name == form_name2)
+            {
+				dt = ConcatFields(dt, "redcap_event_name", "form_name", "form_and_event");
+				
+				DataTable dt2 = JoinDataTables(dt, dt_db_formevent_studymeasid, (row1, row2) =>
+				  row1.Field<string>("form_and_event") == row2.Field<string>("form_and_event")
+				  );
+
+				return dt2;
+			}
+            else
+            {
+				return null;
+            }
+
+		}
+
+		public DataTable ConcatFields(DataTable dt, string fld1, string fld2, string newfld)
+        {
+			DataColumn col_newfld = new DataColumn(newfld);
+			dt.Columns.Add(col_newfld);
+
+			foreach(DataRow row in dt.Rows)
+            {
+				row[newfld] = String.Format("{0}{1}", row[fld1].ToString(), row[fld2].ToString());
+            }
+			return dt;
+        }
+
+
+		public List<dynamic> ToDynamic(DataTable dt)
+		{
+			var dynamicDt = new List<dynamic>();
+			foreach (DataRow row in dt.Rows)
+			{
+				dynamic dyn = new ExpandoObject();
+				foreach (DataColumn column in dt.Columns)
+				{
+					var dic = (IDictionary<string, object>)dyn;
+					dic[column.ColumnName] = row[column];
+				}
+				dynamicDt.Add(dyn);
+			}
+			return dynamicDt;
+		}
+
+		private DataTable JoinDataTables(DataTable t1, DataTable t2, params Func<DataRow, DataRow, bool>[] joinOn)
+		{
+			DataTable result = new DataTable();
+			foreach (DataColumn col in t1.Columns)
+			{
+				if (result.Columns[col.ColumnName] == null)
+					result.Columns.Add(col.ColumnName, col.DataType);
+			}
+			foreach (DataColumn col in t2.Columns)
+			{
+				if (result.Columns[col.ColumnName] == null)
+					result.Columns.Add(col.ColumnName, col.DataType);
+			}
+			foreach (DataRow row1 in t1.Rows)
+			{
+				var joinRows = t2.AsEnumerable().Where(row2 =>
+				{
+					foreach (var parameter in joinOn)
+					{
+						if (!parameter(row1, row2)) return false;
+					}
+					return true;
+				});
+				foreach (DataRow fromRow in joinRows)
+				{
+					DataRow insertRow = result.NewRow();
+					foreach (DataColumn col1 in t1.Columns)
+					{
+						insertRow[col1.ColumnName] = row1[col1.ColumnName];
+					}
+					foreach (DataColumn col2 in t2.Columns)
+					{
+						insertRow[col2.ColumnName] = fromRow[col2.ColumnName];
+					}
+					result.Rows.Add(insertRow);
+				}
+			}
+			return result;
+		}
+
+
+		#region Save to DB
+		private DataTable AddTokenid(DataTable dt, int tokenid)
+        {
+			DataColumn col_tokenid = new DataColumn("tokenid", typeof(int));
+			col_tokenid.DefaultValue = tokenid;
+
+			dt.Columns.Add(col_tokenid);
+
+			return dt;
+        }
+
+		public string SaveFormsToDB()
+        {
+			string result = "";
+			if (dt_redcapforms.HasRows())
+            {
+				SQL_utils sql = new SQL_utils("data");
+				result = sql.BulkInsert(dt_redcapforms, "redcap_form", "def");
+            }
+			return result;
+        }
+		public string SaveEventsToDB()
+		{
+			string result = "";
+			if (dt_redcapevents.HasRows())
+			{
+				SQL_utils sql = new SQL_utils("data");
+				result = sql.BulkInsert(dt_redcapevents, "redcap_form", "def");
+			}
+			return result;
+		}
+		public string SaveFormEventsToDB()
+		{
+			string result = "";
+			if (dt_formevents.HasRows())
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+				string first_tokenid = dt_formevents.AsEnumerable().Select(f => f.Field<int>("tokenid")).First().ToString();
+				string sql_del = String.Format("delete from def.REDCap_formevent where tokenid = ", first_tokenid);
+
+				if (first_tokenid != "")
+				{
+					sql.NonQuery_from_SQLstring(sql_del);
+					result = sql.BulkInsert(dt_formevents, "redcap_formevent", "def");
+				}
+			}
+			return result;
+		}
+
+		public string SaveFieldsToDB()
+		{
+			string result = "";
+			string result2 = "";
+			if (dt_metadata.HasRows())
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+				string first_tokenid = dt_metadata.AsEnumerable().Select(f => f.Field<int>("tokenid")).First().ToString();
+
+				if (first_tokenid != "")
+				{
+					string sql_n = String.Format("select count(*) from def.REDCap_fields where tokenid = {0}", first_tokenid);
+					int nflds = sql.IntScalar_from_SQLstring(sql_n);
+
+					if (nflds > 0)
+					{
+						string sql_del = String.Format("delete from def.REDCap_fields where tokenid = {0}", first_tokenid);
+						sql.NonQuery_from_SQLstring(sql_del);
+						result = String.Format("{0} records deleted from [redcap_fields]. ", nflds);
+					}
+					result2 = sql.BulkInsert(dt_metadata, "redcap_fields", "def");
+				}
+			}
+			return String.Format("{0} {1}",result, result2);
+		}
+
+		public string CreateTableFromForm(string form)
+        {
+			string result = "";
+
+
+			return result;
+        }
+
+		public string SaveFormDataToDB(string form)
+        {
+
+			DataTable dt_redcap = DataFromForm(form);
+			dt_redcap = AddStudymeasToREDCapFormData(dt_redcap);
+
+			SQL_utils sql = new SQL_utils("data");
+
+			int studymeasid1 = dt_redcap.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Min();
+			int studymeasid2 = dt_redcap.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Max();
+
+			int measureid1 = sql.IntScalar_from_SQLstring("select measureid  from uwautism_research_backend..tblstudymeas where studymeasid=" + studymeasid1.ToString());
+			int measureid2 = sql.IntScalar_from_SQLstring("select measureid  from uwautism_research_backend..tblstudymeas where studymeasid=" + studymeasid2.ToString());
+
+			if(measureid1 == measureid2)
+            {
+				string tblname = sql.StringScalar_from_SQLstring(String.Format("select tblname from def.tbl where measureid={0}", measureid1));
+
+				DataTable dt_db = DataImporter.EmptyDataTable(tblname, "dbo");
+
+				List<string> redcap_colnames = dt_redcap.ColumnNames();
+
+				foreach (DataRow row in dt_redcap.Rows)
+				{
+
+					int x = SaveRowToDB(sql, row);
+
+				}
+
+
+			}
+
+
+			return "ok";
+        }
+
+
+
+
+		//private  DataRow PopulateRow(DataTable dt, DataRow source_row, List<string> source_colnames)
+		//{
+		//	DataRow row = dt.NewRow();
+
+		//	try
+		//	{
+		//		for(int i=0; i < row.ItemArray.Length; i++)
+		//		//foreach (Importfield fld in settings.fields)
+		//		{
+		//			fld.type = dt.Columns[fld.field].DataType.ToString();
+		//			fld.basedate = basedate;
+		//			if (fld.ConvertFromLabelToValue)
+		//			{
+		//				fld.valueset = settings.valuesets.Where(v => v.fieldvaluesetid == fld.fieldvaluesetID).First();
+		//			}
+		//			fld.AssignImportValueToProcess(source_row);
+
+
+
+		//			string rowfield = fld.field;
+		//			row[rowfield] = fld.ProcessedValue();
+
+
+		//		}
+		//		return row;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		//some error
+		//		return null;
+		//	}
+		
+		//}
+
+
+		//public void AddRow(bool has_id, DataTable dt, DataRow row)
+		//{
+		//	if (row != null)
+		//	{
+		//		if (has_id)
+		//		{
+		//			string row_id = row["id"].ToString();
+		//			if (String.IsNullOrEmpty(row_id))
+		//			{
+		//				row["id"] = settings.ID;
+		//			}
+		//		}
+		//		Debug.WriteLine(row["id"].ToString());
+		//		dt.Rows.Add(row);
+		//	}
+		//}
+
+
+
+
+
+		public int SaveRowToDB(SQL_utils sql, DataRow row)
+        {
+			int studymeasid = Convert.ToInt32(row["studymeasid"]);
+			string tblname = sql.StringScalar_from_SQLstring(String.Format("select coalesce(tblname,'none') from def.tbl where measureid = (select measureid from uwautism_research_backend..tblstudymeas where studymeasid={0})", studymeasid));
+			int x = 0;
+
+			int n = CountValuesInRow( row);
+
+			if (studymeasid > 0 & tblname != "none")
+            {
+				string code = String.Format("select count(*) from {0} where studymeasid={1} and id='{2}'", tblname, studymeasid, row["record_id"]);
+				int nrows = sql.IntScalar_from_SQLstring(code);
+
+				string msg;
+				if (nrows > 0)
+                {
+					msg = String.Format(" YES ROW nrows:{0}  studymeasid={1} and id='{2}'  n_values: {3}", nrows, studymeasid, row["record_id"], n);
+				}
+				else
+                {
+					msg = String.Format(" NO ROW  nrows:{0}  studymeasid={1} and id='{2}'  n_values: {3}", nrows, studymeasid, row["record_id"], n);
+				}
+
+				Debug.WriteLine(msg);
+			}
+
+			return x;
+        }
+
+		#endregion
+
+		public int CountValuesInRow(DataRow row)
+        {
+			int n = 0;
+			for (int i = 0; i < row.ItemArray.Length; i++) 
+            {
+				//Debug.WriteLine(row.ItemArray[i]);
+				if(row.ItemArray[i].ToString() != "") n++;
+            }
+			return n;
+        }
 
 
 		#region Fields 
@@ -166,49 +487,35 @@ namespace uwac_REDCap
 
 		#region DataTables
 
-		public DataTable DataFromForm(string formname)
+		public DataTable DataFromAllForms(string formname)
 		{
 
 			return DataFromForms(new List<string> { formname });
-			//string strRecordsSelect = "";
-			//string strFilterLogic = "";
-			//string strFields = FieldsCSV(formname);
-			//string strEvents = "";
-			//string strForms = "";
-			//bool boolLabels = false;
-			//bool boolAccessGroups = false;
+		}
 
-			//strFields = "";
 
-			//string firstfld = FirstField(formname);
-
-			//try
-			//{
-			//	//DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
-			//	//DataTable dt = api.GetTableFromAnyRC( strRecordsSelect, strFilterLogic, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
-
-			//	DataTable dt = api.GetTableFromAnyRC(firstfld, strRecordsSelect, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
-
-			//	return dt;
-			//}
-			//catch (Exception ex)
-			//{
-			//	return null;
-			//}
+		public DataTable DataFromForm(string formname)
+		{
+			return DataFromForms(new List<string> { formname });
 		}
 
 
 		public DataTable DataFromForms(List<string> formnames)
 		{
 			string strRecordsSelect = "";
-			string strFilterLogic = "";
+			//string strFilterLogic = "";
 			string strFields = FieldsCSV(formnames);
 			string strEvents = "";
 			string strForms = "";
 			bool boolLabels = false;
 			bool boolAccessGroups = false;
 
-			//strFields = "record_id,redcap_event_name,redcap_repeat_instrument,redcap_repeat_instance," + strFields;
+
+			if(!strFields.Contains("redcap_repeat_instance,")) strFields = "redcap_repeat_instance," + strFields;
+			if (!strFields.Contains("redcap_repeat_instrument,")) strFields = "redcap_repeat_instrument," + strFields;
+			if (!strFields.Contains("redcap_event_name,")) strFields = "redcap_event_name," + strFields;
+			if (!strFields.Contains("record_id,")) strFields = "record_id," + strFields;
+
 
 			string firstfld = FirstField(formnames[0]);
 
@@ -216,11 +523,18 @@ namespace uwac_REDCap
 			{
 				//DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, stFields, strEvents, strForms, boolLabels, boolAccessGroups);
 				//DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, "", "", "", boolLabels, boolAccessGroups);
-
 				//DataTable dt = api.GetTableFromAnyRC(idfld, strRecordsSelect, strFilterLogic, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
 
 				DataTable dt = api.GetTableFromAnyRC(firstfld, strRecordsSelect, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
 
+				//When only a single form is included, add the formname to the datatable
+				if(formnames.Count==1)
+                {
+					DataColumn formcol = new DataColumn("form_name");
+					formcol.DefaultValue = formnames[0];
+
+					dt.Columns.Add(formcol);
+                }
 
 				// FIX?  dt.RenameColumn("id", "redcap_id");
 
@@ -318,6 +632,55 @@ namespace uwac_REDCap
 		}
 
 
+		public ASPxComboBox cboEventSelector()
+		{
+			//if (api != null)
+			if (dt_redcapforms.HasRows())
+			{
+				ASPxComboBox cbo = new ASPxComboBox();
+				cbo.ID = "cboRedcapEvents";
+				cbo.ClientInstanceName = "cboRedcapEvents";
+				cbo.Caption = "REDCap Events:";
+				cbo.DataSource = redcapevents;
+				//cbo.TextField = "unique_event_name";
+				//cbo.ValueField = "unique_event_name";
+				cbo.NullText = String.Format("Available REDCap events (N={0})", redcapevents.Count);
+				cbo.Width = 300;
+				cbo.DataBind();
+				return cbo;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+
+
+
+		public ASPxGridView gridFormEvents()
+		{
+			if(dt_formevents.HasRows())
+			{
+				string dataheader = String.Format("{0} (cols={1}, rows={2})", "Form-Events", dt_formevents.Columns.Count, dt_formevents.Rows.Count);
+
+				ASPxGridView grid = new ASPxGridView();
+				grid.ID = "gridFormEvents";
+				grid.ClientInstanceName = "gridFormEvents";
+				grid.Caption = dataheader;
+				grid.AutoGenerateColumns = true;
+				grid.SettingsBehavior.AllowGroup = true;
+				grid.SettingsPager.PageSize = 200;
+				grid.DataSource = dt_formevents;
+				grid.DataBind();
+				return grid;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
 		public ASPxGridView gridMetaData(string formname)
 		{
 			DataTable dt_meta;
@@ -362,9 +725,10 @@ namespace uwac_REDCap
 				grid.ID = "gridMeta";
 				grid.ClientInstanceName = "gridMeta";
 				grid.Caption = dataheader;
+				grid.Styles.HeaderPanel.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
 				grid.AutoGenerateColumns = true;
 				grid.SettingsBehavior.AllowGroup = true;
-				grid.SettingsPager.PageSize = 200;
+				grid.SettingsPager.PageSize = 500;
 				grid.DataSource = dt_meta;
 				grid.DataBind();
 				return grid;
@@ -378,21 +742,58 @@ namespace uwac_REDCap
 
 		public ASPxGridView gridDataFromForm(string formname)
 		{
+			return gridDataFromForm(formname, false);
+		}
+
+
+
+		public ASPxGridView gridDataFromForm(string formname, bool addStudymeasID)
+		{
 			if (api != null)
 			{
 				DataTable dt = DataFromForm(formname);
-				if (dt != null)
+
+				if (addStudymeasID)
+				{
+					dt = AddStudymeasToREDCapFormData(dt);
+				}
+
+				if (dt.HasRows())
 				{
 					string title = String.Format("{0} (cols={1}, rows={2})", formname, dt.Columns.Count, dt.Rows.Count);
 
-					return gridDataFromForm(dt, title);
+					return gridMetaData(dt, title);
 				}
 			}
 			return null;
 		}
 
 
-		public ASPxGridView gridDataFromForm(List<string> formnames)
+		public string SaveREDCapFormToDB(string formname)
+        {
+
+			DataTable dt = DataFromForm(formname);
+
+			dt = AddStudymeasToREDCapFormData(dt);
+
+			if (dt.HasRows())
+			{
+
+				foreach(DataRow row in dt.Rows)
+                {
+					Debug.WriteLine(String.Format("studymeasID:{0}  record_id:{1}", row["studymeasid"], row["record_id"] ));
+                }
+
+			}
+
+			return "ok";
+		}
+
+
+
+
+
+	public ASPxGridView gridDataFromForm(List<string> formnames)
 		{
 			if (api == null)
 			{

@@ -296,7 +296,7 @@ namespace uwac
 
 		#region............Get Data from SQL............
 
-		#region..1..................return DataTable.....
+		#region....................return DataTable.....
 
 		#region .............................from.string....
 
@@ -640,7 +640,7 @@ namespace uwac
 			{
 				//oCmd.ExecuteNonQuery();
 				var x = oCmd.ExecuteScalar();
-				string s = (x == DBNull.Value) ? null : x.ToString();
+				string s = (x == DBNull.Value | x==null) ? null : x.ToString();
 				return s;
 			}
 			catch (Exception exc)

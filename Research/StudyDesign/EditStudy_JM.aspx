@@ -1,9 +1,11 @@
 <%@ Page MasterPageFile="~/UWAC.master" Language="C#" Debug="true" CodeFile="EditStudy_JM.aspx.cs" Inherits="StudyDesign.EditStudy_JM" %>
 
-<%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
-    Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>
+<%--<%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+    Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>--%>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
+
+	<%--DeleteThisPage!--%>
 
 <table cellspacing="0" id="tblMaster" class="tblInputSmall" runat="server">
 	<tr class="trTitle">
@@ -87,7 +89,7 @@
 
 <asp:scriptmanager id="ScriptManager1" runat="server" enablepagemethods="true" />
 
-    <rsweb:ReportViewer ID="ReportViewer1" runat="server" Font-Names="Verdana" 
+<%--    <rsweb:ReportViewer ID="ReportViewer1" runat="server" Font-Names="Verdana" 
         Font-Size="8pt" InteractiveDeviceInfos="(Collection)" ProcessingMode="Remote" 
         WaitMessageFont-Names="Verdana" WaitMessageFont-Size="14pt" >
         <ServerReport ReportPath="/Study Design/Study_Design_-_Groups" 
@@ -96,5 +98,5 @@
 
 
 <dlcalendar click_element_id="imgCalendar1" input_element_id="<%= txtStartDate.ClientID  %>"></dlcalendar>
-<dlcalendar click_element_id="imgCalendar2" input_element_id="<%= txtEndDate.ClientID %>"></dlcalendar>
+<dlcalendar click_element_id="imgCalendar2" input_element_id="<%= txtEndDate.ClientID %>"></dlcalendar>--%>
 </asp:Content>

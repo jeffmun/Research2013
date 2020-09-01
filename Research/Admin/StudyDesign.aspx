@@ -1,10 +1,12 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UWAC.master" AutoEventWireup="true" CodeFile="StudyDesign.aspx.cs" Inherits="Admin_StudyDesign" %>
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
-<%--<%@ Register TagPrefix="obout" Namespace="Obout.Grid" Assembly="obout_Grid_NET" %>
+<%--
+<%@ Register TagPrefix="obout" Namespace="Obout.Grid" Assembly="obout_Grid_NET" %>
 <%@ Register TagPrefix="obout" Namespace="Obout.Interface" Assembly="Obout_Interface" %>
 <%@ Register TagPrefix="obout" Namespace="Obout.ListBox" Assembly="obout_ListBox" %>
-<%@ Register TagPrefix="obout" Namespace="Obout.Ajax.UI.TreeView" Assembly="Obout.Ajax.UI" %>--%>
+<%@ Register TagPrefix="obout" Namespace="Obout.Ajax.UI.TreeView" Assembly="Obout.Ajax.UI" %>
+--%>
 
 
 <%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
@@ -122,6 +124,8 @@
 
 	<asp:Label ID="lblTitle" runat="server" Text="Study Design:" Font-size="Medium" ></asp:Label>
 	<asp:Label ID="lblStudyname" runat="server" Font-size="Medium"  Font-Bold="true"></asp:Label>
+
+<dx:ASPxLabel ID="foo" runat="server" Text="!" ForeColor="HotPink" Font-Bold="true" Font-Size="Large"></dx:ASPxLabel>
 
 
 
@@ -305,7 +309,7 @@
 			<td  style="vertical-align:top"> 
 				<asp:Label ID="lbl_tblstudyaction" runat="server" Text="Actions" Font-size="Medium"  Font-Bold="true"></asp:Label>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-				<asp:HyperLink ID="hypNEW_ActionType" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
+				<asp:HyperLink ID="hypNEW_ActionType" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small" Visible="false"
 						Text="Create New Action Type" Target="_blank"></asp:HyperLink>
 				<asp:Literal id="tblstudyaction_msg" runat="server" />&nbsp;&nbsp;&nbsp;
 				<asp:Button ID="btnOVERRIDE_tblstudyaction" runat="server" Text="Allow This Deletion" OnClick="btnOVERRIDE_tblstudyaction_Click" Font-Size="X-Small" ForeColor="red"  Visible="false" />
@@ -320,7 +324,7 @@
 
 			<%--		DataSourceID="sql_StudyAction" --%>
 					 <%--OnHtmlCommandCellPrepared="gridSA_HtmlCommandCellPrepared"--%>
-						<dx:ASPXGridView ID="grid_tblstudyaction" runat="server" ClientInstanceName="grid_tblstudyaction"  
+						<dx:ASPXGridView ID="grid_tblstudyaction" runat="server" ClientInstanceName="grid_tblstudyaction"  DataSourceID="sql_StudyAction"
 							AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="false" ShowFooter="false" 
 							 AllowGrouping="true" GroupBy="timepoint_text"  HideColumnsWhenGrouping="true" KeyFieldName="studyactionID"
 							 Settings-ShowHeaderFilterButton="true" 
@@ -329,7 +333,7 @@
 							OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
 						  OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting" >
 						<ClientSideEvents EndCallback="OnEndCallBack" />
-						<SettingsPager Position="Top" PageSize="10">
+						<SettingsPager Position="Top" PageSize="50">
 							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
 						</SettingsPager>
 
@@ -368,7 +372,7 @@
 	<td style="vertical-align:top">
 				<asp:Label ID="lbl_tblstudymeas" runat="server" Text="Measures" Font-size="Medium"  Font-Bold="true"></asp:Label>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-				<asp:HyperLink ID="hypMeasure" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small"
+				<asp:HyperLink ID="hypMeasure" runat="server" BackColor="AliceBlue" ForeColor="Navy" Font-Size="XX-Small" Visible="false"
 						Text="Create New Measure" Target="_blank"></asp:HyperLink>
 						<asp:Literal id="tblstudymeas_msg" runat="server"  />&nbsp;&nbsp;&nbsp;
 						<asp:Button ID="btnOVERRIDE_tblstudymeas" runat="server" Text="Allow This Deletion" OnClick="btnOVERRIDE_tblstudymeas_Click" Font-Size="X-Small" ForeColor="red"  Visible="false" />
@@ -421,23 +425,19 @@
 
 
 
-<%--				 
-			 DataSourceID="sql_StudyMeas"
-			
---%>
+
 					<dx:ASPXGridView ID="grid_tblstudymeas" runat="server" ClientInstanceName="grid_tblstudymeas"   
-						AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false" 
+						AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false"  DataSourceID="sql_StudyMeas"
 							 AllowGrouping="true" GroupBy="timepoint_text" HideColumnsWhenGrouping="true" KeyFieldName="studymeasID"
-						 Settings-ShowHeaderFilterButton="true"  
-						OnHtmlRowPrepared="grid_tblstudymeas_OnHtmlRowPrepared"
-						OnCustomCallback="gridSM_CustomCallback" Styles-SelectedRow-BackColor="#D4EBD3"
+						 Settings-ShowHeaderFilterButton="true"  Styles-SelectedRow-BackColor="#D4EBD3"
 						OnDataBound="dxgridSAM_DataBound" OnCustomButtonCallback="gridSM_CustomButtonCallback" 
-						OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 
-						OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  
-						>
-						<ClientSideEvents EndCallback="OnEndCallBack" SelectionChanged="ShowBulkAssign" />
+						OnCustomButtonInitialize="gridSAM_CustomButtonInitialize" 		
+							OnHtmlRowPrepared="grid_tblstudymeas_OnHtmlRowPrepared"
+						OnCustomCallback="gridSM_CustomCallback" 
+						OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  						>
+							<ClientSideEvents EndCallback="OnEndCallBack" SelectionChanged="ShowBulkAssign" />	
 						<SettingsBehavior AllowSelectByRowClick="true"  />
-						<SettingsPager Position="Top" PageSize="10">
+						<SettingsPager Position="Top" PageSize="50">
 							<PageSizeItemSettings Items="10, 20, 50, 100" Visible="true" />
 						</SettingsPager>
 
@@ -597,20 +597,11 @@
 			<dx:GridViewCommandColumn ShowDeleteButton="false" ShowEditButton="true"  />
 		</Columns>
 	</dx:ASPxGridView>
-
-
-
-				
-
 </td>
-			</tr>
-			</table>
+</tr>
+</table>
 
-		<br /><br />
-
-
-			
-	<br />
+<br /><br /><br />
 
 
 	<dx:ASPxPanel ID="panelConsent" runat="server" ClientInstanceName="panelConsent">
@@ -954,7 +945,7 @@
 			</SelectParameters> 
 	</asp:SqlDataSource>--%>
 
-	<asp:SqlDataSource ID="sql_StudyMeas" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+<%--	<asp:SqlDataSource ID="sql_StudyMeas" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
 		SelectCommand="select 'studymeas' objtype, studymeasID objpk
 				, studyID, studyname, measname, measfullname, studymeasID, measureID, sortorder, StudyMeasName, coremeas, category, cat_sortorder, focusperson, respondant, measmethod
 				, meascat_sortorder, labname, formURL, Flag_SQLdatatable_is_NA, AdminTime, DEesttime, MeasResp_short, MeasMethod_short, MeasFocus_short, timepointID, timepoint, timepoint_text
@@ -962,6 +953,16 @@
 				, dbo.fnCSV_GetLinkedIDs('studymeas','group',studymeasID, ',') groupIDs 
 				, dbo.fnCSV_GetLinkedIDs_text('studymeas','group',studymeasID, ',') groupabbrs  
 				from vwstudymeas where studyID = @studyID order by timepoint, sortorder">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>--%>
+
+
+		<asp:SqlDataSource ID="sql_StudyMeas" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+		SelectCommand="select 'studymeas' objtype, studymeasID objpk, *
+			, dbo.fnCSV_GetLinkedIDs('studymeas','group',studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas','group',studymeasID, ',') groupabbrs 
+		from vwstudymeas where studyID = @studyID order by timepoint, sortorder">
 			<SelectParameters>
 				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
 			</SelectParameters> 

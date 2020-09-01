@@ -23,7 +23,7 @@ using DevExpress.Web;
 using DevExpress.Web.Data;
 
 
-public partial class Data_REDCap : BasePage
+public partial class Data_ManageREDCap : BasePage
 {
 
 	REDCap redcap;
@@ -61,20 +61,27 @@ public partial class Data_REDCap : BasePage
 
 		ASPxListBox lst = redcap.lstFormSelector();
 
+		ASPxComboBox cboForms = redcap.cboFormSelector();
 
-		//if (lst != null)
-		//{
-		//	lst.EnableViewState = true;
-		//	//placeholder_cboForms.Controls.Add(cbo);
-		//	placeholder_cboForms.Controls.Add(lst);
-		//	panelREDCap_controls.Visible = true;
-		//}
-		//else {
-		//	panelREDCap_controls.Visible = false;
-		//}
+		cboForms.SelectedIndexChanged += cboForm_OnSelectedIndexChanged;
+		cboForms.ID = "cboForms";
+
+		placeholder.Controls.Add(cboForms);
+		//tab_import_fields.Controls.Add(cboForms);
+
+
+		if (lst != null)
+		{
+			lst.EnableViewState = true;
+			//placeholder_cboForms.Controls.Add(cbo);
+			placeholder_cboForms.Controls.Add(lst);
+			panelREDCap_controls.Visible = true;
+		}
+		else {
+			panelREDCap_controls.Visible = false;
+		}
 
 		LoadlinkedTables();
-		//btnImportMeta.Visible = false;
 
 		if (IsCallback)
 		{
@@ -94,6 +101,16 @@ public partial class Data_REDCap : BasePage
 		CompareLinkedRedcap();
 
 	}
+
+
+
+	
+	protected void gvcrud_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
+	{
+		gvCRUD.gvcrud_OnRowUpdating((ASPxGridView)sender, e, "data", "REDCap_Formevent","def");
+	}
+
+
 
 
 
@@ -314,8 +331,15 @@ public partial class Data_REDCap : BasePage
 	}
 
 
+	protected void cboForm_OnSelectedIndexChanged(object sender, EventArgs e)
+	{
+		SQL_utils sql = new SQL_utils("data");
 
-	protected void cboMeas_OnSelectedIndexChanged(object sender, EventArgs e)
+
+
+	}
+
+		protected void cboMeas_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
 		try
 		{
@@ -366,14 +390,14 @@ public partial class Data_REDCap : BasePage
 
 
 
-			//if(dtMerged.HasRows())
-			//{
-			//	gridMerged.DataSource = dtMerged;
-			//	gridMerged.SettingsPager.PageSize = 200;
-			//	gridMerged.DataBind();
-			//	gridMerged.Caption = "Matched Fields between DB & REDCap: " + cboMeas.Text;
-			//	panelMerged.Visible = true;
-			//}
+			if(dtMerged.HasRows())
+			{
+				gridMerged.DataSource = dtMerged;
+				gridMerged.SettingsPager.PageSize = 200;
+				gridMerged.DataBind();
+				gridMerged.Caption = "Matched Fields between DB & REDCap: " + cboMeas.Text;
+				panelMerged.Visible = true;
+			}
 
 		}
 
@@ -395,12 +419,153 @@ public partial class Data_REDCap : BasePage
 	//}
 
 
+	#region Get RED Cap Data
+
+
+	protected void btnLoadFormData_OnClick(object sender, EventArgs e)
+	{
+		Debug.WriteLine("*************** btnLoadFormData_OnClick");
+
+		List<string> formnames = GetSelectedFormnames();
+
+		if (formnames.Count > 0)
+		{
+			placeholder_gridMeta.Controls.Clear();
+
+			for (int i=0; i < formnames.Count; i++)
+				{
+				ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
+				grid.SettingsPager.PageSize = 200;
+				if (grid != null)
+				{
+					ASPxLabel lbl = new ASPxLabel();
+					lbl.Font.Bold = true;
+					lbl.EncodeHtml = false;
+					lbl.Text = String.Format("<br/><br/>{0}" , formnames[i]);
+					placeholder_gridMeta.Controls.Add(lbl);
+					placeholder_gridMeta.Controls.Add(grid);
+				}
+			}
+			lblNoneSelected.Text = "";
+		}
+		else
+		{
+			lblNoneSelected.Text = "Select a REDCap form.";
+		}
+
+	}
+
+	protected void btnSaveFormData_OnClick(object sender, EventArgs e)
+	{
+		Debug.WriteLine("*************** btnSaveFormData_OnClick");
+
+		List<string> formnames = GetSelectedFormnames();
+
+		if (formnames.Count > 0)
+		{
+			placeholder_gridMeta.Controls.Clear();
+
+			for (int i = 0; i < formnames.Count; i++)
+			{
+				string result = redcap.SaveFormDataToDB(formnames[i]);
+				//grid.SettingsPager.PageSize = 200;
+				//if (grid != null)
+				//{
+				//	ASPxLabel lbl = new ASPxLabel();
+				//	lbl.Font.Bold = true;
+				//	lbl.EncodeHtml = false;
+				//	lbl.Text = String.Format("<br/><br/>{0}", formnames[i]);
+				//	placeholder_gridMeta.Controls.Add(lbl);
+				//	placeholder_gridMeta.Controls.Add(grid);
+				//}
+			}
+			lblNoneSelected.Text = "";
+		}
+		else
+		{
+			lblNoneSelected.Text = "Select a REDCap form.";
+		}
+
+	}
 
 
 
+	protected List<string> GetSelectedFormnames()
+	{
+
+		ASPxListBox lstRedcapForms = (ASPxListBox)placeholder_cboForms.FindControlRecursive("lstRedcapForms");
+
+		List<string> formnames = new List<string>();
+		foreach (ListEditItem li in lstRedcapForms.SelectedItems)
+		{
+			formnames.Add(li.Value.ToString());
+		}
+
+		return formnames;
+	}
+
+    #endregion
+
+
+
+    protected void btnFormEvents_Click(object sender, EventArgs e)
+    {
+		var results = redcap.SaveFormEventsToDB();
+		lblRESULTS.Text = results;
+	}
+
+
+	protected void btnFields_Click(object sender, EventArgs e)
+	{
+		var results = redcap.SaveFieldsToDB();
+		lblRESULTS.Text = results;
+	}
+
+
+    protected void btnInsertToken_Click(object sender, EventArgs e)
+    {
+
+		string url = "https://redcap.iths.org/api/";
+
+		SQL_utils sql = new SQL_utils("data");
+
+		//Make sure token is unique
+
+		int numtokens = sql.IntScalar_from_SQLstring(String.Format("select count(*) from def.redcaptoken where token='{0}'", txtToken.Text));
+
+		if (numtokens > 0)
+		{
+			lblRESULTS.ForeColor = Color.Red;
+			lblRESULTS.Text = "This token has already been entered into the DB. Try again.";
+		}
+		else
+		{
+
+			int newtokenid = sql.IntScalar_from_SQLstring(String.Format("select max(tokenid)+1 from def.REDCapToken "));
+			string sql_newtoken = String.Format("insert into def.REDCapToken(token, project, url, idfld, tokenid) Values('{0}','{1}','{2}','{3}',{4})", txtToken.Text, txtProjectname.Text, url, txtIDfld.Text, newtokenid);
+			sql.NonQuery_from_SQLstring(sql_newtoken);
+			sql.NonQuery_from_SQLstring(String.Format("insert into def.REDCapToken_study(tokenid, studyid) values({0},{1})", newtokenid, Master.Master_studyID));
+			lblRESULTS.ForeColor = Color.ForestGreen;
+			lblRESULTS.Text = "Token added.";
+
+		}
+		sql.Close();
+
+		gv_tokens.DataBind();
+	}
+
+    protected void btnAddFlds_Click(object sender, EventArgs e)
+    {
+		ASPxComboBox cboForms = (ASPxComboBox)this.FindControlRecursive("cboForms");
+
+		var form = cboForms.Value;
+
+		SQL_utils sql = new SQL_utils("data");
+
+		sql.DataTable_from_SQLstring(String.Format("exec def.spInsertREDCap_flds_to_tbl '{0}'", form));
+		gv_redcap_forms_to_db.DataBind();
+	}
 }
 
 
-//TODO
-// add progress bar
 

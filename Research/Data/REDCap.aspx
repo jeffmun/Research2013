@@ -36,7 +36,7 @@
 	</script>
 
 
-	<asp:Label ID="lbl1" runat="server" Text="Linked Tables for Import: General & REDCap Info" Font-Size="Medium" Font-Bold="true"></asp:Label>
+	<asp:Label ID="lbl1" runat="server" Text="Linked Tables for Import" Font-Size="Medium" Font-Bold="true"></asp:Label>
 
 
 	<table>
@@ -74,14 +74,15 @@
 			</td>
 			<td style="width:500px">
 
-				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked Import Tables (from files)"  Native="true" ClientVisible="true">
+				   <dx:ASPxButton ID="btnShowLinked" ClientInstanceName="btnShowLinked" runat="server" AutoPostBack="false" Text="Manage Linked Import Tables (from files)" 
+					   Native="true" ClientVisible="false">
 						<ClientSideEvents Click="ShowLinkedPanel" />
 					</dx:ASPxButton>
 
-					<dx:ASPxPanel ID="panelLinked" runat="server" ClientInstanceName="panelLinked" ClientVisible="false">
+					<dx:ASPxPanel ID="panelLinked" runat="server" ClientInstanceName="panelLinked" ClientVisible="true">
 						<PanelCollection>
 							<dx:PanelContent>
-								<dx:ASPxButton ID="btnHideLinked" ClientInstanceName="btnHideLinked" runat="server" AutoPostBack="false" Text="Cancel" Native="true" ClientVisible="true">
+								<dx:ASPxButton ID="btnHideLinked" ClientInstanceName="btnHideLinked" runat="server" AutoPostBack="false" Text="Cancel" Native="true" ClientVisible="false">
 									<ClientSideEvents Click="HideLinkedPanel" />
 									</dx:ASPxButton>
 				
@@ -156,33 +157,6 @@
 
 
 
-	<asp:Panel ID="panelREDCap_controls" runat="server" Visible="false">
-	<table>
-		<tr>
-			<td style="vertical-align: top; padding: 10px">
-				<asp:PlaceHolder ID="placeholder_cboForms" runat="server"></asp:PlaceHolder>
-<%--				<dx:ASPxComboBox ID="cboForms" runat="server" Caption="Forms:"></dx:ASPxComboBox>--%>
-			</td>
-			<td style="vertical-align: top; padding: 10px">
-				<dx:ASPxButton ID="btnLoadFormData" runat="server" Text="Display REDCap Data from Selected Forms" OnClick="btnLoadFormData_OnClick" >
-				<%--	<ClientSideEvents Click="function(s,e) {  panel.PerformCallback();}" />--%>
-				</dx:ASPxButton>
-				   <br /><br />
-				<dx:ASPxButton ID="btnShowMeta" runat="server" Text="Display REDCap Meta-Data from Selected Forms" OnClick="btnShowMeta_OnClick"></dx:ASPxButton>
-				   <br /><br />
-				<dx:ASPxButton ID="btnAddMetaToDB" runat="server" Text="Add REDCap Meta-Data from Selected Forms to DB" OnClick="btnAddMeta_OnClick"></dx:ASPxButton>
-				<br />
-				<dx:ASPxLabel ID="lblNoneSelected" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
-				   <br /><br />
-				<dx:ASPxButton ID="btnImportMeta" runat="server" Text="Import this meta data" Visible="false" OnClick="btnImportMeta_OnClick"></dx:ASPxButton>
-
-				<br />
-				<br />
-					<asp:Label ID="lblDictSaveInfo" runat="server" ForeColor="ForestGreen" ></asp:Label>
-			</td>
-		</tr>
-	</table>
-		   </asp:Panel>
 	<br />
 
 	<asp:PlaceHolder ID="placeholder_gridMeta" runat="server"></asp:PlaceHolder>
@@ -196,21 +170,6 @@
 			</dx:PanelContent>
 		</PanelCollection>
 	</dx:ASPxCallbackPanel>
-
-
-	<asp:Panel ID="panelMerged" runat="server" Visible="false">
-		<dx:ASPxGridView ID="gridMerged" runat="server" ClientInstanceName="gridMerged">
-			<Columns>
-				<dx:GridViewDataColumn FieldName="ord_pos" Caption="Pos"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="fldname"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="fldlabel"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="redcap_formname" CellStyle-BackColor="WhiteSmoke"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="redcap_fldname" CellStyle-BackColor="WhiteSmoke"></dx:GridViewDataColumn>
-				<dx:GridViewDataColumn FieldName="redcap_fldlabel" CellStyle-BackColor="WhiteSmoke"></dx:GridViewDataColumn>
-			</Columns>
-			<SettingsPager PageSize="50"  PageSizeItemSettings-Items="20,50,200" PageSizeItemSettings-Visible="true"></SettingsPager>
-		</dx:ASPxGridView>
-	</asp:Panel>
 
 
 

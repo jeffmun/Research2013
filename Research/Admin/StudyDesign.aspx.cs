@@ -14,7 +14,7 @@ using DevExpress.Web.Rendering;
 using uwac;
 
 
-public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
+public partial class Admin_StudyDesign : BasePage
 {
 	private List<string> entities;
 
@@ -27,29 +27,29 @@ public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
 		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
 		LoadHyperlinks_for_new_entities();
 
-		if (!IsPostBack)
-		{
-			//LoadTimepoints();
-			LoadSM();
-			LoadSA();
-		} else 
-		{
-			if(Session["studydesign_studymeas"]!=null)
-			{
-				DataTable dt = (DataTable)Session["studydesign_studymeas"];
+		//if (!IsPostBack)
+		//{
+		//	//LoadTimepoints();
+		//	LoadSM();
+		//	LoadSA();
+		//} else 
+		//{
+		//	if(Session["studydesign_studymeas"]!=null)
+		//	{
+		//		DataTable dt = (DataTable)Session["studydesign_studymeas"];
 
-				grid_tblstudymeas.DataSource = dt;
-				grid_tblstudymeas.DataBind();
-			}
-			if (Session["studydesign_studyaction"] != null)
-			{
-				DataTable dt = (DataTable)Session["studydesign_studyaction"];
+		//		grid_tblstudymeas.DataSource = dt;
+		//		grid_tblstudymeas.DataBind();
+		//	}
+		//	if (Session["studydesign_studyaction"] != null)
+		//	{
+		//		DataTable dt = (DataTable)Session["studydesign_studyaction"];
 
-				grid_tblstudyaction.DataSource = dt;
-				grid_tblstudyaction.DataBind();
-			}
+		//		grid_tblstudyaction.DataSource = dt;
+		//		grid_tblstudyaction.DataBind();
+		//	}
 
-		}
+		//}
 
 	}
 	//If the master page default study is changed, update the Measure DDL
@@ -108,15 +108,15 @@ public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
 
 	public void LoadSM()
 	{
-		string sqlcode = String.Format("select 'studymeas' objtype, studymeasID objpk, * , dbo.fnCSV_GetLinkedIDs('studymeas', 'group', studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas', 'group', studymeasID, ',') groupabbrs " +
-			"			from vwstudymeas where studyID = {0}  order by timepoint, sortorder", Master.Master_studyID.ToString());
-		SQL_utils sql = new SQL_utils("backend");
-		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
-		sql.Close();
-		Session["studydesign_studymeas"] = dt;
+		//string sqlcode = String.Format("select 'studymeas' objtype, studymeasID objpk, * , dbo.fnCSV_GetLinkedIDs('studymeas', 'group', studymeasID, ',') groupIDs , dbo.fnCSV_GetLinkedIDs_text('studymeas', 'group', studymeasID, ',') groupabbrs " +
+		//	"			from vwstudymeas where studyID = {0}  order by timepoint, sortorder", Master.Master_studyID.ToString());
+		//SQL_utils sql = new SQL_utils("backend");
+		//DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
+		//sql.Close();
+		//Session["studydesign_studymeas"] = dt;
 
-		grid_tblstudymeas.DataSource = dt;
-		grid_tblstudymeas.DataBind();
+		//grid_tblstudymeas.DataSource = dt;
+		//grid_tblstudymeas.DataBind();
 	}
 
 	public void LoadSA()
@@ -630,7 +630,9 @@ public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
 					
 
 				}
-				catch (Exception ex) { }
+				catch (Exception ex) {
+					var errtxt = ex.Message;
+				}
 
 			}
 
@@ -639,7 +641,9 @@ public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
 				string remove1 = String.Format("delete from tbl{0}Group where groupID={1} and {0}ID={2}", type, groupID, pk);
 				sql.NonQuery_from_SQLstring(remove1);
 			}
-			catch(Exception ex) { }
+			catch(Exception ex) {
+				var errtxt = ex.Message;
+			}
 
 		}
 
@@ -650,7 +654,9 @@ public partial class Admin_StudyDesign : System.Web.UI.Page //BasePage
 			sql.NonQuery_from_SQLstring(updatestatus);
 
 		}
-		catch (Exception ex) { }
+		catch (Exception ex) {
+			var errtxt = ex.Message;
+		}
 
 
 		if (type == "studyaction")
