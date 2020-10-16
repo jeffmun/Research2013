@@ -123,12 +123,45 @@ namespace uwac_REDCap
 			if(form_name == form_name2)
             {
 				dt = ConcatFields(dt, "redcap_event_name", "form_name", "form_and_event");
-				
-				DataTable dt2 = JoinDataTables(dt, dt_db_formevent_studymeasid, (row1, row2) =>
-				  row1.Field<string>("form_and_event") == row2.Field<string>("form_and_event")
-				  );
 
-				return dt2;
+				dt.Columns.Add(new DataColumn("studymeasid", typeof(int)));
+
+                List<string> form_and_event1 = dt.AsEnumerable().Select(f => f.Field<string>("form_and_event")).Distinct().ToList();
+                List<string> form_and_event2 = dt_db_formevent_studymeasid.AsEnumerable().Select(f => f.Field<string>("form_and_event")).Distinct().ToList();
+
+				Debug.WriteLine("dt form_and_event");
+				foreach (string s in form_and_event1) Debug.WriteLine(s);
+				Debug.WriteLine("dt_db_formevent_studymeasid form_and_event");
+				foreach (string s in form_and_event2) Debug.WriteLine(s);
+
+
+				foreach (DataRow row in dt.Rows)
+                {
+					string form_and_event = row["form_and_event"].ToString();
+
+					try
+					{
+						string str_studymeasid = dt_db_formevent_studymeasid.AsEnumerable().Where(f => f.Field<string>("form_and_event") == form_and_event)
+							.Select(f => f.Field<int>("studymeasid")).First().ToString();
+
+						int studymeasid;
+						bool isint = Int32.TryParse(str_studymeasid, out studymeasid);
+
+						if (isint) row["studymeasid"] = studymeasid;
+					}
+					catch(Exception ex)
+					{ }
+                }
+
+
+				return dt;
+
+				//List<string> form_and_event1 = dt.AsEnumerable().Select(f => f.Field<string>("form_and_event")).Distinct().ToList();
+				//List<string> form_and_event2 = dt_db_formevent_studymeasid.AsEnumerable().Select(f => f.Field<string>("form_and_event")).Distinct().ToList();
+				//DataTable dt2 = JoinDataTables(dt, dt_db_formevent_studymeasid, (row1, row2) =>
+				//  row1.Field<string>("form_and_event") == row2.Field<string>("form_and_event")
+				//  );
+				//return dt2;
 			}
             else
             {
@@ -171,8 +204,15 @@ namespace uwac_REDCap
 			DataTable result = new DataTable();
 			foreach (DataColumn col in t1.Columns)
 			{
-				if (result.Columns[col.ColumnName] == null)
-					result.Columns.Add(col.ColumnName, col.DataType);
+				try
+				{
+					if (result.Columns[col.ColumnName] == null)
+						result.Columns.Add(col.ColumnName, col.DataType);
+				}
+				catch(Exception ex)
+                {
+					int x = 0;
+                }
 			}
 			foreach (DataColumn col in t2.Columns)
 			{
@@ -246,7 +286,7 @@ namespace uwac_REDCap
 				SQL_utils sql = new SQL_utils("data");
 
 				string first_tokenid = dt_formevents.AsEnumerable().Select(f => f.Field<int>("tokenid")).First().ToString();
-				string sql_del = String.Format("delete from def.REDCap_formevent where tokenid = ", first_tokenid);
+				string sql_del = String.Format("delete from def.REDCap_formevent where tokenid = {0}", first_tokenid);
 
 				if (first_tokenid != "")
 				{

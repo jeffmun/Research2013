@@ -34,6 +34,8 @@ public partial class Data_ManageREDCap : BasePage
 		Session["LinkedREDCapForm"] = null;
 		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
 		Session["studyID"] = Master.Master_studyID.ToString();
+
+
 	}
 
 	protected void Master_Study_Changed(object sender, EventArgs e)
@@ -41,13 +43,17 @@ public partial class Data_ManageREDCap : BasePage
 		Session["LinkedImports"] = null;
 		Session["LinkedImportTbls"] = null;
 		Session["LinkedREDCapForm"] = null;
-		Response.Redirect("REDCap.aspx");
+		Response.Redirect("ManageREDCap.aspx");
 	}
 
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
 		Debug.WriteLine(String.Format("Page_Load  IsPostBack:{0}  IsCallback:{1}", IsPostBack, IsCallback));
+
+
+		GridViewDataComboBoxColumn cbo = ((GridViewDataComboBoxColumn)gv_Redcap_FormEvent.Columns["studymeasid"]);
+		cbo.PropertiesComboBox.DataSource = GetStudymeasids();
 
 
 		//LoadSubjects();
@@ -57,18 +63,22 @@ public partial class Data_ManageREDCap : BasePage
 
 		redcap = new REDCap(Master.Master_studyID);
 
+		
+
 		//ASPxComboBox cbo = redcap.cboFormSelector();
 
 		ASPxListBox lst = redcap.lstFormSelector();
 
 		ASPxComboBox cboForms = redcap.cboFormSelector();
 
-		cboForms.SelectedIndexChanged += cboForm_OnSelectedIndexChanged;
-		cboForms.ID = "cboForms";
+		if (cboForms != null)
+		{
+			cboForms.SelectedIndexChanged += cboForm_OnSelectedIndexChanged;
+			cboForms.ID = "cboForms";
 
-		placeholder.Controls.Add(cboForms);
-		//tab_import_fields.Controls.Add(cboForms);
-
+			placeholder.Controls.Add(cboForms);
+			//tab_import_fields.Controls.Add(cboForms);
+		}
 
 		if (lst != null)
 		{
@@ -435,9 +445,9 @@ public partial class Data_ManageREDCap : BasePage
 			for (int i=0; i < formnames.Count; i++)
 				{
 				ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
-				grid.SettingsPager.PageSize = 200;
 				if (grid != null)
 				{
+					grid.SettingsPager.PageSize = 200;
 					ASPxLabel lbl = new ASPxLabel();
 					lbl.Font.Bold = true;
 					lbl.EncodeHtml = false;
@@ -565,6 +575,35 @@ public partial class Data_ManageREDCap : BasePage
 		sql.DataTable_from_SQLstring(String.Format("exec def.spInsertREDCap_flds_to_tbl '{0}'", form));
 		gv_redcap_forms_to_db.DataBind();
 	}
+
+    protected void gv_Redcap_FormEvent_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
+    {
+		if(e.Column.FieldName=="studymeasid")
+        {
+
+            ASPxComboBox combo = (ASPxComboBox)e.Editor;
+            //combo.DataSource = GetStudymeasids();
+            combo.DataBind();
+        }
+
+
+
+	}
+
+	protected DataTable GetStudymeasids()
+    {
+		SQL_utils sql = new SQL_utils("data");
+
+		string code = String.Format("select  studymeasid, studymeasname, studyid from vwREDCap_available_studymeasid where studyid = {0}", Master.Master_studyID);
+
+		DataTable dt = sql.DataTable_from_SQLstring(code);
+		sql.Close();
+
+		return (dt);
+	}
+
+
+
 }
 
 

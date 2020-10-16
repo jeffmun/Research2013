@@ -51,7 +51,9 @@
 						<table>
 							<tr>
 								<td style="padding-left:20px">
-									<dx:ASPxGridView ID="gv_redcap_forms_to_db" runat="server" DataSourceID="sql_forms_to_db" AutoGenerateColumns="true"></dx:ASPxGridView>
+									<dx:ASPxGridView ID="gv_redcap_forms_to_db" runat="server" DataSourceID="sql_forms_to_db" AutoGenerateColumns="true">
+										<SettingsPager Mode="ShowAllRecords"></SettingsPager>									
+									</dx:ASPxGridView>
 								</td>
 								<td style="padding-left:200px">
 									<dx:ASPxButton ID="btnAddFlds" runat="server" Text="Add fields from REDCap form below to DB table" OnClick="btnAddFlds_Click" AutoPostBack="true"></dx:ASPxButton>
@@ -92,6 +94,9 @@
 										</Columns>
 								</dx:GridViewBandColumn>
 							</Columns>
+							<GroupSummary >
+								<dx:ASPxSummaryItem FieldName="form_name" SummaryType="Count" />
+							</GroupSummary>
 							<Settings ShowGroupPanel="True" VerticalScrollBarMode="Visible" VerticalScrollableHeight="500" />
 							<SettingsBehavior AllowFixedGroups="true" />
 							<SettingsPager Mode="ShowAllRecords" />
@@ -103,7 +108,7 @@
 				</dx:TabPage>
 
 
-						<dx:TabPage Text="Assign Form-Events to StudyMeasures">
+			<dx:TabPage Text="Assign Form-Events to StudyMeasures">
 				<ContentCollection>
 					<dx:ContentControl>
 
@@ -120,20 +125,21 @@
 
 						<br /><br />
 						<dx:ASPxGridView ID="gv_Redcap_FormEvent" runat="server" ClientInstanceName="REDCap_formevent" DataSourceID="sqlRedcapFormevents" KeyFieldName="redcapformeventID"
-							 OnRowUpdating="gvcrud_OnRowUpdating" >
+							 OnRowUpdating="gvcrud_OnRowUpdating" OnCellEditorInitialize="gv_Redcap_FormEvent_CellEditorInitialize" >
 							<Columns>
-								<dx:GridViewDataColumn FieldName="redcapformeventID" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="arm_num" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="unique_event_name" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="form" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataComboBoxColumn FieldName="studymeasid" >
-									<PropertiesComboBox DataSourceID="sql_studymeas" ValueField="studymeasid" TextField="studymeasname"></PropertiesComboBox>
+								<dx:GridViewDataColumn Width="100" FieldName="redcapformeventID" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn Width="80"  FieldName="arm_num" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn Width="160" FieldName="unique_event_name" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn Width="250" FieldName="form" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataComboBoxColumn Width="250" FieldName="studymeasid"    >
+									<PropertiesComboBox  ValueField="studymeasid" TextField="studymeasname" ValueType="System.Int32" ></PropertiesComboBox>
 								</dx:GridViewDataComboBoxColumn>
 
 							</Columns>
 							<SettingsDataSecurity AllowEdit="true" />
+							<Settings VerticalScrollableHeight="500" VerticalScrollBarMode="Visible" />
 							<SettingsEditing Mode="Batch" ></SettingsEditing>
-							<SettingsPager PageSize="50"></SettingsPager>
+							<SettingsPager Mode="ShowAllRecords"></SettingsPager>
 						</dx:ASPxGridView>
 					</dx:ContentControl>
 
@@ -438,7 +444,7 @@
 	
 
 	<asp:SqlDataSource ID="sql_studymeas" runat="server" SelectCommandType="Text"  
-		SelectCommand="select studymeasid, studymeasname from uwautism_research_backend..tblstudymeas where studyid = @studyID and measureID in (select measureID from uwautism_research_backend..tblmeasure where measureID in (select measureID from def.tbl where importfiletype in (select importfiletype from def.ImportFileType where importfiletype_txt='REDCap')))"
+		SelectCommand="select  studymeasid, '[' + timepoint_text + '] ' + studymeasname  as studymeasname, a.studyid from uwautism_research_backend..tblstudymeas a join uwautism_research_backend..tbltimepoint b ON a.timepointid = b.timepointid where a.studyid = @studyID 	and a.studymeasid not in (select studymeasid from uwautism_research_data.[def].[REDCap_FormEvent]  where studymeasid>0) order by a.sortorder"
 		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
 		<SelectParameters>
 			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />

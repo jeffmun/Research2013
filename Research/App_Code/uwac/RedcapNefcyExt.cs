@@ -58,6 +58,13 @@ namespace uwac_REDCap
 			DataTable dt = new DataTable();
 			dt.Columns.Add(new DataColumn("event_name", typeof(string)));
 
+			foreach(string e in events)
+            {
+				DataRow row = dt.NewRow();
+				row["event_name"] = e;
+				dt.Rows.Add(row);
+			}
+
 			return dt;
 		}
 
@@ -81,13 +88,18 @@ namespace uwac_REDCap
 
 			string strResponse = responseHTTP(bytePostData);
 
+			if (strResponse.StartsWith("ERROR"))
+            {
+				return null;
+            }
+
 			//replace newline with commas
 			//strResponse = strResponse.Replace('\n', ',');
 
 			// if no records found, there are no fields.  new in RC 6 and greater
 			// have to deal with null DataTable in your call to this function
 			// if Rc < 6, then it will return field names without any rows of data
-			if (strResponse == "\n")
+			else if (strResponse == "\n")
 			{
 				return (dtDataTable);
 			}
