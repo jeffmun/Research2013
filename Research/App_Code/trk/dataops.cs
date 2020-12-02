@@ -224,6 +224,55 @@ public static void SetColorLevel(int x)
 
 
 
+		public static DataTable CopyColumntoID(DataTable dt, string sourcecol)
+		{
+			List<string> colnames = new List<string>();
+			foreach(DataColumn col in dt.Columns)
+            {
+				colnames.Add(col.ColumnName.ToLower());
+            }
+
+			if(!colnames.Contains("id"))
+            {
+				dt.Columns.Add(new DataColumn("id", typeof(string)));
+            }
+
+			foreach (DataRow row in dt.Rows)
+			{
+				row["id"] = row[sourcecol].ToString().ToUpper();
+			}
+
+			return dt;
+		}
+
+			public static DataTable VerifyID(DataTable dt, string sourcecol, int studyid)
+		{
+			SQL_utils sql = new SQL_utils("backend");
+
+			DataTable dt_ids = sql.DataTable_from_SQLstring(String.Format("select id from trk.vwMasterStatus_S where studyid={0}", studyid));
+			List<string> ids = dt_ids.AsEnumerable().Select(f => f.Field<string>("id")).ToList();
+			sql.Close();
+
+			for(int i=0; i < ids.Count; i++) { ids[i] = ids[i].ToUpper(); }
+
+			DataColumn idcol = new DataColumn("not_id", typeof(string));
+			dt.Columns.Add(idcol);
+
+			foreach (DataRow row in dt.Rows)
+			{
+				string txt_with_potential_id = row[sourcecol].ToString().ToUpper();
+
+				if (!ids.Contains(txt_with_potential_id))
+				{
+					row["not_id"] = txt_with_potential_id;
+					row["id"] = "";
+				}
+			}
+			return dt;
+		}
+
+
+
 
 		public static string dxGrid_UpdateData(string pk, List<int> pkvals, OrderedDictionary newvalues, string db, string schema, string tbl)
 		{

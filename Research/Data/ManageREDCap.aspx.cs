@@ -443,8 +443,24 @@ public partial class Data_ManageREDCap : BasePage
 			placeholder_gridMeta.Controls.Clear();
 
 			for (int i=0; i < formnames.Count; i++)
-				{
+			{
+				SQL_utils sql = new SQL_utils("data");
+
+				REDCapDataImport rcdata = new REDCapDataImport(redcap, formnames[i], Master.Master_studyID, true);
+
+				ASPxLabel lbllog = new ASPxLabel();
+				lbllog.EncodeHtml = false;
+
+				foreach(string s in rcdata.resultslog)
+                {
+					lbllog.Text += s + "</br/>";
+
+				}
+
+				placeholder_gridMeta.Controls.Add(lbllog);
+
 				ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
+
 				if (grid != null)
 				{
 					grid.SettingsPager.PageSize = 200;
@@ -471,23 +487,26 @@ public partial class Data_ManageREDCap : BasePage
 
 		List<string> formnames = GetSelectedFormnames();
 
+
 		if (formnames.Count > 0)
 		{
 			placeholder_gridMeta.Controls.Clear();
 
 			for (int i = 0; i < formnames.Count; i++)
 			{
-				string result = redcap.SaveFormDataToDB(formnames[i]);
-				//grid.SettingsPager.PageSize = 200;
-				//if (grid != null)
-				//{
-				//	ASPxLabel lbl = new ASPxLabel();
-				//	lbl.Font.Bold = true;
-				//	lbl.EncodeHtml = false;
-				//	lbl.Text = String.Format("<br/><br/>{0}", formnames[i]);
-				//	placeholder_gridMeta.Controls.Add(lbl);
-				//	placeholder_gridMeta.Controls.Add(grid);
-				//}
+
+				redcap.SaveFormDataToDB(formnames[i], Master.Master_studyID);
+
+				string result = "";
+				int counter = 0;
+				foreach(string s in redcap.import_results)
+                {
+					counter++;
+					result += String.Format("{0}. {1}</br>", counter, s);
+                }
+
+				lblSaveInfo.ForeColor = (result.ToUpper().Contains("ERROR")) ? Color.Red : Color.ForestGreen;
+				lblSaveInfo.Text = result;
 			}
 			lblNoneSelected.Text = "";
 		}

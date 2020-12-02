@@ -401,6 +401,3 @@ public partial class Data_REDCap : BasePage
 }
 
 
-//TODO
-// add progress bar
-

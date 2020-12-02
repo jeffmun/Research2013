@@ -99,7 +99,7 @@ public partial class Admin_LabGroups : BasePage
 				pageControl1.TabPages.FindByName("CreateAddStaff").ClientVisible = showstaffeditors;
 
 				pageControl1.TabPages.FindByName("LabAccess").ClientVisible = showlabeditors;
-				pageControl1.TabPages.FindByName("LabGrid").ClientVisible = showlabeditors;
+				//pageControl1.TabPages.FindByName("LabGrid").ClientVisible = showlabeditors;
 
 			}
 			catch (Exception ex) { }

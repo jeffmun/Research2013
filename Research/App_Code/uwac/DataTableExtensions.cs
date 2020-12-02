@@ -128,6 +128,16 @@ namespace uwac
 
 		#region Manipulate the DataTable
 
+		public static void ColumnNamesToLower(this DataTable dt)
+		{
+			foreach(DataColumn col in dt.Columns)
+            {
+				col.ColumnName = col.ColumnName.ToLower();
+			}
+		}
+
+
+
 		public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
 		{
 			using (DataColumn dc = new DataColumn(columnName + "_new", newType))
@@ -386,7 +396,38 @@ namespace uwac
 
 		}
 
+		public static DataTable ConvertEmptyStringToDBNull(this DataTable dt)
+		{
+			foreach (DataColumn col in dt.Columns)
+			{
+				col.AllowDBNull = true;
+			}
 
+			foreach (DataColumn col in dt.Columns)
+			{
+				string colname = col.ColumnName;
+				foreach (DataRow row in dt.Rows)
+				{
+					if (row[colname].ToString() == "")
+					{
+						if (colname == "indexnum") row[colname] = 1;
+						else row[colname] = DBNull.Value;
+					}
+				}
+			}
+
+			return dt;
+		}
+
+		public static DataTable AddConstantInt(this DataTable dt, string fldname, int val)
+        {
+			dt.Columns.Add(new DataColumn(fldname, typeof(int)));
+			foreach(DataRow row in dt.Rows)
+            {
+				row[fldname] = val;
+            }
+			return dt;
+        }
 
 		#endregion
 

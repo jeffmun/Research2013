@@ -61,7 +61,7 @@
 
 						<table>
 							<tr>
-								<td style="vertical-align: top; padding:10px; width:800px">
+								<td style="vertical-align: top; padding:10px; width:1200px">
 									
 
 
@@ -74,14 +74,17 @@
 							<Settings ShowFilterRow="true" ShowFilterBar="Visible" ShowFilterRowMenu="true"   />
 							<SettingsBehavior FilterRowMode="OnClick" AllowSelectSingleRowOnly="true" />
 							<Columns>
-								<dx:GridViewDataColumn FieldName="staffID" ReadOnly="true" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="staffname" Caption="Staff Name" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="dbrole" Caption="DB Role" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="nunq_otherlabs" Caption="# of Other Labs" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="otherlabs" Caption="Other Labs" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="mismatch_dbrole" Caption="Mismatch in roles across labs" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" ShowSelectButton="true" ></dx:GridViewCommandColumn>
+								<dx:GridViewDataColumn FieldName="staffID" ReadOnly="true" Width="60" Visible="true" CellStyle-ForeColor="Silver"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="staffname" Caption="Staff Name"  Width="120" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="actdirid" Caption="UW NETID"  Width="100" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="dbrole" Caption="DB Role"  Width="150" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="nunq_otherlabs" Caption="# of Other Labs"  Width="90" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="otherlabs" Caption="Other Labs"  Width="200" ReadOnly ="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="mismatch_dbrole" Caption="Mismatch in roles across labs"  Width="100" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewCommandColumn ShowClearFilterButton="true" ShowApplyFilterButton="true" Width="120" ShowSelectButton="true" ></dx:GridViewCommandColumn>
 							</Columns>
+							<SettingsPager Mode="ShowAllRecords"></SettingsPager>
+							<Settings VerticalScrollableHeight="500" VerticalScrollBarMode="Visible" />
 						</dx:ASPxGridView>
 						
 						<br />

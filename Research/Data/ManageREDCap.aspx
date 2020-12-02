@@ -81,11 +81,14 @@
 											<dx:GridViewDataTextColumn FieldName="select_choices_or_calculations" Caption="REDCap val labels" >
 												 <PropertiesTextEdit EncodeHtml="False" />  
 											</dx:GridViewDataTextColumn>
+											<dx:GridViewDataColumn FieldName="field_type" Caption="REDCap fld type"></dx:GridViewDataColumn>
+
 										</Columns>
 								</dx:GridViewBandColumn>
 								<dx:GridViewBandColumn Caption="Research DB" HeaderStyle-BackColor="AliceBlue">
 									<Columns>
 								<dx:GridViewDataColumn FieldName="fldname" Caption="DB fld" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn FieldName="fielddatatype" Caption="Data Type" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="fieldlabel" Caption="DB label" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn FieldName="matchType" Caption="Match Type" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
 								<dx:GridViewDataTextColumn FieldName="vallabels" Caption="DB val labels" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue">
@@ -131,6 +134,7 @@
 								<dx:GridViewDataColumn Width="80"  FieldName="arm_num" ReadOnly="true"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn Width="160" FieldName="unique_event_name" ReadOnly="true"></dx:GridViewDataColumn>
 								<dx:GridViewDataColumn Width="250" FieldName="form" ReadOnly="true"></dx:GridViewDataColumn>
+								<dx:GridViewDataColumn Width="250" FieldName="tpstudymeas" ReadOnly="true"></dx:GridViewDataColumn>
 								<dx:GridViewDataComboBoxColumn Width="250" FieldName="studymeasid"    >
 									<PropertiesComboBox  ValueField="studymeasid" TextField="studymeasname" ValueType="System.Int32" ></PropertiesComboBox>
 								</dx:GridViewDataComboBoxColumn>
@@ -247,6 +251,10 @@
 									   <br /><br />									<dx:ASPxLabel ID="lblNoneSelected" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>
 									   <br /><br />
 										<asp:Label ID="lblDictSaveInfo" runat="server" ForeColor="ForestGreen" ></asp:Label>
+								</td>
+								<td style="vertical-align:top; padding-left:30px">
+									<dx:ASPxLabel ID="lblSaveInfo" runat="server" ForeColor="ForestGreen"  EncodeHtml="false" ></dx:ASPxLabel>
+										
 								</td>
 							</tr>
 						</table>

@@ -236,8 +236,6 @@
 <dx:ASPxHiddenField ID="hidSlider" runat="server" ClientInstanceName="hidSlider"></dx:ASPxHiddenField>
 <asp:HiddenField ID="sliderValue" runat="server"  />
 	
-
-<br />
 	<div class="right">
 		<table style="width:100%">
 			<tr><td>
@@ -255,7 +253,6 @@
 	
 	<dx:ASPxHiddenField ID="hidNumSelected" runat="server" ClientInstanceName="hidnumselected"></dx:ASPxHiddenField>
 
-<br />
 
 <%--Basic Subject Info--%>
 <table>
@@ -343,7 +340,7 @@
 	
 
 
-	<br />
+
 	<dx:ASPxTokenBox ID="tokTimepoint" runat="server" ItemValueType="System.String" DataSourceID="sqlTP"
 		 TextField="timepoint_text" ValueField="timepointID" ClientInstanceName="tkb" Visible="false">
 		<ClientSideEvents Init="OnclientComboBox_Init" />
@@ -369,10 +366,10 @@
 				<dx:ASPxGridView ID="gvA" runat="server"  DataSourceID="sqlA" AutoGenerateColumns="false"   KeyFieldName="ActionID" ClientInstanceName="gvA"
 					 OnRowUpdating="gvA_OnRowUpdating" OnHtmlDataCellPrepared="gvA_HtmlDataCellPrepared"  Styles-Header-Wrap="true"   >  
 					<Columns>
-						<dx:GridViewDataColumn FieldName="timepoint_text" Caption="TimePoint" ReadOnly="true" GroupIndex="0" VisibleIndex="0"   ></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="ActionType" Caption="Type" ReadOnly="true" VisibleIndex="1"></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="ActionText" Caption="Action" ReadOnly="true" VisibleIndex="2"></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="ActionStatus" Caption="Status"  VisibleIndex="3">
+						<dx:GridViewDataColumn FieldName="timepoint_text" Caption="TimePoint" ReadOnly="true" GroupIndex="0" VisibleIndex="0"  Width="70" ></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="ActionType" Caption="Type" ReadOnly="true" VisibleIndex="1" Width="70"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="ActionText" Caption="Action" ReadOnly="true" VisibleIndex="2" Width="90"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="ActionStatus" Caption="Status"  VisibleIndex="3" Width="70">
 							<DataItemTemplate>
 								<dx:ASPxLabel ID="lblActionStatus" runat="server" Text='<%# Eval("ActionStatus") %>' ></dx:ASPxLabel>
 							</DataItemTemplate>
@@ -380,19 +377,19 @@
 <%--                        <dx:GridViewDataComboBoxColumn FieldName="ActionStatusID" Caption="Status" VisibleIndex="3">
 							<PropertiesComboBox DataSourceID="sqlAS" TextField="actionstatus" ValueField="actionstatusID"  DropDownStyle="DropDown"></PropertiesComboBox>
 						</dx:GridViewDataComboBoxColumn>--%>
-						<dx:GridViewDataDateColumn FieldName="DateDone"  VisibleIndex="4"></dx:GridViewDataDateColumn>
-						<dx:GridViewDataDateColumn FieldName="Notes"  VisibleIndex="5"></dx:GridViewDataDateColumn>
+						<dx:GridViewDataDateColumn FieldName="DateDone"  VisibleIndex="4" Width="70"></dx:GridViewDataDateColumn>
+						<dx:GridViewDataDateColumn FieldName="Notes"  VisibleIndex="5" Width="200"></dx:GridViewDataDateColumn>
 						<dx:GridViewDataColumn FieldName="ActionID" Caption="ActionID" ReadOnly="true"  Visible="false"></dx:GridViewDataColumn>
-						<dx:GridViewCommandColumn ShowEditButton="true" VisibleIndex="5" ></dx:GridViewCommandColumn>
+						<dx:GridViewCommandColumn ShowEditButton="true" VisibleIndex="5" Width="70"></dx:GridViewCommandColumn>
 						<dx:GridViewCommandColumn ShowSelectCheckbox="True" Caption="Select Meas" VisibleIndex="6" Width="60px"></dx:GridViewCommandColumn>
 					</Columns>
 					<ClientSideEvents SelectionChanged="gvA_SelectionChanged"  />
-					<Settings ShowGroupPanel="True" ShowGroupedColumns="True"      />
+					<Settings ShowGroupPanel="True" ShowGroupedColumns="True"   VerticalScrollableHeight="650" VerticalScrollBarMode="Visible"    />
 					<SettingsBehavior  AllowGroup="true" AutoExpandAllGroups="true" EnableCustomizationWindow="true" AllowSelectSingleRowOnly="true" ProcessSelectionChangedOnServer="false"   /> <%--for show/hide custom columns--%>
 
 					<SettingsEditing Mode="PopupEditForm"  />
 					<SettingsLoadingPanel Mode="ShowOnStatusBar"  />
-					<SettingsPager PageSize="40" Summary-Visible="true" />
+					<SettingsPager  Mode="ShowAllRecords" />
 					<SettingsPopup >
 						<EditForm Width="600" Modal="true" CloseOnEscape="true" />
 					</SettingsPopup>
@@ -415,7 +412,7 @@
 										<dx:ASPxComboBox ID="CboClin" runat="server" ValueType="System.Int32" OnInit="CboClin_Init" DropDownStyle="DropDown" ></dx:ASPxComboBox>
 									</Template>
 							</dx:GridViewColumnLayoutItem>--%>
-							<dx:GridViewColumnLayoutItem Caption="Action Notes:" ColSpan="2" VerticalAlign="Top">
+							<dx:GridViewColumnLayoutItem Caption="Action Notes:" ColSpan="2" VerticalAlign="Top" >
 								<Template>
 									<dx:ASPxMemo runat="server" ID="notesEditorA" Text='<%# Eval("Notes")%>' Width="100%" Height="70px"/>                            
 								</Template>
@@ -452,27 +449,27 @@
 					OnRowUpdating="gvM_OnRowUpdating" OnCustomCallback="gvM_CustomCallback"    >
 					
 					<Columns>
-						<dx:GridViewDataColumn FieldName="timepoint_text" Caption="TimePoint" ReadOnly="true" GroupIndex="0" VisibleIndex="0" ></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="StudyMeasName" Caption="Study Meas" ReadOnly="true" VisibleIndex="1"></dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="MeasStatusID" Caption="Status" VisibleIndex="2">
+						<dx:GridViewDataColumn FieldName="timepoint_text" Caption="TimePoint" ReadOnly="true" GroupIndex="0" VisibleIndex="0" Width="60" ></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="StudyMeasName" Caption="Study Meas" ReadOnly="true" VisibleIndex="1" Width="110"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="MeasStatusID" Caption="Status" VisibleIndex="2" Width="90">
 							<DataItemTemplate>
 								<dx:ASPxLabel ID="lblMeasStatus" runat="server" Text='<%# Eval("MeasStatus") %>' ></dx:ASPxLabel>
 							</DataItemTemplate>
 						</dx:GridViewDataColumn>
-						<dx:GridViewDataColumn FieldName="MeasStatusDetailID" Caption="Status Detail" VisibleIndex="3">
+						<dx:GridViewDataColumn FieldName="MeasStatusDetailID" Caption="Status Detail" VisibleIndex="3" Width="90">
 							<DataItemTemplate>
 								<dx:ASPxLabel ID="lblMeasStatusDetail" runat="server" Text='<%# Eval("MeasStatusDetail") %>' ></dx:ASPxLabel>
 							</DataItemTemplate>
 							<EditFormSettings VisibleIndex="0" />
 
 						</dx:GridViewDataColumn>
-						 <dx:GridViewDataColumn FieldName="Clinician" Caption="Clinican" VisibleIndex="8">
+						 <dx:GridViewDataColumn FieldName="Clinician" Caption="Clinican" VisibleIndex="8" Width="90">
 								<DataItemTemplate>
 									<dx:ASPxLabel ID="lblClin" runat="server" Text='<%# Eval("staffname") %>' ></dx:ASPxLabel>
 								</DataItemTemplate>
 							</dx:GridViewDataColumn>
-						<dx:GridViewDataDateColumn FieldName="Date" Caption="Date" VisibleIndex="4"></dx:GridViewDataDateColumn>
-						<dx:GridViewDataColumn FieldName="sms_dd_status" Caption="DE status"  VisibleIndex="5">
+						<dx:GridViewDataDateColumn FieldName="Date" Caption="Date" VisibleIndex="4" Width="80"></dx:GridViewDataDateColumn>
+						<dx:GridViewDataColumn FieldName="sms_dd_status" Caption="DE status"  VisibleIndex="5" Width="60">
 							<DataItemTemplate>
 								<dx:ASPxHyperLink ID="delink" runat="server"  ForeColor="Black"
 									NavigateUrl='<%# Eval("DataEntryURL") %>' Text='<%# Eval("sms_dd_status") %>' Target="blank" />
@@ -480,21 +477,21 @@
 							<EditFormSettings VisibleIndex="1" />
 						</dx:GridViewDataColumn>
 						
-						<dx:GridViewDataColumn FieldName="ActionText" Caption="Action" ReadOnly="true" VisibleIndex="6"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="ActionText" Caption="Action" ReadOnly="true" VisibleIndex="6" Width="120"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="Notes" VisibleIndex="7" Width="100"></dx:GridViewDataColumn>                             
 						<dx:GridViewDataColumn FieldName="StudyMeasSubjID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>                             
 						<dx:GridViewDataColumn FieldName="ActionID" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>                             
-						<dx:GridViewCommandColumn ShowEditButton="true" ShowCancelButton="true" ></dx:GridViewCommandColumn>
+						<dx:GridViewCommandColumn ShowEditButton="true" ShowCancelButton="true" Width="70"></dx:GridViewCommandColumn>
 
 					</Columns>
 					 <%--VerticalScrollBarMode="Auto" --%>
 					
-					<Settings ShowGroupPanel="true" ShowGroupedColumns="True" />   <%--ShowPreview="true" --%>
+					<Settings ShowGroupPanel="true" ShowGroupedColumns="True" VerticalScrollableHeight="650" VerticalScrollBarMode="Visible" />   <%--ShowPreview="true" --%>
 					<SettingsBehavior AllowGroup="true" AutoExpandAllGroups="true" EnableCustomizationWindow="true" AllowSelectByRowClick="true" />
 					<SettingsDataSecurity AllowEdit="true" />
 					<SettingsEditing Mode="PopupEditForm"  />
 					<SettingsLoadingPanel Mode="ShowOnStatusBar"  />
-					<SettingsPager PageSize="40" Summary-Visible="true" />
+					<SettingsPager Mode="ShowAllRecords" />
 					<SettingsPopup >
 						<EditForm Width="600" Modal="true" CloseOnEscape="true" />
 					</SettingsPopup>

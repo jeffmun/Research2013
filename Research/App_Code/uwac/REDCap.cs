@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using uwac;
+using uwac.trk;
 using RedcapLibrary;
 using DevExpress.Web;
 using Redcap;
@@ -46,6 +47,9 @@ namespace uwac_REDCap
 		public DataTable dt_db_formevent_studymeasid { get; set; }
 		public List<string>  redcapevents { get; set; }
 
+		public List<string> import_results { get { return _import_results; } }
+
+		private List<string> _import_results;
 		private string idfld;
 		public string dataheader { get; set; }
 		private int _studyID;
@@ -54,6 +58,7 @@ namespace uwac_REDCap
 		{
 			_studyID = studyID;
 			idfld = "id";
+			_import_results = new List<string>();
 
 			LoadTokens();
 			GetAPIInfo();
@@ -115,6 +120,27 @@ namespace uwac_REDCap
 		}
 
 
+		public int MeasureID_from_REDCap_form(SQL_utils sql, string formname, int studyid)
+        {
+			string code = String.Format("select distinct(measureID) from def.REDCap_Form where form_name = '{0}' and tokenID in " +
+					" (select tokenID from[def].[REDCapToken_Study] where studyid = {1})", formname, studyid);
+
+			int mID = sql.IntScalar_from_SQLstring(code);
+
+			return mID;
+        }
+
+		public string REDCap_id_fldname_for_DB(SQL_utils sql, string formname, int studyid)
+        {
+			int mID = MeasureID_from_REDCap_form(sql, formname, studyid);
+
+			string code = String.Format("select (case when fldextractionmode=6 then conststring else fldname end) as id_fld from def.fld where fldname='id' and tblpk = (select tblpk from def.tbl where measureid = {0})", mID);
+			string idfld = sql.StringScalar_from_SQLstring(code);
+			return idfld;
+		}
+
+	
+
 		public DataTable AddStudymeasToREDCapFormData(DataTable dt)
         {
 			string form_name = dt.AsEnumerable().Select(f => f.Field<string>("form_name")).First().ToString();
@@ -153,8 +179,12 @@ namespace uwac_REDCap
 					{ }
                 }
 
+				DataTable dt_with_studymeasid = dt.AsEnumerable().Where(f => f.Field<int?>("studymeasid") != null).CopyToDataTable();
 
-				return dt;
+
+				return dt_with_studymeasid;
+
+				//return dt;
 
 				//List<string> form_and_event1 = dt.AsEnumerable().Select(f => f.Field<string>("form_and_event")).Distinct().ToList();
 				//List<string> form_and_event2 = dt_db_formevent_studymeasid.AsEnumerable().Select(f => f.Field<string>("form_and_event")).Distinct().ToList();
@@ -332,41 +362,81 @@ namespace uwac_REDCap
 			return result;
         }
 
-		public string SaveFormDataToDB(string form)
+		public void SaveFormDataToDB(string form, int studyid)
         {
+			SQL_utils sql = new SQL_utils("data");
+
+			_import_results.Add("Processing <b>" + form + "</b>");
 
 			DataTable dt_redcap = DataFromForm(form);
 			dt_redcap = AddStudymeasToREDCapFormData(dt_redcap);
 
-			SQL_utils sql = new SQL_utils("data");
+			string idfld = REDCap_id_fldname_for_DB(sql, form, studyid);
 
-			int studymeasid1 = dt_redcap.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Min();
-			int studymeasid2 = dt_redcap.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Max();
+			_import_results.Add(String.Format("ID contained in REDCap field '{0}'", idfld));
 
-			int measureid1 = sql.IntScalar_from_SQLstring("select measureid  from uwautism_research_backend..tblstudymeas where studymeasid=" + studymeasid1.ToString());
-			int measureid2 = sql.IntScalar_from_SQLstring("select measureid  from uwautism_research_backend..tblstudymeas where studymeasid=" + studymeasid2.ToString());
 
-			if(measureid1 == measureid2)
-            {
-				string tblname = sql.StringScalar_from_SQLstring(String.Format("select tblname from def.tbl where measureid={0}", measureid1));
+			dt_redcap = dataops.VerifyID(dt_redcap, idfld , studyid);
 
-				DataTable dt_db = DataImporter.EmptyDataTable(tblname, "dbo");
+			int num_notid = dt_redcap.AsEnumerable().Where(f => f.Field<string>("not_id") != null).Count();
 
-				List<string> redcap_colnames = dt_redcap.ColumnNames();
+			if (num_notid > 0)
+			{
+				List<string> not_ids = dt_redcap.AsEnumerable().Where(f => f.Field<string>("not_id") != null).Select(f => f.Field<string>("not_id")).ToList();
 
-				foreach (DataRow row in dt_redcap.Rows)
-				{
+				_import_results.Add(String.Format("ERROR. Data contains {0} records with ID's not in the DB: {1}", num_notid, String.Join(",", not_ids)));
 
-					int x = SaveRowToDB(sql, row);
+			}
+			else
+			{
+				_import_results.Add("All ID's in REDCap data are present in the DB.");
 
+				dt_redcap = dataops.CopyColumntoID(dt_redcap, idfld);
+
+				dt_redcap.AddConstantInt("verified", 0);
+
+
+				string timestamp_column = "";
+				foreach(DataColumn col in dt_redcap.Columns)
+                {
+					if (col.ColumnName.EndsWith("_timestamp"))
+					{
+						timestamp_column = col.ColumnName;
+						dt_redcap.RenameColumn(timestamp_column, "redcap_timestamp");
+					}
 				}
 
 
+				int studymeasid1 = dt_redcap.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Min();
+				int studymeasid2 = dt_redcap.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Max();
+
+				int measureid1 = sql.IntScalar_from_SQLstring("select measureid  from uwautism_research_backend..tblstudymeas where studymeasid=" + studymeasid1.ToString());
+				int measureid2 = sql.IntScalar_from_SQLstring("select measureid  from uwautism_research_backend..tblstudymeas where studymeasid=" + studymeasid2.ToString());
+
+
+
+				if (measureid1 == measureid2)
+				{
+					string tblname = sql.StringScalar_from_SQLstring(String.Format("select tblname from def.tbl where measureid={0}", measureid1));
+					string result;
+					try
+					{
+						DataTable dt_redcap2 = dt_redcap.ConvertEmptyStringToDBNull();
+
+						result = sql.BulkInsert(dt_redcap2, tblname);
+					}
+					catch (Exception ex)
+					{
+						result = "ERROR: " + ex.Message;
+					}
+					_import_results.Add(result);
+				}
 			}
 
 
-			return "ok";
-        }
+			//return result;
+			//return "ok";
+		}
 
 
 
@@ -470,7 +540,7 @@ namespace uwac_REDCap
         }
 
 
-		#region Fields 
+		#region Get Fields from REDCap forms
 		public string FieldsCSV(string formname)
 		{
 
@@ -499,6 +569,8 @@ namespace uwac_REDCap
 				tmp_flds.Remove(idfld);
 
 				flds.AddRange(tmp_flds);
+				//timestamp
+				flds.Add(String.Format("{0}_timestamp", formname));
 			}
 
 
@@ -525,7 +597,7 @@ namespace uwac_REDCap
 		}
 		#endregion
 
-		#region DataTables
+		#region place REDCAP data into DataTables
 
 		public DataTable DataFromAllForms(string formname)
 		{
@@ -550,21 +622,15 @@ namespace uwac_REDCap
 			bool boolLabels = false;
 			bool boolAccessGroups = false;
 
-
 			if(!strFields.Contains("redcap_repeat_instance,")) strFields = "redcap_repeat_instance," + strFields;
 			if (!strFields.Contains("redcap_repeat_instrument,")) strFields = "redcap_repeat_instrument," + strFields;
 			if (!strFields.Contains("redcap_event_name,")) strFields = "redcap_event_name," + strFields;
 			if (!strFields.Contains("record_id,")) strFields = "record_id," + strFields;
 
-
 			string firstfld = FirstField(formnames[0]);
 
 			try
 			{
-				//DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, stFields, strEvents, strForms, boolLabels, boolAccessGroups);
-				//DataTable dt = api.GetTableFromCSV(idfld, strRecordsSelect, strFilterLogic, "", "", "", boolLabels, boolAccessGroups);
-				//DataTable dt = api.GetTableFromAnyRC(idfld, strRecordsSelect, strFilterLogic, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
-
 				DataTable dt = api.GetTableFromAnyRC(firstfld, strRecordsSelect, strFields, strEvents, strForms, boolLabels, boolAccessGroups);
 
 				//When only a single form is included, add the formname to the datatable
@@ -615,7 +681,7 @@ namespace uwac_REDCap
 		#endregion
 
 
-		#region Controls
+		#region Create Controls for REDCap stuff
 		public ASPxComboBox cboFormSelector()
 		{
 			//if (api != null)

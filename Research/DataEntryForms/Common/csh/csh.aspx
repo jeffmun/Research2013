@@ -37,17 +37,24 @@
 											IsInsertField="False" FieldDataType="DATE" FieldLabelWidth="60px" FieldTextBoxWidth="80px" FormatString="{0:d}"></def:datafieldcontrol></TD>
 								</TR>
 								<TR>
-									<TD>1=Mother (bio, step, adoptive)<BR>
+									<TD>
+										<br/><br />
+										<def:datafieldcontrol id="cshrsp" runat="server" DatabaseField="cshrsp" FieldTextBoxTabIndex="6" FieldLabelText="Respondant"
+											IsDoubleEntryField="True" IsReadOnly="False" IsEntryValueRequired="True" IsEntryField="True" IsInsertValueRequired="False"
+											IsInsertField="False" FieldDataType="INT" FieldLabelWidth="130px" FieldTextBoxWidth="40px" ValidList="1,2,3,4,-9"></def:datafieldcontrol>
+										<def:datafieldcontrol id="cshrspo" runat="server" DatabaseField="cshrspo" FieldTextBoxTabIndex="6" FieldLabelText="(specify if 3 or 4)"
+											IsDoubleEntryField="False" IsReadOnly="False" IsEntryValueRequired="False" IsEntryField="True" IsInsertValueRequired="False"
+											IsInsertField="False" FieldDataType="TEXT" FieldLabelWidth="130px"></def:datafieldcontrol>
+
+										</br>
+										1=Mother (bio, step, adoptive)<BR>
 										2=Father (bio, step, adoptive)<BR>
 										3=Primary Caregiver (specify below)<BR>
 										4=Other (specify below)<BR>
-										-9=Missing/Unknown<BR>
-										<def:datafieldcontrol id="cshrsp" runat="server" DatabaseField="cshrsp" FieldTextBoxTabIndex="6" FieldLabelText="Respondant"
-											IsDoubleEntryField="True" IsReadOnly="False" IsEntryValueRequired="True" IsEntryField="True" IsInsertValueRequired="False"
-											IsInsertField="False" FieldDataType="INT" FieldLabelWidth="130px" FieldTextBoxWidth="40px" ValidList="1,2,3,4,-9"></def:datafieldcontrol><BR>
-										<def:datafieldcontrol id="cshrspo" runat="server" DatabaseField="cshrspo" FieldTextBoxTabIndex="6" FieldLabelText="(specify if 3 or 4)"
-											IsDoubleEntryField="False" IsReadOnly="False" IsEntryValueRequired="False" IsEntryField="True" IsInsertValueRequired="False"
-											IsInsertField="False" FieldDataType="TEXT" FieldLabelWidth="130px"></def:datafieldcontrol></TD>
+										-9=Missing/Unknown<br/>
+
+
+									</TD>
 								</TR>
 							</TABLE>
 
@@ -143,6 +150,9 @@
 								</tr>
 
 							</table>
+
+							<br />
+							<def:datafieldcontrol id="cshscrmsg" runat="server" DatabaseField="cshscrmsg" IsReadOnly="True" FieldLabelWidth="160px" FieldTextBoxWidth="350px"></def:datafieldcontrol>
 
 							<br />
 							<def:datafieldcontrol id="cshbt" runat="server" DatabaseField="cshbt" FieldTextBoxTabIndex="6" FieldLabelText="Write in child's bedtime. <em>(Use <strong>-9</strong> for Missing Values.)</em>"

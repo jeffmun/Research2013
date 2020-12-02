@@ -102,12 +102,15 @@ namespace uwac_REDCap
 				strPostParameters += "&records=" + strRecordsSelect;
 			}
 
-			if (strFields != "")
-			{
-				strPostParameters += "&fields=" + strFields;
-			}
+			strPostParameters += "&exportSurveyFields=true";
+			
 
-			if (strEvents != "")
+			if (strFields != "")
+            {
+                strPostParameters += "&fields=" + strFields;
+            }
+
+            if (strEvents != "")
 			{
 				strPostParameters += "&events=" + strEvents;
 			}
