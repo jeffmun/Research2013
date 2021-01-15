@@ -126,6 +126,7 @@ namespace uwac
 
 					CheckSubjects(_imported_dt);  //add any needed subjects in order to import this data.  Only need to do this once
 
+
 					FixIndexnum(_imported_dt, linkedrow["tblname"].ToString()); //Check subjects and fix indexnum
 
 					if (_imported_dt.HasRows())
@@ -134,6 +135,14 @@ namespace uwac
 						//ConvertLabelsToValues();
 
 						SQL_utils sql = new SQL_utils("data");
+
+
+						string code_importlog = String.Format("insert into FILE_ImportLog(uploadfilename, id, studymeasid, nrows_attempted, created, createdby)" +
+							" values('{0}','{1}',{2},{3},getdate(), sec.systemuser())", filename, ID, mystudymeasID, _imported_dt.Rows.Count);
+
+						sql.NonQuery_from_SQLstring(code_importlog);
+
+
 						string insert_result = sql.BulkInsert(_imported_dt, linkedrow["tblname"].ToString());
 						results.Add(insert_result);
 						sql.Close();
@@ -238,8 +247,68 @@ namespace uwac
 			//}
 			else
 			{
+				if(settings.tblname == "ALL_SleepSensorBox")
+                {
+					//here
+					DataTable dt_ssb = new DataTable();
 
-				if (settings.importfiletype == ImportFiletype.csv | settings.importfiletype == ImportFiletype.tsv)
+					dt_ssb.Columns.Add(new DataColumn("id", typeof(string)));
+					dt_ssb.Columns.Add(new DataColumn("studymeasid", typeof(int)));
+					dt_ssb.Columns.Add(new DataColumn("indexnum", typeof(int)));
+					dt_ssb.Columns.Add(new DataColumn("ssb_datetime", typeof(DateTime)));
+					dt_ssb.Columns.Add(new DataColumn("ssb_lux", typeof(float)));
+					dt_ssb.Columns.Add(new DataColumn("ssb_sound", typeof(float)));
+					dt_ssb.Columns.Add(new DataColumn("ssb_temp", typeof(float)));
+					dt_ssb.Columns.Add(new DataColumn("ssb_cmnt", typeof(string)));
+					dt_ssb.Columns.Add(new DataColumn("verified", typeof(int)));
+
+					List<string> lines = File.ReadLines(String.Format("{0}\\{1}", filepath, filename)).ToList();
+
+					settings.needToCheckIndexnum = false;
+
+					for (int i= settings.skipstartingrows; i < lines.Count; i++)
+                    {
+						string line = lines[i];
+
+						string[] vals = line.Split(',').ToArray();
+
+						DataRow row = dt_ssb.NewRow();
+
+						row["id"] = ID;
+
+						string datetime = String.Format("{0} {1}", vals[0],vals[1]);
+						DateTime ssb_datetime;
+						bool isdatetime = DateTime.TryParse(datetime, out ssb_datetime);
+						
+						if(isdatetime)
+                        {
+							row["ssb_datetime"] = ssb_datetime;
+						}
+
+						double lux;
+						bool islux = Double.TryParse(vals[2], out lux);
+						if(islux) row["ssb_lux"] =  lux;
+
+						double sound;
+						bool issound = Double.TryParse(vals[3], out sound);
+						if (issound) row["ssb_sound"] = sound;
+
+						double temp;
+						bool istemp = Double.TryParse(vals[4], out temp);
+						if (istemp) row["ssb_temp"] = temp;
+
+						row["ssb_cmnt"] = filename;
+						row["studymeasid"] = studymeasID;
+						row["indexnum"] = i - settings.skipstartingrows + 1;
+						row["verified"] = 1;
+						dt_ssb.Rows.Add(row);
+					}
+
+					_imported_dt = dt_ssb;
+
+				}
+
+                else if (settings.importfiletype == ImportFiletype.csv | settings.importfiletype == ImportFiletype.tsv)
 				{
 					Debug.WriteLine(" #### CSV TSV ####");
 
@@ -468,7 +537,7 @@ namespace uwac
 
 								if (usebasedate & basedate == null)
 								{
-									basedate = (DateTime)Convert.ToDateTime(parser[basedate_importpos].ToString());
+									basedate = (DateTime)Convert.ToDateTime(parser[basedate_importpos].ToString().Replace("\"", ""));
 								}
 								if (row != null)
 								{
@@ -1044,35 +1113,39 @@ namespace uwac
 
 			if (tblname == "ALL_ObsBehaviorCounts") return;
 
-			Debug.WriteLine(" **** Begin FixIndexnum *****");
-			if (dt.HasRows())
+			if (settings.needToCheckIndexnum)
 			{
-				if (dt.ContainsColumnName("indexnum") & dt.ContainsColumnName("id") & dt.ContainsColumnName("studymeasid"))
+
+				Debug.WriteLine(" **** Begin FixIndexnum *****");
+				if (dt.HasRows())
 				{
-					SQL_utils sql = new SQL_utils("data");
-					DataTable dtmax = sql.DataTable_from_SQLstring(
-						String.Format("select id, studymeasid, max(indexnum) maxidx from {0} group by id, studymeasid", tblname));
-					sql.Close();
-
-					List<int> studymeasids = dt.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Distinct().ToList();
-
-					if (dtmax.Rows.Count > 0)
+					if (dt.ContainsColumnName("indexnum") & dt.ContainsColumnName("id") & dt.ContainsColumnName("studymeasid"))
 					{
+						SQL_utils sql = new SQL_utils("data");
+						DataTable dtmax = sql.DataTable_from_SQLstring(
+							String.Format("select id, studymeasid, max(indexnum) maxidx from {0} group by id, studymeasid", tblname));
+						sql.Close();
 
-					}
-					else
-					{
-						foreach (int studymeasid in studymeasids)
+						List<int> studymeasids = dt.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Distinct().ToList();
+
+						if (dtmax.Rows.Count > 0)
 						{
-							foreach (DataRow row in dt.Rows)
-							{
-								string id = row["id"].ToString();
 
-								int maxidx = MaxIndexnum(dt, id, studymeasid);
-								row["indexnum"] = maxidx + 1;
-							}
 						}
+						else
+						{
+							foreach (int studymeasid in studymeasids)
+							{
+								foreach (DataRow row in dt.Rows)
+								{
+									string id = row["id"].ToString();
 
+									int maxidx = MaxIndexnum(dt, id, studymeasid);
+									row["indexnum"] = maxidx + 1;
+								}
+							}
+
+						}
 					}
 				}
 			}

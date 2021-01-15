@@ -29,8 +29,11 @@ namespace uwac
 		public List<Importfield> fields { get; set; }
 		public List<Valueset> valuesets { get; set; }
 
+		public bool needToCheckIndexnum { get; set; }
+
 		public DataImportSettings(string input_ID, int input_studymeasID)
 		{
+			needToCheckIndexnum = true;
 			rowstoprocess =  200000;  //200;  //for testing set to 200
 			ID = input_ID;
 			studymeasID = input_studymeasID;
@@ -43,6 +46,8 @@ namespace uwac
 		}
 		public DataImportSettings(string input_ID, int input_studymeasID, int numrows)
 		{
+			needToCheckIndexnum = true;
+
 			ID = input_ID;
 			studymeasID = input_studymeasID;
 			rowstoprocess = numrows;

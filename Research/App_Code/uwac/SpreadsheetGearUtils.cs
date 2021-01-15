@@ -78,7 +78,37 @@ public class SpreadsheetGearUtils
 		}
 
 
-		public static void Serialize(DataSet ds, Stream stream)
+
+	public static DataSet GetDataSet(string excelfile, bool fixcols, bool usepathDataDownloads, SpreadsheetGear.Data.GetDataFlags dataFlags)
+	{
+		DataSet dset = new DataSet();
+
+		string serverfilename = (usepathDataDownloads) ? HttpContext.Current.Server.MapPath(@"~/App_Data/DataDownloads/" + excelfile) :
+				excelfile;
+
+		try
+		{
+
+			dset = SpreadsheetGear.Factory.GetWorkbook(serverfilename, CultureInfo.CurrentCulture).GetDataSet(dataFlags);
+
+			if (fixcols)
+			{
+				//bool cleaned = FixXLColumnTypes(dset);
+			}
+		}
+		catch (Exception ex)
+		{
+			string x = ex.Message;
+			//ex.Message;
+			dset.DataSetName = "FileNotFound";
+		}
+
+		//dset = RemoveMissingValues_from_DataSet(dset);
+		return dset;
+	}
+
+
+	public static void Serialize(DataSet ds, Stream stream)
 		{
 			BinaryFormatter serializer = new BinaryFormatter();
 			serializer.Serialize(stream, ds);

@@ -28,6 +28,7 @@ public static class Actigraph
 
 	public static int[] measureIDs = { 3842, 4853, 4855 };
 
+
 	public static List<Color> colors = new List<Color> {Color.Black, Color.Red, Color.Gold};
 
 
@@ -36,7 +37,6 @@ public static class Actigraph
 		DateTime starttime = DateTime.Now;
 		string results = String.Format("<br/>Begin processing. {0}", System.DateTime.Now.ToString());
 		List<string> lines = DataImporter.ReadLinesFromFiles(filepath, filename);
-
 
 
 		//TOFIX - now hardcoded for Sleep Pilot study
@@ -293,6 +293,8 @@ public static class Actigraph
 				, id, studymeasID, indexnum, day.Targetdate.Date, "DaylightInfo", "Sunset", day.Sunset.ToShortTimeString()));
 		return s;
 	}
+
+
 
 	public class ActogramStats
 	{

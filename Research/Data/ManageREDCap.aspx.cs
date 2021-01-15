@@ -459,6 +459,12 @@ public partial class Data_ManageREDCap : BasePage
 
 				placeholder_gridMeta.Controls.Add(lbllog);
 
+				DataTable foo = redcap.DataFromForm(formnames[i]);
+
+				DataTable foo2 = foo.AsEnumerable().Where(f => f.Field<string>("id") != "").CopyToDataTable();
+
+
+
 				ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
 
 				if (grid != null)

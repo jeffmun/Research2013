@@ -113,9 +113,8 @@
     <dx:ASPxGridView ID="gridNDARview" ClientInstanceName="gridNDARview" runat="server" KeyFieldName="databasepk" 
           Visible="false" AutoGenerateColumns="true" Width="95%"  SettingsBehavior-AllowSelectByRowClick="true"
            Settings-HorizontalScrollBarMode="Visible" OnLoad="gridNDARview_OnLoad" OnHtmlDataCellPrepared="gridNDARview_OnHtmlDataCellPrepared" >
-        <SettingsPager PageSize="20" Summary-Visible="true" AlwaysShowPager="true" >
-            <PageSizeItemSettings Visible="true" Items="20,50,100,200" ShowAllItem="true" />
-        </SettingsPager>
+        <Settings VerticalScrollableHeight="600" VerticalScrollBarMode="Visible" />
+        <SettingsPager  Mode="ShowAllRecords" Summary-Visible="true"  ></SettingsPager>
         <Columns>
 <%--            <dx:GridViewDataHyperLinkColumn FieldName="rownum"  >
              <DataItemTemplate>

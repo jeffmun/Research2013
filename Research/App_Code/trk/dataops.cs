@@ -245,7 +245,7 @@ public static void SetColorLevel(int x)
 			return dt;
 		}
 
-			public static DataTable VerifyID(DataTable dt, string sourcecol, int studyid)
+		public static DataTable VerifyID(DataTable dt, string sourcecol, int studyid)
 		{
 			SQL_utils sql = new SQL_utils("backend");
 

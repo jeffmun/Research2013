@@ -28,7 +28,7 @@
 	<table>
 		<tr>
 			<td style="width:300px">
-				<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Staff Assignments" Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
+				<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Staff Assignments." Font-Size="Medium" Font-Bold="true"></dx:ASPxLabel>
 
 			</td>
 			<td style="width:250px">

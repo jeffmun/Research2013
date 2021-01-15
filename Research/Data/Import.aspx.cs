@@ -110,7 +110,7 @@ public partial class Data_Import : BasePage
 		SQL_utils sql = new SQL_utils("backend");
 
 		string sqlcode = "select studymeasID, studymeasname from tblmeasure a join tblstudymeas b ON a.measureID=b.measureID " + Environment.NewLine +
-			" where a.measureID in (select measureID from uwautism_research_data.def.tbl where measureID>0 and importfiletype is not null) " + Environment.NewLine +
+			" where a.measureID in (select measureID from uwautism_research_data.def.tbl where measureID>0 and importfiletype is not null and importfiletype != 7) " + Environment.NewLine +
 			" and studyID = " + Master.Master_studyID.ToString() + Environment.NewLine +
 			" order by b.timepointID, studymeasname ";
 		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
@@ -133,7 +133,7 @@ public partial class Data_Import : BasePage
 
 	protected void cboSubject_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
-		CheckNs();
+		//CheckNs();
 	}
 	protected void cboStudymeas_OnSelectedIndexChanged(object sender, EventArgs e)
 	{
@@ -150,21 +150,21 @@ public partial class Data_Import : BasePage
 
 			string ns = new DataImporter(ID, studymeasID).LinkedTableInfo();
 
+			////Handle REDCap elsewhere
+			//REDCap redcap = new REDCap(Master.Master_studyID);
 
-			REDCap redcap = new REDCap(Master.Master_studyID);
+			//if (redcap.IsREDCapMeasure(studymeasID))
+			//{
+			//	DataTable dt_forms = DataImporter.LinkedREDCapForms(Master.Master_studyID, studymeasID, DbEntityType.studymeas);
 
-			if (redcap.IsREDCapMeasure(studymeasID))
-			{
-				DataTable dt_forms = DataImporter.LinkedREDCapForms(Master.Master_studyID, studymeasID, DbEntityType.studymeas);
-
-				gridREDCapForms.DataSource = dt_forms;
-				gridREDCapForms.DataBind();
-				panelREDCap_controls.Visible = true;
-			}
-			else
-			{
-				panelREDCap_controls.Visible = false;
-			}
+			//	gridREDCapForms.DataSource = dt_forms;
+			//	gridREDCapForms.DataBind();
+			//	panelREDCap_controls.Visible = true;
+			//}
+			//else
+			//{
+			//	panelREDCap_controls.Visible = false;
+			//}
 
 
 			if (ns.Contains("!"))
@@ -184,12 +184,12 @@ public partial class Data_Import : BasePage
 				lblNrecs.Visible = true;
 				lblNrecs.ForeColor = Color.ForestGreen;
 				lblNrecs.Text = ns;
-				FileUpload_Doc.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? false : true;  // don't show if a REDCap measure, because you don't upload files for these
+				FileUpload_Doc.Visible = true; // (redcap.IsREDCapMeasure(studymeasID)) ? false : true;  // don't show if a REDCap measure, because you don't upload files for these
 				btnDelete.Visible = false;
 				btnContinue.Visible = false;
 
-				btnShowREDCap.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? true : false;
-				btnImportREDCap.Visible = (redcap.IsREDCapMeasure(studymeasID)) ? true : false;
+				btnShowREDCap.Visible = false; // (redcap.IsREDCapMeasure(studymeasID)) ? true : false;
+				btnImportREDCap.Visible = false; //(redcap.IsREDCapMeasure(studymeasID)) ? true : false;
 
 			}
 
