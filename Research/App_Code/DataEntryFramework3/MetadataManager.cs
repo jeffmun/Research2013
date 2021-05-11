@@ -114,9 +114,12 @@ namespace DataEntryFramework3
 					//Updated June 2018, now need to set user context
 					SQL_utils sqlx = new SQL_utils("data");
 					string user = sqlx.GetUserNameFromIdentity();
+					string sqlcode = String.Format("EXEC sec.spSetUserContext {0}; exec spDEF_GetFieldMetadata '{1}'", user, DatabaseTable);
+
+					//Here to fix Feb2021!!
+
 					sqlx.Close();
 
-					string sqlcode = String.Format("EXEC sec.spSetUserContext {0}; exec spDEF_GetFieldMetadata '{1}'", user, DatabaseTable);
 					cmd.CommandText = sqlcode;
 					cmd.CommandType = CommandType.Text;
 

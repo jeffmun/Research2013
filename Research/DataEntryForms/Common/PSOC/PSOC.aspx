@@ -19,6 +19,13 @@
 <def:datafieldcontrol runat="server" id="Timepoint" DatabaseField="visit" IsInsertField="true" IsEntryField="true" FieldTextBoxWidth="50px" FieldLabelWidth="125px "></def:datafieldcontrol>
 <br />
 <asp:panel id="mainPanel" runat="server">
+
+    <br />
+<def:datafieldcontrol runat="server" id="psocsat" DatabaseField="psocsat"  IsReadOnly="true" RenderReadOnlyAsDiv="true"  FieldTextBoxWidth="50px" FieldLabelWidth="300px "></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="psoceff" DatabaseField="psoceff"  IsReadOnly="true" RenderReadOnlyAsDiv="true"  FieldTextBoxWidth="50px" FieldLabelWidth="300px "></def:datafieldcontrol>
+<def:datafieldcontrol runat="server" id="psocscrmsg" DatabaseField="psocscrmsg"  IsReadOnly="true" RenderReadOnlyAsDiv="true"   FieldLabelWidth="300px "></def:datafieldcontrol>
+<br /><br />
+
 <def:ValueSetLabel ID="ValueSetLabel_psoc01" runat="server"  DatabaseField="psoc01"></def:ValueSetLabel>
 <br />
 <def:datafieldcontrol runat="server" id="psoc01" DatabaseField="psoc01"  IsEntryField="true" IsDoubleEntryField="true"  FieldTextBoxWidth="50px" FieldLabelWidth="300px "></def:datafieldcontrol>

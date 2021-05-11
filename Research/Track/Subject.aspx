@@ -153,12 +153,45 @@
 	function newID(s, e)
 	{
 		var id = s.GetValue();
-		window.location.href = "Subject.aspx?ID=" + id;
+		window.location.href = "Subject.aspx?subjid=" + id;
 	}
  
 
+        //Show DocUpload Popup and Refresh grid when closed
+        function ShowDocUploadPopup(qs1, qs2) {
+            const urlParams_search = new URLSearchParams(location.search);
+            var urlParams = "&" + urlParams_search;
+            //alert(urlParams);
+            urlParams = urlParams.replace(qs1, qs2)
+            //alert(urlParams);
+            var baseurl = popUpload.GetContentUrl();
+            //alert(baseurl);
+            baseurl = baseurl.replace(urlParams, "");
+            var url = baseurl + urlParams;
+            //Make this replace specific to the page
+            // first, remove
 
-</script>
+            var url = url.replace(qs1, qs2)
+            //alert(url);
+            popUpload.SetContentUrl(url);
+            popUpload.Show();
+        }
+
+        var doc_command = ""
+        function RefreshDocs(s, e) {
+            gridDocs.PerformCallback();
+        }
+        function OnBeginCallback_Docs(s, e) {
+            doc_command = e.command;
+        }
+        function OnEndCallback_Docs(s, e) {
+            if (doc_command == "CUSTOMCALLBACK") {
+                s.Refresh();
+            }
+        }
+
+
+    </script>
 
 
 	
@@ -280,7 +313,7 @@
 		<td style="width: 220px; vertical-align:top">
 			<dx:ASPxLabel ID="lblID" runat="server" Text=""  Font-Size="14" Font-Bold="true" Visible="true"></dx:ASPxLabel>
 			<br />
-			<dx:ASPxComboBox ID="cboID" runat="server" DataSourceID="sqlS" TextField="ID" ValueField="ID" Font-Size="12" Font-Bold="true" width="200px"
+			<dx:ASPxComboBox ID="cboID" runat="server" DataSourceID="sqlS" TextField="ID" ValueField="subjID" Font-Size="12" Font-Bold="true" width="200px"
 				  DropDownStyle="DropDownList" ForeColor="Silver" NullText="-select a subject-">
 				<ClientSideEvents SelectedIndexChanged="newID"   />
 			</dx:ASPxComboBox>
@@ -384,7 +417,7 @@
 						<dx:GridViewCommandColumn ShowSelectCheckbox="True" Caption="Select Meas" VisibleIndex="6" Width="60px"></dx:GridViewCommandColumn>
 					</Columns>
 					<ClientSideEvents SelectionChanged="gvA_SelectionChanged"  />
-					<Settings ShowGroupPanel="True" ShowGroupedColumns="True"   VerticalScrollableHeight="650" VerticalScrollBarMode="Visible"    />
+					<Settings ShowGroupPanel="True" ShowGroupedColumns="True"   VerticalScrollableHeight="400" VerticalScrollBarMode="Visible"    />
 					<SettingsBehavior  AllowGroup="true" AutoExpandAllGroups="true" EnableCustomizationWindow="true" AllowSelectSingleRowOnly="true" ProcessSelectionChangedOnServer="false"   /> <%--for show/hide custom columns--%>
 
 					<SettingsEditing Mode="PopupEditForm"  />
@@ -428,6 +461,62 @@
 						</Items>
 					</EditFormLayoutProperties>
 				</dx:ASPxGridView>
+
+
+				<br />
+				<dx:ASPxLabel ID="ASPxLabel5" runat="server" Text="Documents:"  Font-Size="10" Font-Bold="true"  ForeColor="Silver"></dx:ASPxLabel>
+
+				<%--UPLOAD DOCS--%>
+				            <dx:ASPxButton ID="btnShowDocUploadPopup" runat="server" Text="Upload Document for Subject" AutoPostBack="false" Font-Size="small">
+		            <ClientSideEvents Click="function(s, e) { ShowDocUploadPopup('subjid','entityid'); }" />
+	            </dx:ASPxButton>
+
+	            <dx:ASPxPopupControl ID="popUpload" runat="server" Width="1100px" Height="500px" CloseAction="CloseButton" CloseOnEscape="true" Modal="True"  
+                    PopupHorizontalAlign="WindowCenter" PopupVerticalAlign="WindowCenter" ClientInstanceName="popUpload"  ContentUrl="~/Docs/DocsUploadPopup.aspx?entitytypeid=4"
+                    HeaderText="Upload Document" AllowDragging="True" PopupAnimationType="None" EnableViewState="False" AutoUpdatePosition="true">
+                    <ClientSideEvents CloseUp="RefreshDocs" />
+                    <ContentStyle>
+                        <Paddings PaddingBottom="5px" />
+                    </ContentStyle>
+                </dx:ASPxPopupControl>
+
+	            <br />
+            
+	            <dx:ASPxGridView ID="gridDocs" ClientInstanceName="gridDocs" runat="server"  DataSourceID="sql_docs" KeyFieldName="docversid" 
+		             SettingsDataSecurity-AllowEdit="true"  OnRowUpdating="gridDocs_OnRowUpdating" >
+		            <ClientSideEvents EndCallback="OnEndCallback_Docs" BeginCallback="OnBeginCallback_Docs"/>
+                    <Columns>
+<%--			            <dx:GridViewDataColumn FieldName="version" ReadOnly="true" EditFormSettings-Visible="false"></dx:GridViewDataColumn>--%>
+						<dx:GridViewDataTextColumn FieldName="doctitle" Caption="Doc Title" ReadOnly="true" EditFormSettings-Visible="false" Width="250">
+				            <DataItemTemplate>
+					            <dx:ASPxHyperLink runat="server" ID="keyFieldLink" OnInit="keyFieldLink_Init"></dx:ASPxHyperLink>
+				            </DataItemTemplate>
+			            </dx:GridViewDataTextColumn>
+
+			            <dx:GridViewDataColumn FieldName="fileext" Caption="File Type" ReadOnly="true" EditFormSettings-Visible="false" Width="65"></dx:GridViewDataColumn>
+			            <dx:GridViewDataColumn FieldName="datesubmitted" Caption="Date Submitted" ReadOnly="true" EditFormSettings-Visible="false" Width="100"></dx:GridViewDataColumn>
+			            <dx:GridViewDataColumn FieldName="doctype" Caption="Document Type" GroupIndex="0" ReadOnly="true" EditFormSettings-Visible="false"></dx:GridViewDataColumn>
+			            <dx:GridViewDataColumn FieldName="docid" ReadOnly="true"  Visible="false" Width="50px" EditCellStyle-ForeColor="Silver" EditFormCaptionStyle-ForeColor="Silver">
+				              <EditFormSettings Visible="True" VisibleIndex="4"/>
+			            </dx:GridViewDataColumn>
+			            <dx:GridViewDataColumn FieldName="docversid" ReadOnly="true" Visible="false" Width="50px" EditCellStyle-ForeColor="Silver" EditFormCaptionStyle-ForeColor="Silver" >
+				              <EditFormSettings Visible="True" VisibleIndex="5"  />
+			            </dx:GridViewDataColumn>
+		            </Columns>
+                    <TotalSummary>
+                        <dx:ASPxSummaryItem FieldName="doctype" SummaryType="Count" />
+                    </TotalSummary>
+                    <GroupSummary>
+                        <dx:ASPxSummaryItem FieldName="doctype" SummaryType="Count" />
+                    </GroupSummary>
+		            <Settings ShowGroupPanel="true"  VerticalScrollBarMode="Auto"  VerticalScrollableHeight="400"/>
+		            <SettingsBehavior AllowFixedGroups="true" AutoExpandAllGroups="true" />
+		            <Settings ShowPreview="true" />
+		            <SettingsPager Mode="ShowAllRecords" />
+	            </dx:ASPxGridView>
+
+
+
 			</td>
 			<td style="width: 50px">
 
@@ -561,7 +650,7 @@
 
 	<%--SQL Data Sources--%>
 	<asp:SqlDataSource ID="sqlS" runat="server" SelectCommandType="Text"  
-		SelectCommand="select ID from trk.vwMasterStatus_S2 where studyID=@studyID order by 1"
+		SelectCommand="select ID, subjID from trk.vwMasterStatus_S2 where studyID=@studyID order by 1"
 		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
 		<SelectParameters>
 			<asp:SessionParameter SessionField="studyID" Name="studyID" DbType="Int32" />
@@ -653,6 +742,12 @@
 		</SelectParameters>
 	</asp:SqlDataSource>
 
-	
+	<asp:SqlDataSource ID="sql_docs" runat="server" SelectCommandType="Text"  
+		SelectCommand="select * from vwDocVers where entitytypeid=4 and entityid=@subjid"
+		ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
+			<SelectParameters>
+				<asp:QueryStringParameter QueryStringField="subjid" Name="subjid" />
+			</SelectParameters>
+	</asp:SqlDataSource>
 
 </asp:Content>

@@ -136,7 +136,7 @@
 			//smtp.Host = "smtp.gmail.com";
 			//NetworkCredential networkCredential = new NetworkCredential("jeffmunson@gmail.com", "swerty!1");
 			smtp.Host = "smtp.uw.edu";
-			System.Net.NetworkCredential networkCredential = new System.Net.NetworkCredential("jeffmun@u.washington.edu", "0987!@KLm");
+			System.Net.NetworkCredential networkCredential = new System.Net.NetworkCredential("jeffmun@uw.edu", "098zxcPOI!");
 			smtp.EnableSsl = true;
 			smtp.UseDefaultCredentials = true;
 			smtp.Credentials = networkCredential;

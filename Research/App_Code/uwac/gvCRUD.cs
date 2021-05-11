@@ -32,10 +32,10 @@ namespace uwac
 			Debug.WriteLine(" ***** grid_OnRowInserting");
 			//ASPxGridView gv = (ASPxGridView)sender;
 
-			SQL_utils sql = new SQL_utils("KAWData");
+			SQL_utils sql = new SQL_utils("Data");
 
 			string gvname = gv.ClientInstanceName;
-			DxDbOps.BuildInsertSqlCode(e, gvname, "KAWData");
+			DxDbOps.BuildInsertSqlCode(e, gvname, "Data");
 
 			gv.JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 			gv.CancelEdit();
@@ -61,7 +61,7 @@ namespace uwac
 		{
 			//ASPxGridView gv = (ASPxGridView)sender;
 			string gvname = gv.ClientInstanceName;
-			DxDbOps.BuildDeleteSqlCode(e, gvname, "KAWData");
+			DxDbOps.BuildDeleteSqlCode(e, gvname, "Data");
 
 			gv.JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
 			gv.CancelEdit();

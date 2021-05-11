@@ -22,6 +22,10 @@ public class ProcessLog
 
     }
 
+    public int Numlogs()
+    {
+        return lognotes.Count;
+    }
 
     public void Log(string s)
     {

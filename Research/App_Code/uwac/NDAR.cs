@@ -689,6 +689,10 @@ namespace uwac
 
 			DataTable dse = NDAR.NDARDataStructureElements_to_DataTable(ds);
 
+
+
+
+
 			string results = "";
 			//lblInfo.Text = "nrow = {" + dse.Rows.Count.ToString() + "}";
 			SQL_utils sql = new SQL_utils();

@@ -758,6 +758,7 @@ public partial class Admin_StudyDesign : BasePage
 		else if (grid == "grid_MeasNotInAction") return "tblStudyMeasGroup";
 		else if (grid == "grid_tblsubjstatus") return "tblSS";
 		else if (grid == "grid_tblSSD") return "tblSSD";
+		else if (grid == "grid_tblstudydoc") return "tblStudyDoc";
 
 		else return "";
 	}

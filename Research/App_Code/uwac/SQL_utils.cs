@@ -1180,7 +1180,29 @@ namespace uwac
 			NonQuery_from_SQLstring(sSQL, ps);
 		}
 
-		
+		public string NonQuery_from_SQLstring_withReturnMsg(string sSQL)
+		{
+			SqlCommand oCmd = new SqlCommand();
+
+			oCmd.Connection = oSqlConn;
+			oCmd.CommandText = sSQL;
+			oCmd.CommandTimeout = 90;
+			oCmd.CommandType = CommandType.Text;
+
+			try
+			{
+				oCmd.ExecuteNonQuery();
+				return "OK";
+			}
+			catch (Exception exc)
+			{
+				string err = String.Format("An Error!NonQuery1 sql={0}", exc.Message);
+				return err;
+				//throw new System.Exception("An Error!NonQuery1 sql={" + sSQL + "}", exc);
+			}
+		}
+
+
 
 		public void NonQuery_from_ProcName(string sProc, SqlParameter myp)
 		{
@@ -1521,6 +1543,12 @@ namespace uwac
 							
 							if(dt_dest.ContainsColumnName(sourcecol.ColumnName))
 							{
+								
+								//Debug.WriteLine(String.Format(" source_type:{0} dest_type:{1} source_name:{2} dest_name:{3} ", 
+								//		, sourcecol.ColumnName));
+
+
+
 								Debug.WriteLine(String.Format(" sourcecol.Columnname: {0} ", sourcecol.ColumnName));
 								SqlBulkCopyColumnMapping bccm = new SqlBulkCopyColumnMapping();
 								bccm.DestinationColumn = sourcecol.ColumnName;
@@ -1545,6 +1573,18 @@ namespace uwac
 						bulkCopy.DestinationTableName = String.Format("[{0}].[{1}]", dest_schema, dest_tbl);
 
 						bulkCopy.BatchSize = 2000;
+
+						Debug.WriteLine("dt_source");
+						foreach (DataColumn col in dt_source.Columns)
+                        {
+							Debug.WriteLine(String.Format("{0} {1}", col.DataType, col.ColumnName));
+                        }
+						Debug.WriteLine("dt_dest");
+						foreach (DataColumn col in dt_dest.Columns)
+						{
+							Debug.WriteLine(String.Format("{0} {1}", col.DataType, col.ColumnName));
+						}
+
 
 						// Write from the source to the destination.
 						bulkCopy.WriteToServer(dt_source);
@@ -2131,9 +2171,10 @@ namespace uwac
 			cleanvalue = cleanvalue.Replace("DELETE", "/*D3L3T3*/");
 			cleanvalue = cleanvalue.Replace("INSERT", "/*INS3RT*/");
 			cleanvalue = cleanvalue.Replace("UPDATE", "/*UPD4T3*/");
+			cleanvalue = cleanvalue.Replace("'", "/*'*/");
 
-			//double the apostrophes
-			cleanvalue = cleanvalue.Replace("'", "''");
+			////double the apostrophes
+			//cleanvalue = cleanvalue.Replace("'", "~");
 
 			if (text == "*NULL*")
 			{

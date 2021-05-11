@@ -218,7 +218,7 @@ public partial class NDAR_NDARapi : System.Web.UI.Page
 	protected void SaveDSToDB(string shortname)
 	{
 		string results = NDAR.SaveToDB(shortname);
-
+		lblManualImport_results.Text = results;
 	}
 
 

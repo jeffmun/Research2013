@@ -39,12 +39,12 @@ namespace uwac
         public int doctypeid { get { return _doctypeid; } }
         public ProcessLog processing_results { get; set; }
 
-        private string _file;
-        private string _relative_file;
-        private string _origfilename;
-        private string _fileext;
-        private string _docfilename;
-        private int _doctypeid;
+        public string _file { get; set; }
+        public string _relative_file { get; set; }
+        public string _origfilename { get; set; }
+        public string _fileext { get; set; }
+        public string _docfilename { get; set; }
+        public int _doctypeid { get; set; }
 
         public bool FileExistsLocally()
         {
@@ -92,7 +92,7 @@ namespace uwac
         {
             if (docversid > 0)
             {
-                SQL_utils sql = new SQL_utils();
+                SQL_utils sql = new SQL_utils("backend");
 
                 DataTable dt_docversinfo = sql.DataTable_from_SQLstring(String.Format("select * from vwdocvers where docversid={0}", docversid));
 
@@ -106,11 +106,21 @@ namespace uwac
                         _doctypeid = Convert.ToInt32(row["doctypeid"].ToString());
                         _docfilename = row["docfilename"].ToString();
                     }
-                }
 
-                if (_fileext == ".xlsx" | _fileext == ".xls")
+
+                    if (_fileext.ToLower() == ".xlsx" | _fileext.ToLower() == ".xls")
+                    {
+                        ReadExcelFile(filepath, _docfilename);
+                    }
+                    else if (_fileext.ToLower() == ".csv")
+                    {
+                        ReadExcelFile(filepath, _docfilename);
+                    }
+
+                }
+                else
                 {
-                    ReadExcelFile(filepath, _docfilename);
+                    processing_results.Log(String.Format("ERROR: docversID {0} not in DB.", docversid));
                 }
 
             }
@@ -146,7 +156,21 @@ namespace uwac
 
                     if (dset != null)
                     {
-                        processing_results.Log(String.Format("Excel file contains {0} sheets.", dset.Tables.Count));
+                        if (_fileext.ToLower() == ".xlsx" | _fileext.ToLower() == ".xls")
+                        {
+                            processing_results.Log(String.Format("Excel file contains {0} sheets.", dset.Tables.Count));
+                        }
+                        else if (_fileext.ToLower() == ".csv")
+                        {
+                            if (dset.Tables.Count > 0)
+                            {
+                                processing_results.Log(String.Format("CSV file contains {0} rows.", dset.Tables[0].Rows.Count));
+                            }
+                            else
+                            {
+                                processing_results.Log(String.Format("CSV file not found."));
+                            }
+                        }
                     }
                 }
                 else

@@ -136,6 +136,21 @@ namespace uwac
 			}
 		}
 
+		public static void ChangeColumnIndex(this DataTable dt, string colname, int newindex)
+		{
+			int idx = -1;
+			foreach (DataColumn col in dt.Columns)
+			{
+				if(col.ColumnName==colname)
+                {
+					idx = col.Ordinal;
+                }
+			}
+
+			dt.Columns[idx].SetOrdinal(newindex);
+			dt.AcceptChanges();
+
+		}
 
 
 		public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
@@ -153,7 +168,7 @@ namespace uwac
 				// Get and convert the values of the old column, and insert them into the new
 				foreach (DataRow dr in dt.Rows)
 				{
-					if(dr[columnName] == DBNull.Value | dr[columnName].ToString()=="")
+					if(dr[columnName] == DBNull.Value | dr[columnName].ToString()=="" | dr[columnName].ToString() == "NaN")
 					{
 						dr[dc.ColumnName] = DBNull.Value;
 					}
@@ -267,6 +282,39 @@ namespace uwac
 			}
 		}
 
+		public static void RenameColumnsFromRowIndex(this DataTable dt, int rowidx, bool fixcolname)
+		{
+			DataRow row = dt.Rows[rowidx];
+
+			var rowvals = row.ItemArray.ToList();
+
+			for (int i = 0; i < dt.Columns.Count; i++)
+			{
+				string colname = dt.Columns[i].ColumnName;
+
+				if (colname.StartsWith("column"))
+				{
+					string newname = rowvals[i].ToString().ToLower();
+					if (fixcolname)
+					{
+						newname = newname.Replace(" ", "");
+						newname = newname.Replace("-", "");
+						newname = newname.Replace("#", "num");
+						newname = newname.Replace("%", "pct");
+						newname = newname.Replace("1", "one");
+						newname = newname.Replace("sleep/wake", "sleep0wake1");
+						newname = newname.Replace("s/w", "sw");
+						newname = newname.Replace("/", "_per_");
+					}
+
+					dt.RenameColumn(colname, newname);
+				}
+			}
+
+		}
+
+
+
 		public static void RenameColumn(this DataTable dt, string colname_from, string colname_to)
 		{
 
@@ -274,10 +322,58 @@ namespace uwac
 			{
 				if(col.ColumnName.ToLower() == colname_from.ToLower())
 				{
-					col.ColumnName = colname_to;
+					col.ColumnName = (colname_to != "") ? colname_to : colname_from;
 				}
 			}
 
+		}
+
+		public static void AddColumn(this DataTable dt, string columnNameToAdd, Type type)
+		{
+			if (!dt.ColumnNames().Contains(columnNameToAdd))
+			{
+				DataColumn col = new DataColumn(columnNameToAdd, type);
+				dt.Columns.Add(col);
+				dt.AcceptChanges();
+			}
+		}
+
+		public static void AddColumn(this DataTable dt, string columnNameToAdd, Type type, string defaultvalue)
+		{
+			if (!dt.ColumnNames().Contains(columnNameToAdd))
+			{
+				DataColumn col = new DataColumn(columnNameToAdd, type);
+				col.DefaultValue = defaultvalue;
+				dt.Columns.Add(col);
+				dt.AcceptChanges();
+			}
+		}
+
+
+		public static void AddColumn(this DataTable dt, string columnNameToAdd, Type type, int defaultvalue)
+		{
+			if (!dt.ColumnNames().Contains(columnNameToAdd))
+			{
+				DataColumn col = new DataColumn(columnNameToAdd, type);
+				col.DefaultValue = defaultvalue;
+				dt.Columns.Add(col);
+				dt.AcceptChanges();
+			}
+		}
+
+
+		public static void AddRowNumColumn(this DataTable dt)
+        {
+			DataColumn col = new DataColumn("rownum", typeof(int));
+			dt.Columns.Add(col);
+			dt.AcceptChanges();
+
+			int counter = 0;
+			foreach(DataRow row in dt.Rows)
+            {
+				row["rownum"] = counter;
+				counter++;
+            }
 		}
 
 
@@ -286,18 +382,35 @@ namespace uwac
 			//foreach(DataColumn col in dt.Columns)
 			//{
 			//	foreach (DataColumn col_to_match in dt_to_match.Columns)
+
+			List<string> dt_to_match_colnames = dt_to_match.ColumnNames();
+
+			//	foreach (DataColumn scol in dt_src.Columns)
+			//	{
+
 			for (int i=0; i < dt.Columns.Count; i++)
 			{
 				DataColumn col = dt.Columns[i];
+				string colname = col.ColumnName;
 
-				for (int j = 0; j < dt_to_match.Columns.Count; j++)
-				{
-					DataColumn col_to_match = dt_to_match.Columns[j];
-					if (col.ColumnName == col_to_match.ColumnName)
-					{
+				if(dt_to_match_colnames.Contains(colname))
+                {
+					DataColumn col_to_match = dt_to_match.Columns[colname];
+
+					if(col.DataType != col_to_match.DataType)
+                    {
 						ConvertColumnType(dt, col.ColumnName, col_to_match.DataType);
 					}
-				}	
+
+				}
+				//for (int j = 0; j < dt_to_match.Columns.Count; j++)
+				//{
+				//	DataColumn col_to_match = dt_to_match.Columns[j];
+				//	if (col.ColumnName == col_to_match.ColumnName)
+				//	{
+				//		ConvertColumnType(dt, col.ColumnName, col_to_match.DataType);
+				//	}
+				//}	
 			}
 		}
 
@@ -428,6 +541,47 @@ namespace uwac
             }
 			return dt;
         }
+
+		public static DataTable KeepColumns(this DataTable dt, List<string> cols_to_keep)
+        {
+			DataTable dtout = dt.Copy();
+			foreach (DataColumn dc in dt.Columns)
+			{
+				string colname = dc.ColumnName.ToLower();
+
+				if (cols_to_keep.Contains(colname))
+				{
+					//keep it
+				}
+				else
+				{
+					dtout.Columns.Remove(colname);
+				}
+			}
+
+			dtout.AcceptChanges();
+			return dtout;
+
+		}
+
+		//public static DataTable ConvertMatchingColumns(DataTable dt_src, DataTable dt_dst)
+		//{
+		//	//Matching columns will be converted to the data type present in the destination table: dt_dst
+		//	List<string> dst_colnames = dt_dst.ColumnNames();
+
+		//	foreach (DataColumn scol in dt_src.Columns)
+		//	{
+		//		string scolname = scol.ColumnName;
+		//		if (dst_colnames.Contains(scol.ColumnName))
+		//		{
+		//			DataColumn dcol = dt_dst.Columns[scol.ColumnName];
+
+		//			dt_src.ConvertColumnType(scolname, scol.DataType);
+		//		}
+		//	}
+
+		//	return dt_src;
+		//}
 
 		#endregion
 

@@ -121,7 +121,7 @@ public partial class Data_Dictionary: BasePage
 			", fielddatatype + (case when fielddatatype like '%char%' then coalesce('(' + cast(fielddatatypelength as varchar)+')',' NEEDS LENGTH!! ' + coalesce(cast(character_maximum_length as varchar),'') )  else '' end) " + Environment.NewLine +
 			" + (case  when fielddatatype <> data_type then ' <>TYPE!!' else '' end) " + Environment.NewLine +
 			" + (case  when fielddatatypelength<> character_maximum_length then ' <>' + cast(character_maximum_length as varchar) + ' [in DB]!!' else '' end ) as datatype " + Environment.NewLine +
-			" , fieldlabel, fieldvaluesetID " + Environment.NewLine +
+			" , fieldlabel, fieldvaluesetID, inanalysis, varorigin " + Environment.NewLine +
 			" ,'#'+cast(fieldvaluesetID as varchar) + ':<br/>' +  def.fnValueLabels_for_HtmlDisplay(fieldvaluesetID,'<br/>') valuelabels " + Environment.NewLine +
 			" , missval, a.fieldcodeID, fieldcode, a.fldextractionmode, fldextractionmode_txt, importposition, constString  " + Environment.NewLine +
 			" , (case when c.column_name is null then 'NOT IN SQL Table' else '' end) as fld_status, ExcludeFromNDARdict, ConvertFromLabelToValue " + Environment.NewLine +

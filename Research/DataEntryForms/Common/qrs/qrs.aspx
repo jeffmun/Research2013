@@ -22,7 +22,10 @@
     <def:datafieldcontrol runat="server" id="qrsrespt" DatabaseField="qrsrespt" IsEntryField="true" IsDoubleEntryField="false" FieldLabelWidth="200px" FieldTextBoxWidth="250px" FieldTextBoxMaxLength="50"></def:datafieldcontrol>
     <br /><br />
 </div>
-<div class="collection">
+    <table>
+        <tr>
+            <td>
+                <div class="collection">
     <div class="main">
         <def:datafieldcontrol runat="server" id="qrs01" DatabaseField="qrs01" IsEntryField="true" IsDoubleEntryField="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
         <def:datafieldcontrol runat="server" id="qrs02" DatabaseField="qrs02" IsEntryField="true" IsDoubleEntryField="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
@@ -47,7 +50,34 @@
     </div>
     <div class="key"><def:ValueSetLabel ID="ValueSetLabel_qrs01" runat="server"  DatabaseField="qrs01"  FontColor = "blue"></def:ValueSetLabel></div>
 </div>
+            </td>
+            <td style="padding-left:100px; vertical-align:top">
+                <table   style="padding:5px; margin-left:20px" class="main">
+<thead><b>Scoring Results</b></thead>
+<tr>
+    <td>
+    <def:datafieldcontrol runat="server" id="qrscc" DatabaseField="qrscc" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrscr" DatabaseField="qrscr" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrsdem" DatabaseField="qrsdem" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrsexs" DatabaseField="qrsexs" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrsfen" DatabaseField="qrsfen" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrsfsh" DatabaseField="qrsfsh" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrsmod" DatabaseField="qrsmod" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrspsx" DatabaseField="qrspsx" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrssac" DatabaseField="qrssac" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrssup" DatabaseField="qrssup" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrstot" DatabaseField="qrstot" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
+    <def:datafieldcontrol runat="server" id="qrsscrmsg" DatabaseField="qrsscrmsg" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="400px" FieldTextBoxHeight="40px" FieldTextBoxTextMode="multiline" FieldTextBoxMaxLength="250"></def:datafieldcontrol>
+    </td>
+</tr>
+</table>
+            </td>
+        </tr>
+    </table>
+
 <div class="collection">
+
+
     <div class="main">
         <def:datafieldcontrol runat="server" id="qrs21" DatabaseField="qrs21" IsEntryField="true" IsDoubleEntryField="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
         <def:datafieldcontrol runat="server" id="qrs22" DatabaseField="qrs22" IsEntryField="true" IsDoubleEntryField="true" FieldLabelWidth="400px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
@@ -121,25 +151,7 @@
     <div class="key"><def:ValueSetLabel ID="ValueSetLabel_qrs61" runat="server"  DatabaseField="qrs61"  FontColor = "blue"></def:ValueSetLabel></div>
 </div>
 <div class="main"><def:datafieldcontrol runat="server" id="qrsCMNT" DatabaseField="qrsCMNT" IsEntryField="true" IsDoubleEntryField="true" FieldLabelWidth="300px" FieldTextBoxWidth="400px" FieldTextBoxHeight="40px" FieldTextBoxTextMode="multiline" FieldTextBoxMaxLength="255"></def:datafieldcontrol></div>
-<table border="1" cellpadding="5" cellspacing="0" style="margin-left:20px" class="main">
-<thead>Scoring Results</thead>
-<tr>
-    <td>
-    <def:datafieldcontrol runat="server" id="qrscc" DatabaseField="qrscc" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrscr" DatabaseField="qrscr" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrsdem" DatabaseField="qrsdem" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrsexs" DatabaseField="qrsexs" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrsfen" DatabaseField="qrsfen" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrsfsh" DatabaseField="qrsfsh" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrsmod" DatabaseField="qrsmod" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrspsx" DatabaseField="qrspsx" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrssac" DatabaseField="qrssac" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrssup" DatabaseField="qrssup" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrstot" DatabaseField="qrstot" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="40px"></def:datafieldcontrol>
-    <def:datafieldcontrol runat="server" id="qrsscrmsg" DatabaseField="qrsscrmsg" IsReadOnly="true" RenderReadOnlyAsDiv="true" FieldLabelWidth="300px" FieldTextBoxWidth="400px" FieldTextBoxHeight="40px" FieldTextBoxTextMode="multiline" FieldTextBoxMaxLength="250"></def:datafieldcontrol>
-    </td>
-</tr>
-</table>
+
 </asp:panel>
 <div class="main">
     <br /><br />

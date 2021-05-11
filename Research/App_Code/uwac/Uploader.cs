@@ -80,6 +80,7 @@ namespace uwac
 		
 		public string origfilename{ get; set; }
 		public bool IsAllowed { get { return (allowedExts.Contains(fileext)) ? true : false;  } }
+		public string results { get; set; }
 
 		public UploadSettings(string myfilepath, string myfilename, UploadFiletype myuploadtype )
 		{
@@ -142,6 +143,32 @@ namespace uwac
 			
 		}
 
+
+
+
+		public string UnlogUpload()
+		{
+			try
+			{
+				SQL_utils sql = new SQL_utils("kawdata");
+				if (docID > 0)
+				{
+					sql.NonQuery_from_SQLstring(String.Format("delete from tbldoc where docID={0}", docID));
+				}
+				if (docversID > 0)
+				{
+					sql.NonQuery_from_SQLstring(String.Format("delete from def.DataUpload where docversID={0}", docversID));
+					sql.NonQuery_from_SQLstring(String.Format("delete from tbldocvers where docversID={0}", docversID));
+				}
+				return "File not logged.";
+			}
+			catch (Exception ex)
+			{
+				return "Unlogging Error.";
+			}
+		}
+
+
 		public bool Update_DocFileName()
 		{
 			try
@@ -176,40 +203,44 @@ namespace uwac
 			//Insert Doc
 			docID = DxDbOps.InsertSqlCode_ReturnPK(newvalues, "tblDoc", "backend", "dbo", "DocID");
 
-			newvalues.Add("DocID", docID);
-
-			//Insert DocVers
-			docversID = DxDbOps.InsertSqlCode_ReturnPK(newvalues, "tblDocVers", "backend", "dbo", "DocVersID");
-
-			//Insert entity link - we link this DocID to this MeasureID
-			SQL_utils sql = new SQL_utils("backend");
-
-			string sql_doc = String.Format("select docID from tbldoc where doctitle='{0}' and created > dateadd(minute, -3, getdate())", doctitle);
-			string sql_docvers = String.Format("select docversID from tbldocvers where origfilename='{0}' and docID={1} and created > dateadd(minute, -3, getdate())"
-				, origfilename, docID);
-
-			int thisDocID = sql.IntScalar_from_SQLstring(sql_doc);
-			int thisDocVersID = sql.IntScalar_from_SQLstring(sql_docvers);
-
-
-			string fk_code = String.Format("insert into tblDocFK(DocID, EntitytypeID, EntityID) values({0}, {1}, {2})"
-				, thisDocID, (int)linked_entitytype, linked_entityID);
-
-			if (thisDocID == docID & thisDocVersID == docversID)
+			if (docID > 0)
 			{
+				newvalues.Add("DocID", docID);
 
-				docfilename = String.Format("DocVersID_{0}{1}", docversID, fileext);
-				sql.NonQuery_from_SQLstring(fk_code);
-				sql.Close();
+				//Insert DocVers
+				docversID = DxDbOps.InsertSqlCode_ReturnPK(newvalues, "tblDocVers", "backend", "dbo", "DocVersID");
 
-				return docversID;
+				//Insert entity link - we link this DocID to this MeasureID
+				SQL_utils sql = new SQL_utils("backend");
+
+				string sql_doc = String.Format("select docID from tbldoc where doctitle='{0}' and created > dateadd(minute, -3, getdate())", doctitle);
+				string sql_docvers = String.Format("select docversID from tbldocvers where origfilename='{0}' and docID={1} and created > dateadd(minute, -3, getdate())"
+					, origfilename, docID);
+
+				int thisDocID = sql.IntScalar_from_SQLstring(sql_doc);
+				int thisDocVersID = sql.IntScalar_from_SQLstring(sql_docvers);
+
+
+				string fk_code = String.Format("insert into tblDocFK(DocID, EntitytypeID, EntityID) values({0}, {1}, {2})"
+					, thisDocID, (int)linked_entitytype, linked_entityID);
+
+				if (thisDocID == docID & thisDocVersID == docversID)
+				{
+
+					docfilename = String.Format("DocVersID_{0}{1}", docversID, fileext);
+					sql.NonQuery_from_SQLstring(fk_code);
+					sql.Close();
+
+					return docversID;
+				}
+				else
+				{
+					sql.Close();
+
+					return -1;
+				}
 			}
-			else{
-				sql.Close();
-
-				return -1;
-			}
-
+			return -1;
 
 		}
 

@@ -812,21 +812,42 @@
 	<table>
 		<tr>
 			<td>
-				
+				<asp:Label ID="Label5" runat="server" Text="Subject Documents" Font-size="Medium"  Font-Bold="true"></asp:Label>
+				<br />
+					<dx:ASPXGridView ID="grid_tblstudydoc" runat="server" ClientInstanceName="grid_tblstudydoc"   DataSourceID="sql_StudyDoc"
+						AutoGenerateColumns="false"  AllowAddingRecords="true" AllowSorting="true" ShowFooter="false" 
+							   KeyFieldName="studydocid"
+						 Settings-ShowHeaderFilterButton="true"  
+						OnRowInserting="dxgrid_OnRowInserting" OnRowUpdating="dxgrid_OnRowUpdating" OnRowDeleting="dxgrid_OnRowDeleting"  >
+						<ClientSideEvents EndCallback="OnEndCallBack" />
+						<SettingsBehavior AllowSelectByRowClick="true"  />
+						<SettingsPager  Mode="ShowAllRecords"></SettingsPager>
+
+						<Columns>
+							<dx:GridViewDataTextColumn FieldName="studydocid" Caption="sdID" Width="30"  ReadOnly="true" Settings-AllowHeaderFilter="false" CellStyle-ForeColor="Silver" EditFormSettings-Visible="false">
+								 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>
+							<dx:GridViewDataColumn FieldName="studyID" Width="80" ReadOnly="true" Visible="false"></dx:GridViewDataColumn>
+
+                           <dx:GridViewDataComboBoxColumn FieldName="doctypeid" Caption="Doc Type"  Width="220">
+								<PropertiesComboBox TextField="doctype" ValueField="doctypeid" DataSourceID='sql_DocType'  />
+							</dx:GridViewDataComboBoxColumn>
+							<dx:GridViewDataComboBoxColumn FieldName="timepointid" Caption="Timept" Width="60" Visible="true"  >
+								<PropertiesComboBox TextField="timepoint_text" ValueField="timepointID" DataSourceID='sql_Timepoint'  />
+							</dx:GridViewDataComboBoxColumn>
+					<%--		<dx:GridViewDataTextColumn FieldName="entitytype" Caption="Entity Type"  Width="140">
+								 <PropertiesTextEdit Style-CssClass="invisible"></PropertiesTextEdit>
+							</dx:GridViewDataTextColumn>--%>
+
+							<dx:GridViewCommandColumn ShowDeleteButton="true" ShowEditButton="false"  ShowNewButtonInHeader="true" />
+						</Columns>
+
+					</dx:ASPXGridView>
+
 			</td>
-			<td style="width:50px"></td>
-			<td>
-			</td>
+
 		</tr>
 
-		<tr>
-			<td style="vertical-align:top">
-			
-		</td>
-						<td style="width:50px"></td>
-
-		
-		</tr>
 	</table>
 
 			
@@ -1112,7 +1133,17 @@
 	</asp:SqlDataSource>
 
 
-	
+			<asp:SqlDataSource ID="sql_StudyDoc" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select 'studydoc' objtype, studydocid objpk, * from vwstudydoc where studyID = @studyID order by entitytype  ">
+			<SelectParameters>
+				<asp:SessionParameter SessionField="master_studyID" Name="studyID" Type="Int32" />
+			</SelectParameters> 
+	</asp:SqlDataSource>
+
+
+	    	<asp:SqlDataSource ID="sql_DocType" runat="server" SelectCommandType="Text" ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
+				SelectCommand="select doctypeid, doctype from tbldoctype_lkup where entitytypeID in (4,6) order by sortorder">
+	</asp:SqlDataSource>
 
 </asp:Content>
 

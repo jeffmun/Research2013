@@ -223,6 +223,7 @@
 					<dx:GridViewDataTextColumn FieldName="valuelabels" Caption="Value Labels</br><i>(click to edit)</i>"
 						PropertiesTextEdit-EncodeHtml="false" CellStyle-ForeColor="Gray" Width="150px"></dx:GridViewDataTextColumn>
 					
+					<dx:GridViewDataColumn FieldName="inanalysis" Caption="In Analysis?" Visible="true" ></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fieldcode" Caption="Special code" Visible="true" ></dx:GridViewDataColumn>
 					<dx:GridViewDataColumn FieldName="fld_status" Caption="Status" Visible="true" ></dx:GridViewDataColumn>
 					
@@ -241,7 +242,7 @@
 					<Items>
 						<dx:GridViewColumnLayoutItem ColumnName="fldname" ColumnSpan="1" Width="300px" />
 						<%--Field Settings--%>
-						<dx:GridViewLayoutGroup ColCount="4" ColumnSpan="1" Caption="Field settings"   Width="600px" >
+						<dx:GridViewLayoutGroup ColCount="6" ColumnSpan="1" Caption="Field settings"   Width="1000px" >
 							<Items>
 
 								<dx:GridViewColumnLayoutItem ColumnName="ord_pos"  ColumnSpan="1"/>
@@ -260,6 +261,24 @@
 								</dx:GridViewColumnLayoutItem>
 								<dx:GridViewColumnLayoutItem ColumnName="fielddatatypelength" Caption="Length" ColumnSpan="1"/>
 								<dx:GridViewColumnLayoutItem ColumnName="missval" Caption="Miss Val" ColumnSpan="1"/>
+																<dx:GridViewColumnLayoutItem ColumnName="inanalysis" Caption="Var Type for Analyses" ColumnSpan="1">
+									<Template>
+											<dx:ASPxComboBox ID="cboinanalysis" runat="server"   Value='<%# Bind("inanalysis") %>' ValueType="System.Int32"   Width="125px"
+												 DataSourceID="sql_analysisvartype" TextField="analysisvartype" ValueField="analysisvartypeid">
+										</dx:ASPxComboBox>
+									</Template>
+								</dx:GridViewColumnLayoutItem>
+								<dx:GridViewColumnLayoutItem ColumnName="varorigin" Caption="Origin of variable" ColumnSpan="1">
+									<Template>
+										<dx:ASPxComboBox ID="cbovarorigin" runat="server" Text='<%# Bind("varorigin") %>' Width="95px" >
+											<Items>
+												<dx:ListEditItem Value="static" />
+												<dx:ListEditItem Value="calc in qry" />
+												<dx:ListEditItem  Value="calc via syntax" />
+											</Items>
+										</dx:ASPxComboBox>
+									</Template>
+								</dx:GridViewColumnLayoutItem>
 							</Items>
 						</dx:GridViewLayoutGroup>
 
@@ -378,6 +397,10 @@
 	</dx:ASPxPopupControl>
 
 
+		<asp:SqlDataSource ID="sql_analysisvartype" runat="server" SelectCommandType="Text"  
+		SelectCommand="select * from tblanalysisvartype_lkup"
+		ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>" >
+	</asp:SqlDataSource>
 
 
 	<asp:SqlDataSource ID="sqlMeas" runat="server" SelectCommandType="Text"  

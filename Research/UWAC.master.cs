@@ -395,6 +395,14 @@ public partial class UWAC : System.Web.UI.MasterPage
 
 
 
+	public void HideHeaderAndFooter()
+	{
+		tblBody.Visible = false;
+		dxMenu.Visible = false;
+		divFooter.Visible = false;
+	}
+
+
 	/// <summary>
 	/// New from Jeff - incorporating the Default StudyID
 	/// </summary>

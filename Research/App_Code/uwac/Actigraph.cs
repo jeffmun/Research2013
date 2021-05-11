@@ -50,7 +50,7 @@ public static class Actigraph
 
 		for (int i = 0; i < markers.Count; i++)
 		{
-			int smID = markers[i].studymeasID;
+			int smID = 0; // markers[i].studymeasID;
 
 			if (smID > 0)
 			{

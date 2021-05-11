@@ -42,6 +42,16 @@ namespace uwac
 			}
 		}
 
+		public Datadictionary(string tblname)
+		{
+			SQL_utils sql = new SQL_utils("data");
+			measureid = sql.IntScalar_from_SQLstring(String.Format("select measureid from def.tbl where tblname='{0}'", tblname));
+			Initialize();
+
+			dt_ndardict = GetNDARDatadictionaryFromDB();
+			dt_dict = GetDatadictionaryFromDB();
+		}
+
 		public Datadictionary(int mymeasureID)
 		{
 			measureid = mymeasureID;
@@ -89,6 +99,30 @@ namespace uwac
 		}
 
 
+		public string Fldname_in_REDCap_TO_fldname(string redcapfld)
+        {
+			var fldname = dt_dict.AsEnumerable()
+					.Where(f => f.Field<string>("fldname_in_redcap").ToLower() == redcapfld.ToLower())
+					.Select(f => f.Field<string>("fldname")).ToList();
+			if (fldname.Count == 1)
+			{
+				return fldname[0].ToString();
+			}
+			return null;
+		}
+
+		public string Fldname_TO_fldname_in_REDCap(string myfldname)
+		{
+			var fldname = dt_dict.AsEnumerable()
+					.Where(f => f.Field<string>("fldname").ToLower() == myfldname.ToLower())
+					.Select(f => f.Field<string>("fldname_in_redcap")).ToList();
+			if (fldname.Count == 1)
+			{
+				return fldname[0].ToString();
+			}
+			return null;
+		}
+
 		public DataTable GetDatadictionaryFromDB()
 		{
 			DataTable dt = new DataTable();
@@ -102,6 +136,8 @@ namespace uwac
 				"    when importfiletype={0} and fldextractionmode={1} then constString  " + Environment.NewLine +
 				"    when importfiletype={0} and fldextractionmode={2} then fldname " + Environment.NewLine +
 				" else '' end) fldname_in_redcap " + Environment.NewLine +
+				" , inanalysis " + Environment.NewLine +
+				" , varorigin " + Environment.NewLine +
 				" from def.Fld a " + Environment.NewLine +
 				" JOIN def.Tbl b ON a.tblpk = b.tblpk" + Environment.NewLine +
 				" LEFT JOIN (select table_name, column_name from INFORMATION_SCHEMA.COLUMNS ) c ON b.tblname = c.table_name and a.fldname = c.column_name " + Environment.NewLine +
@@ -116,6 +152,8 @@ namespace uwac
 				measname = sql.StringScalar_from_SQLstring("select measname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
 				//measfullname = sql.StringScalar_from_SQLstring("select measfullname from uwautism_research_backend..tblMeasure where measureID=" + measureid.ToString());
 
+				tblname = sql.StringScalar_from_SQLstring("select tblname from uwautism_research_data.def.tbl where measureID=" + measureid.ToString());
+
 
 				dt = sql.DataTable_from_SQLstring(code);
 
@@ -124,6 +162,58 @@ namespace uwac
 			return dt;
 		}
 
+		public DataTable GetAnalysisVars(int studyid)
+        {
+			if(dt_dict.HasRows())
+            {
+				int x = 0;
+				var qry = dt_dict.AsEnumerable().Where(f => f.Field<int>("inanalysis") > 0).Select(f => new
+				{
+					ord_pos = f.Field<double>("ord_pos"),
+					fldname = f.Field<string>("fldname").ToLower(),
+					fieldlabel = f.Field<string>("fieldlabel")
+				});
+
+				DataTable dt_analysisvars = CustomLINQtoDataSetMethods.CustomCopyToDataTable(qry);
+				return dt_analysisvars;
+			}
+			return null;
+        }
+
+		public string CreateSQLCode_to_pivot_Analysis_Vars(int studyid)
+        {
+			DataTable dt = GetAnalysisVars(studyid);
+
+			List<string> var_sqlcode = new List<string>();
+			int counter = 0;
+			foreach(DataRow row in dt.Rows)
+            {
+				counter++;
+				var_sqlcode.Add( String.Format(" select id, studymeasid, cast({0} as varchar) as value, '{0}' as variable, '{1}' as variablelabel, {2} as ord_pos from {3} ",			
+					row["fldname"].ToString(), row["fieldlabel"], row["ord_pos"], tblname   ));
+			}
+
+			var result = String.Join(" union ", var_sqlcode);
+
+			result = String.Format("select x.*, dense_rank() over(order by ord_pos) varnum, studymeasname, replace(studymeasname , 'sleepdiary_', '') studymeasname2 , timepoint, timepoint_text, timepointid from ({0}) x  " +
+				" join (select studymeasid, studymeasname , timepoint, timepoint_text, timepointid from uwautism_research_backend..vwstudymeas where studyid ={1}) y " + 
+				" ON x.studymeasid=y.studymeasid ", result, studyid);
+
+			return result;
+        }
+
+		public DataTable GetAnalysisVars_as_StackedDatatable(int studyid, string id)
+        {
+			string sqlcode = CreateSQLCode_to_pivot_Analysis_Vars(studyid);
+
+			SQL_utils sql = new SQL_utils("data");
+
+			string whereclause = (id != "") ? String.Format(" and id = '{0}'", id) : "";
+
+			DataTable dt = sql.DataTable_from_SQLstring(String.Format("{0}{1}", sqlcode, whereclause));
+
+			return dt;
+		}
 
 
 		public DataTable GetDatadictionaryFromDB_forStudy(int studyID)

@@ -41,17 +41,17 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 		bool isCallback = IsCallback;
 		bool isPostback = IsPostBack;
 
-		if(Request.QueryString["subjID"] != null)
+		if(Request.QueryString["subjid"] != null)
 		{
 			SQL_utils sql = new SQL_utils("backend");
-			string theID =  sql.StringScalar_from_SQLstring("select id from tblsubject where subjID=" + Request.QueryString["subjID"]);
+			string theID =  sql.StringScalar_from_SQLstring("select id from tblsubject where subjID=" + Request.QueryString["subjid"]);
 			Session["ID"] = theID;
 			//cboID.Value = theID;
 			ID = theID;
 
 			lblID.Text = theID;
 
-			int newstudyID = sql.IntScalar_from_SQLstring("select studyID from vwMasterStatus_S where subjID=" + Request.QueryString["subjID"]);
+			int newstudyID = sql.IntScalar_from_SQLstring("select studyID from vwMasterStatus_S where subjID=" + Request.QueryString["subjid"]);
 
 			if(newstudyID != Master.Master_studyID)
 			{
@@ -230,7 +230,7 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 
 		if (dt.Rows.Count > 0)
 		{
-			string subjid = dt.AsEnumerable().Select(t => t.Field<int>("subjID")).First().ToString();
+			string subjid = dt.AsEnumerable().Select(t => t.Field<int>("subjid")).First().ToString();
 			string id = dt.AsEnumerable().Select(t => t.Field<string>("ID")).First().ToString();
 			string ss = dt.AsEnumerable().Select(t => t.Field<string>("subjstatus") == null ? string.Empty : t.Field<string>("subjstatus")).First().ToString();
 			string ssd = dt.AsEnumerable().Select(t => t.Field<string>("subjstatusdetail") == null ? string.Empty : t.Field<string>("subjstatusdetail")).First().ToString();
@@ -300,7 +300,7 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 		SQL_utils sql = new SQL_utils("backend");
 
 		List<SqlParameter> ps = new List<SqlParameter>();
-		ps.Add(sql.CreateParam("subjID", hidSubjID.Value.ToString(), "int"));
+		ps.Add(sql.CreateParam("subjid", hidSubjID.Value.ToString(), "int"));
 		ps.Add(sql.CreateParam("Notes", txtNotes.Text.ToString(), "text"));
 		ps.Add(sql.CreateParam("ssID", cboSS.Value.ToString(), "int"));
 		ps.Add(sql.CreateParam("ssdID", cboSSD.Value.ToString(), "int"));
@@ -538,15 +538,65 @@ public partial class Track_Subject : BasePage // System.Web.UI.Page
 			int hhid = sql.IntScalar_from_SQLstring("select householdID from vwMasterStatus_S where ID='" + Request.QueryString["ID"] + "' and studyID=" + Master.Master_studyID.ToString());
 			Response.Redirect("~/Tracking/Household2.aspx?hhID=" + hhid.ToString());
 		}
-		else if (Request.QueryString["subjID"] != null)
+		else if (Request.QueryString["subjid"] != null)
 		{
-			int hhid = sql.IntScalar_from_SQLstring("select householdID from vwMasterStatus_S where subjID='" + Request.QueryString["subjID"] + "' and studyID=" + Master.Master_studyID.ToString());
+			int hhid = sql.IntScalar_from_SQLstring("select householdID from vwMasterStatus_S where subjID='" + Request.QueryString["subjid"] + "' and studyID=" + Master.Master_studyID.ToString());
 			Response.Redirect("~/Tracking/Household2.aspx?hhID=" + hhid.ToString());
 		}
 
 	}
 
 
+
+
+	#region Upload
+
+	protected void keyFieldLink_Init(object sender, EventArgs e)
+	{
+		ASPxHyperLink link = sender as ASPxHyperLink;
+		GridViewDataItemTemplateContainer container = link.NamingContainer as GridViewDataItemTemplateContainer;
+
+		link.Text = container.Text; // + container.KeyValue;
+		link.Target = "_blank";
+		link.NavigateUrl = "~/Library/Doc.aspx?dvID=" + container.KeyValue;
+	}
+
+	protected void gridDocs_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
+	{
+		var x = e;
+
+		bool results_docVers = DxDbOps.BuildUpdateSqlCode(e, "tblDocVers", "backend");
+
+
+		OrderedDictionary oldvals = e.OldValues;
+		OrderedDictionary newvals = e.NewValues;
+		OrderedDictionary keys = new OrderedDictionary();
+		keys.Add("DocID", oldvals["DocID"]);
+
+		bool results_doc = DxDbOps.BuildUpdateSqlCode(keys, newvals, oldvals, "tblDoc", "backend");
+
+
+		//LoadDocs(Request.QueryString["ID"]);
+
+		e.Cancel = true;
+		gridDocs.CancelEdit();
+
+		//		gridDocs.EndUpdate();
+
+	}
+
+	public int GetSubjid(string id)
+	{
+		SQL_utils sql = new SQL_utils("backend");
+		int subjid = sql.IntScalar_from_SQLstring(
+			String.Format("select subjid from trk.vwMasterStatus_S where id='{0}' and studyID={1}"
+			, id, Master.Master_studyID));
+		sql.Close();
+		return subjid;
+	}
+
+
+	#endregion
 
 
 }

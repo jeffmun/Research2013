@@ -56,6 +56,7 @@
 					<asp:Button ID="btnSave" runat="server" Text="Re-import NDAR Data Structures" OnClick="btnSave_Click" Enabled="false"  Visible="false"/>
 				<dx:ASPxTextBox ID="txtShortName" runat="server" Caption="NDAR Short Name:" CaptionSettings-Position="Top" Text=""></dx:ASPxTextBox>
 					<asp:Button ID="btnManualImport" runat="server" Text="Import NDAR Data Structure" OnClick="btnManualImport_Click" Enabled="true" />
+				<dx:ASPxLabel ID="lblManualImport_results" runat="server" Text="" ForeColor="Blue"></dx:ASPxLabel>
 			</td>
 			<td>
 				<asp:Label ID="lblInstructions" runat="server" Text="Instructions:" Font-Bold="true" Font-Size="XX-Small"></asp:Label>

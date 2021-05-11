@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Data;
 using System.Linq;
 using System.Web;
@@ -17,7 +18,11 @@ namespace uwac_REDCap
 		public string tblname { get; set; }
 		public string idvarname { get; set; }
 		public List<int> studymeasids { get; set; }
-		public List<string> resultslog { get; set; }
+
+		public List<string> matching_ids { get; set; }
+		public ProcessLogs logs { get; set; }
+
+		public ProcessLog resultslog { get; set; }
 		public List<string> ids_not_in_DB { get; set; }
 		private REDCap redcap;
 
@@ -25,79 +30,185 @@ namespace uwac_REDCap
 
 		private DataTable _dtRC;
 
+		public DataTable dtRC_postProcess { 
+			get {
+				_dtRC.Columns["isready"].SetOrdinal(0);
+				return _dtRC; } }
+
 		private bool readyForInsert;
 
 		public REDCapDataImport(REDCap myredcap, string formname, int mystudyid, bool mycommitToDB)
 		{
-			resultslog = new List<string>();
+			logs = new ProcessLogs();
+
+			resultslog = new ProcessLog("Import from REDCap");
+			ProcessLog matchingrowslog = new ProcessLog("Matching Rows");
+			matching_ids = new List<string>();
+
+			logs.AddLog(resultslog);
+			logs.AddLog(matchingrowslog);
 			ids_not_in_DB = new List<string>();
-			resultslog.Add(String.Format("BEGIN processing REDCap form: <b>{0}</b>", formname));
+			resultslog.Log(String.Format("BEGIN processing REDCap form: <b>{0}</b>", formname));
 
 			commitToDB = mycommitToDB;
 			redcap = myredcap;
 			studyid = mystudyid;
 			_dtRC = redcap.DataFromForm(formname);
-			DataColumn col1 = new DataColumn("isvalidid", typeof(int));
-			DataColumn col2 = new DataColumn("isready", typeof(string));
-			_dtRC.Columns.Add(col1);
-			_dtRC.Columns.Add(col2);
+
+			_dtRC.AddColumn("isvalidid", typeof(int));
+			_dtRC.AddColumn("isready", typeof(string));
+
 			_dtRC = redcap.AddStudymeasToREDCapFormData(_dtRC);
 			readyForInsert = false;
-			idvarname = "record_id";
-			
+
+
+			SQL_utils sql = new SQL_utils("data");
+			//idvarname = "record_id";
+			idvarname = redcap.REDCap_id_fldname_for_DB(sql, formname, studyid);
+
+
 			if (_dtRC.HasRows())
 			{
-				resultslog.Add(String.Format("{0} records present in REDCap", _dtRC.Rows.Count));
+				resultslog.Log(String.Format("{0} records present in REDCap", _dtRC.Rows.Count));
 
-				SQL_utils sql = new SQL_utils("data");
 				CheckValidityOfAllIDs(sql);
 
 				int smid = _dtRC.AsEnumerable().Select(f => f.Field<int>("studymeasid")).First();
 
 				tblname = sql.StringScalar_from_SQLstring(String.Format("select tblname from def.tbl where measureid=(select measureid from uwautism_research_backend..tblstudymeas where studymeasid={0})", smid));
 
-				string sqlcode = String.Format("select * from {0} where studymeasid in (select studymeasid from uwautism_research_backend..tblstudymeas where studyid={1})", tblname, studyid);
+				Datadictionary dict = new Datadictionary(tblname);
+				RenameREDCapColumns(dict);
 
+				string sqlcode = String.Format("select * from {0} where studymeasid in (select studymeasid from uwautism_research_backend..tblstudymeas where studyid={1})", tblname, studyid);
 				DataTable dt_inDB = sql.DataTable_from_SQLstring(sqlcode);
 				dt_inDB.ColumnNamesToLower();
 
-				if (dt_inDB.HasRows())
+				int nrows_dt_inDB = (dt_inDB.HasRows()) ? dt_inDB.Rows.Count : 0;
+
+
+				//Here Apr 27 2021
+				CheckForRowMatch(sql, dt_inDB, dict);
+
+
+				//// Compare Rows that are already in the DB
+				//if (dt_inDB.HasRows())
+				//{
+				//	nrows_dt_inDB = dt_inDB.Rows.Count;
+				//	studymeasids = _dtRC.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Distinct().ToList();
+				//	foreach (DataRow row in _dtRC.Rows)
+				//	{
+				//		string row_all_match = CheckREDCapData_by_row(sql, row, dt_inDB, dict);
+				//	}
+				//}
+
+				//Handle rows that are not in the DB already.  Make sure they have enough valid values 
+				if (nrows_dt_inDB < _dtRC.Rows.Count) //There are more rows in REDCap than in the UWAC DB
 				{
-					studymeasids = _dtRC.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Distinct().ToList();
+					//No rows
+					//Mark row "ready" if isvalidid = 1, the row is not in DB, and the row contains valid data 
+
+					List<string> ids_in_db = dt_inDB.AsEnumerable().Select(f => f.Field<string>("id").ToUpper()).Distinct().ToList();
+
 					foreach (DataRow row in _dtRC.Rows)
 					{
-						CheckREDCapData_by_row(sql, row, dt_inDB);
+						if (row["isvalidid"].ToString() != "1")
+						{
+							row["isready"] = "NotReady: ID not in DB";
+						}
+						else if (row["isvalidid"].ToString() == "1") //(row["isready"].ToString() == "ready")
+						{
 
+							if (!ids_in_db.Contains(row["record_id"].ToString().ToUpper()))
+							{
+								bool isready = CheckREDCapData_that_row_contains_data(sql, row, .20f); //Needs 20% valid fields
+								if (isready) row["isready"] = "ready";
+								else if (!isready) row["isready"] = "NotReady: too much missing data";
+							}
+						}
 					}
 				}
-                else
-                {
-					//No rows
-					//Mark all rows "ready" if isvalidid = 1
-					foreach(DataRow row in _dtRC.Rows)
-                    {
-						if (row["isvalidid"].ToString() == "1") row["isready"] = "ready";
-                    }
-                }
 
-				int n_multrecs = _dtRC.AsEnumerable().Where(f => f.Field<string>("isready") == "multiple records").Count();
-				if (n_multrecs > 0) resultslog.Add(String.Format("<b>WARNING:</b> {0} records with MULTIPLE RECORDS", n_multrecs));
+				matchingrowslog.Log(String.Join(",", matching_ids.Distinct()));
+
+				List<string> ids_with_mult_recs = _dtRC.AsEnumerable().Where(f => f.Field<string>("isready") == "multiple records")
+					.Select(f => f.Field<string>("id")).Distinct().ToList();
+				int n_multrecs = ids_with_mult_recs.Count();
+				if (n_multrecs > 0) resultslog.Log(String.Format("<b>WARNING:</b> {0} records with MULTIPLE RECORDS [{1}]", n_multrecs
+					, String.Join(", ", ids_with_mult_recs)));
 
 				int n_tocompare = _dtRC.AsEnumerable().Where(f => f.Field<string>("isready") == "need to compare values").Count();
-				if (n_tocompare > 0) resultslog.Add(String.Format("INFO: {0} records already exist in DB, NEED TO COMPARE VALUES", n_tocompare));
+				if (n_tocompare > 0) resultslog.Log(String.Format("INFO: {0} records already exist in DB, NEED TO COMPARE VALUES", n_tocompare));
 
 				int n_ready = _dtRC.AsEnumerable().Where(f => f.Field<string>("isready") == "ready").Count();
-				if (n_ready > 0) resultslog.Add(String.Format("PASS: Ready to insert {0} records into {1}", n_ready, tblname));
-				else if (n_ready == 0) resultslog.Add(String.Format("INFO: 0 records are Ready to insert into {1}", n_ready, tblname));
+				List<string> ready_ids = _dtRC.AsEnumerable().Where(f => f.Field<string>("isready") == "ready").Select(f => f.Field<string>("id")).ToList();
 
+
+				if (n_ready > 0)
+				{
+					resultslog.Log(String.Format("PASS: Ready to insert {0} records into {1} <br/>=> {2}", n_ready, tblname, String.Join(",", ready_ids.Distinct())));
+				}
+				else if (n_ready == 0) resultslog.Log(String.Format("INFO: 0 records are Ready to insert into {1}", n_ready, tblname));
 
 
 				if (commitToDB)
 				{
-					if(n_ready > 0) InsertREDCapData();
+
+
+					if (n_ready > 0)
+					{
+
+						InsertREDCapData();
+					}
+				}
+				else
+				{
+					resultslog.Log(String.Format("** Check 'Save to DB?' to save these {0} records. **", n_ready));
+				}
+			}
+			else
+			{
+				resultslog.Log(String.Format("WARNING: 0 records present in REDCap"));
+			}
+		
+			sql.Close();
+		}
+
+
+		private void CheckForRowMatch(SQL_utils sql, DataTable dt_inDB, Datadictionary dict)
+        {
+			//Here Apr 27 2021
+			// Compare Rows that are already in the DB
+			if (dt_inDB.HasRows())
+			{
+				int nrows_dt_inDB = dt_inDB.Rows.Count;
+				studymeasids = _dtRC.AsEnumerable().Select(f => f.Field<int>("studymeasid")).Distinct().ToList();
+				foreach (DataRow row in _dtRC.Rows)
+				{
+					string row_all_match = CheckREDCapData_by_row(sql, row, dt_inDB, dict);
 				}
 			}
 		}
+
+
+
+
+
+		private void RenameREDCapColumns(Datadictionary dict)
+        {
+			int x = 0;
+
+			foreach(DataColumn col in _dtRC.Columns)
+            {
+				string newcolname = dict.Fldname_in_REDCap_TO_fldname(col.ColumnName);
+				if (newcolname != null)
+				{
+					Debug.WriteLine(String.Format("fldname_in_redcap={0}   fldname={1}    ", col.ColumnName.ToLower(), newcolname.ToString()));
+					_dtRC.RenameColumn(col.ColumnName, newcolname);
+				}
+			}
+        }
+
 
 
 
@@ -106,17 +217,22 @@ namespace uwac_REDCap
 			DataTable dtready = _dtRC.AsEnumerable().Where(f => f.Field<string>("isready") == "ready").CopyToDataTable();
 
 			DataColumn col = new DataColumn("verified", typeof(int));
-			col.DefaultValue = 1;
+			col.DefaultValue = 0;
 			dtready.Columns.Add(col);
 
 			SQL_utils sql = new SQL_utils("data");
 
+			resultslog.Log("INFO: Attempting to match data types");
+			DataTable dt_dest = sql.DataTable_from_SQLstring(String.Format("select * from {0} where 1=2", tblname));
+
+			dtready.MatchColumnDataTypes(dt_dest);
+
 			try
 			{
 				string insertresults = sql.BulkInsert(dtready, tblname);
-				resultslog.Add(insertresults);
+				resultslog.Log(insertresults);
 
-				//resultslog.Add(String.Format("SUCCESS: inserted {0} rows of data into {1}", dtready.Rows.Count, tblname));
+				//resultslog.Log(String.Format("SUCCESS: inserted {0} rows of data into {1}", dtready.Rows.Count, tblname));
 				if(!insertresults.Contains("Error"))
                 {
 					UpdateTrackingDB(dtready);
@@ -125,7 +241,7 @@ namespace uwac_REDCap
 			}
 			catch(Exception ex )
             {
-				resultslog.Add(String.Format("FAILED to insert data into {0} (# rows = {1})", tblname, dtready.Rows.Count));
+				resultslog.Log(String.Format("FAILED to insert data into {0} (# rows = {1})", tblname, dtready.Rows.Count));
             }
 
 			sql.Close();
@@ -141,11 +257,11 @@ namespace uwac_REDCap
 					string code = String.Format("update uwautism_research_backend..tblstudymeassubj set measstatusid=1, measstatusdetailid=52 where subjid=(select subjid from vwMasterStatus_S where id='{0}' and studyid={1}) and studymeasid = {2}", row["id"].ToString(), studyid, row["studymeasid"].ToString());
 					sql.NonQuery_from_SQLstring(code);
 				}
-				resultslog.Add("SUCCESS: tracking DB updated.");
+				resultslog.Log("SUCCESS: tracking DB updated.");
 			}
 			catch (Exception ex)
             {
-				resultslog.Add("<b>ERROR while updating tracking DB.</b>");
+				resultslog.Log("<b>ERROR while updating tracking DB.</b>");
             }
 
 
@@ -184,13 +300,13 @@ namespace uwac_REDCap
 
 			if(ids_not_in_DB.Count == 0)
             {
-				resultslog.Add("PASS: All ID's are present in the DB");
+				resultslog.Log("PASS: All ID's are present in the DB");
             }
             else
             {
-				foreach (string id in ids_not_in_DB)
+				foreach (string id in ids_not_in_DB.Distinct())
 				{
-					resultslog.Add(String.Format("WARNING: ID not in DB: {0}", id ));
+					resultslog.Log(String.Format("WARNING: ID not in DB: {0}", id ));
 				}
 			}
         }
@@ -210,11 +326,30 @@ namespace uwac_REDCap
 			return isvalid;
         }
 
-		
-		public void CheckREDCapData_by_row(SQL_utils sql, DataRow row, DataTable dtdb)
+
+		public bool CheckREDCapData_that_row_contains_data(SQL_utils sql, DataRow row, float pct_of_flds_needed_to_insert)
+		{
+			float num_not_null = 0;
+
+			for (int c = 0; c < row.ItemArray.Length; c++)
+			{
+				string val = row[c].ToString();
+
+				if (!String.IsNullOrEmpty(val))
+				{
+					num_not_null++;
+				}
+
+			}
+
+			float pctvalid =  (float)(num_not_null / (float)row.ItemArray.Length);
+			return (pctvalid > pct_of_flds_needed_to_insert) ? true : false;
+		}
+
+			public string CheckREDCapData_by_row(SQL_utils sql, DataRow row, DataTable dtdb, Datadictionary dict)
 		{
 			string result = "";
-
+			
 			// Loop through each row of REDCap data
 
 			// select only records with this id
@@ -224,29 +359,50 @@ namespace uwac_REDCap
 
 			if (isvalidsubject & smid > 0)
 			{
-				int nrecs_for_id = dtdb.AsEnumerable().Where(f => f.Field<string>("id").ToUpper() == id).Count();
+				int nrecs_for_id = 0;
+				try
+				{
+					nrecs_for_id = dtdb.AsEnumerable().Where(f => f.Field<string>("id").ToUpper() == id).Count();
+				}
+				catch (Exception ex) { }
 
 				if (nrecs_for_id > 0)
 				{
-					DataTable dtid = dtdb.AsEnumerable().Where(f => f.Field<string>("id").ToUpper() == id).CopyToDataTable();
 
+					var qry = dtdb.AsEnumerable().Where(f => f.Field<string>("id").ToUpper() == id &  f.Field<int>("studymeasid") == smid); //.CopyToDataTable();
 
-					if (dtid.HasRows())
+					if (qry.Any())
 					{
-						if (dtid.Rows.Count == 1)
+						DataTable dtid = (DataTable)qry.AsEnumerable().CopyToDataTable();
+
+						if (dtid.HasRows())
 						{
-							row["isready"] = "need to compare values"; //CompareRows(row, dtid.Rows[0]);
-						}
-						else
-						{
-							row["isready"] = "multiple records";
-							result = String.Format("There are {0} matching records for id:{1}", id, dtid.Rows.Count);
+							if (dtid.Rows.Count == 1)
+							{
+								DataRowCompare rowcompare = new DataRowCompare(row, dtid.Rows[0], dict, true);
+
+								if (rowcompare.log_mismatches.Numlogs() > 0) logs.AddLog(rowcompare.log_mismatches);
+								else
+								{
+									//matches += String.Format("{0},",rowcompare.log_matches.LogNotesToHtml());
+									//logs.AddLog(rowcompare.log_matches);
+									result = String.Format("AllMatch{0}", id);
+									matching_ids.Add(id);
+								}
+
+								row["isready"] = rowcompare.Results(); //CompareRows(row, dtid.Rows[0]);
+							}
+							else
+							{
+								row["isready"] = "multiple records";
+								result = String.Format("There are {0} matching records for id:{1}", id, dtid.Rows.Count);
+							}
 						}
 					}
 					else
 					{
 						row["isready"] = "ready";
-						result = String.Format("There are NO matching records for id:{1}", id);
+						result = String.Format("There are NO matching records for id:{0}", id);
 					}
 				}
 				else
@@ -255,8 +411,11 @@ namespace uwac_REDCap
 				}
 			}
 
-			
-		 
+			//ProcessLog log_matches = new ProcessLog("Matching rows");
+			//log_matches.Log(matches);
+			//logs.AddLog(log_matches);
+
+			return result;
 		}
 
 
@@ -284,7 +443,11 @@ namespace uwac_REDCap
 			else
 			{
 				if (v1 == v2) return String.Format("{0}[{1}<>{2}]", v1, val1, val2);
-				else return String.Format("{0}|{3}[{1}<>{2}]", v1, val1, val2, v2);
+				else
+				{
+						
+					return String.Format("{0}|{3}[{1}<>{2}]", v1, val1, val2, v2);
+				}
 			}
 		}
 

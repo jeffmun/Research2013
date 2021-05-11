@@ -1,7 +1,7 @@
 ﻿<%@ Master Language="C#" Debug="true" AutoEventWireup="true" CodeFile="UWAC.master.cs" Inherits="UWAC" %>
 
 
-<%@ Register TagPrefix="obout" Namespace="Obout.ComboBox" Assembly="obout_ComboBox" %>
+<%--<%@ Register TagPrefix="obout" Namespace="Obout.ComboBox" Assembly="obout_ComboBox" %>
 <%@ Register TagPrefix="obout" Namespace="OboutInc.Calendar2" Assembly="obout_Calendar2_Net" %>
 <%@ Register TagPrefix="obout" Namespace="Obout.Interface" Assembly="obout_Interface" %>
 <%@ Register TagPrefix="obout" Namespace="Obout.Grid" Assembly="obout_Grid_NET" %>
@@ -9,7 +9,7 @@
 <%@ Register TagPrefix="oajax" Namespace="OboutInc" Assembly="obout_AJAXPage" %>
 
 <%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor" TagPrefix="obout" %>
-<%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor.ToolbarButton" TagPrefix="obout" %>
+<%@ Register Assembly="Obout.Ajax.UI" Namespace="Obout.Ajax.UI.HTMLEditor.ToolbarButton" TagPrefix="obout" %>--%>
 
 <%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
@@ -112,7 +112,7 @@
 <form id="oForm" runat="server">
 
 <div id="divHeader"><asp:PlaceHolder ID="placeholderMasterTitle" runat="server"></asp:PlaceHolder></div>
-<table style="border-spacing: 0px" id="tblBody"  class="tblBody">
+<table style="border-spacing: 0px" id="tblBody" runat="server" class="tblBody">
 	<tr>
 		<td id="tdCurrentDate">
 			<asp:Label ID="lblDate" runat="server" ></asp:Label>
@@ -246,7 +246,7 @@
 </div>
 
 <%--COMMENTED OUT AUG2017 <br clear="all" />--%>
-	<div class="divFooter" id="divFooter">
+	<div class="divFooter" id="divFooter" runat="server">
 	&#169; Copyright 2004-<% =System.DateTime.Today.Year.ToString() %>, University of Washington Autism Center<br/>
 </div>
 

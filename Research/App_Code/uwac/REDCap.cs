@@ -47,9 +47,9 @@ namespace uwac_REDCap
 		public DataTable dt_db_formevent_studymeasid { get; set; }
 		public List<string>  redcapevents { get; set; }
 
-		public List<string> import_results { get { return _import_results; } }
+		public ProcessLog import_results { get { return _import_results; } }
 
-		private List<string> _import_results;
+		private ProcessLog _import_results;
 		private string idfld;
 		public string dataheader { get; set; }
 		private int _studyID;
@@ -58,7 +58,7 @@ namespace uwac_REDCap
 		{
 			_studyID = studyID;
 			idfld = "id";
-			_import_results = new List<string>();
+			_import_results = new ProcessLog("REDCap import");
 
 			LoadTokens();
 			GetAPIInfo();
@@ -132,9 +132,13 @@ namespace uwac_REDCap
 
 		public string REDCap_id_fldname_for_DB(SQL_utils sql, string formname, int studyid)
         {
-			int mID = MeasureID_from_REDCap_form(sql, formname, studyid);
+			//int mID = MeasureID_from_REDCap_form(sql, formname, studyid);
 
-			string code = String.Format("select (case when fldextractionmode=6 then conststring else fldname end) as id_fld from def.fld where fldname='id' and tblpk = (select tblpk from def.tbl where measureid = {0})", mID);
+			//string code = String.Format("select (case when fldextractionmode=6 then conststring else fldname end) as id_fld from def.fld where fldname='id' and tblpk = (select tblpk from def.tbl where measureid = {0})", mID);
+			//string idfld = sql.StringScalar_from_SQLstring(code);
+			//return idfld;
+
+			string code = String.Format("select idfld from vwREDCap_idfld_by_token_study where form='{0}' and studyid={1} ", formname, studyid);
 			string idfld = sql.StringScalar_from_SQLstring(code);
 			return idfld;
 		}
@@ -366,14 +370,14 @@ namespace uwac_REDCap
         {
 			SQL_utils sql = new SQL_utils("data");
 
-			_import_results.Add("Processing <b>" + form + "</b>");
+			_import_results.Log("Processing <b>" + form + "</b>");
 
 			DataTable dt_redcap = DataFromForm(form);
 			dt_redcap = AddStudymeasToREDCapFormData(dt_redcap);
 
 			string idfld = REDCap_id_fldname_for_DB(sql, form, studyid);
 
-			_import_results.Add(String.Format("ID contained in REDCap field '{0}'", idfld));
+			_import_results.Log(String.Format("ID contained in REDCap field '{0}'", idfld));
 
 
 			dt_redcap = dataops.VerifyID(dt_redcap, idfld , studyid);
@@ -384,12 +388,12 @@ namespace uwac_REDCap
 			{
 				List<string> not_ids = dt_redcap.AsEnumerable().Where(f => f.Field<string>("not_id") != null).Select(f => f.Field<string>("not_id")).ToList();
 
-				_import_results.Add(String.Format("ERROR. Data contains {0} records with ID's not in the DB: {1}", num_notid, String.Join(",", not_ids)));
+				_import_results.Log(String.Format("ERROR. Data contains {0} records with ID's not in the DB: {1}", num_notid, String.Join(",", not_ids)));
 
 			}
 			else
 			{
-				_import_results.Add("All ID's in REDCap data are present in the DB.");
+				_import_results.Log("All ID's in REDCap data are present in the DB.");
 
 				dt_redcap = dataops.CopyColumntoID(dt_redcap, idfld);
 
@@ -429,7 +433,7 @@ namespace uwac_REDCap
 					{
 						result = "ERROR: " + ex.Message;
 					}
-					_import_results.Add(result);
+					_import_results.Log(result);
 				}
 			}
 
@@ -704,6 +708,7 @@ namespace uwac_REDCap
 				return null;
 			}
 		}
+		
 
 		public ASPxListBox lstFormSelector()
 		{
@@ -728,6 +733,54 @@ namespace uwac_REDCap
 					lst.Items.Add(itm);
 				}
 
+
+				return lst;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+
+		public ASPxListBox lstFormSelector_with_studymeasID()
+		{
+
+			string code = String.Format("select distinct(form) form from def.vwRedcap_FormEvent where studymeasid is not null and studyid = {0}", _studyID);
+			SQL_utils sql = new SQL_utils("data");
+			DataTable dt_forms_w_smid = sql.DataTable_from_SQLstring(code);
+			sql.Close();
+
+			List<string> forms = dt_forms_w_smid.AsEnumerable().Select(f => f.Field<string>("form")).Distinct().ToList();
+
+			//if (api != null)
+			if (dt_redcapforms.HasRows())
+			{
+
+				ASPxListBox lst = new ASPxListBox();
+				lst.ID = "lstRedcapForms";
+				lst.ClientInstanceName = "lstRedcapForms";
+				lst.Caption = "All REDCap Forms:";
+				lst.ValueType = typeof(string);
+				lst.SelectionMode = ListEditSelectionMode.Multiple;
+				lst.Width = 400;
+				//lst.DataBind();
+
+				//foreach (DataRow row in dt_redcapforms.Rows)
+				//{
+				//	ListEditItem itm = new ListEditItem();
+				//	itm.Value = row["instrument_name"].ToString();
+				//	itm.Text = row["instrument_name"].ToString();
+				//	lst.Items.Add(itm);
+				//}
+
+				foreach (string f in forms)
+				{
+					ListEditItem itm = new ListEditItem();
+					itm.Value = f;
+					itm.Text = f;
+					lst.Items.Add(itm);
+				}
 
 				return lst;
 			}

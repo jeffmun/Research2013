@@ -87,10 +87,17 @@ namespace uwac
 		{
 			bool result = BuildInsertSqlCode(NewValues, tbl, db, schema);
 
-			SQL_utils sql = new SQL_utils(db);
-			int pk = sql.IntScalar_from_SQLstring(String.Format("select max({0}) from {1}.{2}", pkfld, schema, tbl));
+			if (result)
+			{
+				SQL_utils sql = new SQL_utils(db);
+				int pk = sql.IntScalar_from_SQLstring(String.Format("select max({0}) from {1}.{2}", pkfld, schema, tbl));
 
-			return pk;
+				return pk;
+			}
+            else
+            {
+				return -1;
+            }
 		}
 
 

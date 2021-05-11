@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="c#"   Debug="true" MasterPageFile="~/UWAC.master" AutoEventWireup="true" EnableEventValidation="true"
-  CodeFile="ManageREDCap.aspx.cs" Inherits="Data_ManageREDCap"  Title ="Manage REDCap"    %>  
+  CodeFile="ImportREDCap.aspx.cs" Inherits="Data_ImportREDCap"  Title ="Import REDCap"    %>  
 <%@ MasterType VirtualPath="~/UWAC.master" %>
 
 <%@ Register Assembly="DevExpress.Web.v19.2, Version=19.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
@@ -36,7 +36,7 @@
 	</script>
 
 
-	<asp:Label ID="lbl1" runat="server" Text="Manage REDCap" Font-Size="Medium" Font-Bold="true"></asp:Label>
+	<asp:Label ID="lbl1" runat="server" Text="Import from REDCap" Font-Size="Medium" Font-Bold="true"></asp:Label>
 	<br />
 	<asp:Label ID="lblRESULTS" runat="server" Text="" Font-Size="Small" Font-Bold="false" ForeColor="ForestGreen"></asp:Label>
 
@@ -44,192 +44,8 @@
 	<br />
 	<dx:ASPxPageControl ID="tabs" runat="server">
 		<TabPages>
-			<dx:TabPage Text="Matched REDCap fields">
-				<ContentCollection>
-					<dx:ContentControl ID="tab_import_fields" runat="server">
-
-						<table>
-							<tr>
-								<td style="padding-left:20px">
-									<dx:ASPxGridView ID="gv_redcap_forms_to_db" runat="server" DataSourceID="sql_forms_to_db" AutoGenerateColumns="true">
-										<SettingsPager Mode="ShowAllRecords"></SettingsPager>									
-									</dx:ASPxGridView>
-								</td>
-								<td style="padding-left:200px">
-									<dx:ASPxButton ID="btnAddFlds" runat="server" Text="Add fields from REDCap form below to DB table" OnClick="btnAddFlds_Click" AutoPostBack="true"></dx:ASPxButton>
-									<asp:PlaceHolder ID="placeholder" runat="server"></asp:PlaceHolder>
-								</td>
-								<td style="padding-left:40px">
-				
-								</td>
-							</tr>
-						</table>
-
-
-						<br />
-						<br />
-
-						<dx:ASPxLabel ID="lblMatched" runat="server" Text="REDCap fields & Matched DB fields" Font-Bold="true" Font-Size="Small"></dx:ASPxLabel>
-						<dx:ASPxGridView ID="gv_matched_flds" runat="server" AutoGenerateColumns="false" DataSourceID="sql_redcap_matched_fields" Width="98%" >
-							<Columns>
-								<dx:GridViewDataColumn FieldName="form_name" GroupIndex="0"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="tblname" ></dx:GridViewDataColumn>
-								<dx:GridViewBandColumn Caption="REDCap">
-									<Columns>
-											<dx:GridViewDataColumn FieldName="field_name" Caption="REDCap fld"></dx:GridViewDataColumn>
-											<dx:GridViewDataColumn FieldName="field_label" Caption="REDCap label"></dx:GridViewDataColumn>
-											<dx:GridViewDataTextColumn FieldName="select_choices_or_calculations" Caption="REDCap val labels" >
-												 <PropertiesTextEdit EncodeHtml="False" />  
-											</dx:GridViewDataTextColumn>
-											<dx:GridViewDataColumn FieldName="field_type" Caption="REDCap fld type"></dx:GridViewDataColumn>
-
-										</Columns>
-								</dx:GridViewBandColumn>
-								<dx:GridViewBandColumn Caption="Research DB" HeaderStyle-BackColor="AliceBlue">
-									<Columns>
-								<dx:GridViewDataColumn FieldName="fldname" Caption="DB fld" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="fielddatatype" Caption="Data Type" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="fieldlabel" Caption="DB label" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn FieldName="matchType" Caption="Match Type" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue"></dx:GridViewDataColumn>
-								<dx:GridViewDataTextColumn FieldName="vallabels" Caption="DB val labels" HeaderStyle-BackColor="AliceBlue" CellStyle-BackColor="AliceBlue">
-									<PropertiesTextEdit EncodeHtml="False" />  
-								</dx:GridViewDataTextColumn>
-										</Columns>
-								</dx:GridViewBandColumn>
-							</Columns>
-							<GroupSummary >
-								<dx:ASPxSummaryItem FieldName="form_name" SummaryType="Count" />
-							</GroupSummary>
-							<Settings ShowGroupPanel="True" VerticalScrollBarMode="Visible" VerticalScrollableHeight="500" />
-							<SettingsBehavior AllowFixedGroups="true" />
-							<SettingsPager Mode="ShowAllRecords" />
-						</dx:ASPxGridView>
-												<br /><br />
-						
-					</dx:ContentControl>
-				</ContentCollection>
-				</dx:TabPage>
-
-
-			<dx:TabPage Text="Assign Form-Events to StudyMeasures">
-				<ContentCollection>
-					<dx:ContentControl>
-
-						<table>
-							<tr>
-								<td>
-									<asp:Label ID="Label1" runat="server" Text="Match the specific REDCap form & event to a study measure" Font-Size="Small" Font-Bold="true"></asp:Label>	
-								</td>
-								<td style="padding-left:50px">
-									
-								</td>
-								</tr>
-							</table>
-
-						<br /><br />
-						<dx:ASPxGridView ID="gv_Redcap_FormEvent" runat="server" ClientInstanceName="REDCap_formevent" DataSourceID="sqlRedcapFormevents" KeyFieldName="redcapformeventID"
-							 OnRowUpdating="gvcrud_OnRowUpdating" OnCellEditorInitialize="gv_Redcap_FormEvent_CellEditorInitialize" >
-							<Columns>
-								<dx:GridViewDataColumn Width="100" FieldName="redcapformeventID" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn Width="80"  FieldName="arm_num" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn Width="160" FieldName="unique_event_name" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn Width="250" FieldName="form" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataColumn Width="250" FieldName="tpstudymeas" ReadOnly="true"></dx:GridViewDataColumn>
-								<dx:GridViewDataComboBoxColumn Width="250" FieldName="studymeasid"    >
-									<PropertiesComboBox  ValueField="studymeasid" TextField="studymeasname" ValueType="System.Int32" ></PropertiesComboBox>
-								</dx:GridViewDataComboBoxColumn>
-
-							</Columns>
-							<SettingsDataSecurity AllowEdit="true" />
-							<Settings VerticalScrollableHeight="500" VerticalScrollBarMode="Visible" />
-							<SettingsEditing Mode="Batch" ></SettingsEditing>
-							<SettingsPager Mode="ShowAllRecords"></SettingsPager>
-						</dx:ASPxGridView>
-					</dx:ContentControl>
-
-				</ContentCollection>
-
-			</dx:TabPage>
-
-				<dx:TabPage Text="Setup (Tokens, etc.)">
-				<ContentCollection>
-					<dx:ContentControl>
-
-						<table>
-							<tr>
-								<td colspan="2">
-									<dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="Tokens" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<dx:ASPxLabel ID="lbl" runat="server" Text="For security purposes, the actual REDCap token value is not displayed."></dx:ASPxLabel>
-									<dx:ASPxGridView ID="gv_tokens" runat="server" AutoGenerateColumns="true" DataSourceID="sql_tokens">
-										<Columns>
-											<dx:GridViewDataColumn FieldName="tokenid"></dx:GridViewDataColumn>
-											<dx:GridViewDataColumn FieldName="project"></dx:GridViewDataColumn>
-											<dx:GridViewDataColumn FieldName="url"></dx:GridViewDataColumn>
-											<dx:GridViewDataColumn FieldName="idfld"></dx:GridViewDataColumn>
-										</Columns>
-									</dx:ASPxGridView>
-								</td>
-								<td style="padding-left:200px">
-									<dx:ASPxTextBox ID="txtProjectname" runat="server" Caption="REDCap Project Name:" CaptionCellStyle-Width="130px" Width="300px"></dx:ASPxTextBox>
-									<dx:ASPxTextBox ID="txtIDfld" runat="server" Caption="ID field:" CaptionCellStyle-Width="130px" Width="300px"></dx:ASPxTextBox>
-									<dx:ASPxTextBox ID="txtToken" runat="server" Caption="New API Token:" CaptionCellStyle-Width="130px" Width="400px"></dx:ASPxTextBox>
-									<dx:ASPxButton ID="btnInsertToken" runat="server" Text="Add REDCap Token" OnClick="btnInsertToken_Click"></dx:ASPxButton>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="2">
-									<br /><br />
-									<dx:ASPxLabel ID="ASPxLabel2" runat="server" Text="Import meta-data from REDCap" Font-Size="Small" Font-Bold="true"></dx:ASPxLabel>
-									<br />
-									<dx:ASPxLabel ID="ASPxLabel3" runat="server" Text="This needs to be done just once, unless changes are made to REDCap." Font-Size="Smaller" Font-Bold="false"></dx:ASPxLabel>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<dx:ASPxButton ID="btnFormEvents" runat="server" Text="Save REDCap Form-Events to DB" Visible="true" OnClick="btnFormEvents_Click"></dx:ASPxButton>	
-								</td>
-								<td style="padding-left:200px">
-									<dx:ASPxButton ID="btnFields" runat="server" Text="Save REDCap fields to DB" Visible="true" OnClick="btnFields_Click"></dx:ASPxButton>
-								</td>
-							</tr>
-						</table>
-
-					</dx:ContentControl>
-				</ContentCollection>
-				</dx:TabPage>
-			
-
-			<dx:TabPage Text="View All REDCap Field Info">
-				<ContentCollection>
-					<dx:ContentControl>
-
-						<table>
-							<tr>
-								<td style="padding-left:20px">
-									<asp:Label ID="Label2" runat="server" Text="Fields defined in REDCap" Font-Size="Medium" Font-Bold="true"></asp:Label>
-								</td>
-								<td style="padding-left:200px">
-								</td>
-								<td style="padding-left:40px">
-				
-								</td>
-							</tr>
-						</table>
-
-						<br /><br />
-						<dx:ASPxGridView ID="gv_redcap_fields" runat="server" AutoGenerateColumns="true" DataSourceID="sql_redcap_fields">
-							<SettingsPager PageSize="50"></SettingsPager>
-						</dx:ASPxGridView>
-
-					</dx:ContentControl>
-				</ContentCollection>
-				</dx:TabPage>
-
-				<dx:TabPage Text="View REDCap Data">
+		
+			<dx:TabPage Text="View REDCap Data">
 				<ContentCollection>
 					<dx:ContentControl>
 
@@ -249,12 +65,12 @@
 												</dx:ASPxButton>
 											</td>
 											<td>
-												<dx:ASPxCheckBox ID="chkSaveToDB" runat="server" Text="Save to DB?" Visible="false" ></dx:ASPxCheckBox>
+												<dx:ASPxCheckBox ID="chkSaveToDB" runat="server" Text="Save to DB?" ></dx:ASPxCheckBox>
 											</td>
 										</tr>
 									</table>
-									   <br /><br />
-								<dx:ASPxHyperLink ID="hyp" runat="server" NavigateUrl="ImportREDCap.aspx" Text="Import from REDCap here"></dx:ASPxHyperLink>
+									   <br /><br /><br />
+															<dx:ASPxHyperLink ID="hyp" runat="server" NavigateUrl="ManageREDCap.aspx" Text="Manage REDCap settings here"></dx:ASPxHyperLink>
 
 									<dx:ASPxButton ID="btnSaveFormData" runat="server" Text="Save REDCap Data from Selected Forms to DB" OnClick="btnSaveFormData_OnClick" Visible="false">
 									<%--	<ClientSideEvents Click="function(s,e) {  panel.PerformCallback();}" />--%>
@@ -273,7 +89,10 @@
 
 					</dx:ContentControl>
 				</ContentCollection>
-				</dx:TabPage>
+			</dx:TabPage>
+
+
+
 		</TabPages>
 	</dx:ASPxPageControl>
 

@@ -23,7 +23,7 @@ using DevExpress.Web;
 using DevExpress.Web.Data;
 
 
-public partial class Data_ManageREDCap : BasePage
+public partial class Data_ImportREDCap : BasePage
 {
 
 	REDCap redcap;
@@ -51,9 +51,9 @@ public partial class Data_ManageREDCap : BasePage
 	{
 		Debug.WriteLine(String.Format("Page_Load  IsPostBack:{0}  IsCallback:{1}", IsPostBack, IsCallback));
 
-
-		GridViewDataComboBoxColumn cbo = ((GridViewDataComboBoxColumn)gv_Redcap_FormEvent.Columns["studymeasid"]);
-		cbo.PropertiesComboBox.DataSource = GetStudymeasids();
+		////In Manage
+		//GridViewDataComboBoxColumn cbo = ((GridViewDataComboBoxColumn)gv_Redcap_FormEvent.Columns["studymeasid"]);
+		//cbo.PropertiesComboBox.DataSource = GetStudymeasids();
 
 
 		//LoadSubjects();
@@ -63,23 +63,20 @@ public partial class Data_ManageREDCap : BasePage
 
 		redcap = new REDCap(Master.Master_studyID);
 
-		
 
-		//ASPxComboBox cbo = redcap.cboFormSelector();
+
+		////In Manage
+		//ASPxComboBox cboForms = redcap.cboFormSelector();
+		//if (cboForms != null)
+		//{
+		//	cboForms.SelectedIndexChanged += cboForm_OnSelectedIndexChanged;
+		//	cboForms.ID = "cboForms";
+		//	placeholder.Controls.Add(cboForms);
+		//}
+
+
 
 		ASPxListBox lst = redcap.lstFormSelector_with_studymeasID();
-
-		ASPxComboBox cboForms = redcap.cboFormSelector();
-
-		if (cboForms != null)
-		{
-			cboForms.SelectedIndexChanged += cboForm_OnSelectedIndexChanged;
-			cboForms.ID = "cboForms";
-
-			placeholder.Controls.Add(cboForms);
-			//tab_import_fields.Controls.Add(cboForms);
-		}
-
 		if (lst != null)
 		{
 			lst.EnableViewState = true;
@@ -452,7 +449,7 @@ public partial class Data_ManageREDCap : BasePage
 				ASPxLabel lbllog = new ASPxLabel();
 				lbllog.EncodeHtml = false;
 
-				lbllog.Text = rcdata.resultslog.LogNotesToHtml();
+				lbllog.Text = String.Format("{0}", rcdata.logs.LogNotesToHtml());
 
 				//foreach (string s in rcdata.resultslog)
     //            {
@@ -462,7 +459,6 @@ public partial class Data_ManageREDCap : BasePage
 				placeholder_gridMeta.Controls.Add(lbllog);
 
 				DataTable foo = redcap.DataFromForm(formnames[i]);
-
 				bool has_id = (foo.ContainsColumnName("id"));
 
 				if (has_id)
@@ -471,11 +467,15 @@ public partial class Data_ManageREDCap : BasePage
 				}
 
 
-				ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
+				ASPxGridView grid = new ASPxGridView();
+				grid.AutoGenerateColumns = true;
+				grid.DataSource = rcdata.dtRC_postProcess;
+
+				//ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
 
 				if (grid != null)
 				{
-					grid.SettingsPager.PageSize = 200;
+					grid.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
 					ASPxLabel lbl = new ASPxLabel();
 					lbl.Font.Bold = true;
 					lbl.EncodeHtml = false;
@@ -509,16 +509,8 @@ public partial class Data_ManageREDCap : BasePage
 
 				redcap.SaveFormDataToDB(formnames[i], Master.Master_studyID);
 
-				//string result = "";
-				//int counter = 0;
-				//foreach(string s in redcap.import_results)
-    //            {
-				//	counter++;
-				//	result += String.Format("{0}. {1}</br>", counter, s);
-    //            }
-
-				//lblSaveInfo.ForeColor = (result.ToUpper().Contains("ERROR")) ? Color.Red : Color.ForestGreen;
-				lblSaveInfo.Text = redcap.import_results.LogNotesToHtml();
+				lblSaveInfo.EncodeHtml = false;
+				lblSaveInfo.Text = String.Format("{0}",redcap.import_results.LogNotesToHtml());
 			}
 			lblNoneSelected.Text = "";
 		}
@@ -563,63 +555,7 @@ public partial class Data_ManageREDCap : BasePage
 	}
 
 
-    protected void btnInsertToken_Click(object sender, EventArgs e)
-    {
 
-		string url = "https://redcap.iths.org/api/";
-
-		SQL_utils sql = new SQL_utils("data");
-
-		//Make sure token is unique
-
-		int numtokens = sql.IntScalar_from_SQLstring(String.Format("select count(*) from def.redcaptoken where token='{0}'", txtToken.Text));
-
-		if (numtokens > 0)
-		{
-			lblRESULTS.ForeColor = Color.Red;
-			lblRESULTS.Text = "This token has already been entered into the DB. Try again.";
-		}
-		else
-		{
-
-			int newtokenid = sql.IntScalar_from_SQLstring(String.Format("select max(tokenid)+1 from def.REDCapToken "));
-			string sql_newtoken = String.Format("insert into def.REDCapToken(token, project, url, idfld, tokenid) Values('{0}','{1}','{2}','{3}',{4})", txtToken.Text, txtProjectname.Text, url, txtIDfld.Text, newtokenid);
-			sql.NonQuery_from_SQLstring(sql_newtoken);
-			sql.NonQuery_from_SQLstring(String.Format("insert into def.REDCapToken_study(tokenid, studyid) values({0},{1})", newtokenid, Master.Master_studyID));
-			lblRESULTS.ForeColor = Color.ForestGreen;
-			lblRESULTS.Text = "Token added.";
-
-		}
-		sql.Close();
-
-		gv_tokens.DataBind();
-	}
-
-    protected void btnAddFlds_Click(object sender, EventArgs e)
-    {
-		ASPxComboBox cboForms = (ASPxComboBox)this.FindControlRecursive("cboForms");
-
-		var form = cboForms.Value;
-
-		SQL_utils sql = new SQL_utils("data");
-
-		sql.DataTable_from_SQLstring(String.Format("exec def.spInsertREDCap_flds_to_tbl '{0}'", form));
-		gv_redcap_forms_to_db.DataBind();
-	}
-
-    protected void gv_Redcap_FormEvent_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
-    {
-		if(e.Column.FieldName=="studymeasid")
-        {
-
-            ASPxComboBox combo = (ASPxComboBox)e.Editor;
-            //combo.DataSource = GetStudymeasids();
-            combo.DataBind();
-        }
-
-
-
-	}
 
 	protected DataTable GetStudymeasids()
     {
@@ -633,6 +569,64 @@ public partial class Data_ManageREDCap : BasePage
 		return (dt);
 	}
 
+
+	#region In ManageREDCap
+	//protected void btnInsertToken_Click(object sender, EventArgs e)
+	//{
+
+	//	string url = "https://redcap.iths.org/api/";
+
+	//	SQL_utils sql = new SQL_utils("data");
+
+	//	//Make sure token is unique
+
+	//	int numtokens = sql.IntScalar_from_SQLstring(String.Format("select count(*) from def.redcaptoken where token='{0}'", txtToken.Text));
+
+	//	if (numtokens > 0)
+	//	{
+	//		lblRESULTS.ForeColor = Color.Red;
+	//		lblRESULTS.Text = "This token has already been entered into the DB. Try again.";
+	//	}
+	//	else
+	//	{
+
+	//		int newtokenid = sql.IntScalar_from_SQLstring(String.Format("select max(tokenid)+1 from def.REDCapToken "));
+	//		string sql_newtoken = String.Format("insert into def.REDCapToken(token, project, url, idfld, tokenid) Values('{0}','{1}','{2}','{3}',{4})", txtToken.Text, txtProjectname.Text, url, txtIDfld.Text, newtokenid);
+	//		sql.NonQuery_from_SQLstring(sql_newtoken);
+	//		sql.NonQuery_from_SQLstring(String.Format("insert into def.REDCapToken_study(tokenid, studyid) values({0},{1})", newtokenid, Master.Master_studyID));
+	//		lblRESULTS.ForeColor = Color.ForestGreen;
+	//		lblRESULTS.Text = "Token added.";
+
+	//	}
+	//	sql.Close();
+
+	//	gv_tokens.DataBind();
+	//}
+
+	//protected void btnAddFlds_Click(object sender, EventArgs e)
+	//{
+	//	ASPxComboBox cboForms = (ASPxComboBox)this.FindControlRecursive("cboForms");
+
+	//	var form = cboForms.Value;
+
+	//	SQL_utils sql = new SQL_utils("data");
+
+	//	sql.DataTable_from_SQLstring(String.Format("exec def.spInsertREDCap_flds_to_tbl '{0}'", form));
+	//	gv_redcap_forms_to_db.DataBind();
+	//}
+
+	//protected void gv_Redcap_FormEvent_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
+	//{
+	//	if (e.Column.FieldName == "studymeasid")
+	//	{
+
+	//		ASPxComboBox combo = (ASPxComboBox)e.Editor;
+	//		//combo.DataSource = GetStudymeasids();
+	//		combo.DataBind();
+	//	}
+
+	//}
+	#endregion
 
 
 }
