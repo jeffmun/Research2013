@@ -50,6 +50,16 @@ namespace uwac
         {
             return false;
         }
+
+        public bool HasTables()
+        {
+            if (dset == null) return false;
+            else
+            {
+                return (dset.Tables.Count > 0) ? true : false;
+            }
+        }
+
         public bool noColumnHeaders { get; set; }
 
         public Docvers(int mydocversid, string filepath)

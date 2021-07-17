@@ -72,7 +72,7 @@
 									   <br /><br /><br />
 															<dx:ASPxHyperLink ID="hyp" runat="server" NavigateUrl="ManageREDCap.aspx" Text="Manage REDCap settings here"></dx:ASPxHyperLink>
 
-									<dx:ASPxButton ID="btnSaveFormData" runat="server" Text="Save REDCap Data from Selected Forms to DB" OnClick="btnSaveFormData_OnClick" Visible="false">
+<%--									<dx:ASPxButton ID="btnSaveFormData" runat="server" Text="Save REDCap Data from Selected Forms to DB" OnClick="btnSaveFormData_OnClick" Visible="false">--%>
 									<%--	<ClientSideEvents Click="function(s,e) {  panel.PerformCallback();}" />--%>
 									</dx:ASPxButton>
 									   <br /><br />									<dx:ASPxLabel ID="lblNoneSelected" runat="server" Text="" ForeColor="Red"></dx:ASPxLabel>

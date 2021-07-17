@@ -98,98 +98,149 @@ namespace DataEntryFramework3
 		public List<string> RefreshFieldMetadata(Dictionary<string, DataFieldControl> formFields)
 		{
 			List<string> errors = new List<string>();
-			
+
 			try
 			{
-				using (SqlConnection conn = new SqlConnection(ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"]))
+				_fieldMetadataCollection = new Dictionary<string, IFieldMetadata>();
+
+				//Updated June 2018, now need to set user context
+				SQL_utils sqlx = new SQL_utils("data");
+				string user = sqlx.GetUserNameFromIdentity();
+                string sqlcode = String.Format("EXEC sec.spSetUserContext 'jeffmun'; exec spDEF_GetFieldMetadata '{0}'",  DatabaseTable);
+                //string sqlcode = String.Format("exec spDEF_GetFieldMetadata '{0}'", DatabaseTable);
+
+                DataTable dt_flds = sqlx.DataTable_from_SQLstring(sqlcode);
+				//Here to fix Feb2021!!
+
+				sqlx.Close();
+
+				foreach (DataRow row in dt_flds.Rows)
 				{
-					_fieldMetadataCollection = new Dictionary<string, IFieldMetadata>();
 
-					SqlCommand cmd = new SqlCommand();
-					cmd.Connection = conn;
-					//cmd.CommandText = "spDEF_GetFieldMetadata";
-					//cmd.CommandType = CommandType.StoredProcedure;
-					//cmd.Parameters.AddWithValue("@DatabaseTable", DatabaseTable);
-
-					//Updated June 2018, now need to set user context
-					SQL_utils sqlx = new SQL_utils("data");
-					string user = sqlx.GetUserNameFromIdentity();
-					string sqlcode = String.Format("EXEC sec.spSetUserContext {0}; exec spDEF_GetFieldMetadata '{1}'", user, DatabaseTable);
-
-					//Here to fix Feb2021!!
-
-					sqlx.Close();
-
-					cmd.CommandText = sqlcode;
-					cmd.CommandType = CommandType.Text;
-
-					
-					conn.Open();
-
-					SqlDataReader r = cmd.ExecuteReader();
-
-
-
-					//Create and add field metadata to collection if field in metadata is used in form.
-					//Also set DataFieldControl's reference to its corresponding FieldMetadata object.
-					//
-					while (r.Read())
+					if (formFields.ContainsKey(row["databasefield"].ToString().ToUpper()))
 					{
-						if (formFields.ContainsKey(r["DatabaseField"].ToString().ToUpper()))
+						IFieldMetadata fm = null;
+						try
 						{
-							IFieldMetadata fm = null;
-							try
-							{
-								fm = new FieldMetadata(r["DatabaseField"].ToString(),
-															   r["FieldDataType"].ToString(),
-															   r["FieldLabel"].ToString(),
-															   r["ValueRequired"].ToString(),
-															   r["MaxVal"].ToString(),
-															   r["MinVal"].ToString(),
-															   r["RegEx"].ToString(),
-															   r["RegExDescription"].ToString(),
-															   r["ValidList"].ToString(),
-															   r["MissVal"].ToString());
 
-							}
-							catch (Exception e)
-							{
-								//An error occured while creating FieldMetadata object
-								errors.Add(e.Message);
-							}
+							fm = new FieldMetadata(row["databasefield"].ToString(),
+							   row["fielddatatype"].ToString(),
+							   row["fieldlabel"].ToString(),
+							   row["valuerequired"].ToString(),
+							   row["maxval"].ToString(),
+							   row["minval"].ToString(),
+							   row["regex"].ToString(),
+							   row["regexdescription"].ToString(),
+							   row["validlist"].ToString(),
+							   row["missval"].ToString());
 
 							//add to collection.  Convert key value to all upper case
 							//because dictionary is case sensitive.
 							//
 							//fm will be null if an error was thrown by FieldMetadata contructor.
-							_fieldMetadataCollection.Add(r["databasefield"].ToString().ToUpper(), fm);
+
+							string fldname = row["databasefield"].ToString().ToUpper();
+
+							if(fm != null)  _fieldMetadataCollection.Add(fldname, fm);
 
 							//set DataFieldControls's reference to field metadata
-							formFields[r["DatabaseField"].ToString().ToUpper()].FieldMetadata = fm;
+							formFields[row["DatabaseField"].ToString().ToUpper()].FieldMetadata = fm;
+
 						}
+						catch (Exception e)
+						{
+							//An error occured while creating FieldMetadata object
+							errors.Add(e.Message);
+						}
+
+				
 					}
 
-					r.Close();
-
-					//_fieldMetadataCollection now should contain a FieldMetadata object for each
-					//field that exists in both the form and in the database metadata.
-					//A field's FieldMetadata object might be null if database metadata was invalid.
-					//
-					//Add notifications for fields that exist in form but not in metadata or those
-					//whose FieldMetadata object couldn't be created.
-					//
-					//if (_dataEntryController.CheckForMissingFieldMetadata)
-					//{
-					//    foreach (string databaseField in formFields.Keys)
-					//    {
-					//        if (_fieldMetadataCollection.ContainsKey(databaseField) == false || _fieldMetadataCollection[databaseField] == null)
-					//        {
-					//            errors.Add(databaseField + " form field metadata is missing or invalid.");
-					//        }
-					//    }
-					//}
-
 				}
+
+
+				//using (SqlConnection conn = new SqlConnection(ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"]))
+				//{
+				//	_fieldMetadataCollection = new Dictionary<string, IFieldMetadata>();
+
+				//	SqlCommand cmd = new SqlCommand();
+				//	cmd.Connection = conn;
+				//	//cmd.CommandText = "spDEF_GetFieldMetadata";
+				//	//cmd.CommandType = CommandType.StoredProcedure;
+				//	//cmd.Parameters.AddWithValue("@DatabaseTable", DatabaseTable);
+
+				//		//cmd.CommandText = sqlcode;
+				//		//cmd.CommandType = CommandType.Text;
+
+
+				//		//conn.Open();
+
+				//		//SqlDataReader r = cmd.ExecuteReader();
+
+
+
+				//		////Create and add field metadata to collection if field in metadata is used in form.
+				//		////Also set DataFieldControl's reference to its corresponding FieldMetadata object.
+				//		////
+				//		//while (r.Read())
+				//		//{
+				//		//	if (formFields.ContainsKey(r["DatabaseField"].ToString().ToUpper()))
+				//		//	{
+				//		//		IFieldMetadata fm = null;
+				//		//		try
+				//		//		{
+				//		//			fm = new FieldMetadata(r["DatabaseField"].ToString(),
+				//		//										   r["FieldDataType"].ToString(),
+				//		//										   r["FieldLabel"].ToString(),
+				//		//										   r["ValueRequired"].ToString(),
+				//		//										   r["MaxVal"].ToString(),
+				//		//										   r["MinVal"].ToString(),
+				//		//										   r["RegEx"].ToString(),
+				//		//										   r["RegExDescription"].ToString(),
+				//		//										   r["ValidList"].ToString(),
+				//		//										   r["MissVal"].ToString());
+
+				//		//		}
+				//		//		catch (Exception e)
+				//		//		{
+				//		//			//An error occured while creating FieldMetadata object
+				//		//			errors.Add(e.Message);
+				//		//		}
+
+				//		//		//add to collection.  Convert key value to all upper case
+				//		//		//because dictionary is case sensitive.
+				//		//		//
+				//		//		//fm will be null if an error was thrown by FieldMetadata contructor.
+				//		//		_fieldMetadataCollection.Add(r["databasefield"].ToString().ToUpper(), fm);
+
+				//		//		//set DataFieldControls's reference to field metadata
+				//		//		formFields[r["DatabaseField"].ToString().ToUpper()].FieldMetadata = fm;
+				//		//	}
+				//		//}
+
+				//		//r.Close();
+
+				//		////_fieldMetadataCollection now should contain a FieldMetadata object for each
+				//		////field that exists in both the form and in the database metadata.
+				//		////A field's FieldMetadata object might be null if database metadata was invalid.
+				//		////
+				//		////Add notifications for fields that exist in form but not in metadata or those
+				//		////whose FieldMetadata object couldn't be created.
+				//		////
+				//		////if (_dataEntryController.CheckForMissingFieldMetadata)
+				//		////{
+				//		////    foreach (string databaseField in formFields.Keys)
+				//		////    {
+				//		////        if (_fieldMetadataCollection.ContainsKey(databaseField) == false || _fieldMetadataCollection[databaseField] == null)
+				//		////        {
+				//		////            errors.Add(databaseField + " form field metadata is missing or invalid.");
+				//		////        }
+				//		////    }
+				//		////}
+
+					
+
+				//}
 			}
 			catch (Exception e)
 			{

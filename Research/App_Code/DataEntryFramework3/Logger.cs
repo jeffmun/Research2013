@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -18,7 +19,9 @@ namespace DataEntryFramework3
 			try 
 			{
 				// open connection using connection string from web.config and setup command
-				conn = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"]);
+				//conn = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"]);
+				conn = new SqlConnection(ConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ToString());
+
 				cmd = new SqlCommand();
 				cmd.CommandText = "dbo.[spWriteLog2]";
 				cmd.CommandType = System.Data.CommandType.StoredProcedure;

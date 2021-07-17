@@ -2,6 +2,7 @@
 <%@ Page language="c#" Inherits="DataEntryForms_Common_ABC_ABC" CodeFile="abc.aspx.cs"   
 MasterPageFile="~/UWAC.master" %>
 
+<%@ Register TagPrefix="def" Namespace="DataEntryFramework3" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="oBodyPlaceHolder" runat="server">
 
 

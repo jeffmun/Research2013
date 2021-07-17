@@ -13,11 +13,11 @@
 	<AnalysisConnectionString_IIS_USER>INTEGRATED SECURITY=false;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=dev_uwautism_research_analysis;User ID=iis_user;Password=6jB?yc$h!3bK;</AnalysisConnectionString_IIS_USER>
 	<AnalysisConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=dev_uwautism_research_analysis;</AnalysisConnectionString>
 	<DMStatConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=DMStat;</DMStatConnectionString>
-	<FinMartConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=v0130p.host.s.uw.edu;PERSIST SECURITY INFO=True;User=NETID\jeffmun;Password=0987!@KLm;INITIAL CATALOG=FinMart;</FinMartConnectionString>
-	<publicwebConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=v0130p.host.s.uw.edu;PERSIST SECURITY INFO=True;User=NETID\jeffmun;Password=0987!@KLm;INITIAL CATALOG=publicweb;</publicwebConnectionString>
+	<FinMartConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=v0130p.host.s.uw.edu;PERSIST SECURITY INFO=True;User=NETID\jeffmun;Password=098zxcPOI!;INITIAL CATALOG=FinMart;</FinMartConnectionString>
+	<publicwebConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=v0130p.host.s.uw.edu;PERSIST SECURITY INFO=True;User=NETID\jeffmun;Password=098zxcPOI!;INITIAL CATALOG=publicweb;</publicwebConnectionString>
 	<NDARConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=AUTISM-WS03\SQLWS03;PERSIST SECURITY INFO=False;INITIAL CATALOG=NDAR;</NDARConnectionString>
 
-	<VTrackingConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=172.28.203.80;USER=NETID\jeffmun;Password=0987!@KLm;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;</VTrackingConnectionString>
+	<VTrackingConnectionString>INTEGRATED SECURITY=SSPI;DATA SOURCE=172.28.203.80;USER=NETID\jeffmun;Password=098zxcPOI!;PERSIST SECURITY INFO=False;INITIAL CATALOG=uwautism_research_backend;</VTrackingConnectionString>
 
 
 	<OnlineAccessRequestEmail>jeffmun@u.washington.edu</OnlineAccessRequestEmail>

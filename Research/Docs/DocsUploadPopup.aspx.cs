@@ -69,7 +69,7 @@ public partial class Docs_DocsUploadPopup : BasePage
 
             //Check to see if the filename has already been uploaded
             int exists = sql.IntScalar_from_SQLstring(
-                String.Format("select coalesce(count(*),0) result from tblDocVers where origfilename = '{0}'", fileInfo.OriginalFileName));
+                String.Format("select coalesce(count(*),0) result from vwDocVers where doctype != 'SleepSensorBox' and origfilename = '{0}'", fileInfo.OriginalFileName));
 
             int doctypeID = Convert.ToInt32(cboDataUploadType.Value);
 

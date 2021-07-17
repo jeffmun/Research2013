@@ -1156,7 +1156,7 @@ namespace uwac.data
 
 					if (Ns2 == 0)
 					{
-						tmp_body = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine + "   FROM {0} " + Environment.NewLine +
+						tmp_body = String.Format(Environment.NewLine + " LEFT JOIN (select  {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine + "   FROM {0} " + Environment.NewLine +
 							"    WHERE verified in (0,1) and studymeasID in ({3}) ) t{1} ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})"
 							, tblname, t, String.Join(",", vars_recode), studymeasID_csv);
 
@@ -1168,7 +1168,7 @@ namespace uwac.data
 						string plural = (Ns2 > 1) ? "s" : "";
 
 						//Exclude the dups from the main Data
-						tmp_body = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine + "   FROM {0} " + Environment.NewLine +
+						tmp_body = String.Format(Environment.NewLine + " LEFT JOIN (select  {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine + "   FROM {0} " + Environment.NewLine +
 								"   WHERE verified in (0,1) and studymeasID in ({3}) and ID not in ('{4}') ) t{1} ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})"
 								, tblname, t, String.Join(",", vars_recode), studymeasID_csv, dupsIDs_csv);
 
@@ -1389,10 +1389,10 @@ namespace uwac.data
 
 					//DEL?
 					//_sqlcode_vars_mult.Add(String.Join(",", vars_recode));
+
 					_sqlcode_vars_mult.Add(String.Join(",", vars_names));
 
-
-					string _sqlcode_final_mult = String.Format(Environment.NewLine + " LEFT JOIN (select {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine +
+					string _sqlcode_final_mult = String.Format(Environment.NewLine + " LEFT JOIN (select  {2}, id as id{1}, studymeasID as smID{1} " + Environment.NewLine +
 						" {4} " + Environment.NewLine +
 						" from {0} " + Environment.NewLine +
 						" where verified in (0,1) and studymeasID in ({3}) ) t{1} ON a.id=t{1}.id{1} and a.TimePt=dbo.fnGetTimePoint_text_from_StudymeasID(t{1}.smID{1})" + Environment.NewLine

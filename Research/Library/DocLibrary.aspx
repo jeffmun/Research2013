@@ -30,15 +30,61 @@
 
     }
 
+
+    //Show DocUpload Popup and Refresh grid when closed
+    function ShowDocUploadPopup(qs1, qs2) {
+        const urlParams_search = new URLSearchParams(location.search);
+        var urlParams = "&" + urlParams_search;
+        //alert(urlParams);
+        urlParams = urlParams.replace(qs1, qs2)
+        //alert(urlParams);
+        var baseurl = popUpload.GetContentUrl();
+        //alert(baseurl);
+        baseurl = baseurl.replace(urlParams, "");
+        var url = baseurl + urlParams;
+        //Make this replace specific to the page
+        // first, remove
+
+        var url = url.replace(qs1, qs2)
+        //alert(url);
+        popUpload.SetContentUrl(url);
+        popUpload.Show();
+    }
+
+    var doc_command = ""
+    function RefreshDocs(s, e) {
+        gridDocs.PerformCallback();
+    }
+    function OnBeginCallback_Docs(s, e) {
+        doc_command = e.command;
+    }
+    function OnEndCallback_Docs(s, e) {
+        if (doc_command == "CUSTOMCALLBACK") {
+            s.Refresh();
+        }
+    }
+
 </script>
 
 
-
+    <table>
+        <tr>
+            <td>
+                    <dx:ASPxLabel ID="lbl1" runat="server" Text="Document Library" Font-Size="Medium" Font-Bold="true" Width="600px"></dx:ASPxLabel>
+                    <br />
+                    <dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="To Do: add more search methods, etc.  For now you can use the filter boxes in the grid." Font-Size="Small" FOnt-Italic="true" Width="600px"></dx:ASPxLabel>
+            </td>
+            <td style="padding-left:50px">
+		        <dx:ASPxButton ID="btnShowDocUploadPopup" runat="server" Text="Upload Document for Study" AutoPostBack="false" Font-Size="small">
+		            <ClientSideEvents Click="function(s, e) { ShowDocUploadPopup('studyid','entityid'); }" />
+	            </dx:ASPxButton>
+            </td>
+            <td style="padding-left:5px">
+                <dx:ASPxLabel ID="lblnote" runat="server" Text="To upload docs for a specific subject, please do so on the Subject Details page."></dx:ASPxLabel>
+            </td>
+        </tr>
+    </table>
     
-    <dx:ASPxLabel ID="lbl1" runat="server" Text="Document Library" Font-Size="Medium" Font-Bold="true" Width="600px"></dx:ASPxLabel>
-
-    <br />
-    <dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="To Do: add more search methods, etc.  For now you can use the filter boxes in the grid." Font-Size="Small" FOnt-Italic="true" Width="600px"></dx:ASPxLabel>
 
     <br />
     
@@ -71,7 +117,14 @@
        </Columns>
     </dx:ASPxGridView>
 
-
+    	<dx:ASPxPopupControl ID="popUpload" runat="server" Width="1100px" Height="500px" CloseAction="CloseButton" CloseOnEscape="true" Modal="True"  
+        PopupHorizontalAlign="WindowCenter" PopupVerticalAlign="WindowCenter" ClientInstanceName="popUpload"  ContentUrl="~/Docs/DocsUploadPopup.aspx?entitytypeid=6"
+        HeaderText="Upload Document" AllowDragging="True" PopupAnimationType="None" EnableViewState="False" AutoUpdatePosition="true">
+        <ClientSideEvents CloseUp="RefreshDocs" />
+        <ContentStyle>
+            <Paddings PaddingBottom="5px" />
+        </ContentStyle>
+    </dx:ASPxPopupControl>
 
     <br />
     <br />
@@ -84,7 +137,7 @@
 
 
     <asp:SqlDataSource ID="sqlDocs" runat="server" SelectCommandType="Text"  
-        SelectCommand="exec  trk.spDocList_for_Library  "
+        SelectCommand="select * from vwDocList where availableallstudies=1 or entity_studyID in (select studyID from dbo.fnMySelectedStudies()) order by docversid desc"
         ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>" >
     </asp:SqlDataSource>
 

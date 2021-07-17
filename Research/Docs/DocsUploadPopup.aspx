@@ -91,7 +91,7 @@
 
 
                                             <dx:ASPxComboBox runat="server" ID="cboDataUploadType" DataSourceID="sql_doctype" ClientInstanceName="cboDataUploadType" Width="100%" 
-                                                 TextField="doctype_desc" ValueField="doctypeid" OnSelectedIndexChanged="cboDataUploadType_SelectedIndexChanged" AutoPostBack="true">
+                                                 TextField="doctype" ValueField="doctypeid" OnSelectedIndexChanged="cboDataUploadType_SelectedIndexChanged" AutoPostBack="true">
                                             </dx:ASPxComboBox>
                                             <br />
                                             <dx:ASPxButton ID="btnSubmitMissing" runat="server" Text="Submit as missing document" OnClick="btnSubmitMissing_Click"></dx:ASPxButton>
@@ -214,7 +214,7 @@
     
     	<asp:SqlDataSource ID="sql_doctype_data" runat="server" ConnectionString="<%$ ConnectionStrings:DATA_CONN_STRING %>"
 		SelectCommandType="text"
-		SelectCommand="select doctypeid,  doctype_desc  from tbldoctype_lkup where ">
+		SelectCommand="select doctypeid,  doctype_desc  from tbldoctype_lkup  ">
 	 </asp:SqlDataSource> 
 
 </asp:Content>

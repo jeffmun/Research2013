@@ -493,33 +493,33 @@ public partial class Data_ImportREDCap : BasePage
 
 	}
 
-	protected void btnSaveFormData_OnClick(object sender, EventArgs e)
-	{
-		Debug.WriteLine("*************** btnSaveFormData_OnClick");
+	//protected void btnSaveFormData_OnClick(object sender, EventArgs e)
+	//{
+	//	Debug.WriteLine("*************** btnSaveFormData_OnClick");
 
-		List<string> formnames = GetSelectedFormnames();
+	//	List<string> formnames = GetSelectedFormnames();
 
 
-		if (formnames.Count > 0)
-		{
-			placeholder_gridMeta.Controls.Clear();
+	//	if (formnames.Count > 0)
+	//	{
+	//		placeholder_gridMeta.Controls.Clear();
 
-			for (int i = 0; i < formnames.Count; i++)
-			{
+	//		for (int i = 0; i < formnames.Count; i++)
+	//		{
 
-				redcap.SaveFormDataToDB(formnames[i], Master.Master_studyID);
+	//			redcap.SaveFormDataToDB(formnames[i], Master.Master_studyID);
 
-				lblSaveInfo.EncodeHtml = false;
-				lblSaveInfo.Text = String.Format("{0}",redcap.import_results.LogNotesToHtml());
-			}
-			lblNoneSelected.Text = "";
-		}
-		else
-		{
-			lblNoneSelected.Text = "Select a REDCap form.";
-		}
+	//			lblSaveInfo.EncodeHtml = false;
+	//			lblSaveInfo.Text = String.Format("{0}",redcap.import_results.LogNotesToHtml());
+	//		}
+	//		lblNoneSelected.Text = "";
+	//	}
+	//	else
+	//	{
+	//		lblNoneSelected.Text = "Select a REDCap form.";
+	//	}
 
-	}
+	//}
 
 
 

@@ -43,7 +43,7 @@ namespace AutismCenterBase.Security
 
 			//JMTEMP
 			this.sLoginID = "jeffmun";//HttpContext.Current.Request.ServerVariables["AUTH_USER"].ToString().Replace("AUTISM\\", "");
-			this.sPassword = "0987!@KLm";//HttpContext.Current.Request.ServerVariables["AUTH_PASSWORD"].ToString();
+			this.sPassword = "";//HttpContext.Current.Request.ServerVariables["AUTH_PASSWORD"].ToString();
 		}
 
 		public Login(string sUID, string sPWD)

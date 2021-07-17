@@ -371,7 +371,9 @@ namespace DataEntryFramework3
 			{
 				if (_DBConnection == null)
 				{
-					string connectString = ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"];
+					//string connectString = ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"];
+					string connectString = ConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ToString();
+
 					_DBConnection = new SqlConnection(connectString);
 				}
 				return _DBConnection;
@@ -1189,8 +1191,22 @@ namespace DataEntryFramework3
 						lookupSqlCommand.Parameters.AddWithValue("@studymeasid", dec.LookupStudyMeasID);
 					}
 
+
+					if(lookupSqlCommand.Connection.State != ConnectionState.Open)
+                    {
+						lookupSqlCommand.Connection.Open();
+					}
+
+
 					SqlDataAdapter adp = new SqlDataAdapter(lookupSqlCommand);
 					DataSet ds = new DataSet();
+					
+
+
+					////New June 2021 tofix
+					//SQL_utils sql = new SQL_utils("data");
+					//DataSet ds2 = sql.DataSet_from_SQLstring(lookupSqlCommand.CommandText);
+
 					int rowsAdded = adp.Fill(ds, "results");
 
 					if (rowsAdded == 1)

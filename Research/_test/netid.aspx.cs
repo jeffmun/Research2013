@@ -34,7 +34,7 @@ public partial class _test_netid : System.Web.UI.Page
 		string sPath2 = @"LDAPS://netid.washington.edu,636/dc=netid,dc=edu user base,dc=washington,dc=edu,ou=People,ou=u_uwautism";
 
 
-		DirectoryEntry oDirEntry = new DirectoryEntry(sPath2, "jeffmun", "0987!@KLm");
+		DirectoryEntry oDirEntry = new DirectoryEntry(sPath2, "jeffmun", "098zxcPOI!");
 
 
 

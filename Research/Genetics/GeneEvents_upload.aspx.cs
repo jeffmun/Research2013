@@ -36,7 +36,7 @@ public partial class Genetics_GeneEvents_upload : System.Web.UI.Page
 		oConnData.ConnectionString = ConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ToString();
 
 
-		conWS03Excel_Imports.ConnectionString = "Server=autism-ws03\\MSSQLSERVER;Database=Excel_Imports;User ID=Autism/jeffmun;Password=0987!@KLm;";
+		conWS03Excel_Imports.ConnectionString = "Server=autism-ws03\\MSSQLSERVER;Database=Excel_Imports;User ID=Autism/jeffmun;Password=UNK;";
 
 
 		if (!IsPostBack)

@@ -53,8 +53,9 @@
         <siteMapNode url="" title="ESS" menuitem="true">
           <siteMapNode url="~/Study/ESS/esssubjectinfo.aspx" title="ESS Consort Chart and Subject Info" menuitem="true" />
         </siteMapNode>
-        <siteMapNode url="" title="Sleep Pilot" menuitem="true">
-          <siteMapNode url="~/Reports/SleepSummary.aspx" title="Sleep Data Summary" menuitem="true" />
+        <siteMapNode url="" title="Sleep Clinic" menuitem="true">
+          <siteMapNode url="~/Reports/SleepSummary.aspx" title="Sleep Data Summary by Subject" menuitem="true" />
+          <siteMapNode url="~/Reports/SleepMeasures.aspx" title="Sleep Data Measure Status" menuitem="true" />
         </siteMapNode>
       </siteMapNode>
       <siteMapNode url="~/Track/otherID.aspx" title="Other ID's" description="Search and export list of alternate/other ID's" />
@@ -104,6 +105,8 @@
         <siteMapNode url="~/Data/ManageREDCap.aspx" title="Manage REDCap" description="" menuitem="true" />
         <siteMapNode url="~/Data/REDCap.aspx" title="Linked Import Tables" description="" menuitem="true" />
       </siteMapNode>
+      <siteMapNode url="~/Data/ProcessActigraphy.aspx" title="Process Actigraphy" description="" menuitem="true" />
+      <siteMapNode url="~/Data/ActigraphySummary.aspx" title="Actigraphy Summary" description="" menuitem="true" />
     </siteMapNode>
     <siteMapNode url="" title="Admin">
       <siteMapNode url="~/NDAR/GUIDinfo.aspx" title="NDAR GUID Info" menuitem="true" />

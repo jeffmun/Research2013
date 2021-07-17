@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Research", "http://localhost:60094", "{709DC5FF-4662-4150-AC30-E3F7D4FFA0F6}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Research", "http://localhost:60105", "{709DC5FF-4662-4150-AC30-E3F7D4FFA0F6}"
 	ProjectSection(WebsiteProperties) = preProject
 		SccProjectName = "SAK"
 		SccAuxPath = "SAK"
@@ -11,16 +11,16 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Research", "http://localhos
 		SccProvider = "SAK"
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_60094"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_60105"
 		Debug.AspNetCompiler.PhysicalPath = "Research\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60094\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60105\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_60094"
+		Release.AspNetCompiler.VirtualPath = "/localhost_60105"
 		Release.AspNetCompiler.PhysicalPath = "Research\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60094\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60105\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"

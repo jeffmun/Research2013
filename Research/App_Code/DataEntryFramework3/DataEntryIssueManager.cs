@@ -39,7 +39,8 @@ namespace DataEntryFramework3
 			{
 				if (_DBConnection == null)
 				{
-					string connectString = ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"];
+					//string connectString = ConfigurationManager.AppSettings["sqlDataConnection.ConnectionString"];
+					string connectString = ConfigurationManager.ConnectionStrings["DATA_CONN_STRING"].ToString();
 					_DBConnection = new SqlConnection(connectString);
 				}
 				return _DBConnection;

@@ -16,11 +16,11 @@ using System.Data.SqlClient;
 
 namespace uwac
 {
-    /// <summary>
-    /// Summary description for Actigraphy
-    /// </summary>
-    public class Actigraphy : Datapipeline
-    {
+	/// <summary>
+	/// Summary description for Actigraphy
+	/// </summary>
+	public class Actigraphy : Datapipeline
+	{
 		public DataTable dt_props;
 		public DataTable dt_stats;
 		public DataTable dt_epochs;
@@ -28,20 +28,22 @@ namespace uwac
 		public DataTable dt_sleeps;
 		public DataTable dt_diary;
 		public string _id { get; set; }
+		public int _timepointid { get; set;}
 		public List<ActigraphChunkMarkers> markers { get; set; }
 
 		public ActigraphyTimepoint startsource;
 		public ActigraphyTimepoint endsource;
 
-		public Actigraphy(int docversid, string filepath, string id, ActigraphyTimepoint starting_point, ActigraphyTimepoint ending_point)
+		public Actigraphy(int docversid, string filepath, string id, int timepointid, ActigraphyTimepoint starting_point, ActigraphyTimepoint ending_point)
         {
 			startsource = starting_point;
 			endsource = ending_point;
 			_id = id;
+			_timepointid = timepointid;
 
-            Initialize(docversid, filepath);
+			Initialize(docversid, filepath);
 
-			if (_docvers.dset != null)
+			if (_docvers.HasTables())
 			{
 				ExtractMarkers();
 
@@ -53,8 +55,9 @@ namespace uwac
 				GetSleepDiaryInfoFromDB();
 
 				CountConsecSleepsWithinEpochs();
-				dt_sleeps = CreateFirstLastSleepsTable();
-				_log.Log(String.Format("INFO: Found {0} records of Sleep Diary info for '{1}'", dt_diary.Rows.Count, id));
+
+				//dt_sleeps = CreateFirstLastSleepsTable();
+				//_log.Log(String.Format("INFO: Found {0} records of Sleep Diary info for '{1}'", dt_diary.Rows.Count, id));
 
 				//ScoreFromDiary();
 
@@ -66,8 +69,12 @@ namespace uwac
 
 		public DataTable SleepStats(string intervaltype)
 		{
-			DataTable dt = dt_stats.AsEnumerable().Where(f => f.Field<string>("intervaltype") == intervaltype).CopyToDataTable();
-			return dt;
+			if (dt_stats.HasRows())
+			{
+				DataTable dt = dt_stats.AsEnumerable().Where(f => f.Field<string>("intervaltype") == intervaltype).CopyToDataTable();
+				return dt;
+			}
+			else return null;
 		}
 
 		public DataTable TopNEpochs(int n)
@@ -97,7 +104,7 @@ namespace uwac
 			_logs.AddLog(_docvers.processing_results);
 			_logs.AddLog(_log);
 
-			if (_docvers.dset != null)
+			if (_docvers.HasTables())
 			{
 				_docvers.dset.Tables[0].AddRowNumColumn();
 				_log.Log(String.Format("origfilename = {0}", _docvers._origfilename));
@@ -225,6 +232,80 @@ namespace uwac
 				{
 					r["end_dt"] = ActigraphyScoring.Date_time_ToDateTime(int_enddate, dbl_endtime);
 				}
+
+				//Convert to numeric types
+				if (dt_stats.ContainsColumnName("intervalnum")) dt_stats.ConvertColumnType("intervalnum", typeof(int));
+				if (dt_stats.ContainsColumnName("startdate")) dt_stats.ConvertColumnType("startdate", typeof(int));
+				if (dt_stats.ContainsColumnName("enddate")) dt_stats.ConvertColumnType("enddate", typeof(int));
+				if (dt_stats.ContainsColumnName("duration")) dt_stats.ConvertColumnType("duration", typeof(int));
+				if (dt_stats.ContainsColumnName("offwrist")) dt_stats.ConvertColumnType("offwrist", typeof(int));
+				if (dt_stats.ContainsColumnName("totalac")) dt_stats.ConvertColumnType("totalac", typeof(int));
+				if (dt_stats.ContainsColumnName("maxac")) dt_stats.ConvertColumnType("maxac", typeof(int));
+				if (dt_stats.ContainsColumnName("invtimeac")) dt_stats.ConvertColumnType("invtimeac", typeof(int));
+				if (dt_stats.ContainsColumnName("invtimesw")) dt_stats.ConvertColumnType("invtimesw", typeof(int));
+				if (dt_stats.ContainsColumnName("onsetlatency")) dt_stats.ConvertColumnType("onsetlatency", typeof(int));
+				if (dt_stats.ContainsColumnName("snoozetime")) dt_stats.ConvertColumnType("snoozetime", typeof(int));
+				if (dt_stats.ContainsColumnName("waso")) dt_stats.ConvertColumnType("waso", typeof(int));
+				if (dt_stats.ContainsColumnName("waketime")) dt_stats.ConvertColumnType("waketime", typeof(int));
+				if (dt_stats.ContainsColumnName("numwakebouts")) dt_stats.ConvertColumnType("numwakebouts", typeof(int));
+				if (dt_stats.ContainsColumnName("sleeptime")) dt_stats.ConvertColumnType("sleeptime", typeof(int));
+				if (dt_stats.ContainsColumnName("numsleepbouts")) dt_stats.ConvertColumnType("numsleepbouts", typeof(int));
+				if (dt_stats.ContainsColumnName("immobiletime")) dt_stats.ConvertColumnType("immobiletime", typeof(int));
+				if (dt_stats.ContainsColumnName("numimmbouts")) dt_stats.ConvertColumnType("numimmbouts", typeof(int));
+				if (dt_stats.ContainsColumnName("mobiletime")) dt_stats.ConvertColumnType("mobiletime", typeof(int));
+				if (dt_stats.ContainsColumnName("nummobbouts")) dt_stats.ConvertColumnType("nummobbouts", typeof(int));
+				if (dt_stats.ContainsColumnName("numoneminimmb")) dt_stats.ConvertColumnType("numoneminimmb", typeof(int));
+				if (dt_stats.ContainsColumnName("taltwhite")) dt_stats.ConvertColumnType("taltwhite", typeof(int));
+				if (dt_stats.ContainsColumnName("invtimewhite")) dt_stats.ConvertColumnType("invtimewhite", typeof(int));
+				if (dt_stats.ContainsColumnName("rownum")) dt_stats.ConvertColumnType("rownum", typeof(int));
+				if (dt_stats.ContainsColumnName("docversid")) dt_stats.ConvertColumnType("docversid", typeof(int));
+				if (dt_stats.ContainsColumnName("issummary")) dt_stats.ConvertColumnType("issummary", typeof(int));
+
+				if (dt_stats.ContainsColumnName("starttime")) dt_stats.ConvertColumnType("starttime", typeof(double));
+				if (dt_stats.ContainsColumnName("endtime")) dt_stats.ConvertColumnType("endtime", typeof(double));
+				if (dt_stats.ContainsColumnName("pctoffwrist")) dt_stats.ConvertColumnType("pctoffwrist", typeof(double));
+				if (dt_stats.ContainsColumnName("avgac_per_min")) dt_stats.ConvertColumnType("avgac_per_min", typeof(double));
+				if (dt_stats.ContainsColumnName("avgac_per_epoch")) dt_stats.ConvertColumnType("avgac_per_epoch", typeof(double));
+				if (dt_stats.ContainsColumnName("stdac")) dt_stats.ConvertColumnType("stdac", typeof(double));
+				if (dt_stats.ContainsColumnName("pctinvalidac")) dt_stats.ConvertColumnType("pctinvalidac", typeof(double));
+				if (dt_stats.ContainsColumnName("pctinvalidsw")) dt_stats.ConvertColumnType("pctinvalidsw", typeof(double));
+				if (dt_stats.ContainsColumnName("efficiency")) dt_stats.ConvertColumnType("efficiency", typeof(double));
+				if (dt_stats.ContainsColumnName("pctwake")) dt_stats.ConvertColumnType("pctwake", typeof(double));
+				if (dt_stats.ContainsColumnName("avgwakeb")) dt_stats.ConvertColumnType("avgwakeb", typeof(double));
+				if (dt_stats.ContainsColumnName("pctsleep")) dt_stats.ConvertColumnType("pctsleep", typeof(double));
+				if (dt_stats.ContainsColumnName("avgsleepb")) dt_stats.ConvertColumnType("avgsleepb", typeof(double));
+				if (dt_stats.ContainsColumnName("pctimmobile")) dt_stats.ConvertColumnType("pctimmobile", typeof(double));
+				if (dt_stats.ContainsColumnName("avgimmbout")) dt_stats.ConvertColumnType("avgimmbout", typeof(double));
+				if (dt_stats.ContainsColumnName("pctmobile")) dt_stats.ConvertColumnType("pctmobile", typeof(double));
+				if (dt_stats.ContainsColumnName("avgmobbout")) dt_stats.ConvertColumnType("avgmobbout", typeof(double));
+				if (dt_stats.ContainsColumnName("pctoneminimmb")) dt_stats.ConvertColumnType("pctoneminimmb", typeof(double));
+				if (dt_stats.ContainsColumnName("fragmentation")) dt_stats.ConvertColumnType("fragmentation", typeof(double));
+				if (dt_stats.ContainsColumnName("exposurewhite")) dt_stats.ConvertColumnType("exposurewhite", typeof(double));
+				if (dt_stats.ContainsColumnName("avgwhite")) dt_stats.ConvertColumnType("avgwhite", typeof(double));
+				if (dt_stats.ContainsColumnName("stdwhite")) dt_stats.ConvertColumnType("stdwhite", typeof(double));
+				if (dt_stats.ContainsColumnName("maxwhite")) dt_stats.ConvertColumnType("maxwhite", typeof(double));
+				if (dt_stats.ContainsColumnName("pctinvalidwhite")) dt_stats.ConvertColumnType("pctinvalidwhite", typeof(double));
+				if (dt_stats.ContainsColumnName("exposurered")) dt_stats.ConvertColumnType("exposurered", typeof(double));
+				if (dt_stats.ContainsColumnName("avgred")) dt_stats.ConvertColumnType("avgred", typeof(double));
+				if (dt_stats.ContainsColumnName("stdred")) dt_stats.ConvertColumnType("stdred", typeof(double));
+				if (dt_stats.ContainsColumnName("maxred")) dt_stats.ConvertColumnType("maxred", typeof(double));
+				if (dt_stats.ContainsColumnName("taltred")) dt_stats.ConvertColumnType("taltred", typeof(double));
+				if (dt_stats.ContainsColumnName("invtimered")) dt_stats.ConvertColumnType("invtimered", typeof(double));
+				if (dt_stats.ContainsColumnName("pctinvalidred")) dt_stats.ConvertColumnType("pctinvalidred", typeof(double));
+				if (dt_stats.ContainsColumnName("exposuregreen")) dt_stats.ConvertColumnType("exposuregreen", typeof(double));
+				if (dt_stats.ContainsColumnName("avggreen")) dt_stats.ConvertColumnType("avggreen", typeof(double));
+				if (dt_stats.ContainsColumnName("stdgreen")) dt_stats.ConvertColumnType("stdgreen", typeof(double));
+				if (dt_stats.ContainsColumnName("maxgreen")) dt_stats.ConvertColumnType("maxgreen", typeof(double));
+				if (dt_stats.ContainsColumnName("taltgreen")) dt_stats.ConvertColumnType("taltgreen", typeof(double));
+				if (dt_stats.ContainsColumnName("invtimegreen")) dt_stats.ConvertColumnType("invtimegreen", typeof(double));
+				if (dt_stats.ContainsColumnName("pctinvalidgreen")) dt_stats.ConvertColumnType("pctinvalidgreen", typeof(double));
+				if (dt_stats.ContainsColumnName("exposureblue")) dt_stats.ConvertColumnType("exposureblue", typeof(double));
+				if (dt_stats.ContainsColumnName("avgblue")) dt_stats.ConvertColumnType("avgblue", typeof(double));
+				if (dt_stats.ContainsColumnName("stdblue")) dt_stats.ConvertColumnType("stdblue", typeof(double));
+				if (dt_stats.ContainsColumnName("maxblue")) dt_stats.ConvertColumnType("maxblue", typeof(double));
+				if (dt_stats.ContainsColumnName("taltblue")) dt_stats.ConvertColumnType("taltblue", typeof(double));
+				if (dt_stats.ContainsColumnName("invtimeblue")) dt_stats.ConvertColumnType("invtimeblue", typeof(double));
+				if (dt_stats.ContainsColumnName("pctinvalidblue")) dt_stats.ConvertColumnType("pctinvalidblue", typeof(double));
 			}
 		}
 
@@ -271,6 +352,8 @@ namespace uwac
 			if (dt_epochs.ContainsColumnName("epoch")) dt_epochs.ConvertColumnType("epoch", typeof(int));
 			if (dt_epochs.ContainsColumnName("time")) dt_epochs.ConvertColumnType("time", typeof(double));
 
+			if (dt_epochs.ContainsColumnName("offwriststatus")) dt_epochs.ConvertColumnType("offwriststatus", typeof(int));
+
 			if (dt_epochs.ContainsColumnName("activity")) dt_epochs.ConvertColumnType("activity", typeof(int));
 
 
@@ -309,7 +392,7 @@ namespace uwac
 				string sleep0wake1 = row["sleep0wake1"].ToString();
 				consec_sleeps = (sleep0wake1 == "0") ? consec_sleeps + 1 : 0;
 				row["consecsleeps"] = consec_sleeps;
-            }
+			}
 			dt_epochs.AcceptChanges();
         }
 
@@ -362,8 +445,13 @@ namespace uwac
 							, endsource.ToString(), ActigraphyScoring.Daymin_to_String(actig_sleepend_daymin), dtday.Rows.Count
 							, actig_sleepend_daymin - actig_sleepstart_daymin));
 
-					CaclulateSleepVariables(dtday, diarydaycounter, 3, 5, 40, startsource.ToString(), endsource.ToString()
-							, actig_sleepstart_daymin.Value, actig_sleepend_daymin.Value);
+					dtday = CalculateCustomSleepWake(dtday, 40);
+
+					dtday = CountConsecSleepsWithinDay(dtday);
+
+					CaclulateSleepVariables(dtday, diarydaycounter, 3, 5, 40
+						, startsource.ToString(), endsource.ToString()
+						, actig_sleepstart_daymin.Value, actig_sleepend_daymin.Value);
 				}
 				else
 				{
@@ -372,44 +460,105 @@ namespace uwac
 							, endsource, ActigraphyScoring.Daymin_to_String(actig_sleepend_daymin)));
 				}
 
-				//dtday = GetSubsetOfEpochs(bed_time_daymin, out_of_bed_time_daymin);
-				//if (dtday.HasRows())
-				//{
-				//	CaclulateSleepVariables(dtday, diarydaycounter, 3, 5, 40, "bed_time", "out_of_bed_time", actig_sleepstart_daymin, actig_sleepend_daymin);
-				//}
-
 			}
 
 
 		}
 
+
+		public DataTable CalculateCustomSleepWake(DataTable dt, int act_threshhold)
+        {
+			dt.AddColumn("custom_activity", typeof(double));
+			dt.AddColumn("custom_sleep0wake1", typeof(int));
+
+			//Caclulate Activity Count
+			for (int i=0; i < dt.Rows.Count; i++)
+			{
+				bool ready1bef = (i >= 1) ? true : false;
+				bool ready2bef = (i >= 2) ? true : false;
+				bool ready1aft = (i < (dt.Rows.Count - 1)) ? true : false;
+				bool ready2aft = (i < (dt.Rows.Count - 2)) ? true : false;
+
+				DataRow row = dt.Rows[i];
+				DataRow row_bef = (ready1bef) ? dt.Rows[i - 1] : null;
+				DataRow row_bef2 = (ready2bef) ? dt.Rows[i - 2] : null;
+
+				DataRow row_aft = (ready1aft) ? dt.Rows[i + 1] : null;
+				DataRow row_aft2 = (ready2aft) ? dt.Rows[i + 2] : null;
+
+
+				double act = Convert.ToInt32(row["activity"].ToString());
+				double act_bef = (ready1bef) ? Convert.ToInt32(row_bef["activity"].ToString()) : 9999;
+				double act_aft = (ready1aft) ? Convert.ToInt32(row_aft["activity"].ToString()) : 9999;
+				double act_bef2 = (ready2bef) ? Convert.ToInt32(row_bef2["activity"].ToString()) : 9999;
+				double act_aft2 = (ready2aft) ? Convert.ToInt32(row_aft2["activity"].ToString()) : 9999;
+
+
+				double total_activity_counts = act + (.2 * (act_bef + act_aft)) + (.04 * (act_bef2 + act_aft2));
+
+				row["custom_activity"] = total_activity_counts;
+				row["custom_sleep0wake1"] = (total_activity_counts <= act_threshhold) ? 0 : 1;
+			}
+
+			dt.AcceptChanges();
+			return (dt);
+		}
+
+		private DataTable CountConsecSleepsWithinDay(DataTable dt)
+		{
+			dt.AddColumn("consecsleeps", typeof(int));
+			dt.AddColumn("custom_consecsleeps", typeof(int));
+
+			int consec_sleeps = 0;
+			int custom_consec_sleeps = 0;
+
+			for (int i = 0; i < dt.Rows.Count; i++)
+			{
+				DataRow row = dt.Rows[i];
+				string sleep0wake1 = row["sleep0wake1"].ToString();
+				consec_sleeps = (sleep0wake1 == "0") ? consec_sleeps + 1 : 0;
+				row["consecsleeps"] = consec_sleeps;
+
+				string cust_sleep0wake1 = row["custom_sleep0wake1"].ToString();
+				custom_consec_sleeps = (cust_sleep0wake1 == "0") ? custom_consec_sleeps + 1 : 0;
+				row["consecsleeps"] = custom_consec_sleeps;
+
+			}
+			dt.AcceptChanges();
+			return (dt);
+		}
+
+
 		private void CaclulateSleepVariables(DataTable dt, int day, int nconsec_sleeps_forward, int nconsec_sleeps_backward
 			, int act_threshhold, string first_day_min_source, string last_day_min_source, int actig_sleepstart_daymin, int actig_sleepend_daymin)
 		{
 			Debug.WriteLine(String.Format("******** LogFirstLastSleeps forward {0}   backward {1} ************", nconsec_sleeps_forward, nconsec_sleeps_backward));
-			Debug.WriteLine(String.Format("******** LogFirstLastSleeps forward {0}   backward {1} ************", nconsec_sleeps_forward, nconsec_sleeps_backward));
-			//DataTable dtsleeps = CreateFirstLastSleepsTable();
 
+			//get the extent of the time period to be scored	
 			int min_daymin = dt.AsEnumerable().Select(f => f.Field<int>("daymin")).Min();
 			int max_daymin = dt.AsEnumerable().Select(f => f.Field<int>("daymin")).Max();
 
+			// min max sleep from actiwatch scoring
 			int min_sleep_daymin = dt.AsEnumerable().Where(f => f.Field<int?>("sleep0wake1") == 0).Select(f => f.Field<int>("daymin")).Min();
 			int max_sleep_daymin = dt.AsEnumerable().Where(f => f.Field<int?>("sleep0wake1") == 0).Select(f => f.Field<int>("daymin")).Max();
 
 			Debug.WriteLine(String.Format("min_sleep_day_min {0}     max_sleep_day_min {1} ", min_sleep_daymin, max_sleep_daymin));
 
+			//Find first and last consecutive sleeps
 			int starting_day_min_first_nconsec = dt.AsEnumerable().Where(f => f.Field<int>("consecsleeps") >= nconsec_sleeps_forward).Select(f => f.Field<int>("daymin")).Min();
 			int starting_day_min_last_nconsec = dt.AsEnumerable().Where(f => f.Field<int>("consecsleeps") >= nconsec_sleeps_backward).Select(f => f.Field<int>("daymin")).Max();
 
 			starting_day_min_first_nconsec  = starting_day_min_first_nconsec - nconsec_sleeps_forward + 1;
 
+			int sum_all_activity_default = dt.AsEnumerable().Select(f => f.Field<int>("activity")).Sum();
+			int sum_all_mobility_default = dt.AsEnumerable().Select(f => f.Field<int>("mobility")).Sum();
+
 			int sum_wake_default = dt.AsEnumerable().Where(f => f.Field<int>("daymin") >= starting_day_min_first_nconsec & f.Field<int>("daymin") <= starting_day_min_last_nconsec &
-				  f.Field<int?>("sleep0wake1")==1)
+				f.Field<int?>("sleep0wake1") == 1)
 				.Count();
 
-
 			int sum_mobility_default = (dt.ContainsColumnName("mobility")) ? dt.AsEnumerable().Where(f => f.Field<int>("daymin") >= starting_day_min_first_nconsec & f.Field<int>("daymin") <= starting_day_min_last_nconsec &
-					f.Field<int?>("mobility")==1)
+				f.Field<int?>("mobility")==1)
 				.Count() : -1;
 
 			int sum_wake_custom = dt.AsEnumerable().Where(f => f.Field<int>("activity") >= act_threshhold &
@@ -419,6 +568,8 @@ namespace uwac
 
 			int startday_int = min_daymin / 1440;
 			int endday_int = max_daymin / 1440;
+
+			double auto_wake_threshhold = (sum_all_activity_default / sum_all_mobility_default) * 0.88888;
 
 			DataRow row = dt_sleeps.NewRow();
 			row["day"] = day;
@@ -445,13 +596,11 @@ namespace uwac
 			row["sleepstart_time"] = (starting_day_min_first_nconsec % 1440.0) / 1440.0;
 			row["sleepend_time"] = (starting_day_min_last_nconsec % 1440.0) / 1440.0;
 
-
+			row["sum_all_activity_default"] = sum_all_activity_default;
 			row["num_wake_epochs_default"] = sum_wake_default;
-			row["num_mobile_epochs_default"] = sum_mobility_default;
-
 			row["customactivtythreshhold"] = act_threshhold;
 			row["num_wake_epochs_custom"] = sum_wake_custom;
-			row["num_mobile_epochs_custom"] = sum_mobility_custom;
+			row["auto_wake_threshhold"] = auto_wake_threshhold;
 
 			dt_sleeps.Rows.Add(row);
 
@@ -562,12 +711,13 @@ namespace uwac
 			dt.AddColumn("sleepstart_time", typeof(double));
 			dt.AddColumn("sleepend_time", typeof(double));
 
+			dt.AddColumn("sum_all_activity_default", typeof(int));
 			dt.AddColumn("num_mobile_epochs_default", typeof(int));
 			dt.AddColumn("num_wake_epochs_default", typeof(int));
 
 			dt.AddColumn("customactivtythreshhold", typeof(int));
-			dt.AddColumn("num_mobile_epochs_custom", typeof(int));
 			dt.AddColumn("num_wake_epochs_custom", typeof(int));
+			dt.AddColumn("auto_wake_threshhold", typeof(double));
 
 			//dt.AddColumn("num_mobile_bouts", typeof(int));
 			//dt.AddColumn("num_wake_bouts", typeof(int));
@@ -579,7 +729,7 @@ namespace uwac
 
         #endregion
 
-        #region DB functinos
+        #region DB functions
 
         private void GetSleepDiaryInfoFromDB()
         {
@@ -595,23 +745,56 @@ namespace uwac
 			//SQLCreateTableSyntax_from_DataTable(dt_stats_summary, "Stats_Summary");
 			//SQLCreateTableSyntax_from_DataTable(dt_epochs, "Epochs");
 
-			SQL_utils sql1 = new SQL_utils("data");
-			_log.Log(sql1.BulkInsert(dt_props, "ALL_Actigraphy_Props"));
-			sql1.Close();
+			bool has_props = dt_props.HasRows();
+			bool has_stats = dt_stats.HasRows();
+			bool has_stats_summary = dt_stats_summary.HasRows();
+			bool has_epochs = dt_epochs.HasRows();
+	
+						
+			if (has_props)
+			{
+				SQL_utils sql1 = new SQL_utils("data");
+				sql1.NonQuery_from_SQLstring(String.Format("delete from ALL_Actigraphy_Props where docversid = {0}", _docvers.docversid));
+				_log.Log(sql1.BulkInsert(dt_props, "ALL_Actigraphy_Props"));
+				sql1.Close();
+			}
 
-			SQL_utils sql2 = new SQL_utils("data");
-			_log.Log(sql2.BulkInsert(dt_stats, "ALL_Actigraphy_Stats"));
-			sql2.Close();
+			if (has_stats)
+			{
+				SQL_utils sql2 = new SQL_utils("data");
+				sql2.NonQuery_from_SQLstring(String.Format("delete from ALL_Actigraphy_Stats where docversid = {0}", _docvers.docversid));
+				_log.Log(sql2.BulkInsert(dt_stats, "ALL_Actigraphy_Stats"));
+				sql2.Close();
+			}
 
-			SQL_utils sql3 = new SQL_utils("data");
-			_log.Log(sql3.BulkInsert(dt_stats_summary, "ALL_Actigraphy_Stats_Summary"));
-			sql3.Close();
+			if (has_stats_summary)
+			{
+				SQL_utils sql3 = new SQL_utils("data");
+				sql3.NonQuery_from_SQLstring(String.Format("delete from ALL_Actigraphy_Stats_Summary where docversid = {0}", _docvers.docversid));
+				_log.Log(sql3.BulkInsert(dt_stats_summary, "ALL_Actigraphy_Stats_Summary"));
+				sql3.Close();
+			}
 
-			SQL_utils sql4 = new SQL_utils("data");
-			_log.Log(sql4.BulkInsert(dt_epochs, "ALL_Actigraphy_Epochs"));
-			sql4.Close();
+			if (has_epochs)
+			{
+				SQL_utils sql4 = new SQL_utils("data");
+				sql4.NonQuery_from_SQLstring(String.Format("delete from ALL_Actigraphy_Epochs where docversid = {0}", _docvers.docversid));
+				_log.Log(sql4.BulkInsert(dt_epochs, "ALL_Actigraphy_Epochs"));
+				sql4.Close();
+			}
+
+			SQL_utils sql = new SQL_utils("data");
+			int smid_props = sql.IntScalar_from_SQLstring(String.Format("select studymeasid from uwautism_research_backend..tblstudymeas where measureid=4855 and timepointid={0}", _timepointid));
+			int smid_stats = sql.IntScalar_from_SQLstring(String.Format("select studymeasid from uwautism_research_backend..tblstudymeas where measureid=3842 and timepointid={0}", _timepointid));
+			int smid_epochs = sql.IntScalar_from_SQLstring(String.Format("select studymeasid from uwautism_research_backend..tblstudymeas where measureid=4853 and timepointid={0}", _timepointid));
 
 
+			sql.NonQuery_from_SQLstring(String.Format("update ALL_Actigraphy_Props set id='{0}', studymeasid={1}  where docversid={2}", _id, smid_props, _docvers.docversid));
+			sql.NonQuery_from_SQLstring(String.Format("update ALL_Actigraphy_Stats set id='{0}', studymeasid={1}  where docversid={2}", _id, smid_stats, _docvers.docversid));
+			sql.NonQuery_from_SQLstring(String.Format("update ALL_Actigraphy_Stats_Summary set id='{0}', studymeasid={1}  where docversid={2}", _id, smid_stats, _docvers.docversid));
+			sql.NonQuery_from_SQLstring(String.Format("update ALL_Actigraphy_Epochs set id='{0}', studymeasid={1}  where docversid={2}", _id, smid_epochs, _docvers.docversid));
+
+			sql.NonQuery_from_SQLstring(String.Format("exec spActigraphy_Score_WASO_levels '{0}'", _id));
 		}
 
 		public void  SQLCreateTableSyntax_from_DataTable(DataTable dt, string tblname)
