@@ -17,7 +17,7 @@ using uwac;
 using uwac.trk;
 
 
-public partial class Tracking_Subjects : BasePage
+public partial class Tracking_UWACscoring_subjects : BasePage
 {
 	private string ID;
 	private string group_csv;
@@ -278,7 +278,7 @@ public partial class Tracking_Subjects : BasePage
 				Response.Redirect("Actions.aspx");
 				break;
 			case "Measures":
-				Response.Redirect("Measures.aspx");
+				Response.Redirect("UWACscoring_measures.aspx");
 				break;
 		}
 
@@ -614,5 +614,50 @@ public partial class Tracking_Subjects : BasePage
 	public static void SetColorLevel(int x)
 	{
 		dataops.SetColorLevel(x);
+	}
+
+    protected void btnNew_Click(object sender, EventArgs e)
+    {
+		string err = "";
+		if (txtFN.Text == "")
+		{
+			err += " first name;";
+		}
+		if (txtLN.Text == "")
+		{
+			err += "last name; ";
+		}
+		if (txtDOB.Text == "")
+		{
+			err += " DOB;";
+		}
+		if (txtID.Text == "")
+		{
+			err += " ID;";
+		}
+
+
+		if (err != "")
+        {
+			lblERR.Text = String.Format("You must enter: {0}", err);
+
+		}
+
+		else
+		{
+			lblERR.Text = "";
+			SQL_utils sql = new SQL_utils("backend");
+
+			List<SqlParameter> ps = new List<SqlParameter>();
+			ps.Add(sql.CreateParam("fn", txtFN.Text.ToString(), "text"));
+			ps.Add(sql.CreateParam("ln", txtLN.Text.ToString(), "text"));
+			ps.Add(sql.CreateParam("dob", txtDOB.Text.ToString(), "text"));
+			ps.Add(sql.CreateParam("id", txtID.Text.ToString(), "text"));
+
+			sql.NonQuery_from_ProcName("spCreateSubject_UWACScoring", ps);
+
+			Response.Redirect("UWACscoring_subjects.aspx");
+		}
+
 	}
 }

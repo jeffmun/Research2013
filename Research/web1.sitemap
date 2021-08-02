@@ -2,6 +2,7 @@
 <siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0">
   <siteMapNode url="" title="UWAC Research" description="UWAC Research">
     <siteMapNode url="" title="Clinic" description="" menuitem="true" roles="Autism&#x20;Clinic&#x20;Operations&#x20;Group">
+      <siteMapNode url="~/Track/UWACscoring_subjects.aspx" title="UWAC scoring subjects" description="UWAC Scoring subjects" menuitem="true" />
       <siteMapNode url="~/AC/CHDDrpt.aspx" title="CHDD report" description="CHDD report based on Valant data" menuitem="true" />
       <siteMapNode url="~/AC/ValantTracking.aspx" title="Valant tracking" description="Valant tracking" menuitem="true" />
       <siteMapNode url="~/AC/ValantDoc.aspx" title="Valant documents" description="Valant documents" menuitem="true" />
