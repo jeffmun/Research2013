@@ -575,7 +575,7 @@
 					</Columns>
 					 <%--VerticalScrollBarMode="Auto" --%>
 					
-					<Settings ShowGroupPanel="true" ShowGroupedColumns="True" VerticalScrollableHeight="650" VerticalScrollBarMode="Visible" />   <%--ShowPreview="true" --%>
+					<Settings ShowGroupPanel="true" ShowGroupedColumns="True" VerticalScrollableHeight="400" VerticalScrollBarMode="Visible" />   <%--ShowPreview="true" --%>
 					<SettingsBehavior AllowGroup="true" AutoExpandAllGroups="true" EnableCustomizationWindow="true" AllowSelectByRowClick="true" />
 					<SettingsDataSecurity AllowEdit="true" />
 					<SettingsEditing Mode="PopupEditForm"  />

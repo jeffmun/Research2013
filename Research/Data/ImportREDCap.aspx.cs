@@ -470,6 +470,11 @@ public partial class Data_ImportREDCap : BasePage
 				ASPxGridView grid = new ASPxGridView();
 				grid.AutoGenerateColumns = true;
 				grid.DataSource = rcdata.dtRC_postProcess;
+				grid.Settings.HorizontalScrollBarMode = ScrollBarMode.Visible;
+				grid.Width = 1600;
+                grid.DataBound += grid_DataBound; 
+
+
 
 				//ASPxGridView grid = redcap.gridDataFromForm(formnames[i], true);
 
@@ -492,6 +497,18 @@ public partial class Data_ImportREDCap : BasePage
 		}
 
 	}
+
+
+    protected void grid_DataBound(object sender, EventArgs e)
+	{
+		ASPxGridView grid = (ASPxGridView)sender;
+
+		grid.Columns[0].FixedStyle = GridViewColumnFixedStyle.Left; 
+		grid.Columns[1].FixedStyle = GridViewColumnFixedStyle.Left;
+        grid.Columns[2].FixedStyle = GridViewColumnFixedStyle.Left;
+        grid.Columns[3].FixedStyle = GridViewColumnFixedStyle.Left;
+        grid.Columns[4].FixedStyle = GridViewColumnFixedStyle.Left;
+    }
 
 	//protected void btnSaveFormData_OnClick(object sender, EventArgs e)
 	//{

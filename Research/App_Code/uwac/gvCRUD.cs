@@ -42,6 +42,38 @@ namespace uwac
 			e.Cancel = true;
 		}
 
+		public static void gvcrud_OnRowInserting(ASPxGridView gv, ASPxDataInsertingEventArgs e, string dbname)
+		{
+			Debug.WriteLine(" ***** grid_OnRowInserting");
+			//ASPxGridView gv = (ASPxGridView)sender;
+
+			//SQL_utils sql = new SQL_utils(dbname);
+
+			string gvname = gv.ClientInstanceName;
+			DxDbOps.BuildInsertSqlCode(e, gvname, dbname);
+
+			gv.JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+			gv.CancelEdit();
+			e.Cancel = true;
+		}
+
+		public static void gvcrud_OnRowInserting(ASPxGridView gv, ASPxDataInsertingEventArgs e, string dbname, string schemaname)
+		{
+			Debug.WriteLine(" ***** grid_OnRowInserting");
+			//ASPxGridView gv = (ASPxGridView)sender;
+
+			//SQL_utils sql = new SQL_utils(dbname);
+
+			string gvname = gv.ClientInstanceName;
+			DxDbOps.BuildInsertSqlCode(e, gvname, dbname, schemaname);
+
+			gv.JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+			gv.CancelEdit();
+			e.Cancel = true;
+		}
+
+
+
 		public static void gvcrud_OnRowUpdating(ASPxGridView gv, ASPxDataUpdatingEventArgs e)
 		{
 			gvcrud_OnRowUpdating(gv, e, "data", gv.ClientInstanceName,  "dbo");
@@ -67,6 +99,20 @@ namespace uwac
 			gv.CancelEdit();
 			e.Cancel = true;
 		}
+
+
+		public static void gvcrud_OnRowDeleting(ASPxGridView gv, ASPxDataDeletingEventArgs e, string dbname, string schemaname)
+		{
+			//ASPxGridView gv = (ASPxGridView)sender;
+			string gvname = gv.ClientInstanceName;
+			DxDbOps.BuildDeleteSqlCode(e, gvname, dbname, schemaname);
+
+			gv.JSProperties["cpIsUpdated"] = gv.ClientInstanceName.ToString();
+			gv.CancelEdit();
+			e.Cancel = true;
+		}
+
+
 		public static void gvcrud_InitNewRow(object sender, ASPxDataInitNewRowEventArgs e)
 		{
 			Debug.WriteLine(" ***** grid_InitNewRow");

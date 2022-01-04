@@ -12,6 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Configuration;
 using System.Linq;
 using System.Web;
+using System.Net.Security;
 
 // the code below would be placed in your code once you have created a blank aspx page, or
 // in a windows program or wherever.
@@ -314,9 +315,14 @@ namespace uwac_REDCap
 
 			try
 			{
-				// added for mono on unix server. should not need if don't have this environment
-				// ServicePointManager.ServerCertificateValidationCallback = delegate(object s, X509Certificate certificate,
-				//                         X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+                // added for mono on unix server. should not need if don't have this environment
+                //ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate,
+                //                        X509Chain chain, SslPolicyErrors sslPolicyErrors)
+                //{ return true; };
+
+                ServicePointManager.Expect100Continue = true;
+				ServicePointManager.DefaultConnectionLimit = 9999;
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
 				HttpWebRequest webreqRedCap = (HttpWebRequest)WebRequest.Create(strURI);
 
@@ -325,7 +331,7 @@ namespace uwac_REDCap
 				webreqRedCap.ContentLength = bytePostData.Length;
 
 				// Get the request stream and read it
-				Stream streamData = webreqRedCap.GetRequestStream();
+				Stream streamData = webreqRedCap.GetRequestStream(); //error here 10/13/2021
 				streamData.Write(bytePostData, 0, bytePostData.Length);
 				streamData.Close();
 

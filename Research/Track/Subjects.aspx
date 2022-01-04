@@ -238,10 +238,10 @@
 				<br />
 
 				<dx:ASPxGridView ID="gvENT" runat="server"  Visible="false" AutoGenerateColumns="false"   KeyFieldName="subjID" ClientInstanceName="gva"
-					Settings-ShowHeaderFilterButton="true"  
+					Settings-ShowHeaderFilterButton="true"   SettingsResizing-ColumnResizeMode="Control" 
 					OnRowUpdating="gvENT_OnRowUpdating" OnDataBinding="gvENT_DataBinding"  OnHtmlDataCellPrepared="gvENT_HtmlDataCellPrepared"   >  
 					<ClientSideEvents EndCallback="function(s, e) {ASPxClientHint.Update();}" />
-
+					<SettingsSearchPanel Visible="true" />
 					<SettingsExport EnableClientSideExportAPI="true" FileName="Subjects"></SettingsExport>
 					  <Toolbars>
 						<dx:GridViewToolbar >
@@ -302,6 +302,11 @@
 						<dx:GridViewDataColumn FieldName="address_notes" Caption="Address Notes" ReadOnly="true" Width="80px" VisibleIndex="17" Visible="false"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="firstname" Caption="First Name" ReadOnly="true" Width="80px" VisibleIndex="18" Visible="false"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="lastname" Caption="Last Name" ReadOnly="true" Width="80px" VisibleIndex="19" Visible="false"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="emailaddress" Caption="Email" ReadOnly="true" Width="80px" VisibleIndex="20" Visible="false"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="emaildetails" Caption="Email Details" ReadOnly="true" Width="80px" VisibleIndex="21" Visible="false"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="emailaddress2" Caption="Email2" ReadOnly="true" Width="80px" VisibleIndex="22" Visible="false"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="emaildetails2" Caption="Email2 Details" ReadOnly="true" Width="80px" VisibleIndex="23" Visible="false"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="num_emailaddresses" Caption="Num emails" ReadOnly="true" Width="80px" VisibleIndex="24" Visible="false"></dx:GridViewDataColumn>
 						<dx:GridViewCommandColumn ShowEditButton="true" Width="60"></dx:GridViewCommandColumn>
 					</Columns>
 <%--                    <ClientSideEvents SelectionChanged="gvA_SelectionChanged"  />--%>
