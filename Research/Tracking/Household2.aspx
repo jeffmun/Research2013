@@ -374,7 +374,7 @@
 				<asp:Label ID="Label13" runat="server" Text="Email" Font-Bold="true" Font-Size="Small" ForeColor="GrayText" ></asp:Label>
 
 				<dx:ASPxGridView ID="dxgridEmail" runat="server" ClientInstanceName="dxgridEmail"  
-					DataSourceID="sql__email" KeyFieldName="emailID" 
+					DataSourceID="sql__email" KeyFieldName="emailID"   
 					OnRowInserting="dxgrid_OnRowInserting"  OnRowUpdating="dxgrid_OnRowUpdating"  OnRowDeleting="dxgrid_OnRowDeleting" 
 					SettingsDataSecurity-AllowEdit="true" SettingsDataSecurity-AllowInsert="true">
 					<SettingsBehavior ConfirmDelete="true" />
@@ -384,6 +384,8 @@
 						<dx:GridViewDataColumn FieldName="emailID" Caption="" Visible="false"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="emailaddress" Caption="Email"></dx:GridViewDataColumn>
 						<dx:GridViewDataColumn FieldName="emailType" Caption="Email Type"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="emailstatus" Caption="Status"></dx:GridViewDataColumn>
+						<dx:GridViewDataColumn FieldName="emailNotes" Caption="Notes"></dx:GridViewDataColumn>
 						<dx:GridViewCommandColumn ShowEditButton="true"  ShowNewButtonInHeader="true" ShowDeleteButton="true" />
 					</Columns>
 				</dx:ASPxGridView>
@@ -713,7 +715,7 @@
 
 		<asp:SqlDataSource runat="server" ID="sql__email"  ConnectionString="<%$ ConnectionStrings:TRACKING_CONN_STRING %>"
 		SelectCommandType="Text" DeleteCommandType="Text"
-	 SelectCommand="select emailID, emailaddress, emailType, householdID from tblemail where HouseholdID = @hhID" 
+	 SelectCommand="select emailID, emailaddress, emailType, householdID ,emailstatus, emailNotes from tblemail where HouseholdID = @hhID" 
 	 DeleteCommand="delete from tblemail where emailID = @emailID" 
 		>
 		<SelectParameters>

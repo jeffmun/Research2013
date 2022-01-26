@@ -88,32 +88,59 @@ namespace uwac_REDCap
 				int counter = 0;
 				foreach (DataRow row in dt_tokens.Rows)
 				{
-					apiMeta = new RedcapAPI(row["url"].ToString(), row["token"].ToString());
-					api = new RedcapNefcyExt(row["url"].ToString(), row["token"].ToString());
+					string url = row["url"].ToString();
+					string token = row["token"].ToString();
 
-					int tokenid = Convert.ToInt32(row["tokenid"]);
+                    //var newapi = new RedcapApi(url);
+                    //var events = newapi.ExportEventsAsync(row["token"].ToString()).Result;
 
-					if (counter == 0)
+
+                    try
 					{
-						redcapevents = api.events;
+                        try
+                        {
+                            apiMeta = new RedcapAPI(url, token);
+                        }
+                        catch (Exception ex)
+                        {
 
-						dt_redcapforms = AddTokenid(apiMeta.InstrumentDataTable, tokenid);
-						dt_redcapevents = AddTokenid(api.dt_redcapevents, tokenid);
-						dt_metadata = AddTokenid(apiMeta.MetaDataTable, tokenid);
-						dt_formevents = AddTokenid(api.dt_formevents, tokenid);
+                        }
 
-					}
-					else
-					{
-						foreach (DataRow row2 in apiMeta.InstrumentDataTable.Rows)
+
+
+
+						//RedcapApi newapi = new RedcapApi(row["token"].ToString(), row["url"].ToString());
+
+						api = new RedcapNefcyExt(row["url"].ToString(), row["token"].ToString());
+
+						int tokenid = Convert.ToInt32(row["tokenid"]);
+
+						if (counter == 0)
 						{
-							dt_redcapforms.ImportRow(row2);
+							redcapevents = api.events;
+
+							dt_redcapforms = AddTokenid(apiMeta.InstrumentDataTable, tokenid);
+							dt_redcapevents = AddTokenid(api.dt_redcapevents, tokenid);
+							dt_metadata = AddTokenid(apiMeta.MetaDataTable, tokenid);
+							dt_formevents = AddTokenid(api.dt_formevents, tokenid);
+
 						}
-						foreach (DataRow row2m in apiMeta.MetaDataTable.Rows)
+						else
 						{
-							dt_metadata.ImportRow(row2m);
+							foreach (DataRow row2 in apiMeta.InstrumentDataTable.Rows)
+							{
+								dt_redcapforms.ImportRow(row2);
+							}
+							foreach (DataRow row2m in apiMeta.MetaDataTable.Rows)
+							{
+								dt_metadata.ImportRow(row2m);
+							}
 						}
 					}
+					catch(Exception ex)
+                    {
+
+                    }
 					counter++;
 				}
 			}

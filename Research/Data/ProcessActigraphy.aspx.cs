@@ -44,9 +44,13 @@ public partial class Data_ProcessActigraphy : BasePage
             lbl.Font.Bold = true;
 
             ASPxGridView gv = new ASPxGridView();
+            gv.DataBound += grid_DataBound;
             gv.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+            gv.Settings.HorizontalScrollBarMode = ScrollBarMode.Visible;
+            gv.Width = 1600; 
             gv.DataSource = dt;
             gv.DataBind();
+
 
             panel.Controls.Add(lbl);
             panel.Controls.Add(gv);
@@ -54,6 +58,14 @@ public partial class Data_ProcessActigraphy : BasePage
     }
 
 
+    protected void grid_DataBound(object sender, EventArgs e)
+    {
+        ASPxGridView grid = (ASPxGridView)sender;
+
+        grid.Columns[0].FixedStyle = GridViewColumnFixedStyle.Left;
+        grid.Columns[1].FixedStyle = GridViewColumnFixedStyle.Left;
+        grid.Columns[2].FixedStyle = GridViewColumnFixedStyle.Left;
+    }
 
 
     protected void btnProcess_Click(object sender, EventArgs e)

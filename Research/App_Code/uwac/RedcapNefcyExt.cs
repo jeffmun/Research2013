@@ -80,11 +80,13 @@ namespace uwac_REDCap
 			DataTable dtDataTable = new DataTable();
 			DataRow drRecord;
 
-			strPostParameters = "&content=formEventMapping&format=csv&type=flat"; // &eventName=unique";
+			strPostParameters = "&content=formEventMapping&format=csv&returnFormat=csv"; // &eventName=unique";
 
 			strPostParameters += "&rawOrLabel=raw";
 
-			byte[] bytePostData = Encoding.UTF8.GetBytes("token=" + strPostToken + strPostParameters);
+			string post_string = String.Format("token={0}{1}", strPostToken , strPostParameters);
+			byte[] bytePostData = Encoding.UTF8.GetBytes(post_string);
+			//byte[] bytePostData = Encoding.UTF8.GetBytes("token=" + strPostToken + strPostParameters);
 
 			string strResponse = responseHTTP(bytePostData);
 
