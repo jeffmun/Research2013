@@ -1,5 +1,5 @@
 <%@ Page Language="c#" Debug="true" MasterPageFile="../UWAC.master"
-    CodeFile="NewCHDDReport.aspx.cs" AutoEventWireup="true" Inherits="NewCHDDReport" Title="Waitlist" %>
+    CodeFile="NewCHDDReport.aspx.cs" AutoEventWireup="true" Inherits="NewCHDDReport" Title="CHDD Annual Report" %>
 
 <%@ MasterType VirtualPath="../UWAC.master" %>
 
@@ -12,13 +12,12 @@
             <td style="text-align: right"  >
                 <asp:Label ID="Label3" runat="server" Text="Total Clients"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox8" runat="server"></asp:TextBox>
-                <br />
+                <br />______________________<br /><br /></td><td style="text-align: right"  >
                 <asp:Label ID="Label1" runat="server" Text="Total Visits"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox1" runat="server"></asp:TextBox>
-                <br />
-                 ______________________<br />
-                <br />
-
+<br />______________________<br /><br /></td></tr>
+        <tr>
+            <td style="text-align: right"  >
 
                 <asp:Label ID="Label28" runat="server" Text="Age 0 to 3"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox29" runat="server"></asp:TextBox>
@@ -48,7 +47,11 @@
                 &nbsp;<asp:TextBox width="40" ID="TextBox37" runat="server"></asp:TextBox>
                 
                 <br />
-                <br />______________________<br />
+                <asp:Label ID="Label63" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox63" runat="server"></asp:TextBox>
+                
+                <br />
+                <br />______________________<br /><br />
                 <asp:Label ID="Label20" runat="server" Text="Ethnicity Native Amer."></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox21" runat="server"></asp:TextBox>
                 <br />
@@ -74,6 +77,23 @@
                 <asp:Label ID="Label27" runat="server" Text="Ethnicity Other"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox28" runat="server"></asp:TextBox>
                 <br />
+                <asp:Label ID="Label64" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox64" runat="server"></asp:TextBox>
+                <br />
+                <br />
+                ______________________
+                <br /><br />
+
+                <asp:Label ID="Label9" runat="server" Text="Established disability"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox9" runat="server"></asp:TextBox>
+                <br />
+                <asp:Label ID="Label10" runat="server" Text="At-risk: Biological"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox10" runat="server"></asp:TextBox>
+                  <br />              <asp:Label ID="Label71" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox71" runat="server"></asp:TextBox>
+                
+                
+
             </td>
             <td style="text-align: right" >
                 <asp:Label ID="Label18" runat="server" Text="Male"></asp:Label>
@@ -82,11 +102,15 @@
                 <asp:Label ID="Label19" runat="server" Text="Female"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox19" runat="server"></asp:TextBox>
                 <br />
-                <asp:Label ID="Label38" runat="server" Text="Other"></asp:Label>
+                <asp:Label ID="Label38" runat="server" Text="Other/Unknown"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox20" runat="server"></asp:TextBox>
                 <br />
+
+                                <asp:Label ID="Label65" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox65" runat="server"></asp:TextBox>
+                <br />
                 
-                <br />______________________<br />
+                <br />______________________<br /><br />
                 <asp:Label ID="Label39" runat="server" Text="Caregiver Adoptive"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox39" runat="server"></asp:TextBox>
                 <br />
@@ -113,6 +137,10 @@
                 <br />
                 <asp:Label ID="Label47" runat="server" Text="Caregiver Null"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox47" runat="server"></asp:TextBox>
+                <br />
+
+                                <asp:Label ID="Label66" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox66" runat="server"></asp:TextBox>
                 <br />
                
                 ______________________<br /> <br />
@@ -142,6 +170,9 @@
                 <asp:Label ID="Label55" runat="server" Text="Referrer Unk."></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox55" runat="server"></asp:TextBox>
                 <br />
+                                <asp:Label ID="Label67" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox67" runat="server"></asp:TextBox>
+
 
             </td>
             <td style="text-align: right" >
@@ -154,7 +185,11 @@
                 <asp:Label ID="Label6" runat="server" Text="Visit Purpose: Treatment"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox4" runat="server"></asp:TextBox>
                 
-                <br />______________________<br />
+                <br />
+                <asp:Label ID="Label68" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox68" runat="server"></asp:TextBox>
+                
+                <br />______________________<br /><br />
 
 
                 <asp:Label ID="Label7" runat="server" Text="Visit Disc.: Psych"></asp:Label>
@@ -166,7 +201,12 @@
                 <asp:Label ID="Label2" runat="server" Text="Visit Disc.: ABA"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox7" runat="server"></asp:TextBox>
                 
-                <br />______________________<br />
+                <br />
+                <asp:Label ID="Label69" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox69" runat="server"></asp:TextBox>
+                
+                <br />
+                ______________________<br /><br />
 
                 <asp:Label ID="Label11" runat="server" Text="Payor: Commercial"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox11" runat="server"></asp:TextBox>
@@ -186,16 +226,16 @@
                 <asp:Label ID="Label16" runat="server" Text="Payor: Tricare"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox16" runat="server"></asp:TextBox>
                 
-                <br />______________________<br />
-
-
-                <asp:Label ID="Label9" runat="server" Text="Established disability"></asp:Label>
-                &nbsp;<asp:TextBox width="40" ID="TextBox9" runat="server"></asp:TextBox>
                 <br />
-                <asp:Label ID="Label10" runat="server" Text="At-risk: Biological"></asp:Label>
-                &nbsp;<asp:TextBox width="40" ID="TextBox10" runat="server"></asp:TextBox>
                 
-              <br />______________________<br />
+                <asp:Label ID="Label70" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox70" runat="server"></asp:TextBox>
+                
+                <br />
+                ______________________<br /><br />
+
+
+                
                 <asp:Label ID="Label57" runat="server" Text="ADD Or ADHD"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox57" runat="server"></asp:TextBox>
                 <br />
@@ -213,7 +253,9 @@
                 <br />
                 <asp:Label ID="Label62" runat="server" Text="Soc/Emot/Behav. Disorder"></asp:Label>
                 &nbsp;<asp:TextBox width="40" ID="TextBox62" runat="server"></asp:TextBox>
-
+                <br />
+                <asp:Label ID="Label72" runat="server" Text="Total"></asp:Label>
+                &nbsp;<asp:TextBox width="40" ID="TextBox72" runat="server"></asp:TextBox>
             </td>
         </tr>
     </table>

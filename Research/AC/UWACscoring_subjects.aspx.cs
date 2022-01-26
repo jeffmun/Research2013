@@ -1,0 +1,663 @@
+﻿using DevExpress.Web;
+using DevExpress.Web.Export;
+using DevExpress.Web.ASPxPivotGrid;
+using DevExpress.Web.Data;
+using DevExpress.XtraPivotGrid;
+using DevExpress.XtraGrid;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Web.UI.WebControls;
+using System.Web.Services;
+using uwac;
+using uwac.trk;
+
+
+public partial class Tracking_UWACscoring_subjects : BasePage
+{
+	private string ID;
+	private string group_csv;
+	private string subjstatus_csv;
+
+	#region Page Events
+	protected void Page_Init(object sender, EventArgs e)
+	{
+		Master.DDL_Master_SelectStudyID.SelectedIndexChanged += new EventHandler(Master_Study_Changed);
+		Session["studyID"] = Master.Master_studyID.ToString();
+	}
+
+	protected void Master_Study_Changed(object sender, EventArgs e)
+	{
+		Response.Redirect("Subjects.aspx");
+	}
+
+	protected void Page_Load(object sender, EventArgs e)
+	{
+		//GridViewFeaturesHelper.SetupGlobalGridViewBehavior(grid);
+		bool isCallback = IsCallback;
+		bool isPostback = IsPostBack;
+
+
+		if (!IsCallback && !IsPostBack)
+		{
+			LoadEntities();
+		}
+
+		sliderValue.Value = Master.Colorlevel.ToString();
+
+	}
+
+
+	#endregion
+
+
+
+
+	#region Setup Controls 
+
+	protected void cboSS_Init(object sender, EventArgs e)
+	{
+		ASPxComboBox cboSS = (ASPxComboBox)sender;
+		//GridViewDataItemTemplateContainer templateContainer = (GridViewDataItemTemplateContainer)CboMS.NamingContainer;
+		GridViewEditFormLayoutItemTemplateContainer templateContainer = (GridViewEditFormLayoutItemTemplateContainer)cboSS.NamingContainer;
+
+		cboSS.ClientInstanceName = string.Format("cboSS_{0}", templateContainer.VisibleIndex);
+		cboSS.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e) {{ OnSelectedIndexChanged(s, e, {0}); }}", templateContainer.VisibleIndex);
+
+		cboSS.DataSourceID = "sqlSS";
+		cboSS.TextField = "subjstatus";
+		cboSS.ValueField = "ssID";
+		cboSS.DataBind();
+
+		cboSS.Value = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "ssID");
+
+	}
+
+
+
+
+	protected void cboSSD_Init(object sender, EventArgs e)
+	{
+		ASPxComboBox cboSSD = (ASPxComboBox)sender;
+		GridViewEditFormLayoutItemTemplateContainer templateContainer = (GridViewEditFormLayoutItemTemplateContainer)cboSSD.NamingContainer;
+		cboSSD.ClientInstanceName = string.Format("cboSSD_{0}", templateContainer.VisibleIndex);
+		cboSSD.Callback += cboSSD_Callback;
+
+		string str_ssID = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "ssID").ToString();
+		string str_ssdID = templateContainer.Grid.GetRowValues(templateContainer.VisibleIndex, "ssdID").ToString();
+
+
+		cboSSD.DataSourceID = "sqlSSD_by_SS";
+		cboSSD.TextField = "subjstatusdetail";
+		cboSSD.ValueField = "ssdID";
+
+
+		int ssID; int ssdID;
+		bool ssID_is_int = int.TryParse(str_ssID, out ssID);
+		if (ssID_is_int) FillCboSSD(cboSSD, ssID.ToString());
+
+		bool ssdID_is_int = int.TryParse(str_ssdID, out ssdID);
+		if (ssdID_is_int) cboSSD.Value = ssdID;
+	}
+
+	private void cboSSD_Callback(object sender, CallbackEventArgsBase e)
+	{
+		ASPxComboBox cbossd = (ASPxComboBox)sender;
+		string ssd = e.Parameter;
+
+		if (string.IsNullOrEmpty(ssd)) return;
+
+		FillCboSSD(cbossd, ssd);
+	}
+
+
+	//protected void Grid_CellEditorInitialize(object sender, ASPxGridViewEditorEventArgs e)
+	//{
+	//	if (e.Column.FieldName == "CityID")
+	//	{
+	//		var combo = (ASPxComboBox)e.Editor;
+	//		combo.Callback += new CallbackEventHandlerBase(combo_Callback);
+
+	//		var grid = e.Column.Grid;
+	//		if (!combo.IsCallback)
+	//		{
+	//			var countryID = -1;
+	//			if (!grid.IsNewRowEditing)
+	//				countryID = (int)grid.GetRowValues(e.VisibleIndex, "CountryID");
+	//			FillCitiesComboBox(combo, countryID);
+	//		}
+	//	}
+	//}
+
+	//private void combo_Callback(object sender, CallbackEventArgsBase e)
+	//{
+	//	var countryID = -1;
+	//	Int32.TryParse(e.Parameter, out countryID);
+	//	FillCitiesComboBox(sender as ASPxComboBox, countryID);
+	//}
+
+	//protected void FillCitiesComboBox(ASPxComboBox combo, int countryID)
+	//{
+	//	combo.DataSourceID = "Cities";
+	//	Cities.SelectParameters["CountryID"].DefaultValue = countryID.ToString();
+	//	combo.DataBindItems();
+	//	combo.Items.Insert(0, new ListEditItem("", null)); // Null Item
+	//}
+
+
+	protected void FillCboSSD(ASPxComboBox cbo, string ssID)
+	{
+		if (string.IsNullOrEmpty(ssID)) return;
+
+		SqlDataSource sqlSSD_by_SS = (SqlDataSource)cbo.NamingContainer.FindControl("sqlSSD_by_SS");
+		sqlSSD_by_SS.SelectParameters[1].DefaultValue = ssID;  //Because it is the second parameter
+		cbo.DataBind();
+	}
+
+
+	protected DataTable getDataforCombobox(string sqlcode)
+	{
+		SQL_utils sql = new SQL_utils("backend");
+		DataTable dt = sql.DataTable_from_SQLstring(sqlcode);
+		return dt;
+	}
+
+	#endregion
+
+
+	protected void LoadEntities()
+	{
+		ViewState["needBind"] = "true";
+
+
+		switch (rblObj.Value.ToString())
+		{
+			case "Table":
+
+				gvENT.DataBind();
+				gvENT.Visible = true;
+				pivotENT.Visible = false;
+				break;
+			case "Grid Details":
+				gvENT.Visible = false;
+				pivotENT.Visible = true;
+				pivotENT.DataBind();
+
+				pivotENT.Fields["fldID"].SetAreaPosition(PivotArea.DataArea, 0);
+				pivotENT.Fields["fldGroupName"].SetAreaPosition(PivotArea.ColumnArea, 0);
+				pivotENT.Fields["fldSubjStatus"].SetAreaPosition(PivotArea.RowArea, 0);
+
+
+				break;
+			case "Grid Enroll Race":
+				gvENT.Visible = false;
+				pivotENT.Visible = true;
+				pivotENT.DataBind();
+
+				pivotENT.Fields["fldID"].SetAreaPosition(PivotArea.DataArea, 0);
+				pivotENT.Fields["fldID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Count;
+
+				pivotENT.Fields["fldSex"].SetAreaPosition(PivotArea.ColumnArea, 0);
+				pivotENT.Fields["fldEthnicityDesc"].SetAreaPosition(PivotArea.RowArea, 0);
+				pivotENT.Fields["fldHispanicDesc"].SetAreaPosition(PivotArea.FilterArea, 0);
+
+				pivotENT.Fields["fldGroupName"].SetAreaPosition(PivotArea.FilterArea, 1);
+
+				break;
+			case "Grid Enroll Ethn":
+				gvENT.Visible = false;
+				pivotENT.Visible = true;
+				pivotENT.DataBind();
+
+				pivotENT.Fields["fldID"].SetAreaPosition(PivotArea.DataArea, 0);
+				pivotENT.Fields["fldID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Count;
+
+				pivotENT.Fields["fldSex"].SetAreaPosition(PivotArea.ColumnArea, 0);
+				pivotENT.Fields["fldHispanicDesc"].SetAreaPosition(PivotArea.RowArea, 0);
+				pivotENT.Fields["fldEthnicityDesc"].SetAreaPosition(PivotArea.FilterArea,0);
+
+
+				pivotENT.Fields["fldGroupName"].SetAreaPosition(PivotArea.FilterArea, 1);
+
+				break;
+			case "Grid Enroll RaceEthn":
+				gvENT.Visible = false;
+				pivotENT.Visible = true;
+				pivotENT.DataBind();
+
+				pivotENT.Fields["fldID"].SetAreaPosition(PivotArea.DataArea, 0);
+				pivotENT.Fields["fldID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Count;
+
+				pivotENT.Fields["fldSex"].SetAreaPosition(PivotArea.ColumnArea, 0);
+				pivotENT.Fields["fldEthnicityDesc"].SetAreaPosition(PivotArea.RowArea, 0);
+				pivotENT.Fields["fldHispanicDesc"].SetAreaPosition(PivotArea.RowArea, 1);
+
+
+				pivotENT.Fields["fldGroupName"].SetAreaPosition(PivotArea.FilterArea, 1);
+
+				break;
+			case "Grid Counts":
+				gvENT.Visible = false;
+				pivotENT.Visible = true;
+
+
+				pivotENT.Fields["fldID"].SetAreaPosition(PivotArea.DataArea, 0);
+				pivotENT.Fields["fldID"].SummaryType = DevExpress.Data.PivotGrid.PivotSummaryType.Count;
+
+				pivotENT.Fields["fldGroupName"].SetAreaPosition(PivotArea.ColumnArea, 0);
+				pivotENT.Fields["fldSubjStatus"].SetAreaPosition(PivotArea.RowArea, 0);
+
+
+				pivotENT.Fields["fldSex"].Visible = false;
+				pivotENT.Fields["fldEthnicityDesc"].Visible = false;
+				pivotENT.Fields["fldHispanicDesc"].Visible = false;
+
+				pivotENT.OptionsView.ShowColumnGrandTotals = true;
+				pivotENT.OptionsView.ShowRowGrandTotals = true;
+
+				pivotENT.DataBind();
+				break;
+		}
+
+	}
+
+
+	#region User Initiated Events
+
+	protected void ddlEntity_OnSelectedIndexChanged(object sender, EventArgs e)
+	{
+		ASPxComboBox cbo = (ASPxComboBox)sender;
+		string entity = cbo.SelectedItem.Value.ToString();
+
+		switch (entity){
+			case "Actions":
+				Response.Redirect("Actions.aspx");
+				break;
+			case "Measures":
+				Response.Redirect("UWACscoring_measures.aspx");
+				break;
+		}
+
+	}
+
+
+	protected void btnLoad_OnClick(object sender, EventArgs e)
+	{
+		LoadEntities();
+	}
+
+
+
+	protected void btnHelp_Click(object sender, EventArgs e)
+	{
+		Response.Redirect("Help_Tracking.aspx?ent=Subjects");
+	}
+
+
+	#endregion
+
+
+
+
+
+	#region gvENT Events
+
+	protected void gvENT_DataBinding(object sender, EventArgs e)
+	{
+		var needbind = ViewState["needBind"];
+
+		if (ViewState["needBind"].ToString() == "true")
+		{
+
+			//UpdateSelectParameters();
+			group_csv = "";
+			subjstatus_csv = "";
+			DataTable dt = ENT_GetData("gvENT", group_csv.ToString(), subjstatus_csv.ToString());
+
+			if (dt != null)
+			{
+				if (dt.Rows.Count > 0)
+				{
+					gvENT.DataSource = Session["ENT_data"];
+					gvENT.DataBind();
+				}
+			}
+			
+			if (group_csv.ToString() +  subjstatus_csv.ToString() == "")
+			{ btnLoad.Text = "Load Subjects"; }
+			else { btnLoad.Text = "Load Selected Subjects"; }
+		}
+		else 
+		{
+			gvENT.DataSource = Session["ENT_data"];
+		}
+
+	}
+
+
+	protected void gvENT_OnRowUpdating(object sender, ASPxDataUpdatingEventArgs e)
+	{
+		ASPxGridView gv = (ASPxGridView)sender;
+
+		//Get and Process the list of selected records in order to populate the list of pkvals
+		#region process selected records
+		var selected_keys = gvENT.GetSelectedFieldValues("subjID");
+
+
+		ASPxCheckBox chkAllSelected = gv.FindEditFormLayoutItemTemplateControl("chkUpdateAllSelected") as ASPxCheckBox;
+		bool updateALLSelected = chkAllSelected.Checked;
+
+
+		List<int> pkvals = new List<int>();
+
+		foreach (object key in e.Keys.Values)
+		{
+			int ikey;
+			bool isint = int.TryParse(key.ToString(), out ikey);
+			if (isint) pkvals.Add(ikey);
+		}
+
+		//Add the other selected rows to the update if the user has selected the "Update All" checkbox
+		if (selected_keys.Count > 0 && updateALLSelected)
+		{
+			foreach (object k in selected_keys)
+			{
+				int ikey;
+				bool isint = int.TryParse(k.ToString(), out ikey);
+				if (!pkvals.Contains(ikey)) pkvals.Add(ikey);
+			}
+		}
+		#endregion
+
+
+		//Custom: retrieve specific data from the grid
+		//Get the data from the ComboBoxes
+		ASPxComboBox cboSS = (ASPxComboBox)gvENT.FindEditFormLayoutItemTemplateControl("cboSS");
+		e.NewValues["ssID"] = cboSS.Value;
+
+		ASPxComboBox cboSSD = (ASPxComboBox)gvENT.FindEditFormLayoutItemTemplateControl("cboSSD");
+		e.NewValues["ssdID"] = cboSSD.Value;
+
+		ASPxMemo notes = (ASPxMemo)gvENT.FindEditFormLayoutItemTemplateControl("notesEditor");
+		e.NewValues["Notes"] = notes.Value;
+
+
+		string result = dataops.dxGrid_UpdateData("subjID", pkvals, e.NewValues, "backend", "dbo", "tblSubject");
+		gvENTstatus.Text = result;
+
+		gv.CancelEdit();
+		e.Cancel = true;
+		ViewState["needBind"] = "true";
+		gvENT.DataBind();
+	}
+
+	protected void CountNumSelectedRecords(object sender, EventArgs e)
+	{
+		ASPxLabel lblNumSelected = (ASPxLabel)sender; // gvM.FindEditFormLayoutItemTemplateControl("lblNumSelected");
+		int num = gvENT.GetSelectedFieldValues("actionID").Count();
+		GridViewEditFormLayoutItemTemplateContainer template = (GridViewEditFormLayoutItemTemplateContainer)lblNumSelected.NamingContainer;
+		ASPxGridView gv = (ASPxGridView)template.Grid;
+
+		ASPxCheckBox chkall = (ASPxCheckBox)gv.FindControlRecursive("chkUpdateAllSelected");
+
+		if (lblNumSelected != null & num > 0)
+		{
+			lblNumSelected.Text = num.ToString() + " records";
+			chkall.ClientVisible = true;
+		}
+		else
+		{
+			lblNumSelected.Text = "";
+			chkall.ClientVisible = false;
+
+		}
+	}
+
+
+	protected void gvENT_HtmlDataCellPrepared(object sender, ASPxGridViewTableDataCellEventArgs e)
+	{
+		
+		if (e.DataColumn.FieldName == "ssID")
+		{
+
+			SQL_utils sql = new SQL_utils("backend");
+			string subjstatus = sql.StringScalar_from_SQLstring("select subjstatus from tblSS where ssID=" + e.CellValue.ToString());
+			sql.Close();
+
+			int colorlevel = uwac.trk.color.GetColorLevel();
+
+			string x = e.Cell.Text;
+			Color newcolor = color.GetStatus_Color(color.StatusType.Subject, subjstatus, colorlevel);
+			e.Cell.BackColor = newcolor;
+			e.Cell.ForeColor = Color.Black;
+		}
+	}
+
+	#endregion
+
+
+
+
+
+	#region pivotENT Events
+
+
+
+	protected void pivotENT_DataBinding(object sender, EventArgs e)
+	{
+		//if (ViewState["needBind"] != null && (bool)ViewState["needBind"])
+		if (ViewState["needBind"].ToString() == "true")
+		{
+			//UpdateSelectParameters();
+
+			DataTable dt = ENT_GetData("pivotENT",  group_csv, subjstatus_csv);
+
+			if (dt != null)
+			{
+				if (dt.Rows.Count > 0)
+				{
+					pivotENT.DataSource = Session["ENT_data"];
+				}
+			}
+
+			group_csv = (group_csv == null) ? "" : group_csv;
+			subjstatus_csv = (subjstatus_csv == null) ? "" : subjstatus_csv;
+
+			if ( group_csv.ToString() +   subjstatus_csv.ToString() == "")
+			{ btnLoad.Text = "Load Subjects"; }
+			else { btnLoad.Text = "Load Selected Subjects"; }
+
+
+			//Debug.Print("!!!! pivotENT_DataBinding            pivotENT.RowCount=" + pivotENT.RowCount.ToString());
+		}
+
+	}
+
+
+
+
+
+	protected void pivotENT_OnBeginRefresh(object sender, EventArgs e)
+	{
+		//Debug.Print("pivotENT_OnBeginRefresh              pivotENT.RowCount=" + pivotENT.RowCount.ToString());
+		pivotENT.DataSource = Session["ENT_data"];
+		pivotENT.DataBind();
+	}
+
+
+
+	protected void pivotENT_CustomCellDisplayText(object sender, DevExpress.Web.ASPxPivotGrid.PivotCellDisplayTextEventArgs e)
+	{
+
+	}
+
+
+	protected void pivotENT_CustomCellStyle(object sender, PivotCustomCellStyleEventArgs e)
+	{
+
+		if (e.ColumnValueType == PivotGridValueType.Value)
+		{
+			if (rblObj.Value.ToString() != "Grid Counts")
+			{
+
+				if (e.Value != null)
+				{
+					Color cellcolor = color.GetStatus_Color(color.StatusType.Subject, e.Value.ToString(), color.GetColorLevel());
+					e.CellStyle.BackColor = cellcolor;
+				}
+			}
+
+			else
+			{
+				var rowfield = e.RowField;
+				if (rowfield != null)
+				{
+					var v = e.GetFieldValue(e.RowField).ToString();
+					if (v != null)
+					{
+						Color cellcolor = color.GetStatus_Color(color.StatusType.Subject, v.ToString(), color.GetColorLevel());
+						e.CellStyle.BackColor = cellcolor;
+					}
+				}
+			}
+		}
+
+	}
+
+	#endregion
+
+
+
+	#region Get Data from DB
+
+	//protected void UpdateSelectParameters()
+	//{
+	//	//group_csv = tokGroup.Value.ToString();
+	//	//subjstatus_csv = tokSubjStatus.Value.ToString();
+
+	//}
+
+
+	protected DataTable ENT_GetData(string obj, string group_csv, string subjstatus_csv)
+	{
+		group_csv = (group_csv == null) ? "" : group_csv;
+		subjstatus_csv = (subjstatus_csv == null) ? "" : subjstatus_csv;
+
+		SQL_utils sql = new SQL_utils("backend");
+		List<SqlParameter> ps = new List<SqlParameter>();
+		ps.Add(sql.CreateParam("studyID", Master.Master_studyID.ToString(), "int"));
+		ps.Add(sql.CreateParam("groupID_csv", group_csv.ToString(), "text"));
+		ps.Add(sql.CreateParam("subjstatusID_csv", subjstatus_csv.ToString(), "text"));
+
+		DataTable dt = sql.DataTable_from_ProcName("trk.spGetSelected_S", ps);
+
+
+		int nrows = 0;
+		int nsubjects = 0;
+		if (dt != null)
+		{
+			nrows = dt.Rows.Count;
+			nsubjects = dt.AsEnumerable().Select(f => f.Field<string>("ID")).Distinct().Count();
+		}
+		Debug.Print(String.Format(" #### I have gathered {0} records at {1} #### ", nrows, System.DateTime.Now.ToString()));
+
+
+		ViewState["ENT_nrecs"] = nrows.ToString();
+		gvENTstatus.Text =  nsubjects.ToString() + " subjects";
+
+		if (nrows == 0)
+		{
+			gvENT.Visible = false;
+			pivotENT.Visible = false;
+		}
+		else
+		{
+			Session["ENT_data"] = dt;
+			ViewState["needBind"] = "false";
+
+			switch (obj)
+			{
+				case "gvENT":
+					gvENT.DataSource = dt;
+					gvENT.Visible = true;
+					pivotENT.Visible = false;
+
+					break;
+				case "pivotENT":
+					pivotENT.DataSource = dt;
+					gvENT.Visible = false;
+					pivotENT.Visible = true;
+
+					break;
+			}
+		}
+
+
+
+		gvENT.DataSource = dt;
+
+		sql.Close();
+
+		return dt;
+	}
+
+
+
+
+	#endregion
+
+	[WebMethod]
+	public static void SetColorLevel(int x)
+	{
+		dataops.SetColorLevel(x);
+	}
+
+    protected void btnNew_Click(object sender, EventArgs e)
+    {
+		string err = "";
+		if (txtFN.Text == "")
+		{
+			err += " first name;";
+		}
+		if (txtLN.Text == "")
+		{
+			err += "last name; ";
+		}
+		if (txtDOB.Text == "")
+		{
+			err += " DOB;";
+		}
+		if (txtID.Text == "")
+		{
+			err += " ID;";
+		}
+
+
+		if (err != "")
+        {
+			lblERR.Text = String.Format("You must enter: {0}", err);
+
+		}
+
+		else
+		{
+			lblERR.Text = "";
+			SQL_utils sql = new SQL_utils("backend");
+
+			List<SqlParameter> ps = new List<SqlParameter>();
+			ps.Add(sql.CreateParam("fn", txtFN.Text.ToString(), "text"));
+			ps.Add(sql.CreateParam("ln", txtLN.Text.ToString(), "text"));
+			ps.Add(sql.CreateParam("dob", txtDOB.Text.ToString(), "text"));
+			ps.Add(sql.CreateParam("id", txtID.Text.ToString(), "text"));
+
+			sql.NonQuery_from_ProcName("spCreateSubject_UWACScoring", ps);
+
+			Response.Redirect("UWACscoring_subjects.aspx");
+		}
+
+	}
+}
