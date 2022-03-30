@@ -24,7 +24,7 @@ public class WebdocFileHandler : IHttpHandler {
                 //FileInfo[] files = dir.GetFiles( "*.pdf", SearchOption.TopDirectoryOnly);
 
                 string dir = HttpContext.Current.Server.MapPath("~/ValantDocs");
-                //string dir = @"\\medicine.washington.edu\autism\UWAC\clinic\Ops\UWAC IT\ValantExport\Docs";
+                //string dir = @"\\netid.washington.edu\wfs\UWAC\clinic\Ops\UWAC_IT\ValantExport\Docs";
 
 
                 string[] parms = filename.Split(new string[] { "@!@" }, StringSplitOptions.None);

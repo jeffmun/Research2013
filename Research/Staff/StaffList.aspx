@@ -66,7 +66,7 @@
 		<tr>
 			<td style="padding-left:10px">
 
-	       <dx:ASPxGridView ID="gv_staff" runat="server" ClientInstanceName="staff" DataSourceID="sql_staff"  KeyFieldName="staffpk"  Width="1600"
+	       <dx:ASPxGridView ID="gv_staff" runat="server" ClientInstanceName="staff" DataSourceID="sql_staff"  KeyFieldName="staffpk"  Width="1400" 
 				Styles-Header-Wrap="true"  OnRowUpdating="gvcrud_OnRowUpdating" OnRowInserting="gvcrud_OnRowInserting" OnRowDeleting="gvcrud_OnRowDeleting" 
 			   SettingsDataSecurity-AllowEdit="true" SettingsDataSecurity-AllowInsert="true"  SettingsDataSecurity-AllowDelete="true" >
 			   <Columns>
@@ -77,7 +77,7 @@
 				  </dx:GridViewDataComboBoxColumn>
 					<dx:GridViewDataColumn Width="120" FieldName="first_name" Caption="First" />
 					<dx:GridViewDataColumn Width="120" FieldName="last_name" Caption="Last"/>
-					<dx:GridViewDataColumn Width="120" FieldName="pref_name" Caption="Preferred Name" />
+<%--					<dx:GridViewDataColumn Width="120" FieldName="pref_name" Caption="Preferred Name" />--%>
 					<dx:GridViewDataDateColumn Width="100" FieldName="dob" Caption="DOB"/>
 					<dx:GridViewDataColumn Width="80" FieldName="employee_id" Caption="Employee ID" />
 					<dx:GridViewDataColumn Width="80" FieldName="net_id" Caption="NETID" />
@@ -106,10 +106,11 @@
 					</dx:GridViewDataComboBoxColumn>
 					<dx:GridViewDataColumn Width="100" FieldName="hire_date" Caption="Hire Date" ReadOnly="true"/>
 					<dx:GridViewDataColumn Width="100" FieldName="background_check_date" Caption="Background Check Date" ReadOnly="true"/>
-				   <dx:GridViewCommandColumn ShowDeleteButton="true"></dx:GridViewCommandColumn>
+				   <dx:GridViewDataCheckColumn Width="80" FieldName="is_deleted" Caption="Archived" />
+				   <%--<dx:GridViewCommandColumn ShowDeleteButton="true"></dx:GridViewCommandColumn>--%>
 			</Columns>
 
-			<Settings ShowFooter="true" ShowGroupPanel="true" VerticalScrollableHeight="500" VerticalScrollBarMode="Visible" VerticalScrollBarStyle="Standard"  HorizontalScrollBarMode="Visible"/>
+			<Settings ShowFilterRow="true" ShowFooter="true" ShowGroupPanel="true" VerticalScrollableHeight="350" VerticalScrollBarMode="Visible" VerticalScrollBarStyle="Standard"  HorizontalScrollBarMode="Visible"/>
 			<SettingsEditing Mode="Batch" BatchEditSettings-EditMode="Row"  BatchEditSettings-StartEditAction="Click" NewItemRowPosition="Top" ></SettingsEditing>
 
 			  <SettingsPager Mode="ShowAllRecords"></SettingsPager>
